@@ -1,5 +1,8 @@
 # Contributing to ExamMaster
 
+**Version:** 1.0  
+**Last Updated:** December 18, 2025
+
 Thank you for your interest in contributing to ExamMaster! This document provides guidelines and instructions for contributing to the project.
 
 ## Table of Contents
@@ -29,11 +32,12 @@ Thank you for your interest in contributing to ExamMaster! This document provide
 
 Before contributing, ensure you have:
 
--   PHP 8.2+
+-   PHP 8.3+
 -   Composer
--   Node.js 18+
--   MySQL
+-   Node.js 18+ (20 LTS recommended)
+-   SQLite (or MySQL for production)
 -   Git
+-   Laravel Herd (recommended for local development)
 
 ### Setup Development Environment
 

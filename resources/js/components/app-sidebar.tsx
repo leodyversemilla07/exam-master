@@ -11,11 +11,12 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { dashboard } from "@/routes";
-import { index as usermanagements } from "@/routes/usermanagements";
-import { index as modmanagements } from "@/routes/modmanagements";
-import { index as tosgenerates } from "@/routes/tosgenerates";
-import { type NavItem } from "@/types";
-import { Link } from "@inertiajs/react";
+import { index as modules } from "@/routes/modules";
+import { index as tosgenerates } from "@/routes/tos-generates";
+import { index as exams } from "@/routes/exams";
+import { index as users } from "@/routes/users";
+import { type NavItem, type SharedData } from "@/types";
+import { Link, usePage } from "@inertiajs/react";
 import {
     LayoutGrid,
     FileText,
@@ -23,6 +24,7 @@ import {
     TableProperties,
     BookMarked,
     Folder,
+    Users,
 } from "lucide-react";
 import AppLogo from "./app-logo";
 
@@ -33,19 +35,28 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: "Exam",
-        href: usermanagements(),
-        icon: FileText,
-    },
-    {
-        title: "Module",
-        href: modmanagements(),
+        title: "Modules",
+        href: modules(),
         icon: BookOpen,
+        permission: "view modules",
     },
     {
         title: "Table of Specification",
         href: tosgenerates(),
         icon: TableProperties,
+        permission: "view tos",
+    },
+    {
+        title: "Exams",
+        href: exams(),
+        icon: FileText,
+        permission: "view exams",
+    },
+    {
+        title: "Users",
+        href: users(),
+        icon: Users,
+        permission: "view users",
     },
 ];
 
@@ -63,6 +74,16 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage<SharedData>().props;
+    const userPermissions = auth.user?.permissions || [];
+
+    const filteredNavItems = mainNavItems.filter((item) => {
+        if (!item.permission) {
+            return true;
+        }
+        return userPermissions.includes(item.permission);
+    });
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -78,7 +99,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filteredNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

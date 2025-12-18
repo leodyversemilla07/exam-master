@@ -1,5 +1,10 @@
 # ExamMaster Architecture
 
+**Version:** 1.0  
+**Last Updated:** December 18, 2025  
+**Laravel Version:** 12.43.1  
+**React Version:** 19.2.3
+
 This document describes the technical architecture of the ExamMaster application.
 
 ## Table of Contents
@@ -19,6 +24,40 @@ This document describes the technical architecture of the ExamMaster application
 
 ExamMaster is a full-stack web application built with Laravel 12 (backend) and React with TypeScript (frontend), using Inertia.js for seamless SPA-like navigation without building a separate API.
 
+### Current Implementation Status
+
+**✅ Completed Features:**
+- User authentication (login, register, password reset, email verification)
+- Two-factor authentication support
+- User profile management
+- Settings pages (profile, password, appearance)
+- Dark/light mode theming
+- Resource routes for all management modules
+- Basic database structure
+- Queue system
+- Session management
+- Type-safe routing with Wayfinder
+- Modern UI with shadcn/ui components
+
+**🔄 In Progress:**
+- User management CRUD operations
+- Module management system
+- Exam management interface
+- TOS generation logic
+- System logging functionality
+
+**⏳ Planned:**
+- Complete TOS functionality
+- Exam export (PDF)
+- Advanced analytics
+- Role-based permissions
+
+**✅ Recently Completed:**
+- AI question generation with PrismPHP
+- Multi-provider AI support (OpenAI, Gemini, Anthropic)
+- Structured output for exam questions
+- Database schema for questions and TOS
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        Browser                              │
@@ -28,10 +67,16 @@ ExamMaster is a full-stack web application built with Laravel 12 (backend) and R
 ┌─────────────────────────▼───────────────────────────────────┐
 │                    Laravel Backend                          │
 │              (Controllers, Services, Models)                │
+│                                                             │
+│    ┌─────────────────────────────────────┐                │
+│    │   AI Service Layer (PrismPHP)       │                │
+│    │   - QuestionGeneratorService        │                │
+│    │   - OpenAI / Gemini / Anthropic     │                │
+│    └─────────────────────────────────────┘                │
 └─────────────────────────┬───────────────────────────────────┘
                           │ Eloquent ORM
 ┌─────────────────────────▼───────────────────────────────────┐
-│                        MySQL                                │
+│                        SQLite/MySQL                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -43,30 +88,33 @@ ExamMaster is a full-stack web application built with Laravel 12 (backend) and R
 
 | Technology        | Version | Purpose           |
 | ----------------- | ------- | ----------------- |
-| React             | 18      | UI library        |
-| TypeScript        | 5.x     | Type safety       |
-| Inertia.js        | 2       | SPA adapter       |
-| Tailwind CSS      | 4       | Styling           |
-| shadcn/ui         | Latest  | UI components     |
-| Laravel Wayfinder | 0.1     | Type-safe routing |
+| React             | 19.2.3  | UI library        |
+| TypeScript        | 5.9.3   | Type safety       |
+| Inertia.js        | 2.3.3   | SPA adapter       |
+| Tailwind CSS      | 4.1.18  | Styling           |
+| shadcn/ui         | 3.5.1   | UI components     |
+| Laravel Wayfinder | 0.1.12  | Type-safe routing |
 
 ### Backend
 
-| Technology      | Version | Purpose         |
-| --------------- | ------- | --------------- |
-| Laravel         | 12      | PHP framework   |
-| PHP             | 8.2+    | Server language |
-| MySQL           | 8.0+    | Database        |
-| Laravel Sanctum | 4       | Authentication  |
+| Technology       | Version | Purpose           |
+| ---------------- | ------- | ----------------- |
+| Laravel          | 12.43.1 | PHP framework     |
+| PHP              | 8.3.28  | Server language   |
+| SQLite           | 3.x     | Database (dev)    |
+| Laravel Sanctum  | 4.2.1   | Authentication    |
+| Laravel Fortify  | 1.33.0  | Auth features     |
+| PrismPHP         | 0.99.2  | AI integration    |
 
 ### Development Tools
 
-| Tool         | Purpose         |
-| ------------ | --------------- |
-| Vite         | Asset bundling  |
-| Pest         | Testing         |
-| Laravel Pint | Code formatting |
-| TypeScript   | Type checking   |
+| Tool           | Version | Purpose          |
+| -------------- | ------- | ---------------- |
+| Vite           | 7.3.0   | Asset bundling   |
+| Pest           | 4.2.0   | Testing          |
+| Laravel Pint   | 1.26.0  | Code formatting  |
+| TypeScript     | 5.9.3   | Type checking    |
+| Laravel Boost  | 1.8+    | MCP dev tools    |
 
 ---
 
@@ -187,6 +235,47 @@ import { show } from '@/actions/App/Http/Controllers/ExamController';
 <Form {...store.form()}>
 ```
 
+### UI Components
+
+ExamMaster uses shadcn/ui built on Radix UI primitives for accessible, customizable components:
+
+**Installed Components:**
+- Avatar
+- Checkbox
+- Dialog/Modal
+- Dropdown Menu
+- Label
+- Separator
+- Slot
+- Switch (recently added)
+- Tooltip
+
+**Component Structure:**
+```
+resources/js/components/
+├── ui/                  # shadcn/ui components
+│   ├── avatar.tsx
+│   ├── button.tsx
+│   ├── checkbox.tsx
+│   ├── dialog.tsx
+│   ├── dropdown-menu.tsx
+│   ├── label.tsx
+│   ├── separator.tsx
+│   ├── switch.tsx
+│   └── tooltip.tsx
+├── app-sidebar.tsx      # Application sidebar
+├── nav-main.tsx         # Main navigation
+└── theme-provider.tsx   # Theme management
+```
+
+### Theme Management
+
+ExamMaster supports light and dark mode:
+- Persisted in localStorage
+- Accessible via settings/appearance page
+- Uses CSS variables for theming
+- Compatible with Tailwind CSS v4
+
 ---
 
 ## Backend Architecture
@@ -271,54 +360,136 @@ class ExamGeneratorService
 
 ## Database Schema
 
-### Core Tables
+### Core Tables (Current Implementation)
+
+The application currently uses SQLite for development with the following tables:
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│    users     │     │   subjects   │     │    topics    │
-├──────────────┤     ├──────────────┤     ├──────────────┤
-│ id           │     │ id           │     │ id           │
-│ name         │     │ name         │     │ subject_id   │──┐
-│ email        │     │ description  │     │ name         │  │
-│ password     │     │ created_at   │     │ description  │  │
-│ role         │     └──────────────┘     └──────────────┘  │
-│ created_at   │            ▲                    ▲          │
-└──────────────┘            │                    │          │
-       │                    └────────────────────┘          │
-       │                                                    │
-       ▼                                                    │
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐ │
-│    exams     │     │  questions   │     │cognitive_lvl │ │
-├──────────────┤     ├──────────────┤     ├──────────────┤ │
-│ id           │     │ id           │     │ id           │ │
-│ user_id      │──┐  │ topic_id     │─────│ name         │ │
-│ title        │  │  │ cognitive_id │─────│ level        │ │
-│ description  │  │  │ content      │     │ description  │ │
-│ created_at   │  │  │ answer       │     └──────────────┘ │
-└──────────────┘  │  │ created_at   │                      │
-       │          │  └──────────────┘                      │
-       │          │         ▲                              │
-       ▼          │         │                              │
-┌──────────────┐  │  ┌──────────────┐                      │
-│exam_questions│  │  │     tos      │                      │
-├──────────────┤  │  ├──────────────┤                      │
-│ exam_id      │──┘  │ id           │                      │
-│ question_id  │─────│ exam_id      │                      │
-│ order        │     │ topic_id     │──────────────────────┘
-└──────────────┘     │ cognitive_id │
-                     │ count        │
-                     └──────────────┘
+┌──────────────────────┐
+│        users         │
+├──────────────────────┤
+│ id                   │ (Primary Key)
+│ name                 │ (varchar)
+│ email                │ (varchar, unique)
+│ email_verified_at    │ (datetime, nullable)
+│ password             │ (varchar)
+│ remember_token       │ (varchar, nullable)
+│ two_factor_secret    │ (text, nullable) *NEW*
+│ two_factor_recovery  │ (text, nullable) *NEW*
+│ two_factor_confirmed │ (datetime, nullable) *NEW*
+│ created_at           │
+│ updated_at           │
+└──────────────────────┘
+         │
+         │ (Referenced by other tables)
+         │
+         ▼
+┌──────────────────────┐     ┌──────────────────────┐
+│  user_management     │     │  exam_management     │
+├──────────────────────┤     ├──────────────────────┤
+│ id                   │     │ id                   │
+│ created_at           │     │ created_at           │
+│ updated_at           │     │ updated_at           │
+└──────────────────────┘     └──────────────────────┘
+
+┌──────────────────────┐     ┌──────────────────────┐
+│ module_management    │     │   mod_management     │
+├──────────────────────┤     ├──────────────────────┤
+│ id                   │     │ id                   │
+│ created_at           │     │ created_at           │
+│ updated_at           │     │ updated_at           │
+└──────────────────────┘     └──────────────────────┘
+
+┌──────────────────────┐     ┌──────────────────────┐
+│   tos_generators     │     │    tos_generates     │
+├──────────────────────┤     ├──────────────────────┤
+│ id                   │     │ id                   │
+│ created_at           │     │ created_at           │
+│ updated_at           │     │ updated_at           │
+└──────────────────────┘     └──────────────────────┘
+
+┌──────────────────────┐     ┌──────────────────────┐
+│    system_logs       │     │      settings        │
+├──────────────────────┤     ├──────────────────────┤
+│ id                   │     │ id                   │
+│ created_at           │     │ created_at           │
+│ updated_at           │     │ updated_at           │
+└──────────────────────┘     └──────────────────────┘
+
+┌──────────────────────┐
+│       modules        │
+├──────────────────────┤
+│ id                   │
+│ created_at           │
+│ updated_at           │
+└──────────────────────┘
 ```
 
-### Key Relationships
+### System Tables
 
-| Relationship      | Type         | Description                  |
-| ----------------- | ------------ | ---------------------------- |
-| User → Exams      | One-to-Many  | User creates many exams      |
-| Subject → Topics  | One-to-Many  | Subject contains many topics |
-| Topic → Questions | One-to-Many  | Topic has many questions     |
-| Exam → Questions  | Many-to-Many | Via exam_questions pivot     |
-| Exam → TOS        | One-to-Many  | Exam has TOS entries         |
+```
+┌──────────────────────┐     ┌──────────────────────┐
+│    sessions          │     │  password_reset      │
+├──────────────────────┤     ├──────────────────────┤
+│ id (PK)              │     │ email (PK)           │
+│ user_id              │     │ token                │
+│ ip_address           │     │ created_at           │
+│ user_agent           │     └──────────────────────┘
+│ payload              │
+│ last_activity        │     ┌──────────────────────┐
+└──────────────────────┘     │     cache            │
+                             ├──────────────────────┤
+┌──────────────────────┐     │ key (PK)             │
+│    jobs              │     │ value                │
+├──────────────────────┤     │ expiration           │
+│ id (PK)              │     └──────────────────────┘
+│ queue                │
+│ payload              │     ┌──────────────────────┐
+│ attempts             │     │   cache_locks        │
+│ reserved_at          │     ├──────────────────────┤
+│ available_at         │     │ key (PK)             │
+│ created_at           │     │ owner                │
+└──────────────────────┘     │ expiration           │
+                             └──────────────────────┘
+┌──────────────────────┐
+│   job_batches        │     ┌──────────────────────┐
+├──────────────────────┤     │   failed_jobs        │
+│ id (PK)              │     ├──────────────────────┤
+│ name                 │     │ id (PK)              │
+│ total_jobs           │     │ uuid (unique)        │
+│ pending_jobs         │     │ connection           │
+│ failed_jobs          │     │ queue                │
+│ failed_job_ids       │     │ payload              │
+│ options              │     │ exception            │
+│ cancelled_at         │     │ failed_at            │
+│ created_at           │     └──────────────────────┘
+│ finished_at          │
+└──────────────────────┘
+```
+
+### Key Relationships & Notes
+
+**Current Implementation Status:**
+- ✅ User authentication with Fortify (login, register, password reset, email verification)
+- ✅ Two-factor authentication support (columns added to users table)
+- ✅ Session management
+- ✅ Cache system
+- ✅ Job queue system
+- ⚠️ Management tables (exam, user, module, mod, tos) exist but have minimal columns
+- 🔄 Full exam and TOS functionality is under development
+
+**Planned Relationships (To Be Implemented):**
+| Relationship      | Type         | Description                  | Status |
+| ----------------- | ------------ | ---------------------------- | ------ |
+| User → Exams      | One-to-Many  | User creates many exams      | 🔄     |
+| Subject → Topics  | One-to-Many  | Subject contains many topics | 🔄     |
+| Topic → Questions | One-to-Many  | Topic has many questions     | 🔄     |
+| Exam → Questions  | Many-to-Many | Via exam_questions pivot     | 🔄     |
+| Exam → TOS        | One-to-Many  | Exam has TOS entries         | 🔄     |
+
+**Database Engine:**
+- Development: SQLite (current)
+- Production: MySQL/PostgreSQL (recommended)
 
 ---
 

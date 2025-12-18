@@ -7,6 +7,8 @@ export interface User {
     email: string;
     avatar?: string;
     email_verified_at?: string;
+    roles?: string[];
+    permissions?: string[];
 }
 
 export interface Auth {
@@ -23,6 +25,7 @@ export interface NavItem {
     href: NonNullable<InertiaLinkProps["href"]>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    permission?: string;
 }
 
 export interface SharedData {

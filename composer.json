@@ -14,7 +14,9 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
-        "laravel/wayfinder": "^0.1.12"
+        "laravel/wayfinder": "^0.1.12",
+        "prism-php/prism": "^0.99.2",
+        "spatie/laravel-permission": "^6.24"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",

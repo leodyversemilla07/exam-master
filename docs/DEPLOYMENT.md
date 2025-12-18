@@ -1,5 +1,9 @@
 # ExamMaster Deployment Guide
 
+**Version:** 1.0  
+**Last Updated:** December 18, 2025  
+**Target Environment:** Production
+
 This guide covers deploying ExamMaster to production environments.
 
 ---
@@ -22,13 +26,13 @@ This guide covers deploying ExamMaster to production environments.
 
 ### Server Requirements
 
-| Requirement | Minimum | Recommended |
-| ----------- | ------- | ----------- |
-| PHP         | 8.2     | 8.3         |
-| MySQL       | 8.0     | 8.0+        |
-| Node.js     | 18      | 20 LTS      |
-| RAM         | 2GB     | 4GB+        |
-| Storage     | 20GB    | 50GB+       |
+| Requirement       | Minimum | Recommended |
+| ----------------- | ------- | ----------- |
+| PHP               | 8.3     | 8.3.28      |
+| Database (SQLite) | 3.x     | 3.x         |
+| Node.js           | 18      | 20 LTS      |
+| RAM               | 2GB     | 4GB+        |
+| Storage           | 20GB    | 50GB+       |
 
 ### Required PHP Extensions
 
@@ -40,10 +44,11 @@ This guide covers deploying ExamMaster to production environments.
 - Mbstring
 - OpenSSL
 - PDO
-- PDO_MySQL
+- PDO_SQLite
 - Tokenizer
 - XML
 - cURL
+- intl
 ```
 
 ---
