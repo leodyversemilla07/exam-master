@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTosGenerateRequest;
+use App\Jobs\GenerateQuestionsJob;
 use App\Models\ExamQuestion;
 use App\Models\Module;
 use App\Models\TosGenerate;
@@ -131,7 +132,7 @@ class TosGenerateController extends Controller
     }
 
     /**
-     * Generate AI-powered questions based on TOS.
+     * Generate AI-powered questions based on TOS (dispatches async job).
      */
     public function generateQuestions(TosGenerate $tosGenerate): RedirectResponse
     {
@@ -142,43 +143,19 @@ class TosGenerateController extends Controller
         }
 
         try {
+            // Mark as generating immediately
             $tosGenerate->markAsGenerating();
 
-            $generatedQuestions = $this->questionGenerator->generateQuestions($tosGenerate);
-
-            DB::transaction(function () use ($tosGenerate, $generatedQuestions) {
-                foreach ($generatedQuestions['questions'] as $questionData) {
-                    ExamQuestion::create([
-                        'tos_generate_id' => $tosGenerate->id,
-                        'module_id' => $tosGenerate->module_id,
-                        'created_by' => auth()->id(),
-                        'question_type' => $tosGenerate->question_type,
-                        'question' => $questionData['question'],
-                        'options' => $questionData['options'] ?? null,
-                        'correct_answer' => $questionData['correct_answer'],
-                        'explanation' => $questionData['explanation'] ?? null,
-                        'cognitive_level' => $questionData['cognitive_level'],
-                        'difficulty' => $questionData['difficulty'],
-                        'learning_objective_code' => $questionData['learning_objective_code'],
-                        'is_ai_generated' => true,
-                        'ai_metadata' => json_encode([
-                            'provider' => $this->questionGenerator->provider ?? 'unknown',
-                            'model' => $this->questionGenerator->model ?? 'unknown',
-                            'generated_at' => now()->toIso8601String(),
-                        ]),
-                    ]);
-                }
-
-                $tosGenerate->markAsCompleted();
-            });
+            // Dispatch job to queue for async processing
+            GenerateQuestionsJob::dispatch($tosGenerate, auth()->id());
 
             return redirect()
                 ->route('tos-generates.show', $tosGenerate)
-                ->with('success', "Successfully generated {$tosGenerate->total_items} questions!");
+                ->with('success', 'Question generation started! This may take a few minutes. Refresh the page to see progress.');
         } catch (\Exception $e) {
             $tosGenerate->markAsFailed($e->getMessage());
 
-            return back()->with('error', 'Failed to generate questions: '.$e->getMessage());
+            return back()->with('error', 'Failed to start question generation: '.$e->getMessage());
         }
     }
 

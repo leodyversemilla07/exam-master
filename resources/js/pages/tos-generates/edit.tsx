@@ -233,7 +233,7 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
                                             placeholder="e.g., M10-A1"
                                         />
                                     </div>
-                                    <div className="flex-[2] space-y-2">
+                                    <div className="flex-2 space-y-2">
                                         <Label>Description</Label>
                                         <Input
                                             value={objective.description}
@@ -322,7 +322,7 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
                                     <Label htmlFor="question_type">Question Type *</Label>
                                     <Select
                                         value={form.data.question_type}
-                                        onValueChange={(value) => form.setData('question_type', value)}
+                                        onValueChange={(value) => form.setData('question_type', value as 'multiple_choice' | 'true_false' | 'essay' | 'short_answer')}
                                     >
                                         <SelectTrigger id="question_type">
                                             <SelectValue />
@@ -343,7 +343,7 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
                                     <Label htmlFor="difficulty_level">Difficulty Level *</Label>
                                     <Select
                                         value={form.data.difficulty_level}
-                                        onValueChange={(value) => form.setData('difficulty_level', value)}
+                                        onValueChange={(value) => form.setData('difficulty_level', value as 'easy' | 'medium' | 'hard' | 'mixed')}
                                     >
                                         <SelectTrigger id="difficulty_level">
                                             <SelectValue />

@@ -27,6 +27,9 @@ class QuestionGeneratorService
      */
     public function generateQuestions(TosGenerate $tos): array
     {
+        // Allow up to 5 minutes for generation (job handles overall timeout)
+        set_time_limit(300);
+
         try {
             $module = $tos->module;
 
@@ -37,6 +40,7 @@ class QuestionGeneratorService
                 ->withPrompt($prompt)
                 ->withSchema($this->getQuestionSchema())
                 ->withMaxTokens(4096)
+                ->withTimeout(180) // 3 minutes for API call
                 ->asStructured();
 
             return $response->structured;
@@ -44,6 +48,7 @@ class QuestionGeneratorService
             Log::error('Question generation failed', [
                 'tos_id' => $tos->id,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e;
