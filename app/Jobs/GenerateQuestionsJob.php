@@ -50,6 +50,10 @@ class GenerateQuestionsJob implements ShouldQueue
             // Generate questions using AI
             $generatedQuestions = $questionGenerator->generateQuestions($this->tosGenerate);
 
+            if (! isset($generatedQuestions['questions']) || ! is_array($generatedQuestions['questions'])) {
+                throw new \RuntimeException("Invalid AI response: missing 'questions' array.");
+            }
+
             // Save questions in a transaction
             DB::transaction(function () use ($generatedQuestions, $questionGenerator) {
                 $questionsCreated = 0;

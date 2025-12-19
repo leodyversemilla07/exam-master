@@ -21,6 +21,7 @@ interface PageProps {
 
 const statusColors = {
     draft: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
+    pending: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
     generating: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
     completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
     failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
@@ -28,6 +29,7 @@ const statusColors = {
 
 const statusIcons = {
     draft: Clock,
+    pending: Clock,
     generating: Loader2,
     completed: CheckCircle2,
     failed: AlertCircle,
@@ -125,11 +127,11 @@ export default function TosGeneratesIndex({ tosGenerates, modules }: PageProps) 
                                                 <p className="text-sm text-muted-foreground mb-2">Cognitive Levels:</p>
                                                 <div className="flex flex-wrap gap-1">
                                                     {Object.entries(tos.cognitive_levels).map(([level, count]) => (
-                                                        count > 0 && (
+                                                        count > 0 ? (
                                                             <Badge key={level} variant="secondary" className="text-xs">
                                                                 {level}: {count}
                                                             </Badge>
-                                                        )
+                                                        ) : null
                                                     ))}
                                                 </div>
                                             </div>

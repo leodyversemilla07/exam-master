@@ -71,6 +71,7 @@ export interface TosGenerate {
     item_distribution: Record<string, unknown>;
     difficulty_level: 'easy' | 'medium' | 'hard' | 'mixed';
     question_type: 'multiple_choice' | 'true_false' | 'essay' | 'short_answer';
+    language: 'english' | 'filipino';
     additional_instructions: string | null;
     status: 'draft' | 'generating' | 'completed' | 'failed';
     error_message: string | null;

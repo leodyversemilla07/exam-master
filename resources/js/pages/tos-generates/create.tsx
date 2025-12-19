@@ -42,6 +42,7 @@ export default function TosGenerateCreate({ modules }: PageProps) {
         },
         difficulty_level: 'mixed',
         question_type: 'multiple_choice',
+        language: 'english',
         additional_instructions: '',
     });
 
@@ -352,6 +353,25 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         <p className="text-sm text-destructive">
                                             {form.errors.difficulty_level}
                                         </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="language">Language *</Label>
+                                    <Select
+                                        value={form.data.language}
+                                        onValueChange={(value) => form.setData('language', value)}
+                                    >
+                                        <SelectTrigger id="language">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="english">English</SelectItem>
+                                            <SelectItem value="filipino">Filipino</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    {form.errors.language && (
+                                        <p className="text-sm text-destructive">{form.errors.language}</p>
                                     )}
                                 </div>
                             </div>

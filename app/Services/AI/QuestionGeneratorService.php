@@ -19,7 +19,7 @@ class QuestionGeneratorService
     public function __construct()
     {
         $this->provider = config('app.env') === 'production' ? 'openai' : 'gemini';
-        $this->model = $this->provider === 'openai' ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
+        $this->model = $this->provider === 'openai' ? 'gpt-4o-mini' : 'gemini-2.0-flash-exp';
     }
 
     /**
@@ -39,11 +39,28 @@ class QuestionGeneratorService
                 ->using($this->provider, $this->model)
                 ->withPrompt($prompt)
                 ->withSchema($this->getQuestionSchema())
-                ->withMaxTokens(4096)
-                ->withTimeout(180) // 3 minutes for API call
+                ->withMaxTokens(10000)
+                ->withClientOptions([
+                    'timeout' => 180, // 3 minutes timeout for HTTP request
+                    'connect_timeout' => 30,
+                ])
                 ->asStructured();
 
-            return $response->structured;
+            $structured = $response->structured;
+
+            if (! is_array($structured) || ! array_key_exists('questions', $structured) || ! is_array($structured['questions'])) {
+                if (! is_array($structured)) {
+                    $shape = gettype($structured).': '.json_encode($structured);
+                } elseif (empty($structured)) {
+                    $shape = 'empty array';
+                } else {
+                    $shape = 'array with keys ['.implode(', ', array_keys($structured)).']';
+                }
+
+                throw new \RuntimeException("Invalid AI response: missing 'questions' array. Received: {$shape}");
+            }
+
+            return $structured;
         } catch (\Exception $e) {
             Log::error('Question generation failed', [
                 'tos_id' => $tos->id,
@@ -68,6 +85,12 @@ class QuestionGeneratorService
             ->map(fn ($count, $level) => "- {$level}: {$count} items")
             ->join("\n");
 
+        $language = $tos->language === 'filipino' ? 'Filipino (Tagalog)' : 'English';
+
+        $languageInstruction = $tos->language === 'filipino'
+            ? 'Write the question text, options, correct answers, and explanations in Filipino (Tagalog).'
+            : 'Write the question text, options, correct answers, and explanations in English.';
+
         return <<<PROMPT
 You are an expert educational assessment creator for Filipino students in {$tos->grade_level}.
 
@@ -75,6 +98,7 @@ You are an expert educational assessment creator for Filipino students in {$tos-
 **Module:** {$module->name} ({$module->code})
 **Quarter:** {$tos->quarter}
 **Total Items:** {$tos->total_items}
+**Language:** {$language}
 
 **Learning Objectives:**
 {$objectives}
@@ -86,9 +110,11 @@ You are an expert educational assessment creator for Filipino students in {$tos-
 - Generate exactly {$tos->total_items} {$tos->question_type} questions
 - Follow the cognitive level distribution strictly
 - Difficulty: {$tos->difficulty_level}
+- {$languageInstruction}
 - Ensure questions are culturally appropriate for Filipino students
 - Use clear, simple language appropriate for {$tos->grade_level}
 - Each question must align with one of the learning objectives
+- Output must strictly follow the provided JSON schema: the top-level object must contain a `questions` array.
 ".($tos->additional_instructions ? "\n- Additional Requirements: {$tos->additional_instructions}" : '')."
 
 Generate the questions now.

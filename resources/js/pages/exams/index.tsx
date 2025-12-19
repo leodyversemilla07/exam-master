@@ -4,14 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Module } from '@/types/models';
 import { Plus, Search, Filter, CheckCircle2, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface Question {
     id: number;
-    question_text: string;
+    question: string;
     question_type: 'multiple_choice' | 'true_false' | 'essay' | 'identification';
     cognitive_level: 'remembering' | 'understanding' | 'applying' | 'analyzing' | 'evaluating' | 'creating';
     difficulty: 'easy' | 'moderate' | 'difficult';
@@ -310,8 +310,14 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                     )}
                                                 </div>
                                                 <p className="text-sm leading-relaxed">
-                                                    {question.question_text.substring(0, 200)}
-                                                    {question.question_text.length > 200 && '...'}
+                                                    {question.question ? (
+                                                        <>
+                                                            {question.question.substring(0, 200)}
+                                                            {question.question.length > 200 && '...'}
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-muted-foreground italic">No question text</span>
+                                                    )}
                                                 </p>
                                                 {question.tosGenerate && (
                                                     <p className="text-xs text-muted-foreground">
@@ -320,10 +326,18 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Button variant="outline" size="sm">
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => router.visit(`/exams/${question.id}`)}
+                                                >
                                                     View
                                                 </Button>
-                                                <Button variant="ghost" size="sm">
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm"
+                                                    onClick={() => router.visit(`/exams/${question.id}/edit`)}
+                                                >
                                                     Edit
                                                 </Button>
                                             </div>
@@ -344,7 +358,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                         variant="outline"
                                         size="sm"
                                         disabled={questions.current_page === 1}
-                                        onClick={() => router.get(`/exams?page=${questions.current_page - 1}`, filters)}
+                                        onClick={() => router.get('/exams', { ...filters, page: questions.current_page - 1 }, { preserveState: true })}
                                     >
                                         Previous
                                     </Button>
@@ -355,7 +369,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                         variant="outline"
                                         size="sm"
                                         disabled={questions.current_page === questions.last_page}
-                                        onClick={() => router.get(`/exams?page=${questions.current_page + 1}`, filters)}
+                                        onClick={() => router.get('/exams', { ...filters, page: questions.current_page + 1 }, { preserveState: true })}
                                     >
                                         Next
                                     </Button>

@@ -37,6 +37,7 @@ class StoreTosGenerateRequest extends FormRequest
             'cognitive_levels.create' => ['nullable', 'integer', 'min:0'],
             'difficulty_level' => ['required', 'in:easy,medium,hard,mixed'],
             'question_type' => ['required', 'in:multiple_choice,true_false,essay,short_answer'],
+            'language' => ['nullable', 'in:english,filipino'],
             'additional_instructions' => ['nullable', 'string', 'max:1000'],
         ];
     }

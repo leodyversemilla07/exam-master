@@ -30,6 +30,7 @@ class TosGenerate extends Model
         'item_distribution',
         'difficulty_level',
         'question_type',
+        'language',
         'additional_instructions',
         'status',
         'error_message',

@@ -1,11 +1,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { TosGenerate, Module, ExamQuestion } from '@/types/models';
 import { User } from '@/types/index';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Clock,
     Loader2,
@@ -57,6 +68,8 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
     const status = statusConfig[tosGenerate.status];
     const StatusIcon = status.icon;
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     // Auto-refresh when status is "generating"
     useEffect(() => {
@@ -75,20 +88,18 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
     }, [tosGenerate.status]);
 
     const handleGenerateQuestions = () => {
-        if (confirm('Start generating questions based on this TOS? This may take a few minutes.')) {
-            router.post(`/tos-generates/${tosGenerate.id}/generate`, {}, {
-                preserveScroll: true,
-                onSuccess: () => {
-                    // Refresh will start automatically due to status change
-                },
-            });
-        }
+        setIsGenerateDialogOpen(false);
+        router.post(`/tos-generates/${tosGenerate.id}/generate`, {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Refresh will start automatically due to status change
+            },
+        });
     };
 
     const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this TOS?')) {
-            router.delete(`/tos-generates/${tosGenerate.id}`);
-        }
+        setIsDeleteDialogOpen(false);
+        router.delete(`/tos-generates/${tosGenerate.id}`);
     };
 
     return (
@@ -109,6 +120,9 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                 />
                                 {status.label}
                             </Badge>
+                            <Badge variant="outline">
+                                {tosGenerate.language === 'filipino' ? 'Filipino' : 'English'}
+                            </Badge>
                         </div>
                         <p className="mt-2 text-muted-foreground">
                             {tosGenerate.module?.code} - {tosGenerate.module?.name}
@@ -124,10 +138,30 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                         Edit
                                     </Button>
                                 </Link>
-                                <Button onClick={handleGenerateQuestions}>
-                                    <Sparkles className="mr-2 size-4" />
-                                    Generate Questions
-                                </Button>
+                                <AlertDialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
+                                    <AlertDialogTrigger asChild>
+                                        <Button>
+                                            <Sparkles className="mr-2 size-4" />
+                                            Generate Questions
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Generate Questions?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This will start generating {tosGenerate.total_items} questions based on this Table of Specifications. 
+                                                The process may take 2-5 minutes depending on the number of questions. 
+                                                You can navigate away from this page while generation is in progress.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleGenerateQuestions}>
+                                                Continue
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </>
                         )}
                         {tosGenerate.status === 'completed' && tosGenerate.questions && tosGenerate.questions.length > 0 && (
@@ -136,9 +170,31 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                 Export
                             </Button>
                         )}
-                        <Button variant="ghost" size="icon" onClick={handleDelete}>
-                            <Trash2 className="size-4 text-destructive" />
-                        </Button>
+                        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Trash2 className="size-4 text-destructive" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete TOS?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to delete this Table of Specifications? 
+                                        This action cannot be undone and will permanently remove all associated data.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                        onClick={handleDelete}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </div>
 
@@ -175,16 +231,39 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                     <p className="text-sm text-red-700 dark:text-red-300">
                                         {tosGenerate.error_message || 'An error occurred during generation.'}
                                     </p>
+                                    {tosGenerate.questions && tosGenerate.questions.length > 0 && (
+                                        <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+                                            Note: Questions shown below are from a previous successful generation.
+                                        </p>
+                                    )}
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleGenerateQuestions}
-                                    className="border-red-300 text-red-700 hover:bg-red-100 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900"
-                                >
-                                    <Sparkles className="mr-2 size-4" />
-                                    Retry
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-red-300 text-red-700 hover:bg-red-100 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900"
+                                        >
+                                            <Sparkles className="mr-2 size-4" />
+                                            Retry
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Retry Question Generation?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This will attempt to generate {tosGenerate.total_items} questions again based on this Table of Specifications. 
+                                                The process may take 2-5 minutes.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleGenerateQuestions}>
+                                                Retry
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </CardContent>
                     </Card>
@@ -311,8 +390,14 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                                     </Badge>
                                                 </div>
                                                 <p className="text-sm">
-                                                    {question.question_text.substring(0, 150)}
-                                                    {question.question_text.length > 150 && '...'}
+                                                    {question.question ? (
+                                                        <>
+                                                            {question.question.substring(0, 150)}
+                                                            {question.question.length > 150 && '...'}
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-muted-foreground italic">No question text</span>
+                                                    )}
                                                 </p>
                                             </div>
                                         ))}
