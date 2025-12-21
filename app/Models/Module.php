@@ -56,4 +56,9 @@ class Module extends Model
     {
         return $this->hasMany(Topic::class)->whereNull('parent_id')->orderBy('order');
     }
+
+    public function exams(): HasMany
+    {
+        return $this->hasMany(Exam::class);
+    }
 }

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
 import { Exam, ExamQuestion } from '@/types/models';
-import { ArrowLeft, Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye } from 'lucide-react';
+import { ArrowLeft, Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye, Download } from 'lucide-react';
 import { useState } from 'react';
 import {
     AlertDialog,
@@ -24,6 +24,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { BreadcrumbItem } from '@/types';
 
@@ -130,7 +136,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
             <Head title={exam.title} />
 
             <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl">
                     {/* Header */}
                     <div className="mb-6">
                         <Button
@@ -186,6 +192,30 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             </div>
 
                             <div className="flex gap-2 mt-4 lg:mt-0">
+                                {exam.questions.length > 0 && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline">
+                                                <Download className="mr-2 h-4 w-4" />
+                                                Export PDF
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem asChild>
+                                                <a href={`/exam-builder/${exam.id}/export-pdf`} download>
+                                                    <FileText className="mr-2 h-4 w-4" />
+                                                    Exam Only
+                                                </a>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <a href={`/exam-builder/${exam.id}/export-pdf-answers`} download>
+                                                    <FileText className="mr-2 h-4 w-4" />
+                                                    With Answer Key
+                                                </a>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
                                 <Button variant="outline" asChild>
                                     <Link href={`/exam-builder/${exam.id}/edit`}>
                                         <Edit className="mr-2 h-4 w-4" />

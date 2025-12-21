@@ -1,12 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import AppLayout from '@/layouts/app-layout';
-import { Head, router, useForm } from '@inertiajs/react';
-import { User } from '@/types/models';
-import { Plus, Search, Mail, Shield, Trash2, Pencil } from 'lucide-react';
-import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -15,35 +9,88 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { User } from '@/types/models';
+import { Head, router, useForm } from '@inertiajs/react';
+import { CheckCircle, Pencil, Plus, Search, Trash2, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Users', href: '/users' },
 ];
 
+interface ExtendedUser extends User {
+    role?: string;
+}
+
 interface PageProps {
     users: {
-        data: User[];
+        data: ExtendedUser[];
         current_page: number;
         last_page: number;
         total: number;
     };
+    roles: string[];
     filters: {
         search?: string;
     };
 }
 
-export default function UsersIndex({ users, filters }: PageProps) {
+const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+        case 'super-admin':
+            return 'destructive';
+        case 'admin':
+            return 'default';
+        case 'educator':
+            return 'secondary';
+        default:
+            return 'outline';
+    }
+};
+
+const getRoleLabel = (role: string) => {
+    switch (role) {
+        case 'super-admin':
+            return 'Super Admin';
+        case 'admin':
+            return 'Admin';
+        case 'educator':
+            return 'Educator';
+        default:
+            return role;
+    }
+};
+
+export default function UsersIndex({ users, roles, filters }: PageProps) {
     const [search, setSearch] = useState(filters.search || '');
     const [showCreateDialog, setShowCreateDialog] = useState(false);
-    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [editingUser, setEditingUser] = useState<ExtendedUser | null>(null);
 
     const form = useForm({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
+        role: 'educator',
     });
 
     const handleSearch = (value: string) => {
@@ -56,16 +103,18 @@ export default function UsersIndex({ users, filters }: PageProps) {
 
     const openCreateDialog = () => {
         form.reset();
+        form.setData('role', 'educator');
         setEditingUser(null);
         setShowCreateDialog(true);
     };
 
-    const openEditDialog = (user: User) => {
+    const openEditDialog = (user: ExtendedUser) => {
         form.setData({
             name: user.name,
             email: user.email,
             password: '',
             password_confirmation: '',
+            role: user.role || 'educator',
         });
         setEditingUser(user);
         setShowCreateDialog(true);
@@ -90,7 +139,7 @@ export default function UsersIndex({ users, filters }: PageProps) {
         }
     };
 
-    const handleDelete = (user: User) => {
+    const handleDelete = (user: ExtendedUser) => {
         if (confirm(`Are you sure you want to delete ${user.name}?`)) {
             router.delete(`/users/${user.id}`);
         }
@@ -116,114 +165,115 @@ export default function UsersIndex({ users, filters }: PageProps) {
 
                 {/* Search */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Search Users</CardTitle>
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <CardTitle>Users</CardTitle>
+                            <div className="relative w-64">
+                                <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search users..."
+                                    value={search}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    className="pl-10"
+                                />
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search by name or email..."
-                                value={search}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
+                        {users.data.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-muted-foreground">
+                                    {filters.search
+                                        ? 'No users found matching your search'
+                                        : 'No users yet. Add your first user to get started.'}
+                                </p>
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Email</TableHead>
+                                        <TableHead>Role</TableHead>
+                                        <TableHead>Verified</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {users.data.map((user) => (
+                                        <TableRow key={user.id}>
+                                            <TableCell className="font-medium">{user.name}</TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={getRoleBadgeVariant(user.role || 'educator')}>
+                                                    {getRoleLabel(user.role || 'educator')}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                {user.email_verified_at ? (
+                                                    <CheckCircle className="size-5 text-green-500" />
+                                                ) : (
+                                                    <XCircle className="size-5 text-muted-foreground" />
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => openEditDialog(user)}
+                                                    >
+                                                        <Pencil className="size-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleDelete(user)}
+                                                    >
+                                                        <Trash2 className="size-4 text-destructive" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                     </CardContent>
                 </Card>
 
-                {/* Users List */}
-                {users.data.length === 0 ? (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>No Users Found</CardTitle>
-                            <CardDescription>
-                                {filters.search
-                                    ? 'Try adjusting your search'
-                                    : 'Get started by adding your first user'}
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                ) : (
-                    <>
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {users.data.map((user) => (
-                                <Card key={user.id}>
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1 space-y-2">
-                                                <CardTitle className="text-lg">{user.name}</CardTitle>
-                                                <CardDescription className="flex items-center gap-2">
-                                                    <Mail className="size-3" />
-                                                    {user.email}
-                                                </CardDescription>
-                                                {user.email_verified_at && (
-                                                    <Badge variant="secondary" className="text-xs">
-                                                        <Shield className="mr-1 size-3" />
-                                                        Verified
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="flex-1"
-                                                onClick={() => openEditDialog(user)}
-                                            >
-                                                <Pencil className="mr-2 size-3" />
-                                                Edit
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleDelete(user)}
-                                            >
-                                                <Trash2 className="size-4 text-destructive" />
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                {/* Pagination */}
+                {users.last_page > 1 && (
+                    <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">
+                            Showing {users.data.length} of {users.total} users
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={users.current_page === 1}
+                                onClick={() =>
+                                    router.get(`/users?page=${users.current_page - 1}`, filters)
+                                }
+                            >
+                                Previous
+                            </Button>
+                            <span className="text-sm">
+                                Page {users.current_page} of {users.last_page}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={users.current_page === users.last_page}
+                                onClick={() =>
+                                    router.get(`/users?page=${users.current_page + 1}`, filters)
+                                }
+                            >
+                                Next
+                            </Button>
                         </div>
-
-                        {/* Pagination */}
-                        {users.last_page > 1 && (
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm text-muted-foreground">
-                                    Showing {users.data.length} of {users.total} users
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={users.current_page === 1}
-                                        onClick={() =>
-                                            router.get(`/users?page=${users.current_page - 1}`, filters)
-                                        }
-                                    >
-                                        Previous
-                                    </Button>
-                                    <span className="text-sm">
-                                        Page {users.current_page} of {users.last_page}
-                                    </span>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={users.current_page === users.last_page}
-                                        onClick={() =>
-                                            router.get(`/users?page=${users.current_page + 1}`, filters)
-                                        }
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-                    </>
+                    </div>
                 )}
 
                 {/* Create/Edit Dialog */}
@@ -287,6 +337,27 @@ export default function UsersIndex({ users, filters }: PageProps) {
                                     onChange={(e) => form.setData('password_confirmation', e.target.value)}
                                     placeholder="••••••••"
                                 />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="role">Role</Label>
+                                <Select
+                                    value={form.data.role}
+                                    onValueChange={(value) => form.setData('role', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {roles.map((role) => (
+                                            <SelectItem key={role} value={role}>
+                                                {getRoleLabel(role)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {form.errors.role && (
+                                    <p className="text-sm text-destructive">{form.errors.role}</p>
+                                )}
                             </div>
                             <DialogFooter>
                                 <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>

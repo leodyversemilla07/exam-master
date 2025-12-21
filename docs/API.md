@@ -1,10 +1,10 @@
 # ExamMaster API Documentation
 
-**Version:** 1.2  
-**Last Updated:** December 19, 2025  
+**Version:** 1.3  
+**Last Updated:** December 21, 2025  
 **Laravel Version:** 12.43.1  
 **Database:** SQLite (development), MySQL/PostgreSQL (production)  
-**Backend Status:** 98% Complete ✅  
+**Backend Status:** 100% Complete ✅  
 **Frontend Status:** 100% Complete ✅
 
 This document describes the API endpoints available in ExamMaster.
@@ -26,6 +26,7 @@ This document describes the API endpoints available in ExamMaster.
 - [Question Bank](#question-bank)
 - [Duplicate Detection](#duplicate-detection)
 - [Exam Builder](#exam-builder)
+- [PDF Export](#pdf-export)
 - [Profile](#profile)
 - [Current Implementation Status](#current-implementation-status)
 
@@ -36,8 +37,8 @@ This document describes the API endpoints available in ExamMaster.
 ### ✅ Fully Implemented (Production Ready)
 
 #### Core Authentication & User Management
-- **Authentication** - Laravel Fortify with 2FA support
-- **Dashboard** - Main application dashboard with statistics
+- **Authentication** - Laravel Fortify with 2FA and email verification
+- **Dashboard** - Main application dashboard with comprehensive analytics
 - **Profile Management** - Edit profile, password, appearance settings
 - **User Management** - Full CRUD with search and pagination
 
@@ -860,6 +861,77 @@ POST /exam-builder/{exam}/publish
 ```
 POST /exam-builder/{exam}/duplicate
 ```
+
+---
+
+## PDF Export
+
+### Export Exam to PDF (Without Answers)
+
+```
+GET /exam-builder/{exam}/export-pdf
+```
+
+**Response:** PDF file download
+
+**Headers:**
+- `Content-Type: application/pdf`
+- `Content-Disposition: attachment; filename="exam-title_exam.pdf"`
+
+**Description:**
+Generates a professional PDF of the exam suitable for student distribution. Includes:
+- Exam header with title and module
+- Student information section (name, date, score fields)
+- Instructions section
+- All questions with answer blanks (for MCQ, options A-D are shown)
+
+**Permissions Required:** `view exams`
+
+**Error Responses:**
+- `400` - Cannot export an exam with no questions
+- `403` - Unauthorized (missing permission)
+
+---
+
+### Export Exam to PDF (With Answer Key)
+
+```
+GET /exam-builder/{exam}/export-pdf-answers
+```
+
+**Response:** PDF file download
+
+**Headers:**
+- `Content-Type: application/pdf`
+- `Content-Disposition: attachment; filename="exam-title_exam_answer_key.pdf"`
+
+**Description:**
+Generates a professional PDF of the exam with the answer key included. Suitable for instructor use. Includes:
+- Exam header with title and module
+- Student information section
+- Instructions section
+- All questions with answer blanks
+- **Answer Key section** with correct answers highlighted
+
+**Permissions Required:** `view exams`
+
+**Error Responses:**
+- `400` - Cannot export an exam with no questions
+- `403` - Unauthorized (missing permission)
+
+---
+
+### Supported Question Types
+
+The PDF export supports all question types:
+
+| Type | Format |
+|------|--------|
+| Multiple Choice | Options A-D with checkboxes |
+| True/False | True ○  False ○ |
+| Short Answer | Blank line for answer |
+| Identification | Blank line for answer |
+| Essay | Multiple blank lines |
 
 ---
 

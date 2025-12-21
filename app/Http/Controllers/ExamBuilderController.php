@@ -7,8 +7,10 @@ use App\Models\Exam;
 use App\Models\ExamQuestion;
 use App\Models\Module;
 use App\Models\TosGenerate;
+use App\Services\ExamPdfExporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -275,5 +277,39 @@ class ExamBuilderController extends Controller
         return redirect()
             ->route('exam-builder.show', $newExam)
             ->with('success', 'Exam duplicated successfully.');
+    }
+
+    /**
+     * Export exam to PDF.
+     */
+    public function exportPdf(Exam $exam, ExamPdfExporter $exporter): HttpResponse
+    {
+        abort_unless(auth()->user()->can('view exams'), 403);
+
+        if ($exam->questions()->count() === 0) {
+            abort(400, 'Cannot export an exam with no questions.');
+        }
+
+        $pdf = $exporter->export($exam, false);
+        $filename = $exporter->getFilename($exam, false);
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export exam to PDF with answer key.
+     */
+    public function exportPdfWithAnswers(Exam $exam, ExamPdfExporter $exporter): HttpResponse
+    {
+        abort_unless(auth()->user()->can('view exams'), 403);
+
+        if ($exam->questions()->count() === 0) {
+            abort(400, 'Cannot export an exam with no questions.');
+        }
+
+        $pdf = $exporter->exportWithAnswerKey($exam);
+        $filename = $exporter->getFilename($exam, true);
+
+        return $pdf->download($filename);
     }
 }

@@ -59,7 +59,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
             <Head title="Create Exam" />
 
             <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-4xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-4xl">
                     <div className="mb-6">
                         <Button
                             variant="ghost"

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -17,7 +18,7 @@ class UserController extends Controller
      */
     public function index(Request $request): Response
     {
-        $query = User::query()->latest();
+        $query = User::with('roles')->latest();
 
         // Search
         if ($request->filled('search')) {
@@ -29,8 +30,19 @@ class UserController extends Controller
 
         $users = $query->paginate(15)->withQueryString();
 
+        // Transform users to include role names
+        $users->getCollection()->transform(function ($user) {
+            $user->role = $user->roles->first()?->name ?? 'educator';
+
+            return $user;
+        });
+
+        // Get available roles for the dropdown
+        $roles = Role::all()->pluck('name');
+
         return Inertia::render('users/index', [
             'users' => $users,
+            'roles' => $roles,
             'filters' => $request->only(['search']),
         ]);
     }
@@ -42,12 +54,16 @@ class UserController extends Controller
     {
         abort_unless(auth()->user()->can('create users'), 403);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'email_verified_at' => now(),
         ]);
+
+        // Assign role
+        $role = $request->input('role', 'educator');
+        $user->assignRole($role);
 
         return back()->with('success', 'User created successfully.');
     }
@@ -69,6 +85,11 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        // Update role if provided
+        if ($request->filled('role')) {
+            $user->syncRoles([$request->input('role')]);
+        }
 
         return back()->with('success', 'User updated successfully.');
     }

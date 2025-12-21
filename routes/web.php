@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DuplicateDetectionController;
 use App\Http\Controllers\ExamBuilderController;
 use App\Http\Controllers\ExamController;
@@ -20,9 +21,8 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -96,6 +96,14 @@ Route::post('exam-builder/{exam}/publish', [ExamBuilderController::class, 'publi
 Route::post('exam-builder/{exam}/duplicate', [ExamBuilderController::class, 'duplicate'])
     ->name('exam-builder.duplicate')
     ->middleware(['auth', 'verified', 'permission:create exams']);
+
+Route::get('exam-builder/{exam}/export-pdf', [ExamBuilderController::class, 'exportPdf'])
+    ->name('exam-builder.export-pdf')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
+Route::get('exam-builder/{exam}/export-pdf-answers', [ExamBuilderController::class, 'exportPdfWithAnswers'])
+    ->name('exam-builder.export-pdf-answers')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
 
 // Topic Management Routes
 Route::patch('modules/{module}/topics/reorder', [TopicController::class, 'reorder'])
