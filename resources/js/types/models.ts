@@ -101,6 +101,7 @@ export interface ExamQuestion {
     cognitive_level: CognitiveLevel;
     difficulty: 'easy' | 'medium' | 'hard';
     learning_objective_code: string | null;
+    points: number;
     status: 'draft' | 'pending' | 'approved' | 'rejected';
     created_at: string;
     updated_at: string;

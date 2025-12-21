@@ -57,29 +57,16 @@ Route::post('tos-generates/{tos_generate}/generate', [TosGenerateController::cla
     ->name('tos-generates.generate')
     ->middleware(['auth', 'verified', 'permission:generate questions']);
 
-// Create question from specific TOS or Module
-Route::get('exams/create/tos/{tos_generate}', [ExamController::class, 'createFromTos'])
-    ->name('exams.create.tos')
+Route::resource('question-bank', ExamController::class)
+    ->parameters(['question-bank' => 'exam'])
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
-Route::resource('exams', ExamController::class)
-    ->middleware(['auth', 'verified', 'permission:view exams']);
-
-// View questions by TOS or Module
-Route::get('exams/tos/{tos_generate}', [ExamController::class, 'byTos'])
-    ->name('exams.by-tos')
-    ->middleware(['auth', 'verified', 'permission:view exams']);
-
-Route::get('exams/module/{module}', [ExamController::class, 'byModule'])
-    ->name('exams.by-module')
-    ->middleware(['auth', 'verified', 'permission:view exams']);
-
-Route::post('exams/{exam}/approve', [ExamController::class, 'approve'])
-    ->name('exams.approve')
+Route::post('question-bank/{exam}/approve', [ExamController::class, 'approve'])
+    ->name('question-bank.approve')
     ->middleware(['auth', 'verified', 'permission:approve questions']);
 
-Route::delete('exams/bulk-destroy', [ExamController::class, 'bulkDestroy'])
-    ->name('exams.bulk-destroy')
+Route::delete('question-bank/bulk-destroy', [ExamController::class, 'bulkDestroy'])
+    ->name('question-bank.bulk-destroy')
     ->middleware(['auth', 'verified', 'permission:bulk delete questions']);
 
 // Exam Builder Routes
@@ -160,14 +147,14 @@ Route::get('tos-generates/{tos_generate}/summary', [TosGenerateController::class
     ->middleware(['auth', 'verified', 'permission:view tos']);
 
 // Duplicate Detection Routes
-Route::get('exams/{question}/duplicates', [ExamController::class, 'checkDuplicates'])
-    ->name('exams.duplicates')
+Route::get('question-bank/{question}/duplicates', [ExamController::class, 'checkDuplicates'])
+    ->name('question-bank.duplicates')
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
 Route::get('modules/{module}/duplicate-stats', [ExamController::class, 'getModuleDuplicates'])
     ->name('modules.duplicate-stats')
     ->middleware(['auth', 'verified', 'permission:view modules']);
 
-Route::post('exams/check-duplicates', [ExamController::class, 'bulkCheckDuplicates'])
-    ->name('exams.check-duplicates')
+Route::post('question-bank/check-duplicates', [ExamController::class, 'bulkCheckDuplicates'])
+    ->name('question-bank.check-duplicates')
     ->middleware(['auth', 'verified', 'permission:create questions']);

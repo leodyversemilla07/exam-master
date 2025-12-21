@@ -18,15 +18,15 @@ interface Question {
     points: number;
     is_approved: boolean;
     is_ai_generated: boolean;
-    module: {
+    module?: {
         id: number;
         code: string;
         name: string;
-    };
-    creator: {
+    } | null;
+    creator?: {
         name: string;
-    };
-    tosGenerate?: {
+    } | null;
+    tos_generate?: {
         subject: string;
         grade_level: string;
     };
@@ -37,23 +37,37 @@ interface PageProps {
 }
 
 export default function ExamShow({ question }: PageProps) {
+    console.log('Question data:', question);
+    
+    if (!question) {
+        return (
+            <AppLayout>
+                <Head title="Question Not Found" />
+                <div className="p-4 md:p-6">
+                    <p>Question not found.</p>
+                </div>
+            </AppLayout>
+        );
+    }
+
     const breadcrumbs = [
-        { title: 'Questions', href: '/exams' },
-        { title: 'View Question', href: `/exams/${question.id}` },
+        { title: 'Question Bank', href: '/question-bank' },
+        { title: 'View Question', href: `/question-bank/${question.id}` },
     ];
+
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this question?')) {
-            router.delete(`/exams/${question.id}`);
+            router.delete(`/question-bank/${question.id}`);
         }
     };
 
     const handleApprove = () => {
-        router.post(`/exams/${question.id}/approve`);
+        router.post(`/question-bank/${question.id}/approve`);
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="View Question" />
+            <Head title="Question Details" />
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
@@ -62,7 +76,7 @@ export default function ExamShow({ question }: PageProps) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => router.visit('/exams')}
+                            onClick={() => router.visit('/question-bank')}
                         >
                             <ArrowLeft className="mr-2 size-4" />
                             Back
@@ -83,7 +97,7 @@ export default function ExamShow({ question }: PageProps) {
                         )}
                         <Button
                             variant="outline"
-                            onClick={() => router.visit(`/exams/${question.id}/edit`)}
+                            onClick={() => router.visit(`/question-bank/${question.id}/edit`)}
                         >
                             <Edit className="mr-2 size-4" />
                             Edit
@@ -102,15 +116,21 @@ export default function ExamShow({ question }: PageProps) {
                             <div className="space-y-2">
                                 <CardTitle>Question</CardTitle>
                                 <div className="flex items-center gap-2">
-                                    <Badge variant="secondary">
-                                        {question.cognitive_level}
-                                    </Badge>
-                                    <Badge variant="outline">
-                                        {question.difficulty}
-                                    </Badge>
-                                    <Badge variant={question.question_type === 'multiple_choice' ? 'default' : 'secondary'}>
-                                        {question.question_type.replace('_', ' ')}
-                                    </Badge>
+                                    {question.cognitive_level && (
+                                        <Badge variant="secondary" className="capitalize">
+                                            {question.cognitive_level}
+                                        </Badge>
+                                    )}
+                                    {question.difficulty && (
+                                        <Badge variant="outline" className="capitalize">
+                                            {question.difficulty}
+                                        </Badge>
+                                    )}
+                                    {question.question_type && (
+                                        <Badge variant={question.question_type === 'multiple_choice' ? 'default' : 'secondary'} className="capitalize">
+                                            {question.question_type.replace(/_/g, ' ')}
+                                        </Badge>
+                                    )}
                                     {question.is_approved ? (
                                         <Badge variant="default">
                                             <CheckCircle2 className="mr-1 size-3" />
@@ -187,24 +207,28 @@ export default function ExamShow({ question }: PageProps) {
                         <div className="border-t pt-4">
                             <h3 className="mb-3 font-semibold">Additional Information</h3>
                             <div className="grid gap-3 sm:grid-cols-2">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Module</p>
-                                    <p className="font-medium">
-                                        {question.module.code} - {question.module.name}
-                                    </p>
-                                </div>
-                                {question.tosGenerate && (
+                                {question.module && (
                                     <div>
-                                        <p className="text-sm text-muted-foreground">TOS</p>
+                                        <p className="text-sm text-muted-foreground">Module</p>
                                         <p className="font-medium">
-                                            {question.tosGenerate.subject} - {question.tosGenerate.grade_level}
+                                            {question.module.code} - {question.module.name}
                                         </p>
                                     </div>
                                 )}
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Created By</p>
-                                    <p className="font-medium">{question.creator.name}</p>
-                                </div>
+                                {question.tos_generate && (
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">TOS</p>
+                                        <p className="font-medium">
+                                            {question.tos_generate.subject} - {question.tos_generate.grade_level}
+                                        </p>
+                                    </div>
+                                )}
+                                {question.creator && (
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Created By</p>
+                                        <p className="font-medium">{question.creator.name}</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </CardContent>

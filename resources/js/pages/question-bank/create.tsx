@@ -2,12 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface Module {
     id: number;
@@ -15,52 +15,62 @@ interface Module {
     name: string;
 }
 
-interface Question {
+interface TosInfo {
     id: number;
-    question: string;
-    question_type: string;
-    options: Array<{ key: string; text: string }> | null;
-    correct_answer: string;
-    explanation: string | null;
-    cognitive_level: string;
-    difficulty: string;
-    learning_objective_code: string | null;
-    points: number;
-    module_id: number;
+    title: string;
+    module: {
+        id: number;
+        code: string;
+        name: string;
+    };
 }
 
 interface PageProps {
-    question: Question;
     modules: Module[];
+    from_group?: string;
+    from_group_id?: number;
+    from_group_name?: string;
+    from_tos?: TosInfo;
 }
 
-export default function ExamEdit({ question, modules }: PageProps) {
-    const breadcrumbs = [
-        { title: 'Questions', href: '/exams' },
-        { title: 'View Question', href: `/exams/${question.id}` },
-        { title: 'Edit', href: `/exams/${question.id}/edit` },
-    ];
-    const { data, setData, put, processing, errors } = useForm({
-        module_id: question.module_id,
-        question_type: question.question_type,
-        question: question.question,
-        options: question.options || [
+export default function ExamCreate({ modules, from_group, from_group_id, from_group_name, from_tos }: PageProps) {
+    const breadcrumbs = from_group && from_group_id && from_group_name
+        ? [
+            { title: 'Question Bank', href: '/question-bank' },
+            { 
+                title: from_group_name, 
+                href: from_group === 'tos' 
+                    ? `/question-bank/tos/${from_group_id}` 
+                    : `/question-bank/module/${from_group_id}` 
+            },
+            { title: 'Create', href: '/question-bank/create' },
+        ]
+        : [
+            { title: 'Question Bank', href: '/question-bank' },
+            { title: 'Create', href: '/question-bank/create' },
+        ];
+
+    const { data, setData, post, processing, errors } = useForm({
+        module_id: modules.length > 0 ? modules[0].id : 0,
+        question_type: 'multiple_choice',
+        question: '',
+        options: [
             { key: 'A', text: '' },
             { key: 'B', text: '' },
             { key: 'C', text: '' },
             { key: 'D', text: '' },
         ],
-        correct_answer: question.correct_answer,
-        explanation: question.explanation || '',
-        cognitive_level: question.cognitive_level,
-        difficulty: question.difficulty,
-        learning_objective_code: question.learning_objective_code || '',
-        points: question.points,
+        correct_answer: '',
+        explanation: '',
+        cognitive_level: 'remembering',
+        difficulty: 'moderate',
+        learning_objective_code: '',
+        points: 1,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/exams/${question.id}`);
+        post('/question-bank');
     };
 
     const handleOptionChange = (index: number, text: string) => {
@@ -71,30 +81,22 @@ export default function ExamEdit({ question, modules }: PageProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Question" />
+            <Head title="Create Question" />
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => router.visit(`/exams/${question.id}`)}
-                        >
-                            <ArrowLeft className="mr-2 size-4" />
-                            Back
-                        </Button>
                         <div>
-                            <h1 className="text-2xl font-bold">Edit Question</h1>
+                            <h1 className="text-2xl font-bold">Add New Question</h1>
                             <p className="text-muted-foreground">
-                                Update question details
+                                Create an individual question to add to your question bank. This question can later be used in multiple exams.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Edit Form */}
+                {/* Create Form */}
                 <form onSubmit={handleSubmit}>
                     <Card>
                         <CardHeader>
@@ -102,13 +104,13 @@ export default function ExamEdit({ question, modules }: PageProps) {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {/* Module Selection */}
-                            <div className="space-y-2">
-                                <Label htmlFor="module_id">Module</Label>
+                            <Field>
+                                <FieldLabel htmlFor="module_id">Module *</FieldLabel>
                                 <Select
                                     value={data.module_id.toString()}
                                     onValueChange={(value) => setData('module_id', parseInt(value))}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="module_id">
                                         <SelectValue placeholder="Select module" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -119,14 +121,12 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {errors.module_id && (
-                                    <p className="text-sm text-destructive">{errors.module_id}</p>
-                                )}
-                            </div>
+                                {errors.module_id && <FieldError>{errors.module_id}</FieldError>}
+                            </Field>
 
                             {/* Question Text */}
-                            <div className="space-y-2">
-                                <Label htmlFor="question">Question</Label>
+                            <Field>
+                                <FieldLabel htmlFor="question">Question *</FieldLabel>
                                 <Textarea
                                     id="question"
                                     value={data.question}
@@ -134,19 +134,17 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     rows={4}
                                     placeholder="Enter the question text"
                                 />
-                                {errors.question && (
-                                    <p className="text-sm text-destructive">{errors.question}</p>
-                                )}
-                            </div>
+                                {errors.question && <FieldError>{errors.question}</FieldError>}
+                            </Field>
 
                             {/* Question Type */}
-                            <div className="space-y-2">
-                                <Label htmlFor="question_type">Question Type</Label>
+                            <Field>
+                                <FieldLabel htmlFor="question_type">Question Type *</FieldLabel>
                                 <Select
                                     value={data.question_type}
                                     onValueChange={(value) => setData('question_type', value)}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="question_type">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -156,37 +154,39 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         <SelectItem value="identification">Identification</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
+                            </Field>
 
                             {/* Options (for multiple choice) */}
                             {data.question_type === 'multiple_choice' && (
-                                <div className="space-y-4">
-                                    <Label>Options</Label>
-                                    {data.options.map((option, index) => (
-                                        <div key={option.key} className="flex gap-2">
-                                            <Badge variant="outline" className="h-10 w-10 items-center justify-center">
-                                                {option.key}
-                                            </Badge>
-                                            <Input
-                                                value={option.text}
-                                                onChange={(e) => handleOptionChange(index, e.target.value)}
-                                                placeholder={`Option ${option.key}`}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
+                                <Field>
+                                    <FieldLabel>Options *</FieldLabel>
+                                    <div className="space-y-3">
+                                        {data.options.map((option, index) => (
+                                            <div key={option.key} className="flex gap-2">
+                                                <Badge variant="outline" className="h-10 w-10 items-center justify-center">
+                                                    {option.key}
+                                                </Badge>
+                                                <Input
+                                                    value={option.text}
+                                                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                                                    placeholder={`Option ${option.key}`}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Field>
                             )}
 
                             {/* Correct Answer */}
-                            <div className="space-y-2">
-                                <Label htmlFor="correct_answer">Correct Answer</Label>
+                            <Field>
+                                <FieldLabel htmlFor="correct_answer">Correct Answer *</FieldLabel>
                                 {data.question_type === 'multiple_choice' ? (
                                     <Select
                                         value={data.correct_answer}
                                         onValueChange={(value) => setData('correct_answer', value)}
                                     >
-                                        <SelectTrigger>
-                                            <SelectValue />
+                                        <SelectTrigger id="correct_answer">
+                                            <SelectValue placeholder="Select correct answer" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {data.options.map((option) => (
@@ -194,6 +194,19 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                                     {option.key}
                                                 </SelectItem>
                                             ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : data.question_type === 'true_false' ? (
+                                    <Select
+                                        value={data.correct_answer}
+                                        onValueChange={(value) => setData('correct_answer', value)}
+                                    >
+                                        <SelectTrigger id="correct_answer">
+                                            <SelectValue placeholder="Select correct answer" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="True">True</SelectItem>
+                                            <SelectItem value="False">False</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 ) : (
@@ -204,14 +217,12 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         placeholder="Enter correct answer"
                                     />
                                 )}
-                                {errors.correct_answer && (
-                                    <p className="text-sm text-destructive">{errors.correct_answer}</p>
-                                )}
-                            </div>
+                                {errors.correct_answer && <FieldError>{errors.correct_answer}</FieldError>}
+                            </Field>
 
                             {/* Explanation */}
-                            <div className="space-y-2">
-                                <Label htmlFor="explanation">Explanation (Optional)</Label>
+                            <Field>
+                                <FieldLabel htmlFor="explanation">Explanation (Optional)</FieldLabel>
                                 <Textarea
                                     id="explanation"
                                     value={data.explanation}
@@ -219,16 +230,16 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     rows={3}
                                     placeholder="Explain why this is the correct answer"
                                 />
-                            </div>
+                            </Field>
 
                             {/* Cognitive Level */}
-                            <div className="space-y-2">
-                                <Label htmlFor="cognitive_level">Cognitive Level</Label>
+                            <Field>
+                                <FieldLabel htmlFor="cognitive_level">Cognitive Level *</FieldLabel>
                                 <Select
                                     value={data.cognitive_level}
                                     onValueChange={(value) => setData('cognitive_level', value)}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="cognitive_level">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -240,16 +251,16 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         <SelectItem value="creating">Creating</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
+                            </Field>
 
                             {/* Difficulty */}
-                            <div className="space-y-2">
-                                <Label htmlFor="difficulty">Difficulty</Label>
+                            <Field>
+                                <FieldLabel htmlFor="difficulty">Difficulty *</FieldLabel>
                                 <Select
                                     value={data.difficulty}
                                     onValueChange={(value) => setData('difficulty', value)}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger id="difficulty">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -258,31 +269,31 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         <SelectItem value="difficult">Difficult</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
+                            </Field>
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {/* Learning Objective Code */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="learning_objective_code">Learning Objective Code</Label>
+                                <Field>
+                                    <FieldLabel htmlFor="learning_objective_code">Learning Objective Code</FieldLabel>
                                     <Input
                                         id="learning_objective_code"
                                         value={data.learning_objective_code}
                                         onChange={(e) => setData('learning_objective_code', e.target.value)}
                                         placeholder="e.g., LO-001"
                                     />
-                                </div>
+                                </Field>
 
                                 {/* Points */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="points">Points</Label>
+                                <Field>
+                                    <FieldLabel htmlFor="points">Points *</FieldLabel>
                                     <Input
                                         id="points"
                                         type="number"
                                         min="1"
                                         value={data.points}
-                                        onChange={(e) => setData('points', parseInt(e.target.value))}
+                                        onChange={(e) => setData('points', parseInt(e.target.value) || 1)}
                                     />
-                                </div>
+                                </Field>
                             </div>
 
                             {/* Submit Button */}
@@ -290,13 +301,13 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => router.visit(`/exams/${question.id}`)}
+                                    onClick={() => router.visit('/question-bank')}
                                 >
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={processing}>
-                                    <Save className="mr-2 size-4" />
-                                    {processing ? 'Saving...' : 'Save Changes'}
+                                    <Plus className="mr-2 size-4" />
+                                    {processing ? 'Creating...' : 'Create Question'}
                                 </Button>
                             </div>
                         </CardContent>

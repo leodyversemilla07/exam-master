@@ -13,7 +13,8 @@ import {
 import { dashboard } from "@/routes";
 import { index as modules } from "@/routes/modules";
 import { index as tosgenerates } from "@/routes/tos-generates";
-import { index as exams } from "@/routes/exams";
+import { index as questionBank } from "@/routes/question-bank";
+import { index as examBuilder } from "@/routes/exam-builder";
 import { index as users } from "@/routes/users";
 import { type NavItem, type SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
@@ -25,6 +26,8 @@ import {
     BookMarked,
     Folder,
     Users,
+    ClipboardList,
+    MessageSquare,
 } from "lucide-react";
 import AppLogo from "./app-logo";
 
@@ -47,10 +50,16 @@ const mainNavItems: NavItem[] = [
         permission: "view tos",
     },
     {
-        title: "Exams",
-        href: exams(),
-        icon: FileText,
+        title: "Question Bank",
+        href: questionBank(),
+        icon: MessageSquare,
         permission: "view exams",
+    },
+    {
+        title: "Exam Builder",
+        href: examBuilder(),
+        icon: ClipboardList,
+        permission: "create exams",
     },
     {
         title: "Users",

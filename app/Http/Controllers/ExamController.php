@@ -62,36 +62,11 @@ class ExamController extends Controller
             $query->where('question', 'like', '%'.$request->search.'%');
         }
 
-        // Get all questions matching filters (no pagination for grouping)
-        $allQuestions = $query->get();
+        // Get paginated questions
+        $questions = $query->paginate(20)->withQueryString();
 
-        // Group questions by module or TOS
-        $groupedQuestions = $allQuestions->groupBy(function ($question) {
-            // Prefer grouping by TOS if available, otherwise by module
-            if ($question->tosGenerate) {
-                return 'tos_'.$question->tos_generate_id;
-            }
-            if ($question->module) {
-                return 'module_'.$question->module_id;
-            }
-            return 'ungrouped';
-        })->map(function ($questions, $key) {
-            $firstQuestion = $questions->first();
-            
-            return [
-                'key' => $key,
-                'type' => str_starts_with($key, 'tos_') ? 'tos' : (str_starts_with($key, 'module_') ? 'module' : 'ungrouped'),
-                'group_name' => $this->getGroupName($firstQuestion),
-                'module' => $firstQuestion->module,
-                'tos' => $firstQuestion->tosGenerate,
-                'count' => $questions->count(),
-                'questions' => $questions->values(),
-            ];
-        })->values();
-
-        return Inertia::render('exams/index', [
-            'groupedQuestions' => $groupedQuestions,
-            'totalQuestions' => $allQuestions->count(),
+        return Inertia::render('question-bank/index', [
+            'questions' => $questions,
             'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
             'filters' => $request->only(['module_id', 'tos_generate_id', 'question_type', 'cognitive_level', 'difficulty', 'is_approved', 'search']),
         ]);
@@ -112,123 +87,12 @@ class ExamController extends Controller
     }
 
     /**
-     * Display questions for a specific TOS.
-     */
-    public function byTos(Request $request, $tosGenerateId): Response
-    {
-        $tosGenerate = \App\Models\TosGenerate::findOrFail($tosGenerateId);
-        
-        $query = ExamQuestion::query()
-            ->with(['module', 'creator', 'tosGenerate'])
-            ->where('tos_generate_id', $tosGenerateId)
-            ->latest();
-
-        // Apply additional filters
-        if ($request->filled('question_type')) {
-            $query->where('question_type', $request->question_type);
-        }
-
-        if ($request->filled('cognitive_level')) {
-            $query->where('cognitive_level', $request->cognitive_level);
-        }
-
-        if ($request->filled('difficulty')) {
-            $query->where('difficulty', $request->difficulty);
-        }
-
-        if ($request->filled('search')) {
-            $query->where('question', 'like', '%'.$request->search.'%');
-        }
-
-        $questions = $query->paginate(20)->withQueryString();
-
-        return Inertia::render('exams/by-group', [
-            'questions' => $questions,
-            'groupType' => 'tos',
-            'groupInfo' => [
-                'id' => $tosGenerate->id,
-                'name' => $tosGenerate->subject.' - '.$tosGenerate->grade_level,
-                'subject' => $tosGenerate->subject,
-                'grade_level' => $tosGenerate->grade_level,
-            ],
-            'filters' => $request->only(['question_type', 'cognitive_level', 'difficulty', 'search']),
-        ]);
-    }
-
-    /**
-     * Display questions for a specific module.
-     */
-    public function byModule(Request $request, $moduleId): Response
-    {
-        $module = Module::findOrFail($moduleId);
-        
-        $query = ExamQuestion::query()
-            ->with(['module', 'creator', 'tosGenerate'])
-            ->where('module_id', $moduleId)
-            ->latest();
-
-        // Apply additional filters
-        if ($request->filled('question_type')) {
-            $query->where('question_type', $request->question_type);
-        }
-
-        if ($request->filled('cognitive_level')) {
-            $query->where('cognitive_level', $request->cognitive_level);
-        }
-
-        if ($request->filled('difficulty')) {
-            $query->where('difficulty', $request->difficulty);
-        }
-
-        if ($request->filled('search')) {
-            $query->where('question', 'like', '%'.$request->search.'%');
-        }
-
-        $questions = $query->paginate(20)->withQueryString();
-
-        return Inertia::render('exams/by-group', [
-            'questions' => $questions,
-            'groupType' => 'module',
-            'groupInfo' => [
-                'id' => $module->id,
-                'name' => $module->name,
-                'code' => $module->code,
-            ],
-            'filters' => $request->only(['question_type', 'cognitive_level', 'difficulty', 'search']),
-        ]);
-    }
-
-    /**
      * Show the form for creating a new question.
      */
     public function create(): Response
     {
-        return Inertia::render('exams/create', [
+        return Inertia::render('question-bank/create', [
             'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new question from a specific TOS.
-     */
-    public function createFromTos($tosGenerateId): Response
-    {
-        $tosGenerate = \App\Models\TosGenerate::with('module')->findOrFail($tosGenerateId);
-        
-        return Inertia::render('exams/create', [
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
-            'from_group' => 'tos',
-            'from_group_id' => $tosGenerate->id,
-            'from_group_name' => $tosGenerate->title,
-            'from_tos' => [
-                'id' => $tosGenerate->id,
-                'title' => $tosGenerate->title,
-                'module' => [
-                    'id' => $tosGenerate->module->id,
-                    'code' => $tosGenerate->module->code,
-                    'name' => $tosGenerate->module->name,
-                ],
-            ],
         ]);
     }
 
@@ -257,7 +121,7 @@ class ExamController extends Controller
     {
         $exam->load(['module', 'creator', 'tosGenerate']);
 
-        return Inertia::render('exams/show', [
+        return Inertia::render('question-bank/show', [
             'question' => $exam,
         ]);
     }
@@ -267,7 +131,7 @@ class ExamController extends Controller
      */
     public function edit(ExamQuestion $exam): Response
     {
-        return Inertia::render('exams/edit', [
+        return Inertia::render('question-bank/edit', [
             'question' => $exam,
             'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
         ]);
