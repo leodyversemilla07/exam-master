@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import PageHeader from '@/components/page-header';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -113,12 +114,10 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex items-start justify-between">
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold tracking-tight">
-                                {tosGenerate.subject} - {tosGenerate.grade_level}
-                            </h1>
+                <PageHeader
+                    title={
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <span>{tosGenerate.subject} - {tosGenerate.grade_level}</span>
                             <Badge className={status.color}>
                                 <StatusIcon
                                     className={`mr-1 size-3 ${status.animate ? 'animate-spin' : ''}`}
@@ -129,79 +128,78 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                 {tosGenerate.language === 'filipino' ? 'Filipino' : 'English'}
                             </Badge>
                         </div>
-                        <p className="mt-2 text-muted-foreground">
-                            {tosGenerate.module?.code} - {tosGenerate.module?.name}
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        {tosGenerate.status === 'draft' && (
-                            <>
-                                <Link href={`/tos-generates/${tosGenerate.id}/edit`}>
-                                    <Button variant="outline">
-                                        <Edit className="mr-2 size-4" />
-                                        Edit
+                    }
+                    description={`${tosGenerate.module?.code} - ${tosGenerate.module?.name}`}
+                    actions={
+                        <>
+                            {tosGenerate.status === 'draft' && (
+                                <>
+                                    <Button asChild variant="outline">
+                                        <Link href={`/tos-generates/${tosGenerate.id}/edit`}>
+                                            <Edit className="mr-2 size-4" />
+                                            Edit
+                                        </Link>
                                     </Button>
-                                </Link>
-                                <AlertDialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
-                                    <AlertDialogTrigger asChild>
-                                        <Button>
-                                            <Sparkles className="mr-2 size-4" />
-                                            Generate Questions
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Generate Questions?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This will start generating {tosGenerate.total_items} questions based on this Table of Specifications. 
-                                                The process may take 2-5 minutes depending on the number of questions. 
-                                                You can navigate away from this page while generation is in progress.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={handleGenerateQuestions}>
-                                                Continue
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </>
-                        )}
-                        {tosGenerate.status === 'completed' && tosGenerate.questions && tosGenerate.questions.length > 0 && (
-                            <Button variant="outline">
-                                <Download className="mr-2 size-4" />
-                                Export
-                            </Button>
-                        )}
-                        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Trash2 className="size-4 text-destructive" />
+                                    <AlertDialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
+                                        <AlertDialogTrigger asChild>
+                                            <Button>
+                                                <Sparkles className="mr-2 size-4" />
+                                                Generate Questions
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Generate Questions?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This will start generating {tosGenerate.total_items} questions based on this Table of Specifications.
+                                                    The process may take 2-5 minutes depending on the number of questions.
+                                                    You can navigate away from this page while generation is in progress.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={handleGenerateQuestions}>
+                                                    Continue
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </>
+                            )}
+                            {tosGenerate.status === 'completed' && tosGenerate.questions && tosGenerate.questions.length > 0 && (
+                                <Button variant="outline">
+                                    <Download className="mr-2 size-4" />
+                                    Export
                                 </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete TOS?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Are you sure you want to delete this Table of Specifications? 
-                                        This action cannot be undone and will permanently remove all associated data.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction 
-                                        onClick={handleDelete}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        Delete
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                </div>
+                            )}
+                            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <Trash2 className="size-4 text-destructive" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete TOS?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to delete this Table of Specifications?
+                                            This action cannot be undone and will permanently remove all associated data.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={handleDelete}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </>
+                    }
+                />
 
                 {/* Generating Status Alert */}
                 {tosGenerate.status === 'generating' && (
@@ -257,7 +255,7 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Retry Question Generation?</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                This will attempt to generate {tosGenerate.total_items} questions again based on this Table of Specifications. 
+                                                This will attempt to generate {tosGenerate.total_items} questions again based on this Table of Specifications.
                                                 The process may take 2-5 minutes.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
@@ -366,7 +364,7 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                                 {tosGenerate.questions.length} questions generated
                                             </CardDescription>
                                         </div>
-                                        <Link href={`/exams?tos_id=${tosGenerate.id}`}>
+                                        <Link href={`/question-bank?tos_generate_id=${tosGenerate.id}`}>
                                             <Button variant="outline" size="sm">
                                                 View All
                                             </Button>

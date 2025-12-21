@@ -139,7 +139,11 @@ class ExamBuilderController extends Controller
      */
     public function destroy(Exam $examBuilder): RedirectResponse
     {
-        abort_unless(auth()->user()->can('delete exams'), 403);
+        // Allow deletion if user has permission OR is the creator of the exam
+        abort_unless(
+            auth()->user()->can('delete exams') || auth()->id() === $examBuilder->created_by,
+            403
+        );
 
         $examBuilder->delete();
 
@@ -151,8 +155,10 @@ class ExamBuilderController extends Controller
     /**
      * Add questions to exam.
      */
-    public function addQuestions(Request $request, Exam $exam): RedirectResponse
+    public function addQuestions(Request $request, $examId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('edit exams'), 403);
 
         $request->validate([
@@ -180,8 +186,11 @@ class ExamBuilderController extends Controller
     /**
      * Remove question from exam.
      */
-    public function removeQuestion(Exam $exam, ExamQuestion $question): RedirectResponse
+    public function removeQuestion($examId, $questionId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+        $question = ExamQuestion::findOrFail($questionId);
+
         abort_unless(auth()->user()->can('edit exams'), 403);
 
         $exam->questions()->detach($question->id);
@@ -193,8 +202,10 @@ class ExamBuilderController extends Controller
     /**
      * Reorder questions in exam.
      */
-    public function reorderQuestions(Request $request, Exam $exam): RedirectResponse
+    public function reorderQuestions(Request $request, $examId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('edit exams'), 403);
 
         $request->validate([
@@ -217,8 +228,11 @@ class ExamBuilderController extends Controller
     /**
      * Update question points in exam.
      */
-    public function updateQuestionPoints(Request $request, Exam $exam, ExamQuestion $question): RedirectResponse
+    public function updateQuestionPoints(Request $request, $examId, $questionId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+        $question = ExamQuestion::findOrFail($questionId);
+
         abort_unless(auth()->user()->can('edit exams'), 403);
 
         $request->validate([
@@ -237,8 +251,10 @@ class ExamBuilderController extends Controller
     /**
      * Publish exam (change status to published).
      */
-    public function publish(Exam $exam): RedirectResponse
+    public function publish($examId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('approve questions'), 403);
 
         if ($exam->questions()->count() === 0) {
@@ -253,8 +269,10 @@ class ExamBuilderController extends Controller
     /**
      * Duplicate an exam.
      */
-    public function duplicate(Exam $exam): RedirectResponse
+    public function duplicate($examId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('create exams'), 403);
 
         $newExam = $exam->replicate();
@@ -282,8 +300,10 @@ class ExamBuilderController extends Controller
     /**
      * Export exam to PDF.
      */
-    public function exportPdf(Exam $exam, ExamPdfExporter $exporter): HttpResponse
+    public function exportPdf($examId, ExamPdfExporter $exporter): HttpResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('view exams'), 403);
 
         if ($exam->questions()->count() === 0) {
@@ -299,8 +319,10 @@ class ExamBuilderController extends Controller
     /**
      * Export exam to PDF with answer key.
      */
-    public function exportPdfWithAnswers(Exam $exam, ExamPdfExporter $exporter): HttpResponse
+    public function exportPdfWithAnswers($examId, ExamPdfExporter $exporter): HttpResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('view exams'), 403);
 
         if ($exam->questions()->count() === 0) {
@@ -316,8 +338,10 @@ class ExamBuilderController extends Controller
     /**
      * Archive an exam.
      */
-    public function archive(Exam $exam): RedirectResponse
+    public function archive($examId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('edit exams'), 403);
 
         $exam->update(['status' => 'archived']);
@@ -328,8 +352,10 @@ class ExamBuilderController extends Controller
     /**
      * Unarchive an exam.
      */
-    public function unarchive(Exam $exam): RedirectResponse
+    public function unarchive($examId): RedirectResponse
     {
+        $exam = Exam::findOrFail($examId);
+
         abort_unless(auth()->user()->can('edit exams'), 403);
 
         $exam->update(['status' => 'draft']);

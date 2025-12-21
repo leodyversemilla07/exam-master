@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { TosGenerate, Module } from '@/types/models';
 import { Plus, FileText, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 
 interface PageProps {
     tosGenerates: {
@@ -45,20 +46,18 @@ export default function TosGeneratesIndex({ tosGenerates, modules }: PageProps) 
             <Head title="Table of Specifications" />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Table of Specifications</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Generate and manage test specifications and questions
-                        </p>
-                    </div>
-                    <Link href="/tos-generates/create">
-                        <Button>
-                            <Plus className="mr-2 size-4" />
-                            Generate TOS
+                <PageHeader
+                    title="Table of Specifications"
+                    description="Generate and manage test specifications and questions"
+                    actions={
+                        <Button asChild>
+                            <Link href="/tos-generates/create">
+                                <Plus className="mr-2 size-4" />
+                                Generate TOS
+                            </Link>
                         </Button>
-                    </Link>
-                </div>
+                    }
+                />
 
                 {tosGenerates.data.length === 0 ? (
                     <Card>

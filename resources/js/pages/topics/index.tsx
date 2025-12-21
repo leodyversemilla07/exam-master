@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Plus, FolderTree, Edit, Trash2, Clock, Percent } from "lucide-react";
 import { index as topicsIndex, create as topicsCreate } from "@/actions/App/Http/Controllers/TopicController";
+import PageHeader from "@/components/page-header";
 
 interface Props extends PageProps {
     module: Module;
@@ -98,20 +99,18 @@ export default function TopicsIndex({ module, topics }: Props) {
             <Head title={`Topics - ${module.name}`} />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Topics</h1>
-                        <p className="text-muted-foreground">
-                            Manage topics and subtopics for {module.name}
-                        </p>
-                    </div>
-                    <Link href={topicsCreate.url(module.id)}>
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Topic
+                <PageHeader
+                    title="Topics"
+                    description={`Manage topics and subtopics for ${module.name}`}
+                    actions={
+                        <Button asChild>
+                            <Link href={topicsCreate.url(module.id)}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Topic
+                            </Link>
                         </Button>
-                    </Link>
-                </div>
+                    }
+                />
 
                 {rootTopics.length === 0 ? (
                     <Empty>

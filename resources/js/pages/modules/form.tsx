@@ -10,6 +10,7 @@ import { Module } from '@/types/models';
 import { BreadcrumbItem } from '@/types';
 import { FileText, X } from 'lucide-react';
 import { useState } from 'react';
+import PageHeader from '@/components/page-header';
 
 interface Props {
     module?: Module;
@@ -71,14 +72,10 @@ export default function ModuleForm({ module }: Props) {
             <Head title={isEditing ? `Edit ${module.name}` : 'Create Module'} />
 
             <div className="p-4 md:p-6 mx-auto max-w-2xl space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
-                        {isEditing ? 'Edit Module' : 'Create Module'}
-                    </h1>
-                    <p className="mt-2 text-muted-foreground">
-                        {isEditing ? 'Update module information' : 'Add a new course module to your system'}
-                    </p>
-                </div>
+                <PageHeader
+                    title={isEditing ? 'Edit Module' : 'Create Module'}
+                    description={isEditing ? 'Update module information' : 'Add a new course module to your system'}
+                />
 
                 <form onSubmit={handleSubmit}>
                     <Card>

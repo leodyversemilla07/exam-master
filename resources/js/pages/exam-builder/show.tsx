@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
 import { Exam, ExamQuestion } from '@/types/models';
-import { ArrowLeft, Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye, Download } from 'lucide-react';
+import { Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye, Download } from 'lucide-react';
 import { useState } from 'react';
+import PageHeader from '@/components/page-header';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -139,63 +140,89 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                 <div className="mx-auto max-w-7xl">
                     {/* Header */}
                     <div className="mb-6">
-                        <Button
-                            variant="ghost"
-                            onClick={() => window.history.back()}
-                            className="mb-4"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Exam Builder
-                        </Button>
-
-                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h1 className="text-2xl font-bold text-foreground">{exam.title}</h1>
-                                    <div className="flex gap-2">
-                                        {getStatusBadge(exam.status)}
-                                        {getTypeBadge(exam.exam_type)}
-                                    </div>
+                        <PageHeader
+                            title={
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <span>{exam.title}</span>
+                                    {getStatusBadge(exam.status)}
+                                    {getTypeBadge(exam.exam_type)}
                                 </div>
+                            }
+                            description={exam.description || undefined}
+                            actions={
+                                <>
+                                    <Button asChild variant="outline">
+                                        <Link href={`/exam-builder/${exam.id}/edit`}>
+                                            <Edit className="mr-2 h-4 w-4" />
+                                            Edit Exam
+                                        </Link>
+                                    </Button>
+                                    {exam.status === 'draft' && (
+                                        <>
+                                            <Button onClick={() => setShowAddQuestions(true)} variant="outline">
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Add Questions
+                                            </Button>
+                                            <Button onClick={handlePublish}>
+                                                Publish Exam
+                                            </Button>
+                                        </>
+                                    )}
+                                    {exam.status === 'published' && (
+                                        <Button asChild>
+                                            <Link href={`/exam-builder/${exam.id}/preview`}>
+                                                <Eye className="mr-2 h-4 w-4" />
+                                                Preview
+                                            </Link>
+                                        </Button>
+                                    )}
+                                </>
+                            }
+                        />
+                    </div>
 
-                                {exam.description && (
-                                    <p className="text-muted-foreground mb-4">{exam.description}</p>
+                    {/* Exam Info */}
+                    <Card className="mb-6">
+                        <CardContent className="pt-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                <div className="flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-muted-foreground" />
+                                    <span>{exam.module.code} - {exam.module.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4 text-muted-foreground" />
+                                    <span>{exam.questions.length} questions</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Settings className="h-4 w-4 text-muted-foreground" />
+                                    <span>{totalPoints} points</span>
+                                </div>
+                                {exam.time_limit && (
+                                    <div className="flex items-center gap-2">
+                                        <Clock className="h-4 w-4 text-muted-foreground" />
+                                        <span>{exam.time_limit} minutes</span>
+                                    </div>
                                 )}
-
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="h-4 w-4 text-muted-foreground" />
-                                        <span>{exam.module.code} - {exam.module.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Users className="h-4 w-4 text-muted-foreground" />
-                                        <span>{exam.questions.length} questions</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Settings className="h-4 w-4 text-muted-foreground" />
-                                        <span>{totalPoints} points</span>
-                                    </div>
-                                    {exam.time_limit && (
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="h-4 w-4 text-muted-foreground" />
-                                            <span>{exam.time_limit} minutes</span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="mt-2 text-sm text-muted-foreground">
-                                    Created by {exam.creator.name}
-                                    {exam.tos_generate && (
-                                        <span> • Based on {exam.tos_generate.title}</span>
-                                    )}
-                                </div>
                             </div>
 
-                            <div className="flex gap-2 mt-4 lg:mt-0">
-                                {exam.questions.length > 0 && (
+                            <div className="mt-4 text-sm text-muted-foreground">
+                                Created by {exam.creator.name}
+                                {exam.tos_generate && (
+                                    <span> • Based on {exam.tos_generate.title}</span>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Export and Actions moved to header */}
+                    {exam.questions.length > 0 && (
+                        <Card className="mb-6">
+                            <CardContent className="p-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-muted-foreground">Export exam as PDF</span>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline">
+                                            <Button variant="outline" size="sm">
                                                 <Download className="mr-2 h-4 w-4" />
                                                 Export PDF
                                             </Button>
@@ -215,22 +242,10 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                )}
-                                <Button variant="outline" asChild>
-                                    <Link href={`/exam-builder/${exam.id}/edit`}>
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        Edit
-                                    </Link>
-                                </Button>
-                                {exam.status === 'draft' && (
-                                    <Button onClick={handlePublish}>
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        Publish
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Exam Details */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">

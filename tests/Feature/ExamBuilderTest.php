@@ -57,7 +57,7 @@ test('can add questions to exam', function () {
         'is_approved' => true,
     ]);
 
-    $response = $this->postJson("/exam-builder/{$exam->id}/add-questions", [
+    $response = $this->postJson(route('exam-builder.add-questions', $exam), [
         'question_ids' => $questions->pluck('id')->toArray(),
     ]);
 

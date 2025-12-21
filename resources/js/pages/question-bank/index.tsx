@@ -8,6 +8,7 @@ import { Head, router, Link } from '@inertiajs/react';
 import { Module } from '@/types/models';
 import { Plus, Search, Eye, Edit, Trash2, CheckCircle2, XCircle, Filter } from 'lucide-react';
 import { useState } from 'react';
+import PageHeader from '@/components/page-header';
 
 interface Question {
     id: number;
@@ -106,23 +107,18 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Question Bank</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            {questions.total} {questions.total === 1 ? 'question' : 'questions'} available
-                        </p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Browse, search, and manage all your exam questions in one place
-                        </p>
-                    </div>
-                    <Button asChild>
-                        <Link href="/question-bank/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Question
-                        </Link>
-                    </Button>
-                </div>
+                <PageHeader
+                    title="Question Bank"
+                    description={`${questions.total} ${questions.total === 1 ? 'question' : 'questions'} available • Browse, search, and manage all your exam questions in one place`}
+                    actions={
+                        <Button asChild>
+                            <Link href="/question-bank/create">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Question
+                            </Link>
+                        </Button>
+                    }
+                />
 
                 {/* Search and Filters */}
                 <Card>

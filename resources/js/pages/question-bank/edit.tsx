@@ -7,7 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 
 interface Module {
     id: number;
@@ -75,24 +76,10 @@ export default function ExamEdit({ question, modules }: PageProps) {
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => router.visit(`/question-bank/${question.id}`)}
-                        >
-                            <ArrowLeft className="mr-2 size-4" />
-                            Back
-                        </Button>
-                        <div>
-                            <h1 className="text-2xl font-bold">Edit Question</h1>
-                            <p className="text-muted-foreground">
-                                Update question details
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <PageHeader
+                    title="Edit Question"
+                    description="Update question details"
+                />
 
                 {/* Edit Form */}
                 <form onSubmit={handleSubmit}>

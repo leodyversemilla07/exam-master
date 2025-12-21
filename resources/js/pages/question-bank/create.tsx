@@ -8,6 +8,7 @@ import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 
 interface Module {
     id: number;
@@ -85,16 +86,10 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div>
-                            <h1 className="text-2xl font-bold">Add New Question</h1>
-                            <p className="text-muted-foreground">
-                                Create an individual question to add to your question bank. This question can later be used in multiple exams.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <PageHeader
+                    title="Add New Question"
+                    description="Create an individual question to add to your question bank. This question can later be used in multiple exams."
+                />
 
                 {/* Create Form */}
                 <form onSubmit={handleSubmit}>

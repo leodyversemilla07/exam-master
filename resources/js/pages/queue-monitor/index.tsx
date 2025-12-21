@@ -1,9 +1,9 @@
 import AppLayout from "@/layouts/app-layout";
-import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import PageHeader from "@/components/page-header";
 import { 
     Activity, 
     RefreshCw,
@@ -32,7 +32,7 @@ interface FailedJob {
     failed_at: string;
 }
 
-export default function QueueMonitorIndex({ auth }: PageProps) {
+export default function QueueMonitorIndex() {
     const [stats, setStats] = useState<QueueStats | null>(null);
     const [failedJobs, setFailedJobs] = useState<FailedJob[]>([]);
     const [loading, setLoading] = useState(false);
@@ -99,26 +99,24 @@ export default function QueueMonitorIndex({ auth }: PageProps) {
 
             <div className="space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Queue Monitor</h1>
-                        <p className="text-muted-foreground mt-1">
-                            Monitor background jobs and queue status
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={fetchStats} disabled={loading}>
-                            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                            Refresh
-                        </Button>
-                        {failedJobs.length > 0 && (
-                            <Button variant="destructive" onClick={handleClearAllFailed}>
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Clear All Failed
+                <PageHeader
+                    title="Queue Monitor"
+                    description="Monitor background jobs and queue status"
+                    actions={
+                        <>
+                            <Button variant="outline" onClick={fetchStats} disabled={loading}>
+                                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                                Refresh
                             </Button>
-                        )}
-                    </div>
-                </div>
+                            {failedJobs.length > 0 && (
+                                <Button variant="destructive" onClick={handleClearAllFailed}>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Clear All Failed
+                                </Button>
+                            )}
+                        </>
+                    }
+                />
 
                 {/* Stats Cards */}
                 <div className="grid gap-4 md:grid-cols-3">
@@ -197,11 +195,11 @@ export default function QueueMonitorIndex({ auth }: PageProps) {
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="flex items-center justify-center h-[200px]">
+                            <div className="flex items-center justify-center h-50">
                                 <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
                             </div>
                         ) : failedJobs.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
+                            <div className="flex flex-col items-center justify-center h-50 text-muted-foreground">
                                 <CheckCircle className="h-12 w-12 mb-4 text-success" />
                                 <p className="text-success font-medium">No failed jobs!</p>
                                 <p className="text-sm">All queue jobs are running smoothly</p>

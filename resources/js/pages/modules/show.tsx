@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { Module, TosGenerate } from '@/types/models';
+import PageHeader from '@/components/page-header';
 import {
     BookOpen,
     Edit,
@@ -46,35 +47,33 @@ export default function ModuleShow({ module }: PageProps) {
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="outline" className="font-mono text-base px-3 py-1">
-                                    {module.code}
-                                </Badge>
-                                {!module.is_active && (
-                                    <Badge variant="secondary">Inactive</Badge>
-                                )}
-                            </div>
-                            <h1 className="text-3xl font-bold tracking-tight">{module.name}</h1>
-                            {module.description && (
-                                <p className="mt-2 text-muted-foreground">{module.description}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Link href={`/modules/${module.id}/edit`}>
-                            <Button>
-                                <Edit className="mr-2 size-4" />
-                                Edit Module
-                            </Button>
-                        </Link>
-                        <Button variant="outline" onClick={handleDelete}>
-                            <Trash2 className="mr-2 size-4" />
-                            Delete
-                        </Button>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="font-mono text-base px-3 py-1">
+                            {module.code}
+                        </Badge>
+                        {!module.is_active && (
+                            <Badge variant="secondary">Inactive</Badge>
+                        )}
                     </div>
                 </div>
+                <PageHeader
+                    title={module.name}
+                    description={module.description || undefined}
+                    actions={
+                        <>
+                            <Button asChild>
+                                <Link href={`/modules/${module.id}/edit`}>
+                                    <Edit className="mr-2 size-4" />
+                                    Edit Module
+                                </Link>
+                            </Button>
+                            <Button variant="outline" onClick={handleDelete}>
+                                <Trash2 className="mr-2 size-4" />
+                                Delete
+                            </Button>
+                        </>
+                    }
+                />
 
                 {/* Module Info Cards */}
                 <div className="grid gap-6 md:grid-cols-4">

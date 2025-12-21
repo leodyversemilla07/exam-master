@@ -6,6 +6,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Module } from '@/types/models';
 import { BookOpen, Plus, FileText, Calculator, FolderTree, Edit, Trash2 } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
+import PageHeader from '@/components/page-header';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Modules', href: '/modules' },
@@ -39,20 +40,18 @@ export default function ModuleIndex({ modules }: PageProps) {
             <Head title="Module Management" />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Module Management</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Manage your course modules, topics, and learning objectives
-                        </p>
-                    </div>
-                    <Link href="/modules/create">
-                        <Button>
-                            <Plus className="mr-2 size-4" />
-                            Create Module
+                <PageHeader
+                    title="Module Management"
+                    description="Manage your course modules, topics, and learning objectives"
+                    actions={
+                        <Button asChild>
+                            <Link href="/modules/create">
+                                <Plus className="mr-2 size-4" />
+                                Create Module
+                            </Link>
                         </Button>
-                    </Link>
-                </div>
+                    }
+                />
 
                 {modules.data.length === 0 ? (
                     <Card>

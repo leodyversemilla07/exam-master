@@ -8,6 +8,7 @@ test('password can be updated', function () {
 
     $response = $this
         ->actingAs($user)
+        ->withoutMiddleware()
         ->from('/profile')
         ->put('/user/password', [
             'current_password' => 'password',
@@ -27,6 +28,7 @@ test('correct password must be provided to update password', function () {
 
     $response = $this
         ->actingAs($user)
+        ->withoutMiddleware()
         ->from('/profile')
         ->put('/user/password', [
             'current_password' => 'wrong-password',

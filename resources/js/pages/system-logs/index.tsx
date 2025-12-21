@@ -1,11 +1,12 @@
 import AppLayout from "@/layouts/app-layout";
-import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import PageHeader from "@/components/page-header";
+import { BreadcrumbItem } from "@/types";
 import { 
     FileText, 
     Download, 
@@ -51,7 +52,11 @@ const levelIcons: Record<string, React.ReactNode> = {
     DEBUG: <Bug className="h-4 w-4" />,
 };
 
-export default function SystemLogsIndex({ auth }: PageProps) {
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'System Logs', href: '/system-logs' },
+];
+
+export default function SystemLogsIndex() {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [lines, setLines] = useState("100");
@@ -110,31 +115,32 @@ export default function SystemLogsIndex({ auth }: PageProps) {
     }, []);
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="System Logs" />
 
-            <div className="space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">System Logs</h1>
-                        <p className="text-muted-foreground mt-1">
-                            View and manage application logs
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={handleDownload}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Download
-                        </Button>
-                        <Button variant="destructive" onClick={handleClearLogs}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Clear Logs
-                        </Button>
-                    </div>
-                </div>
+            <div className="p-4 md:p-6">
+                <div className="mx-auto max-w-7xl">
+                    <div className="mb-6">
+                        <PageHeader
+                            title="System Logs"
+                            description="View and manage application logs"
+                            actions={
+                                <>
+                                    <Button variant="outline" onClick={handleDownload}>
+                                        <Download className="mr-2 h-4 w-4" />
+                                        Download
+                            </Button>
+                            <Button variant="destructive" onClick={handleClearLogs}>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Clear Logs
+                            </Button>
+                        </>
+                    }
+                />
 
-                {/* Filters */}
+                    </div>
+
+                    {/* Filters */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Filters</CardTitle>
@@ -204,11 +210,11 @@ export default function SystemLogsIndex({ auth }: PageProps) {
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="flex items-center justify-center h-[300px]">
+                            <div className="flex items-center justify-center h-75">
                                 <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
                             </div>
                         ) : logs.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+                            <div className="flex flex-col items-center justify-center h-75 text-muted-foreground">
                                 <FileText className="h-12 w-12 mb-4" />
                                 <p>No log entries found</p>
                             </div>
@@ -256,6 +262,7 @@ export default function SystemLogsIndex({ auth }: PageProps) {
                         )}
                     </CardContent>
                 </Card>
+                </div>
             </div>
         </AppLayout>
     );

@@ -46,7 +46,7 @@ it('persists selected language when creating a TOS', function () {
         'additional_instructions' => null,
     ];
 
-    $response = $this->post(route('tos-generates.store'), $payload);
+    $response = $this->withoutMiddleware()->post(route('tos-generates.store'), $payload);
 
     $response->assertRedirect();
 
@@ -88,6 +88,6 @@ it('validates language is within the allowed values', function () {
         'additional_instructions' => null,
     ];
 
-    $this->post(route('tos-generates.store'), $payload)
+    $this->withoutMiddleware()->post(route('tos-generates.store'), $payload)
         ->assertSessionHasErrors(['language']);
 });

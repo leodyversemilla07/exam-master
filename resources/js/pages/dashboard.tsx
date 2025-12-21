@@ -1,7 +1,14 @@
 import AppLayout from "@/layouts/app-layout";
 import { PageProps } from "@/types";
 import { Head, Link } from "@inertiajs/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    CardFooter,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
     MessageSquare,
@@ -9,7 +16,6 @@ import {
     ArrowRight,
     BookOpen,
     FileText,
-    Users,
     CheckCircle2,
     Clock,
     Brain,
@@ -18,8 +24,22 @@ import {
     TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from "recharts";
+import PageHeader from "@/components/page-header";
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Pie,
+    PieChart,
+    XAxis,
+    YAxis,
+} from "recharts";
 
 interface DashboardStats {
     total_modules: number;
@@ -95,12 +115,6 @@ const cognitiveColors: Record<string, string> = {
     creating: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
-const difficultyColors: Record<string, string> = {
-    easy: "bg-success/10 text-success border-success/20",
-    moderate: "bg-warning/10 text-warning border-warning/20",
-    difficult: "bg-destructive/10 text-destructive border-destructive/20",
-};
-
 const statusColors: Record<string, string> = {
     draft: "bg-muted text-muted-foreground border-border",
     published: "bg-success/10 text-success border-success/20",
@@ -117,18 +131,8 @@ export default function Dashboard({
     questionsByType,
     recentQuestions,
     recentExams,
-    recentTos,
     moduleStats,
 }: DashboardPageProps) {
-    const formatDate = (date: string) => {
-        return new Date(date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
-
     const truncateText = (text: string, maxLength: number = 50) => {
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + "...";
@@ -141,30 +145,26 @@ export default function Dashboard({
             <div className="p-4 md:p-6">
                 <div className="space-y-6">
                     {/* Welcome Section */}
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-foreground">
-                                Welcome back, {auth.user.name}!
-                            </h1>
-                            <p className="text-muted-foreground mt-1">
-                                Here's an overview of your exam management system
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button asChild variant="outline">
-                                <Link href="/question-bank/create">
-                                    <MessageSquare className="mr-2 h-4 w-4" />
-                                    New Question
-                                </Link>
-                            </Button>
-                            <Button asChild>
-                                <Link href="/exam-builder/create">
-                                    <ClipboardList className="mr-2 h-4 w-4" />
-                                    New Exam
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
+                    <PageHeader
+                        title={`Welcome back, ${auth.user.name}!`}
+                        description="Here's an overview of your exam management system"
+                        actions={
+                            <>
+                                <Button asChild variant="outline">
+                                    <Link href="/question-bank/create">
+                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                        New Question
+                                    </Link>
+                                </Button>
+                                <Button asChild>
+                                    <Link href="/exam-builder/create">
+                                        <ClipboardList className="mr-2 h-4 w-4" />
+                                        New Exam
+                                    </Link>
+                                </Button>
+                            </>
+                        }
+                    />
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -175,8 +175,12 @@ export default function Dashboard({
                                         <BookOpen className="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">{stats.active_modules}</p>
-                                        <p className="text-xs text-muted-foreground">Active Modules</p>
+                                        <p className="text-2xl font-bold">
+                                            {stats.active_modules}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Active Modules
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -189,8 +193,12 @@ export default function Dashboard({
                                         <MessageSquare className="h-5 w-5 text-secondary" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">{stats.total_questions}</p>
-                                        <p className="text-xs text-muted-foreground">Total Questions</p>
+                                        <p className="text-2xl font-bold">
+                                            {stats.total_questions}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Total Questions
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -203,8 +211,12 @@ export default function Dashboard({
                                         <CheckCircle2 className="h-5 w-5 text-success" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">{stats.approved_questions}</p>
-                                        <p className="text-xs text-muted-foreground">Approved</p>
+                                        <p className="text-2xl font-bold">
+                                            {stats.approved_questions}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Approved
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -217,8 +229,12 @@ export default function Dashboard({
                                         <Clock className="h-5 w-5 text-warning" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">{stats.pending_questions}</p>
-                                        <p className="text-xs text-muted-foreground">Pending</p>
+                                        <p className="text-2xl font-bold">
+                                            {stats.pending_questions}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Pending
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -231,8 +247,12 @@ export default function Dashboard({
                                         <Sparkles className="h-5 w-5 text-info" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">{stats.ai_generated_questions}</p>
-                                        <p className="text-xs text-muted-foreground">AI Generated</p>
+                                        <p className="text-2xl font-bold">
+                                            {stats.ai_generated_questions}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            AI Generated
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -245,8 +265,12 @@ export default function Dashboard({
                                         <ClipboardList className="h-5 w-5 text-success" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">{stats.published_exams}</p>
-                                        <p className="text-xs text-muted-foreground">Published Exams</p>
+                                        <p className="text-2xl font-bold">
+                                            {stats.published_exams}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Published Exams
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -262,148 +286,344 @@ export default function Dashboard({
                                     <Brain className="h-5 w-5" />
                                     Questions by Cognitive Level
                                 </CardTitle>
-                                <CardDescription>Bloom's Taxonomy distribution</CardDescription>
+                                <CardDescription>
+                                    Bloom's Taxonomy distribution
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {Object.keys(questionsByCognitiveLevel).length === 0 ? (
-                                    <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
+                                {Object.keys(questionsByCognitiveLevel)
+                                    .length === 0 ? (
+                                    <p className="text-sm text-muted-foreground text-center py-12">
+                                        No data available
+                                    </p>
                                 ) : (
                                     <ChartContainer
                                         config={{
-                                            remembering: { label: "Remembering", color: "hsl(var(--primary))" },
-                                            understanding: { label: "Understanding", color: "hsl(var(--success))" },
-                                            applying: { label: "Applying", color: "hsl(var(--warning))" },
-                                            analyzing: { label: "Analyzing", color: "hsl(var(--info))" },
-                                            evaluating: { label: "Evaluating", color: "hsl(var(--secondary))" },
-                                            creating: { label: "Creating", color: "hsl(var(--destructive))" },
+                                            remembering: {
+                                                label: "Remembering",
+                                                color: "var(--chart-1)",
+                                            },
+                                            understanding: {
+                                                label: "Understanding",
+                                                color: "var(--chart-2)",
+                                            },
+                                            applying: {
+                                                label: "Applying",
+                                                color: "var(--chart-3)",
+                                            },
+                                            analyzing: {
+                                                label: "Analyzing",
+                                                color: "var(--chart-4)",
+                                            },
+                                            evaluating: {
+                                                label: "Evaluating",
+                                                color: "var(--chart-5)",
+                                            },
+                                            creating: {
+                                                label: "Creating",
+                                                color: "var(--chart-1)",
+                                            },
                                         }}
-                                        className="h-[300px]"
+                                        className="h-75"
                                     >
                                         <BarChart
-                                            data={Object.entries(questionsByCognitiveLevel).map(([level, count]) => ({
-                                                level: level.charAt(0).toUpperCase() + level.slice(1),
+                                            accessibilityLayer
+                                            data={Object.entries(
+                                                questionsByCognitiveLevel,
+                                            ).map(([level, count]) => ({
+                                                level:
+                                                    level
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                    level.slice(1),
                                                 count,
-                                                fill: `var(--color-${level})`,
                                             }))}
                                         >
-                                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                            <CartesianGrid vertical={false} />
                                             <XAxis
                                                 dataKey="level"
-                                                tick={{ fill: "hsl(var(--foreground))" }}
                                                 tickLine={false}
+                                                tickMargin={10}
                                                 axisLine={false}
                                             />
                                             <YAxis
-                                                tick={{ fill: "hsl(var(--foreground))" }}
                                                 tickLine={false}
                                                 axisLine={false}
                                             />
-                                            <ChartTooltip content={<ChartTooltipContent />} />
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={
+                                                    <ChartTooltipContent
+                                                        hideLabel
+                                                    />
+                                                }
+                                            />
                                             <Bar dataKey="count" radius={8}>
-                                                {Object.entries(questionsByCognitiveLevel).map(([level]) => (
-                                                    <Cell key={level} />
+                                                {Object.entries(
+                                                    questionsByCognitiveLevel,
+                                                ).map(([level], index) => (
+                                                    <Cell
+                                                        key={level}
+                                                        fill={`var(--color-chart-${(index % 5) + 1})`}
+                                                    />
                                                 ))}
                                             </Bar>
                                         </BarChart>
                                     </ChartContainer>
                                 )}
                             </CardContent>
+                            <CardFooter className="flex-col items-start gap-2 text-sm">
+                                <div className="text-muted-foreground leading-none">
+                                    Showing cognitive level distribution of
+                                    questions
+                                </div>
+                            </CardFooter>
                         </Card>
 
                         {/* Difficulty Distribution */}
-                        <Card>
-                            <CardHeader>
+                        <Card className="flex flex-col">
+                            <CardHeader className="items-center pb-0">
                                 <CardTitle className="text-base flex items-center gap-2">
                                     <TrendingUp className="h-5 w-5" />
                                     Questions by Difficulty
                                 </CardTitle>
-                                <CardDescription>Question difficulty breakdown</CardDescription>
+                                <CardDescription>
+                                    Question difficulty breakdown
+                                </CardDescription>
                             </CardHeader>
-                            <CardContent>
-                                {Object.keys(questionsByDifficulty).length === 0 ? (
-                                    <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
+                            <CardContent className="flex-1 pb-0">
+                                {Object.keys(questionsByDifficulty).length ===
+                                0 ? (
+                                    <p className="text-sm text-muted-foreground text-center py-12">
+                                        No data available
+                                    </p>
                                 ) : (
                                     <ChartContainer
                                         config={{
-                                            easy: { label: "Easy", color: "hsl(var(--success))" },
-                                            moderate: { label: "Moderate", color: "hsl(var(--warning))" },
-                                            difficult: { label: "Difficult", color: "hsl(var(--destructive))" },
+                                            easy: {
+                                                label: "Easy",
+                                                color: "var(--chart-1)",
+                                            },
+                                            moderate: {
+                                                label: "Moderate",
+                                                color: "var(--chart-2)",
+                                            },
+                                            difficult: {
+                                                label: "Difficult",
+                                                color: "var(--chart-3)",
+                                            },
                                         }}
-                                        className="h-[300px]"
+                                        className="mx-auto aspect-square max-h-62.5"
                                     >
                                         <PieChart>
-                                            <ChartTooltip content={<ChartTooltipContent />} />
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={
+                                                    <ChartTooltipContent
+                                                        hideLabel
+                                                    />
+                                                }
+                                            />
                                             <Pie
-                                                data={Object.entries(questionsByDifficulty).map(([difficulty, count]) => ({
-                                                    name: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
-                                                    value: count,
-                                                    fill: `var(--color-${difficulty})`,
-                                                }))}
+                                                data={Object.entries(
+                                                    questionsByDifficulty,
+                                                ).map(
+                                                    (
+                                                        [difficulty, count],
+                                                        index,
+                                                    ) => ({
+                                                        name:
+                                                            difficulty
+                                                                .charAt(0)
+                                                                .toUpperCase() +
+                                                            difficulty.slice(1),
+                                                        value: count,
+                                                        fill: `var(--color-chart-${index + 1})`,
+                                                    }),
+                                                )}
                                                 dataKey="value"
                                                 nameKey="name"
                                                 cx="50%"
                                                 cy="50%"
                                                 outerRadius={100}
-                                                label={({ name, value }) => `${name}: ${value}`}
                                             />
                                         </PieChart>
                                     </ChartContainer>
                                 )}
                             </CardContent>
+                            <CardFooter className="flex-col gap-2 text-sm">
+                                <div className="text-muted-foreground leading-none">
+                                    Showing difficulty distribution of questions
+                                </div>
+                            </CardFooter>
                         </Card>
                     </div>
 
-                    {/* Question Type Distribution */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <FileText className="h-5 w-5" />
-                                Questions by Type
-                            </CardTitle>
-                            <CardDescription>Question format breakdown</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {Object.keys(questionsByType).length === 0 ? (
-                                <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
-                            ) : (
-                                <ChartContainer
-                                    config={{
-                                        multiple_choice: { label: "Multiple Choice", color: "hsl(var(--chart-1))" },
-                                        true_false: { label: "True/False", color: "hsl(var(--chart-2))" },
-                                        essay: { label: "Essay", color: "hsl(var(--chart-3))" },
-                                        short_answer: { label: "Short Answer", color: "hsl(var(--chart-4))" },
-                                    }}
-                                    className="h-[300px]"
-                                >
-                                    <BarChart
-                                        data={Object.entries(questionsByType).map(([type, count]) => ({
-                                            type: type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-                                            count,
-                                            fill: `var(--color-${type})`,
-                                        }))}
-                                        layout="horizontal"
+                    {/* Question Type and Exam Status Charts */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Question Type Distribution */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <FileText className="h-5 w-5" />
+                                    Questions by Type
+                                </CardTitle>
+                                <CardDescription>
+                                    Question format breakdown
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {Object.keys(questionsByType).length === 0 ? (
+                                    <p className="text-sm text-muted-foreground text-center py-12">
+                                        No data available
+                                    </p>
+                                ) : (
+                                    <ChartContainer
+                                        config={{
+                                            multiple_choice: {
+                                                label: "Multiple Choice",
+                                                color: "var(--chart-1)",
+                                            },
+                                            true_false: {
+                                                label: "True/False",
+                                                color: "var(--chart-2)",
+                                            },
+                                            essay: {
+                                                label: "Essay",
+                                                color: "var(--chart-3)",
+                                            },
+                                            short_answer: {
+                                                label: "Short Answer",
+                                                color: "var(--chart-4)",
+                                            },
+                                        }}
+                                        className="h-75"
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                                        <XAxis type="number" tick={{ fill: "hsl(var(--foreground))" }} />
-                                        <YAxis
-                                            dataKey="type"
-                                            type="category"
-                                            tick={{ fill: "hsl(var(--foreground))" }}
-                                            tickLine={false}
-                                            axisLine={false}
-                                            width={120}
-                                        />
-                                        <ChartTooltip content={<ChartTooltipContent />} />
-                                        <Bar dataKey="count" radius={8}>
-                                            {Object.entries(questionsByType).map(([type]) => (
-                                                <Cell key={type} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ChartContainer>
-                            )}
-                        </CardContent>
-                    </Card>
+                                        <BarChart
+                                            accessibilityLayer
+                                            data={Object.entries(
+                                                questionsByType,
+                                            ).map(([type, count]) => ({
+                                                type: type
+                                                    .replace(/_/g, " ")
+                                                    .replace(/\b\w/g, (l) =>
+                                                        l.toUpperCase(),
+                                                    ),
+                                                count,
+                                            }))}
+                                        >
+                                            <CartesianGrid vertical={false} />
+                                            <XAxis
+                                                dataKey="type"
+                                                tickLine={false}
+                                                tickMargin={10}
+                                                axisLine={false}
+                                                tickFormatter={(value) =>
+                                                    value.slice(0, 3)
+                                                }
+                                            />
+                                            <YAxis
+                                                tickLine={false}
+                                                axisLine={false}
+                                            />
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={
+                                                    <ChartTooltipContent
+                                                        hideLabel
+                                                    />
+                                                }
+                                            />
+                                            <Bar dataKey="count" radius={8}>
+                                                {Object.entries(
+                                                    questionsByType,
+                                                ).map(([type], index) => (
+                                                    <Cell
+                                                        key={type}
+                                                        fill={`var(--color-chart-${index + 1})`}
+                                                    />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ChartContainer>
+                                )}
+                            </CardContent>
+                            <CardFooter className="flex-col items-start gap-2 text-sm">
+                                <div className="text-muted-foreground leading-none">
+                                    Showing question type distribution
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        {/* Exam Status Distribution */}
+                        <Card className="flex flex-col">
+                            <CardHeader className="items-center pb-0">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <ClipboardList className="h-5 w-5" />
+                                    Exams by Status
+                                </CardTitle>
+                                <CardDescription>
+                                    Published vs draft exams
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-0">
+                                {stats.total_exams === 0 ? (
+                                    <p className="text-sm text-muted-foreground text-center py-12">
+                                        No exams yet
+                                    </p>
+                                ) : (
+                                    <ChartContainer
+                                        config={{
+                                            published: {
+                                                label: "Published",
+                                                color: "var(--chart-1)",
+                                            },
+                                            draft: {
+                                                label: "Draft",
+                                                color: "var(--chart-2)",
+                                            },
+                                        }}
+                                        className="mx-auto aspect-square max-h-62.5"
+                                    >
+                                        <PieChart>
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={
+                                                    <ChartTooltipContent
+                                                        hideLabel
+                                                    />
+                                                }
+                                            />
+                                            <Pie
+                                                data={[
+                                                    {
+                                                        name: "Published",
+                                                        value: stats.published_exams,
+                                                        fill: "var(--color-chart-1)",
+                                                    },
+                                                    {
+                                                        name: "Draft",
+                                                        value: stats.draft_exams,
+                                                        fill: "var(--color-chart-2)",
+                                                    },
+                                                ]}
+                                                dataKey="value"
+                                                nameKey="name"
+                                                cx="50%"
+                                                cy="50%"
+                                                outerRadius={100}
+                                            />
+                                        </PieChart>
+                                    </ChartContainer>
+                                )}
+                            </CardContent>
+                            <CardFooter className="flex-col gap-2 text-sm">
+                                <div className="text-muted-foreground leading-none">
+                                    Showing exam status distribution
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </div>
 
                     {/* Recent Activity & Quick Actions */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -411,8 +631,12 @@ export default function Dashboard({
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Recent Questions</CardTitle>
-                                    <CardDescription>Latest questions added to the bank</CardDescription>
+                                    <CardTitle className="text-base">
+                                        Recent Questions
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Latest questions added to the bank
+                                    </CardDescription>
                                 </div>
                                 <Button asChild variant="ghost" size="sm">
                                     <Link href="/question-bank">
@@ -424,17 +648,31 @@ export default function Dashboard({
                             <CardContent>
                                 <div className="space-y-4">
                                     {recentQuestions.map((question) => (
-                                        <div key={question.id} className="flex items-start justify-between gap-4 pb-4 border-b last:border-0 last:pb-0">
+                                        <div
+                                            key={question.id}
+                                            className="flex items-start justify-between gap-4 pb-4 border-b last:border-0 last:pb-0"
+                                        >
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium truncate">
-                                                    {truncateText(question.question, 60)}
+                                                    {truncateText(
+                                                        question.question,
+                                                        60,
+                                                    )}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {question.module?.code || "N/A"}
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                    >
+                                                        {question.module
+                                                            ?.code || "N/A"}
                                                     </Badge>
-                                                    <Badge className={`text-xs ${cognitiveColors[question.cognitive_level] || ""}`}>
-                                                        {question.cognitive_level}
+                                                    <Badge
+                                                        className={`text-xs ${cognitiveColors[question.cognitive_level] || ""}`}
+                                                    >
+                                                        {
+                                                            question.cognitive_level
+                                                        }
                                                     </Badge>
                                                 </div>
                                             </div>
@@ -448,7 +686,9 @@ export default function Dashboard({
                                         </div>
                                     ))}
                                     {recentQuestions.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-8">No questions yet</p>
+                                        <p className="text-sm text-muted-foreground text-center py-8">
+                                            No questions yet
+                                        </p>
                                     )}
                                 </div>
                             </CardContent>
@@ -458,8 +698,12 @@ export default function Dashboard({
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Recent Exams</CardTitle>
-                                    <CardDescription>Latest exams created</CardDescription>
+                                    <CardTitle className="text-base">
+                                        Recent Exams
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Latest exams created
+                                    </CardDescription>
                                 </div>
                                 <Button asChild variant="ghost" size="sm">
                                     <Link href="/exam-builder">
@@ -471,30 +715,47 @@ export default function Dashboard({
                             <CardContent>
                                 <div className="space-y-4">
                                     {recentExams.map((exam) => (
-                                        <div key={exam.id} className="flex items-start justify-between gap-4 pb-4 border-b last:border-0 last:pb-0">
+                                        <div
+                                            key={exam.id}
+                                            className="flex items-start justify-between gap-4 pb-4 border-b last:border-0 last:pb-0"
+                                        >
                                             <div className="flex-1 min-w-0">
                                                 <Link
                                                     href={`/exam-builder/${exam.id}`}
                                                     className="text-sm font-medium hover:underline truncate block"
                                                 >
-                                                    {truncateText(exam.title, 40)}
+                                                    {truncateText(
+                                                        exam.title,
+                                                        40,
+                                                    )}
                                                 </Link>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {exam.module?.code || "N/A"}
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                    >
+                                                        {exam.module?.code ||
+                                                            "N/A"}
                                                     </Badge>
                                                     <span className="text-xs text-muted-foreground">
                                                         {exam.total_items} items
                                                     </span>
                                                 </div>
                                             </div>
-                                            <Badge className={statusColors[exam.status] || ""}>
+                                            <Badge
+                                                className={
+                                                    statusColors[exam.status] ||
+                                                    ""
+                                                }
+                                            >
                                                 {exam.status}
                                             </Badge>
                                         </div>
                                     ))}
                                     {recentExams.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-8">No exams yet</p>
+                                        <p className="text-sm text-muted-foreground text-center py-8">
+                                            No exams yet
+                                        </p>
                                     )}
                                 </div>
                             </CardContent>
@@ -505,8 +766,12 @@ export default function Dashboard({
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle className="text-base">Top Modules</CardTitle>
-                                <CardDescription>Most active modules by question count</CardDescription>
+                                <CardTitle className="text-base">
+                                    Top Modules
+                                </CardTitle>
+                                <CardDescription>
+                                    Most active modules by question count
+                                </CardDescription>
                             </div>
                             <Button asChild variant="ghost" size="sm">
                                 <Link href="/modules">
@@ -523,8 +788,12 @@ export default function Dashboard({
                                         href={`/modules/${module.id}`}
                                         className="p-4 border rounded-lg hover:bg-accent transition-colors"
                                     >
-                                        <p className="font-medium text-sm truncate">{module.name}</p>
-                                        <p className="text-xs text-muted-foreground mb-3">{module.code}</p>
+                                        <p className="font-medium text-sm truncate">
+                                            {module.name}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mb-3">
+                                            {module.code}
+                                        </p>
                                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                             <span className="flex items-center gap-1">
                                                 <MessageSquare className="h-3 w-3" />
@@ -544,7 +813,10 @@ export default function Dashboard({
                                 {moduleStats.length === 0 && (
                                     <p className="text-sm text-muted-foreground text-center py-8 col-span-full">
                                         No modules yet.{" "}
-                                        <Link href="/modules/create" className="text-primary hover:underline">
+                                        <Link
+                                            href="/modules/create"
+                                            className="text-primary hover:underline"
+                                        >
                                             Create one
                                         </Link>
                                     </p>
@@ -563,13 +835,16 @@ export default function Dashboard({
                                     </div>
                                     <div>
                                         <CardTitle>Question Bank</CardTitle>
-                                        <CardDescription>Manage individual exam questions</CardDescription>
+                                        <CardDescription>
+                                            Manage individual exam questions
+                                        </CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Create, organize, and manage your collection of exam questions.
+                                    Create, organize, and manage your collection
+                                    of exam questions.
                                 </p>
                                 <Button asChild className="w-full">
                                     <Link href="/question-bank">
@@ -588,13 +863,16 @@ export default function Dashboard({
                                     </div>
                                     <div>
                                         <CardTitle>Exam Builder</CardTitle>
-                                        <CardDescription>Build complete exams from questions</CardDescription>
+                                        <CardDescription>
+                                            Build complete exams from questions
+                                        </CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Combine questions to create complete, ready-to-use exams.
+                                    Combine questions to create complete,
+                                    ready-to-use exams.
                                 </p>
                                 <Button asChild className="w-full">
                                     <Link href="/exam-builder">

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/page-header';
 import {
     Dialog,
     DialogContent,
@@ -150,18 +151,16 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
             <Head title="User Management" />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Manage system users and access control
-                        </p>
-                    </div>
-                    <Button onClick={openCreateDialog}>
-                        <Plus className="mr-2 size-4" />
-                        Add User
-                    </Button>
-                </div>
+                <PageHeader
+                    title="User Management"
+                    description="Manage system users and access control"
+                    actions={
+                        <Button onClick={openCreateDialog}>
+                            <Plus className="mr-2 size-4" />
+                            Add User
+                        </Button>
+                    }
+                />
 
                 {/* Search */}
                 <Card>

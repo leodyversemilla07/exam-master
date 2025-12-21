@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -61,15 +61,6 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
             <div className="p-4 md:p-6">
                 <div className="mx-auto max-w-4xl">
                     <div className="mb-6">
-                        <Button
-                            variant="ghost"
-                            onClick={() => window.history.back()}
-                            className="mb-4"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Exam Builder
-                        </Button>
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Create New Exam</CardTitle>

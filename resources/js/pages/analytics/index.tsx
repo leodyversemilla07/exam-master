@@ -6,21 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import PageHeader from "@/components/page-header";
 import { 
     BarChart3, 
     Download, 
     TrendingUp, 
     Users, 
     BookOpen,
-    FileText,
-    Calendar,
-    ArrowUpRight
+    FileText
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { Badge } from "@/components/ui/badge";
+
+const breadcrumbs = [{ title: "Analytics & Reports", href: "/analytics" }];
 
 interface ExamsCreatedData {
     period: string;
@@ -69,7 +70,7 @@ interface EducatorActivityData {
     };
 }
 
-export default function AnalyticsIndex({ auth }: PageProps) {
+export default function AnalyticsIndex({}: PageProps) {
     const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'year'>('month');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -157,25 +158,22 @@ export default function AnalyticsIndex({ auth }: PageProps) {
     };
 
     return (
-        <AppLayout user={auth.user}>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Analytics & Reports" />
 
-            <div className="space-y-6">
+            <div className="p-4 md:p-6">
+                <div className="space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Analytics & Reports</h1>
-                        <p className="text-muted-foreground mt-1">
-                            Comprehensive insights into exam creation and system usage
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
+                <PageHeader
+                    title="Analytics & Reports"
+                    description="Comprehensive insights into exam creation and system usage"
+                    actions={
                         <Button variant="outline" onClick={() => fetchExamsData()}>
                             <TrendingUp className="mr-2 h-4 w-4" />
                             Refresh
                         </Button>
-                    </div>
-                </div>
+                    }
+                />
 
                 {/* Filters */}
                 <Card>
@@ -254,7 +252,7 @@ export default function AnalyticsIndex({ auth }: PageProps) {
                     </CardHeader>
                     <CardContent>
                         {loading ? (
-                            <div className="flex items-center justify-center h-[300px]">
+                            <div className="flex items-center justify-center h-75">
                                 <p className="text-muted-foreground">Loading...</p>
                             </div>
                         ) : examsData ? (
@@ -263,7 +261,7 @@ export default function AnalyticsIndex({ auth }: PageProps) {
                                     <p className="text-2xl font-bold">{examsData.total}</p>
                                     <p className="text-sm text-muted-foreground">Total exams created</p>
                                 </div>
-                                <div className="h-[300px]">
+                                <div className="h-75">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={formatChartData()}>
                                             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -287,7 +285,7 @@ export default function AnalyticsIndex({ auth }: PageProps) {
                                 </div>
                             </>
                         ) : (
-                            <div className="flex items-center justify-center h-[300px]">
+                            <div className="flex items-center justify-center h-75">
                                 <p className="text-muted-foreground">No data available</p>
                             </div>
                         )}
@@ -448,6 +446,7 @@ export default function AnalyticsIndex({ auth }: PageProps) {
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </div>
+    </AppLayout>
     );
 }

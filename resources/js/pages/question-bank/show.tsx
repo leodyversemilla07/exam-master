@@ -3,7 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import { Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 
 interface Question {
     id: number;
@@ -71,43 +72,34 @@ export default function ExamShow({ question }: PageProps) {
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => router.visit('/question-bank')}
-                        >
-                            <ArrowLeft className="mr-2 size-4" />
-                            Back
-                        </Button>
-                        <div>
-                            <h1 className="text-2xl font-bold">Question Details</h1>
-                            <p className="text-muted-foreground">
-                                View and manage question
-                            </p>
+                <PageHeader
+                    title="Question Details"
+                    description={
+                        <div className="flex items-center gap-2">
+                            <span>View and manage question</span>
+                            <Badge variant="secondary">Draft</Badge>
+                            <Badge variant="outline">English</Badge>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        {!question.is_approved && (
-                            <Button onClick={handleApprove}>
-                                <CheckCircle2 className="mr-2 size-4" />
-                                Approve
+                    }
+                    actions={
+                        <>
+                            <Button onClick={() => router.visit(`/question-bank/${question.id}/edit`)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
                             </Button>
-                        )}
-                        <Button
-                            variant="outline"
-                            onClick={() => router.visit(`/question-bank/${question.id}/edit`)}
-                        >
-                            <Edit className="mr-2 size-4" />
-                            Edit
-                        </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
-                            <Trash2 className="mr-2 size-4" />
-                            Delete
-                        </Button>
-                    </div>
-                </div>
+                            {!question.is_approved && (
+                                <Button onClick={handleApprove} variant="outline">
+                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                                    Approve
+                                </Button>
+                            )}
+                            <Button onClick={handleDelete} variant="destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </Button>
+                        </>
+                    }
+                />
 
                 {/* Question Details */}
                 <Card>

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Edit2, Trash2, GripVertical } from "lucide-react";
 import { store, update, destroy } from "@/actions/App/Http/Controllers/LearningObjectiveController";
 import { useState } from "react";
+import PageHeader from "@/components/page-header";
 
 interface Props extends PageProps {
     module: Module;
@@ -136,20 +137,18 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
             <Head title={`Learning Objectives - ${topic.title}`} />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Learning Objectives</h1>
-                        <p className="text-muted-foreground">
-                            Manage learning outcomes for {topic.title} using Bloom's Taxonomy
-                        </p>
-                    </div>
-                    {!showForm && (
-                        <Button onClick={() => setShowForm(true)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Objective
-                        </Button>
-                    )}
-                </div>
+                <PageHeader
+                    title="Learning Objectives"
+                    description={`Manage learning outcomes for ${topic.title} using Bloom's Taxonomy`}
+                    actions={
+                        !showForm ? (
+                            <Button onClick={() => setShowForm(true)}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Objective
+                            </Button>
+                        ) : undefined
+                    }
+                />
 
                 {showForm && (
                     <Card>

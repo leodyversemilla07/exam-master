@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { Module, ExamQuestion } from '@/types/models';
 import { AlertTriangle, FileQuestion, Search } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 
 interface DuplicateMatch {
     question: ExamQuestion;
@@ -52,15 +53,10 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Duplicate Detection</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Question similarity analysis for <strong>{module.code}</strong> - {module.name}
-                        </p>
-                    </div>
-                    <Search className="size-8 text-muted-foreground" />
-                </div>
+                <PageHeader
+                    title="Duplicate Detection"
+                    description={<>Question similarity analysis for <strong>{module.code}</strong> - {module.name}</>}
+                />
 
                 {/* Statistics Cards */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

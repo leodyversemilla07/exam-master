@@ -23,7 +23,6 @@ import { type NavItem, type SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
 import {
     LayoutGrid,
-    FileText,
     BookOpen,
     TableProperties,
     BookMarked,

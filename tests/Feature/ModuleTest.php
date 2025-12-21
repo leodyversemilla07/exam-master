@@ -56,7 +56,7 @@ it('creates a new module', function () {
         'is_active' => true,
     ];
 
-    post(route('modules.store'), $data)
+    $this->post(route('modules.store'), $data)
         ->assertRedirect()
         ->assertSessionHas('success');
 
@@ -68,14 +68,14 @@ it('creates a new module', function () {
 });
 
 it('validates required fields when creating module', function () {
-    post(route('modules.store'), [])
+    $this->post(route('modules.store'), [])
         ->assertSessionHasErrors(['code', 'name', 'subject_area', 'grade_level', 'curriculum_year']);
 });
 
 it('validates unique module code', function () {
     $module = Module::factory()->create(['code' => 'MATH-101']);
 
-    post(route('modules.store'), [
+    $this->post(route('modules.store'), [
         'code' => 'MATH-101',
         'name' => 'Math 101',
         'subject_area' => 'Mathematics',
@@ -109,7 +109,7 @@ it('displays edit module page', function () {
 it('updates an existing module', function () {
     $module = Module::factory()->create(['code' => 'OLD-CODE']);
 
-    patch(route('modules.update', $module), [
+    $this->patch(route('modules.update', $module), [
         'code' => 'NEW-CODE',
         'name' => 'Updated Module',
         'subject_area' => 'Updated Subject',
@@ -128,7 +128,7 @@ it('updates an existing module', function () {
 it('deletes a module', function () {
     $module = Module::factory()->create();
 
-    delete(route('modules.destroy', $module))
+    $this->delete(route('modules.destroy', $module))
         ->assertRedirect()
         ->assertSessionHas('success');
 
@@ -138,7 +138,7 @@ it('deletes a module', function () {
 it('toggles module active status', function () {
     $module = Module::factory()->create(['is_active' => true]);
 
-    post(route('modules.toggle', $module))
+    $this->post(route('modules.toggle', $module))
         ->assertRedirect()
         ->assertSessionHas('success');
 

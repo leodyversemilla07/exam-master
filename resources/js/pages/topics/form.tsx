@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { store as topicsStore, update as topicsUpdate } from "@/actions/App/Http/Controllers/TopicController";
+import PageHeader from "@/components/page-header";
 
 interface Props extends PageProps {
     module: Module;
@@ -65,14 +66,10 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
             <Head title={isEditing ? `Edit ${topic.title}` : "Create Topic"} />
 
             <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
-                        {isEditing ? "Edit Topic" : "Create Topic"}
-                    </h1>
-                    <p className="text-muted-foreground">
-                        {isEditing ? `Update topic details for ${module.name}` : `Add a new topic to ${module.name}`}
-                    </p>
-                </div>
+                <PageHeader
+                    title={isEditing ? "Edit Topic" : "Create Topic"}
+                    description={isEditing ? `Update topic details for ${module.name}` : `Add a new topic to ${module.name}`}
+                />
 
                 <form onSubmit={handleSubmit}>
                     <Card>

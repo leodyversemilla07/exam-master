@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
 import { Module, Topic, LearningObjective, CognitiveLevel } from '@/types/models';
 import { Calculator, TrendingUp, AlertCircle, CheckCircle2, Plus, BookOpen } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 
 interface PageProps {
     module: Module & {
@@ -71,15 +72,10 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">TOS Calculator</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Table of Specifications for <strong>{module.code}</strong> - {module.name}
-                        </p>
-                    </div>
-                    <Calculator className="size-8 text-muted-foreground" />
-                </div>
+                <PageHeader
+                    title="TOS Calculator"
+                    description={<>Table of Specifications for <strong>{module.code}</strong> - {module.name}</>}
+                />
 
                 {/* Empty State */}
                 {statistics.total_objectives === 0 && (

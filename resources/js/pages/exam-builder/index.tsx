@@ -1,13 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { Head, router, Link } from '@inertiajs/react';
+import { Head, router, Link, usePage } from '@inertiajs/react';
 import { Exam } from '@/types/models';
-import { Plus, Search, Eye, Edit, Copy, Trash2, Clock, FileText, Users } from 'lucide-react';
+import { Plus, Eye, Edit, Copy, Trash2, Clock, FileText, Users } from 'lucide-react';
 import { useState } from 'react';
+import PageHeader from '@/components/page-header';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,7 +19,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { BreadcrumbItem } from '@/types';
+import { BreadcrumbItem, SharedData } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Exam Builder', href: '/exam-builder' },
@@ -57,11 +58,19 @@ interface PageProps {
 }
 
 export default function ExamBuilderIndex({ exams, modules, filters }: PageProps) {
+    const { auth } = usePage<SharedData>().props;
+    const userPermissions = auth.user?.permissions || [];
+    const currentUserId = auth.user?.id;
+
     const [search, setSearch] = useState(filters.search || '');
     const [moduleFilter, setModuleFilter] = useState(filters.module_id || 'all');
     const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [typeFilter, setTypeFilter] = useState(filters.exam_type || 'all');
     const [deletingExam, setDeletingExam] = useState<Exam | null>(null);
+
+    const canDeleteExam = (exam: Exam) => {
+        return userPermissions.includes('delete exams') || exam.created_by === currentUserId;
+    };
 
     const handleSearch = (value: string) => {
         setSearch(value);
@@ -129,17 +138,19 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
 
             <div className="p-4 md:p-6">
                 <div className="mx-auto max-w-7xl">
-                    <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-foreground">Exam Builder</h1>
-                            <p className="text-muted-foreground">Create complete exams by combining questions from your question bank</p>
-                        </div>
-                        <Button asChild className="mt-4 sm:mt-0">
-                            <Link href="/exam-builder/create">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create Exam
-                            </Link>
-                        </Button>
+                    <div className="mb-6">
+                        <PageHeader
+                            title="Exam Builder"
+                            description="Create complete exams by combining questions from your question bank"
+                            actions={
+                                <Button asChild>
+                                    <Link href="/exam-builder/create">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Create Exam
+                                    </Link>
+                                </Button>
+                            }
+                        />
                     </div>
 
                     {/* Filters */}
@@ -283,14 +294,16 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                             >
                                                 <Copy className="h-4 w-4" />
                                             </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleDelete(exam)}
-                                                className="text-destructive hover:text-destructive/80"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                            {canDeleteExam(exam) && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleDelete(exam)}
+                                                    className="text-destructive hover:text-destructive/80"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </CardContent>

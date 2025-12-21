@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Clock, Percent, Plus } from "lucide-react";
 import { edit as topicsEdit } from "@/actions/App/Http/Controllers/TopicController";
 import { index as objectivesIndex } from "@/actions/App/Http/Controllers/LearningObjectiveController";
+import PageHeader from "@/components/page-header";
 
 interface Props extends PageProps {
     module: Module;
@@ -36,36 +37,32 @@ export default function TopicShow({ module, topic }: Props) {
             <Head title={topic.title} />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <Badge variant="outline" className="font-mono">
-                                    {topic.code}
-                                </Badge>
-                                {!topic.is_active && (
-                                    <Badge variant="secondary">Inactive</Badge>
-                                )}
-                            </div>
-                            <h1 className="text-3xl font-bold tracking-tight">{topic.title}</h1>
-                            {topic.description && (
-                                <p className="text-muted-foreground mt-1">{topic.description}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Link href={topicsEdit.url({ module: module.id, topic: topic.id })}>
-                            <Button>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Topic
-                            </Button>
-                        </Link>
-                        <Button variant="outline">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                        </Button>
-                    </div>
+                <div className="flex items-center gap-2 mb-3">
+                    <Badge variant="outline" className="font-mono">
+                        {topic.code}
+                    </Badge>
+                    {!topic.is_active && (
+                        <Badge variant="secondary">Inactive</Badge>
+                    )}
                 </div>
+                <PageHeader
+                    title={topic.title}
+                    description={topic.description || undefined}
+                    actions={
+                        <>
+                            <Button asChild>
+                                <Link href={topicsEdit.url({ module: module.id, topic: topic.id })}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit Topic
+                                </Link>
+                            </Button>
+                            <Button variant="outline">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </Button>
+                        </>
+                    }
+                />
 
                 <div className="grid gap-6 md:grid-cols-3">
                     <Card>
