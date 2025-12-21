@@ -13,6 +13,7 @@ class TosGenerate extends Model
         return [
             'learning_objectives' => 'array',
             'cognitive_levels' => 'array',
+            'question_types' => 'array',
             'item_distribution' => 'array',
             'total_items' => 'integer',
         ];
@@ -27,9 +28,9 @@ class TosGenerate extends Model
         'total_items',
         'learning_objectives',
         'cognitive_levels',
+        'question_types',
         'item_distribution',
         'difficulty_level',
-        'question_type',
         'language',
         'additional_instructions',
         'status',

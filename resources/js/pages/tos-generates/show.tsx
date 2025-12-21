@@ -37,34 +37,39 @@ interface PageProps {
     };
 }
 
-const statusConfig = {
-    draft: {
-        icon: Clock,
-        color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
-        label: 'Draft',
-        animate: false,
-    },
-    generating: {
-        icon: Loader2,
-        color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-        label: 'Generating',
-        animate: true,
-    },
-    completed: {
-        icon: CheckCircle2,
-        color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        label: 'Completed',
-        animate: false,
-    },
-    failed: {
-        icon: AlertCircle,
-        color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-        label: 'Failed',
-        animate: false,
-    },
-};
-
 export default function TosGenerateShow({ tosGenerate }: PageProps) {
+    const breadcrumbs = [
+        { title: 'Table of Specifications', href: '/tos-generates' },
+        { title: tosGenerate.subject || 'View TOS', href: `/tos-generates/${tosGenerate.id}` },
+    ];
+
+    const statusConfig = {
+        draft: {
+            icon: Clock,
+            color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
+            label: 'Draft',
+            animate: false,
+        },
+        generating: {
+            icon: Loader2,
+            color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+            label: 'Generating',
+            animate: true,
+        },
+        completed: {
+            icon: CheckCircle2,
+            color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+            label: 'Completed',
+            animate: false,
+        },
+        failed: {
+            icon: AlertCircle,
+            color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+            label: 'Failed',
+            animate: false,
+        },
+    };
+
     const status = statusConfig[tosGenerate.status];
     const StatusIcon = status.icon;
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,7 +108,7 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`TOS: ${tosGenerate.subject} - ${tosGenerate.grade_level}`} />
 
             <div className="p-4 md:p-6 space-y-6">
@@ -296,12 +301,6 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                         <p className="font-medium">{tosGenerate.total_items}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-muted-foreground">Question Type</p>
-                                        <p className="font-medium capitalize">
-                                            {tosGenerate.question_type.replace('_', ' ')}
-                                        </p>
-                                    </div>
-                                    <div>
                                         <p className="text-sm text-muted-foreground">Difficulty</p>
                                         <p className="font-medium capitalize">
                                             {tosGenerate.difficulty_level}
@@ -409,6 +408,40 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
 
                     {/* Right Column - Stats */}
                     <div className="space-y-6">
+                        {/* Question Types Distribution */}
+                        {tosGenerate.question_types && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Question Types</CardTitle>
+                                    <CardDescription>Distribution by question type</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-3">
+                                        {Object.entries(tosGenerate.question_types)
+                                            .filter(([_, count]) => count > 0)
+                                            .map(([type, count]) => (
+                                                <div key={type} className="space-y-1">
+                                                    <div className="flex items-center justify-between text-sm">
+                                                        <span className="capitalize">{type.replace('_', ' ')}</span>
+                                                        <span className="font-medium">
+                                                            {count} ({Math.round((count / tosGenerate.total_items) * 100)}%)
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-2 rounded-full bg-muted">
+                                                        <div
+                                                            className="h-2 rounded-full bg-blue-500"
+                                                            style={{
+                                                                width: `${(count / tosGenerate.total_items) * 100}%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
                         {/* Cognitive Levels Distribution */}
                         <Card>
                             <CardHeader>

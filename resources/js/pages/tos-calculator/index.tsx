@@ -1,9 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Module, Topic, LearningObjective, CognitiveLevel } from '@/types/models';
-import { Calculator, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Calculator, TrendingUp, AlertCircle, CheckCircle2, Plus, BookOpen } from 'lucide-react';
 
 interface PageProps {
     module: Module & {
@@ -57,8 +59,14 @@ const cognitiveLevelColors: Record<CognitiveLevel, { bg: string; text: string; b
 const cognitiveLevels: CognitiveLevel[] = ['remembering', 'understanding', 'applying', 'analyzing', 'evaluating', 'creating'];
 
 export default function TosCalculatorIndex({ module, matrix, distribution, statistics, balance }: PageProps) {
+    const breadcrumbs = [
+        { title: 'Modules', href: '/modules' },
+        { title: module.name, href: `/modules/${module.id}` },
+        { title: 'TOS Calculator', href: `/tos-calculator/${module.id}` },
+    ];
+
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`TOS Calculator - ${module.name}`} />
 
             <div className="p-4 md:p-6 space-y-6">
@@ -73,7 +81,39 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                     <Calculator className="size-8 text-muted-foreground" />
                 </div>
 
-                {/* Statistics Cards */}
+                {/* Empty State */}
+                {statistics.total_objectives === 0 && (
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <BookOpen className="size-8" />
+                            </EmptyMedia>
+                            <EmptyTitle>No Topics or Learning Objectives Yet</EmptyTitle>
+                            <EmptyDescription>
+                                To use the TOS Calculator, you need to add topics and learning objectives to this module first. 
+                                These will be used to analyze the distribution across Bloom's taxonomy levels.
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <div className="flex gap-2">
+                                <Link href={`/modules/${module.id}`}>
+                                    <Button>
+                                        <Plus className="mr-2 size-4" />
+                                        Add Topics & Objectives
+                                    </Button>
+                                </Link>
+                                <Link href="/modules">
+                                    <Button variant="outline">
+                                        Back to Modules
+                                    </Button>
+                                </Link>
+                            </div>
+                        </EmptyContent>
+                    </Empty>
+                )}
+
+                {/* Statistics Cards - Only show if there are objectives */}
+                {statistics.total_objectives > 0 && (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -94,7 +134,7 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                             <Calculator className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{statistics.average_per_topic.toFixed(1)}</div>
+                            <div className="text-2xl font-bold">{isNaN(statistics.average_per_topic) ? '0.0' : statistics.average_per_topic.toFixed(1)}</div>
                             <p className="text-xs text-muted-foreground">
                                 Learning objectives
                             </p>
@@ -107,9 +147,9 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                             <TrendingUp className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold capitalize">{statistics.most_used_level}</div>
+                            <div className="text-2xl font-bold capitalize">{statistics.total_objectives > 0 ? statistics.most_used_level : 'N/A'}</div>
                             <p className="text-xs text-muted-foreground">
-                                Bloom's taxonomy
+                                {statistics.total_objectives > 0 ? "Bloom's taxonomy" : 'No objectives yet'}
                             </p>
                         </CardContent>
                     </Card>
@@ -120,15 +160,17 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                             <AlertCircle className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold capitalize">{statistics.least_used_level}</div>
+                            <div className="text-2xl font-bold capitalize">{statistics.total_objectives > 0 ? statistics.least_used_level : 'N/A'}</div>
                             <p className="text-xs text-muted-foreground">
-                                Consider balancing
+                                {statistics.total_objectives > 0 ? 'Consider balancing' : 'No objectives yet'}
                             </p>
                         </CardContent>
                     </Card>
                 </div>
+                )}
 
-                {/* TOS Matrix */}
+                {/* TOS Matrix - Only show if there are objectives */}
+                {statistics.total_objectives > 0 && (
                 <Card>
                     <CardHeader>
                         <CardTitle>Table of Specifications Matrix</CardTitle>
@@ -177,7 +219,7 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                                                 {row.creating || '-'}
                                             </td>
                                             <td className="p-2 text-center font-medium">{row.total}</td>
-                                            <td className="p-2 text-center text-muted-foreground">{row.percentage.toFixed(1)}%</td>
+                                            <td className="p-2 text-center text-muted-foreground">{isNaN(row.percentage) ? '0.0' : row.percentage.toFixed(1)}%</td>
                                         </tr>
                                     ))}
                                     <tr className="border-t-2 bg-muted font-medium">
@@ -198,8 +240,10 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                         </div>
                     </CardContent>
                 </Card>
+                )}
 
-                {/* Distribution and Balance */}
+                {/* Distribution and Balance - Only show if there are objectives */}
+                {statistics.total_objectives > 0 && (
                 <div className="grid gap-6 md:grid-cols-2">
                     {/* Distribution */}
                     <Card>
@@ -210,18 +254,19 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                         <CardContent className="space-y-4">
                             {distribution.map((item) => {
                                 const colors = cognitiveLevelColors[item.cognitive_level];
+                                const percentage = isNaN(item.percentage) ? 0 : item.percentage;
                                 return (
                                     <div key={item.cognitive_level} className="space-y-2">
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="font-medium capitalize">{item.cognitive_level}</span>
                                             <span className="text-muted-foreground">
-                                                {item.count} ({item.percentage.toFixed(1)}%)
+                                                {item.count} ({percentage.toFixed(1)}%)
                                             </span>
                                         </div>
                                         <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                                             <div
                                                 className={`h-full ${colors.bg.replace('50', '500').replace('dark:bg-', 'dark:bg-').replace('950', '600')}`}
-                                                style={{ width: `${item.percentage}%` }}
+                                                style={{ width: `${percentage}%` }}
                                             />
                                         </div>
                                     </div>
@@ -239,7 +284,7 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                         <CardContent className="space-y-3">
                             {balance.map((item) => {
                                 const colors = cognitiveLevelColors[item.level];
-                                const percentage = (item.count / statistics.total_objectives) * 100;
+                                const percentage = statistics.total_objectives > 0 ? (item.count / statistics.total_objectives) * 100 : 0;
                                 return (
                                     <div
                                         key={item.level}
@@ -276,6 +321,7 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                         </CardContent>
                     </Card>
                 </div>
+                )}
             </div>
         </AppLayout>
     );

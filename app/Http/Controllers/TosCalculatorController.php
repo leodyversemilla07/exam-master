@@ -45,9 +45,8 @@ class TosCalculatorController extends Controller
                 $distribution[$objective->cognitive_level]++;
             }
 
-            if ($row['total'] > 0) {
-                $matrix[] = $row;
-            }
+            $row['percentage'] = 0; // Default percentage
+            $matrix[] = $row;
         }
 
         // Calculate percentages

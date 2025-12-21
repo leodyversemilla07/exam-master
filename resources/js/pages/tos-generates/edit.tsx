@@ -24,6 +24,12 @@ interface LearningObjective {
 }
 
 export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
+    const breadcrumbs = [
+        { title: 'Table of Specifications', href: '/tos-generates' },
+        { title: tosGenerate.subject || 'View TOS', href: `/tos-generates/${tosGenerate.id}` },
+        { title: 'Edit', href: `/tos-generates/${tosGenerate.id}/edit` },
+    ];
+
     const [objectives, setObjectives] = useState<LearningObjective[]>(
         tosGenerate.learning_objectives || [{ code: '', description: '' }]
     );
@@ -43,8 +49,13 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
             evaluate: 0,
             create: 0,
         },
+        question_types: tosGenerate.question_types || {
+            multiple_choice: 0,
+            true_false: 0,
+            essay: 0,
+            identification: 0,
+        },
         difficulty_level: tosGenerate.difficulty_level || 'mixed',
-        question_type: tosGenerate.question_type || 'multiple_choice',
         language: tosGenerate.language || 'english',
         additional_instructions: tosGenerate.additional_instructions || '',
     });
@@ -88,7 +99,19 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
         });
     };
 
+    const updateQuestionType = (type: string, value: number) => {
+        form.setData('question_types', {
+            ...form.data.question_types,
+            [type]: value,
+        });
+    };
+
     const totalCognitiveLevels = Object.values(form.data.cognitive_levels).reduce(
+        (sum, val) => sum + val,
+        0
+    );
+
+    const totalQuestionTypes = Object.values(form.data.question_types).reduce(
         (sum, val) => sum + val,
         0
     );
@@ -99,7 +122,7 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Edit TOS: ${tosGenerate.subject}`} />
 
             <div className="p-4 md:p-6 space-y-6">
@@ -311,35 +334,98 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Question Configuration */}
+                    {/* Question Type Distribution */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Question Configuration</CardTitle>
-                            <CardDescription>Configure question types and difficulty</CardDescription>
+                            <CardTitle>Question Type Distribution</CardTitle>
+                            <CardDescription>
+                                Specify the number of questions for each type (must equal total items)
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="question_type">Question Type *</Label>
-                                    <Select
-                                        value={form.data.question_type}
-                                        onValueChange={(value) => form.setData('question_type', value as 'multiple_choice' | 'true_false' | 'essay' | 'short_answer')}
-                                    >
-                                        <SelectTrigger id="question_type">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
-                                            <SelectItem value="true_false">True/False</SelectItem>
-                                            <SelectItem value="essay">Essay</SelectItem>
-                                            <SelectItem value="short_answer">Short Answer</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {form.errors.question_type && (
-                                        <p className="text-sm text-destructive">{form.errors.question_type}</p>
-                                    )}
+                                    <Label htmlFor="multiple_choice">Multiple Choice</Label>
+                                    <Input
+                                        id="multiple_choice"
+                                        type="number"
+                                        min="0"
+                                        value={form.data.question_types.multiple_choice}
+                                        onChange={(e) =>
+                                            updateQuestionType('multiple_choice', parseInt(e.target.value) || 0)
+                                        }
+                                    />
                                 </div>
 
+                                <div className="space-y-2">
+                                    <Label htmlFor="true_false">True/False</Label>
+                                    <Input
+                                        id="true_false"
+                                        type="number"
+                                        min="0"
+                                        value={form.data.question_types.true_false}
+                                        onChange={(e) =>
+                                            updateQuestionType('true_false', parseInt(e.target.value) || 0)
+                                        }
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="essay">Essay</Label>
+                                    <Input
+                                        id="essay"
+                                        type="number"
+                                        min="0"
+                                        value={form.data.question_types.essay}
+                                        onChange={(e) =>
+                                            updateQuestionType('essay', parseInt(e.target.value) || 0)
+                                        }
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="identification">Identification</Label>
+                                    <Input
+                                        id="identification"
+                                        type="number"
+                                        min="0"
+                                        value={form.data.question_types.identification}
+                                        onChange={(e) =>
+                                            updateQuestionType('identification', parseInt(e.target.value) || 0)
+                                        }
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="rounded-lg border bg-muted/50 p-3">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="font-medium">Total Question Types:</span>
+                                    <span className={totalQuestionTypes !== form.data.total_items ? 'text-destructive font-semibold' : 'font-semibold'}>
+                                        {totalQuestionTypes} / {form.data.total_items}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {totalQuestionTypes !== form.data.total_items && (
+                                <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3">
+                                    <AlertCircle className="size-4 text-destructive mt-0.5" />
+                                    <p className="text-sm text-destructive">
+                                        The sum of question types ({totalQuestionTypes}) must equal the
+                                        total items ({form.data.total_items})
+                                    </p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Difficulty & Language Configuration */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Additional Configuration</CardTitle>
+                            <CardDescription>Configure difficulty level and language</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="difficulty_level">Difficulty Level *</Label>
                                     <Select

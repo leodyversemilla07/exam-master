@@ -35,8 +35,12 @@ class StoreTosGenerateRequest extends FormRequest
             'cognitive_levels.analyze' => ['nullable', 'integer', 'min:0'],
             'cognitive_levels.evaluate' => ['nullable', 'integer', 'min:0'],
             'cognitive_levels.create' => ['nullable', 'integer', 'min:0'],
+            'question_types' => ['nullable', 'array'],
+            'question_types.multiple_choice' => ['nullable', 'integer', 'min:0'],
+            'question_types.true_false' => ['nullable', 'integer', 'min:0'],
+            'question_types.essay' => ['nullable', 'integer', 'min:0'],
+            'question_types.identification' => ['nullable', 'integer', 'min:0'],
             'difficulty_level' => ['required', 'in:easy,medium,hard,mixed'],
-            'question_type' => ['required', 'in:multiple_choice,true_false,essay,short_answer'],
             'language' => ['nullable', 'in:english,filipino'],
             'additional_instructions' => ['nullable', 'string', 'max:1000'],
         ];
@@ -54,5 +58,31 @@ class StoreTosGenerateRequest extends FormRequest
             'cognitive_levels.required' => 'Cognitive level distribution is required.',
             'total_items.max' => 'Maximum 200 questions per TOS.',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            // Validate cognitive levels sum
+            $cognitiveSum = array_sum($this->input('cognitive_levels', []));
+            if ($cognitiveSum !== $this->input('total_items')) {
+                $validator->errors()->add(
+                    'cognitive_levels',
+                    "The sum of cognitive levels ({$cognitiveSum}) must equal the total items ({$this->input('total_items')})."
+                );
+            }
+
+            // Validate question types sum
+            $questionTypesSum = array_sum($this->input('question_types', []));
+            if ($questionTypesSum !== $this->input('total_items')) {
+                $validator->errors()->add(
+                    'question_types',
+                    "The sum of question types ({$questionTypesSum}) must equal the total items ({$this->input('total_items')})."
+                );
+            }
+        });
     }
 }

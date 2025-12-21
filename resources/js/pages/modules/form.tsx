@@ -7,6 +7,9 @@ import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
 import { Module } from '@/types/models';
+import { BreadcrumbItem } from '@/types';
+import { FileText, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
     module?: Module;
@@ -15,32 +18,56 @@ interface Props {
 export default function ModuleForm({ module }: Props) {
     const isEditing = !!module;
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Modules', href: '/modules' },
+        { title: isEditing ? 'Edit Module' : 'Create Module', href: isEditing ? `/modules/${module.id}/edit` : '/modules/create' },
+    ];
+
+    const [fileName, setFileName] = useState<string | null>(null);
+
     const form = useForm({
         code: module?.code || '',
         name: module?.name || '',
         description: module?.description || '',
+        pdf_file: null as File | null,
         subject_area: module?.subject_area || '',
         grade_level: module?.grade_level || '',
         curriculum_year: module?.curriculum_year || '',
         is_active: module?.is_active ?? true,
     });
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            form.setData('pdf_file', file);
+            setFileName(file.name);
+        }
+    };
+
+    const removeFile = () => {
+        form.setData('pdf_file', null);
+        setFileName(null);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (isEditing) {
-            form.put(`/modules/${module.id}`, {
+            form.post(`/modules/${module.id}`, {
+                forceFormData: true,
                 preserveScroll: true,
+                _method: 'put',
             });
         } else {
             form.post('/modules', {
+                forceFormData: true,
                 preserveScroll: true,
             });
         }
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={isEditing ? `Edit ${module.name}` : 'Create Module'} />
 
             <div className="p-4 md:p-6 mx-auto max-w-2xl space-y-6">
@@ -118,6 +145,42 @@ export default function ModuleForm({ module }: Props) {
                                 {form.errors.description && (
                                     <p className="text-sm text-destructive">{form.errors.description}</p>
                                 )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="pdf_file">Module PDF (Optional)</Label>
+                                <div className="space-y-2">
+                                    {(fileName || module?.pdf_file) && (
+                                        <div className="flex items-center gap-2 rounded-lg border p-3 bg-muted/50">
+                                            <FileText className="size-5 text-muted-foreground" />
+                                            <span className="flex-1 text-sm font-medium truncate">
+                                                {fileName || (module?.pdf_file ? module.pdf_file.split('/').pop() : '')}
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={removeFile}
+                                                className="size-8 p-0"
+                                            >
+                                                <X className="size-4" />
+                                            </Button>
+                                        </div>
+                                    )}
+                                    <Input
+                                        id="pdf_file"
+                                        type="file"
+                                        accept=".pdf"
+                                        onChange={handleFileChange}
+                                        className="cursor-pointer"
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                        Upload a PDF file of the module content (max 10MB)
+                                    </p>
+                                    {form.errors.pdf_file && (
+                                        <p className="text-sm text-destructive">{form.errors.pdf_file}</p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">

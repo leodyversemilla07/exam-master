@@ -4,6 +4,7 @@ export interface Module {
     code: string;
     name: string;
     description: string | null;
+    pdf_file: string | null;
     subject_area: string;
     grade_level: string;
     curriculum_year: string;
@@ -68,9 +69,14 @@ export interface TosGenerate {
         description: string;
     }>;
     cognitive_levels: Record<CognitiveLevel, number>;
+    question_types?: {
+        multiple_choice: number;
+        true_false: number;
+        essay: number;
+        identification: number;
+    };
     item_distribution: Record<string, unknown>;
     difficulty_level: 'easy' | 'medium' | 'hard' | 'mixed';
-    question_type: 'multiple_choice' | 'true_false' | 'essay' | 'short_answer';
     language: 'english' | 'filipino';
     additional_instructions: string | null;
     status: 'draft' | 'generating' | 'completed' | 'failed';

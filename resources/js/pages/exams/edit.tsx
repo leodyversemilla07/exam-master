@@ -35,6 +35,11 @@ interface PageProps {
 }
 
 export default function ExamEdit({ question, modules }: PageProps) {
+    const breadcrumbs = [
+        { title: 'Questions', href: '/exams' },
+        { title: 'View Question', href: `/exams/${question.id}` },
+        { title: 'Edit', href: `/exams/${question.id}/edit` },
+    ];
     const { data, setData, put, processing, errors } = useForm({
         module_id: question.module_id,
         question_type: question.question_type,
@@ -65,7 +70,7 @@ export default function ExamEdit({ question, modules }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Question" />
 
             <div className="p-4 md:p-6 space-y-6">

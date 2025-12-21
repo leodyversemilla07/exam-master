@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tos_generates', function (Blueprint $table) {
-            $table->json('item_distribution')->nullable()->change();
+        Schema::table('modules', function (Blueprint $table) {
+            $table->string('pdf_file')->nullable()->after('description');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tos_generates', function (Blueprint $table) {
-            $table->json('item_distribution')->nullable(false)->change();
+        Schema::table('modules', function (Blueprint $table) {
+            $table->dropColumn('pdf_file');
         });
     }
 };

@@ -24,7 +24,12 @@ class GenerateQuestionsJob implements ShouldQueue
     /**
      * The maximum number of seconds the job can run.
      */
-    public int $timeout = 300;
+    public int $timeout = 600;
+
+    /**
+     * The number of seconds to wait before retrying the job.
+     */
+    public int $backoff = 60;
 
     /**
      * Create a new job instance.
@@ -63,7 +68,7 @@ class GenerateQuestionsJob implements ShouldQueue
                         'tos_generate_id' => $this->tosGenerate->id,
                         'module_id' => $this->tosGenerate->module_id,
                         'created_by' => $this->userId,
-                        'question_type' => $this->tosGenerate->question_type,
+                        'question_type' => $questionData['question_type'] ?? 'multiple_choice',
                         'question' => $questionData['question'],
                         'options' => $questionData['options'] ?? null,
                         'correct_answer' => $questionData['correct_answer'],

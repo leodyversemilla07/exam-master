@@ -16,6 +16,11 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Users', href: '/users' },
+];
 
 interface PageProps {
     users: {
@@ -92,7 +97,7 @@ export default function UsersIndex({ users, filters }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User Management" />
 
             <div className="p-4 md:p-6 space-y-6">

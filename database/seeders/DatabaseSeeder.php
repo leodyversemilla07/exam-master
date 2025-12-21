@@ -176,19 +176,24 @@ class DatabaseSeeder extends Seeder
                 ['code' => 'MATH-10-05', 'description' => 'Solve systems of linear equations'],
             ],
             'cognitive_levels' => [
-                'Remembering' => 20,
-                'Understanding' => 30,
-                'Applying' => 30,
-                'Analyzing' => 15,
-                'Evaluating' => 5,
+                'Remembering' => 8,
+                'Understanding' => 8,
+                'Applying' => 8,
+                'Analyzing' => 8,
+                'Evaluating' => 8,
             ],
             'item_distribution' => [
                 'Multiple Choice' => 60,
                 'Problem Solving' => 25,
                 'Essay' => 15,
             ],
+            'question_types' => [
+                'multiple_choice' => 25,
+                'true_false' => 10,
+                'essay' => 5,
+                'identification' => 0,
+            ],
             'difficulty_level' => 'medium',
-            'question_type' => 'mixed',
             'status' => 'draft',
         ]);
 
@@ -208,11 +213,11 @@ class DatabaseSeeder extends Seeder
                 ['code' => 'SCI-9-05', 'description' => 'Propose solutions for environmental conservation'],
             ],
             'cognitive_levels' => [
-                'Remembering' => 25,
-                'Understanding' => 30,
-                'Applying' => 20,
-                'Analyzing' => 20,
-                'Evaluating' => 5,
+                'Remembering' => 10,
+                'Understanding' => 10,
+                'Applying' => 10,
+                'Analyzing' => 10,
+                'Evaluating' => 10,
             ],
             'item_distribution' => [
                 'Multiple Choice' => 50,
@@ -220,8 +225,13 @@ class DatabaseSeeder extends Seeder
                 'Short Answer' => 20,
                 'Essay' => 10,
             ],
+            'question_types' => [
+                'multiple_choice' => 30,
+                'true_false' => 15,
+                'essay' => 5,
+                'identification' => 0,
+            ],
             'difficulty_level' => 'easy',
-            'question_type' => 'mixed',
             'status' => 'draft',
         ]);
 
@@ -241,19 +251,24 @@ class DatabaseSeeder extends Seeder
                 ['code' => 'ENG-8-05', 'description' => 'Evaluate themes and author\'s purpose in literary texts'],
             ],
             'cognitive_levels' => [
-                'Remembering' => 15,
-                'Understanding' => 25,
-                'Applying' => 25,
-                'Analyzing' => 25,
-                'Evaluating' => 10,
+                'Remembering' => 7,
+                'Understanding' => 7,
+                'Applying' => 7,
+                'Analyzing' => 7,
+                'Evaluating' => 7,
             ],
             'item_distribution' => [
                 'Multiple Choice' => 45,
                 'Short Answer' => 30,
                 'Essay' => 25,
             ],
+            'question_types' => [
+                'multiple_choice' => 25,
+                'true_false' => 10,
+                'essay' => 5,
+                'identification' => 0,
+            ],
             'difficulty_level' => 'medium',
-            'question_type' => 'mixed',
             'status' => 'draft',
         ]);
 

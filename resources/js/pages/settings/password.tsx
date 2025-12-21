@@ -13,7 +13,7 @@ import { FormEventHandler, useRef } from "react";
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Password settings",
-        href: "/password",
+        href: "/settings/password",
     },
 ];
 

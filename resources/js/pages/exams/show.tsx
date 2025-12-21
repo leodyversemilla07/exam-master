@@ -37,6 +37,10 @@ interface PageProps {
 }
 
 export default function ExamShow({ question }: PageProps) {
+    const breadcrumbs = [
+        { title: 'Questions', href: '/exams' },
+        { title: 'View Question', href: `/exams/${question.id}` },
+    ];
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this question?')) {
             router.delete(`/exams/${question.id}`);
@@ -48,7 +52,7 @@ export default function ExamShow({ question }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="View Question" />
 
             <div className="p-4 md:p-6 space-y-6">

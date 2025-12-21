@@ -5,6 +5,11 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { Module } from '@/types/models';
 import { BookOpen, Plus, FileText, Calculator, FolderTree, Edit, Trash2 } from 'lucide-react';
+import { BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Modules', href: '/modules' },
+];
 
 interface PageProps {
     modules: {
@@ -30,7 +35,7 @@ export default function ModuleIndex({ modules }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Module Management" />
 
             <div className="p-4 md:p-6 space-y-6">

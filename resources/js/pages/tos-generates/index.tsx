@@ -35,9 +35,13 @@ const statusIcons = {
     failed: AlertCircle,
 };
 
+const breadcrumbs = [
+    { title: 'Table of Specifications', href: '/tos-generates' },
+];
+
 export default function TosGeneratesIndex({ tosGenerates, modules }: PageProps) {
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Table of Specifications" />
 
             <div className="p-4 md:p-6 space-y-6">
@@ -112,10 +116,17 @@ export default function TosGeneratesIndex({ tosGenerates, modules }: PageProps) 
                                                     <span className="text-muted-foreground">Difficulty:</span>
                                                     <p className="font-medium capitalize">{tos.difficulty_level}</p>
                                                 </div>
-                                                <div>
-                                                    <span className="text-muted-foreground">Type:</span>
-                                                    <p className="font-medium capitalize">{tos.question_type.replace('_', ' ')}</p>
-                                                </div>
+                                                {tos.question_types && Object.values(tos.question_types).some(count => count > 0) && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">Types:</span>
+                                                        <p className="font-medium text-sm">
+                                                            {Object.entries(tos.question_types)
+                                                                .filter(([_, count]) => count > 0)
+                                                                .map(([type, count]) => `${count} ${type.replace('_', ' ')}`)
+                                                                .join(', ')}
+                                                        </p>
+                                                    </div>
+                                                )}
                                                 <div>
                                                     <span className="text-muted-foreground">Quarter:</span>
                                                     <p className="font-medium">{tos.quarter || 'N/A'}</p>

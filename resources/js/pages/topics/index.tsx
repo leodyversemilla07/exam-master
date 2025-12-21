@@ -5,6 +5,7 @@ import { Module, Topic } from "@/types/models";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Plus, FolderTree, Edit, Trash2, Clock, Percent } from "lucide-react";
 import { index as topicsIndex, create as topicsCreate } from "@/actions/App/Http/Controllers/TopicController";
 
@@ -113,22 +114,25 @@ export default function TopicsIndex({ module, topics }: Props) {
                 </div>
 
                 {rootTopics.length === 0 ? (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>No Topics Yet</CardTitle>
-                            <CardDescription>
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <FolderTree className="size-8" />
+                            </EmptyMedia>
+                            <EmptyTitle>No Topics Yet</EmptyTitle>
+                            <EmptyDescription>
                                 Get started by creating your first topic for this module.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
                             <Link href={topicsCreate.url(module.id)}>
                                 <Button>
                                     <Plus className="mr-2 h-4 w-4" />
                                     Create Topic
                                 </Button>
                             </Link>
-                        </CardContent>
-                    </Card>
+                        </EmptyContent>
+                    </Empty>
                 ) : (
                     <div className="space-y-2">
                         {rootTopics.map((topic) => renderTopic(topic))}

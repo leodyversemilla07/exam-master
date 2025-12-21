@@ -14,7 +14,9 @@ import {
     FileText,
     Calendar,
     User,
+    Download,
 } from 'lucide-react';
+import { BreadcrumbItem } from '@/types';
 
 interface PageProps {
     module: Module & {
@@ -25,6 +27,10 @@ interface PageProps {
 }
 
 export default function ModuleShow({ module }: PageProps) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Modules', href: '/modules' },
+        { title: module.name, href: `/modules/${module.id}` },
+    ];
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this module? This will also delete all associated topics, questions, and exams.')) {
             router.delete(`/modules/${module.id}`, {
@@ -34,7 +40,7 @@ export default function ModuleShow({ module }: PageProps) {
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={module.name} />
 
             <div className="p-4 md:p-6 space-y-6">
@@ -112,6 +118,33 @@ export default function ModuleShow({ module }: PageProps) {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* PDF File Section */}
+                {module.pdf_file && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Module Materials</CardTitle>
+                            <CardDescription>
+                                Download PDF materials for this module
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <a
+                                href={`/storage/${module.pdf_file}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+                            >
+                                <FileText className="size-8 text-primary" />
+                                <div className="flex-1">
+                                    <p className="font-medium">{module.pdf_file.split('/').pop()}</p>
+                                    <p className="text-sm text-muted-foreground">Module PDF Document</p>
+                                </div>
+                                <Download className="size-5 text-muted-foreground" />
+                            </a>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Quick Access Actions */}
                 <Card>

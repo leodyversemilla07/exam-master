@@ -57,7 +57,21 @@ Route::post('tos-generates/{tos_generate}/generate', [TosGenerateController::cla
     ->name('tos-generates.generate')
     ->middleware(['auth', 'verified', 'permission:generate questions']);
 
+// Create question from specific TOS or Module
+Route::get('exams/create/tos/{tos_generate}', [ExamController::class, 'createFromTos'])
+    ->name('exams.create.tos')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
 Route::resource('exams', ExamController::class)
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
+// View questions by TOS or Module
+Route::get('exams/tos/{tos_generate}', [ExamController::class, 'byTos'])
+    ->name('exams.by-tos')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
+Route::get('exams/module/{module}', [ExamController::class, 'byModule'])
+    ->name('exams.by-module')
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
 Route::post('exams/{exam}/approve', [ExamController::class, 'approve'])

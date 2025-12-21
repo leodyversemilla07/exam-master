@@ -41,8 +41,15 @@ class ModuleController extends Controller
     {
         abort_unless(auth()->user()->can('create modules'), 403);
 
+        $data = $request->validated();
+
+        // Handle PDF file upload
+        if ($request->hasFile('pdf_file')) {
+            $data['pdf_file'] = $request->file('pdf_file')->store('modules/pdfs', 'public');
+        }
+
         $module = Module::create([
-            ...$request->validated(),
+            ...$data,
             'created_by' => auth()->id(),
         ]);
 
@@ -80,7 +87,18 @@ class ModuleController extends Controller
     {
         abort_unless(auth()->user()->can('edit modules'), 403);
 
-        $module->update($request->validated());
+        $data = $request->validated();
+
+        // Handle PDF file upload
+        if ($request->hasFile('pdf_file')) {
+            // Delete old file if exists
+            if ($module->pdf_file) {
+                \Storage::disk('public')->delete($module->pdf_file);
+            }
+            $data['pdf_file'] = $request->file('pdf_file')->store('modules/pdfs', 'public');
+        }
+
+        $module->update($data);
 
         return redirect()
             ->route('modules.show', $module)
@@ -93,6 +111,11 @@ class ModuleController extends Controller
     public function destroy(Module $module): RedirectResponse
     {
         abort_unless(auth()->user()->can('delete modules'), 403);
+
+        // Delete PDF file if exists
+        if ($module->pdf_file) {
+            \Storage::disk('public')->delete($module->pdf_file);
+        }
 
         $module->delete();
 

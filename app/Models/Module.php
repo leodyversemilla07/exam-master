@@ -24,6 +24,7 @@ class Module extends Model
         'code',
         'name',
         'description',
+        'pdf_file',
         'subject_area',
         'grade_level',
         'curriculum_year',

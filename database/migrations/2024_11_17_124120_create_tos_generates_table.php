@@ -21,9 +21,10 @@ return new class extends Migration
             $table->integer('total_items');
             $table->json('learning_objectives'); // Array of objectives with codes
             $table->json('cognitive_levels'); // Distribution by Bloom's taxonomy
-            $table->json('item_distribution'); // Number of items per objective/level
+            $table->json('item_distribution')->nullable(); // Number of items per objective/level
             $table->string('difficulty_level')->default('mixed'); // easy, medium, hard, mixed
-            $table->string('question_type')->default('multiple_choice'); // multiple_choice, true_false, essay, etc.
+            $table->json('question_types')->nullable(); // Distribution by question type (multiple_choice, true_false, essay, identification)
+            $table->string('language')->default('english');
             $table->text('additional_instructions')->nullable();
             $table->string('status')->default('draft'); // draft, generating, completed, failed
             $table->text('error_message')->nullable();

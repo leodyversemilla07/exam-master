@@ -40,8 +40,14 @@ const getSimilarityLabel = (score: number): string => {
 };
 
 export default function DuplicateDetectionIndex({ module, duplicates, statistics }: PageProps) {
+    const breadcrumbs = [
+        { title: 'Modules', href: '/modules' },
+        { title: module.name, href: `/modules/${module.id}` },
+        { title: 'Duplicate Detection', href: `/duplicate-detection/${module.id}` },
+    ];
+
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Duplicate Detection - ${module.name}`} />
 
             <div className="p-4 md:p-6 space-y-6">
