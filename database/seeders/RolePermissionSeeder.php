@@ -98,6 +98,7 @@ class RolePermissionSeeder extends Seeder
             'view exams',
             'create exams',
             'edit exams',
+            'approve questions',
             'edit own profile',
             'change own password',
         ]);

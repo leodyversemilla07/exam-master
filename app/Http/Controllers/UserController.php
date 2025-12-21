@@ -110,4 +110,23 @@ class UserController extends Controller
 
         return back()->with('success', 'User deleted successfully.');
     }
+
+    /**
+     * Toggle user active status.
+     */
+    public function toggleActive(User $user): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('edit users'), 403);
+
+        // Prevent deactivating yourself
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot deactivate your own account.');
+        }
+
+        $user->update(['is_active' => ! $user->is_active]);
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+
+        return back()->with('success', "User {$status} successfully.");
+    }
 }

@@ -1,12 +1,16 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DuplicateDetectionController;
 use App\Http\Controllers\ExamBuilderController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\LearningObjectiveController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QueueMonitorController;
+use App\Http\Controllers\SystemLogsController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TosCalculatorController;
 use App\Http\Controllers\TosGenerateController;
@@ -21,8 +25,14 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/design-system', function () {
+    return Inertia::render('design-system-showcase');
+})->name('design-system');
+
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/health', HealthCheckController::class)->name('health.check');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -41,6 +51,10 @@ Route::middleware('auth')->group(function () {
 Route::resource('users', UserController::class)
     ->only(['index', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::post('users/{user}/toggle', [UserController::class, 'toggleActive'])
+    ->name('users.toggle')
+    ->middleware(['auth', 'verified', 'permission:edit users']);
 
 Route::resource('modules', ModuleController::class)
     ->middleware(['auth', 'verified', 'permission:view modules']);
@@ -96,6 +110,14 @@ Route::post('exam-builder/{exam}/publish', [ExamBuilderController::class, 'publi
 Route::post('exam-builder/{exam}/duplicate', [ExamBuilderController::class, 'duplicate'])
     ->name('exam-builder.duplicate')
     ->middleware(['auth', 'verified', 'permission:create exams']);
+
+Route::post('exam-builder/{exam}/archive', [ExamBuilderController::class, 'archive'])
+    ->name('exam-builder.archive')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::post('exam-builder/{exam}/unarchive', [ExamBuilderController::class, 'unarchive'])
+    ->name('exam-builder.unarchive')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
 
 Route::get('exam-builder/{exam}/export-pdf', [ExamBuilderController::class, 'exportPdf'])
     ->name('exam-builder.export-pdf')
@@ -154,6 +176,14 @@ Route::get('tos-generates/{tos_generate}/summary', [TosGenerateController::class
     ->name('tos-generates.summary')
     ->middleware(['auth', 'verified', 'permission:view tos']);
 
+Route::get('tos-generates/{tos_generate}/export-pdf', [TosGenerateController::class, 'exportPdf'])
+    ->name('tos-generates.export-pdf')
+    ->middleware(['auth', 'verified', 'permission:view tos']);
+
+Route::post('tos-generates/{tos_generate}/duplicate', [TosGenerateController::class, 'duplicate'])
+    ->name('tos-generates.duplicate')
+    ->middleware(['auth', 'verified', 'permission:create tos']);
+
 // Duplicate Detection Routes
 Route::get('question-bank/{question}/duplicates', [ExamController::class, 'checkDuplicates'])
     ->name('question-bank.duplicates')
@@ -166,3 +196,66 @@ Route::get('modules/{module}/duplicate-stats', [ExamController::class, 'getModul
 Route::post('question-bank/check-duplicates', [ExamController::class, 'bulkCheckDuplicates'])
     ->name('question-bank.check-duplicates')
     ->middleware(['auth', 'verified', 'permission:create questions']);
+
+// Analytics Routes
+Route::get('analytics', [AnalyticsController::class, 'index'])
+    ->name('analytics.index')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/exams-created', [AnalyticsController::class, 'examsCreatedPerPeriod'])
+    ->name('analytics.exams-created')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/modules-topics', [AnalyticsController::class, 'mostUsedModulesAndTopics'])
+    ->name('analytics.modules-topics')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/educator-activity', [AnalyticsController::class, 'educatorActivity'])
+    ->name('analytics.educator-activity')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/export-csv', [AnalyticsController::class, 'exportCsv'])
+    ->name('analytics.export-csv')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+// System Logs Routes
+Route::get('system-logs', [SystemLogsController::class, 'index'])
+    ->name('system-logs.index')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::get('system-logs/logs', [SystemLogsController::class, 'getLogs'])
+    ->name('system-logs.logs')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::post('system-logs/clear', [SystemLogsController::class, 'clearLogs'])
+    ->name('system-logs.clear')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::get('system-logs/download', [SystemLogsController::class, 'downloadLogs'])
+    ->name('system-logs.download')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+// Queue Monitor Routes
+Route::get('queue-monitor', [QueueMonitorController::class, 'index'])
+    ->name('queue-monitor.index')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::get('queue-monitor/stats', [QueueMonitorController::class, 'getStats'])
+    ->name('queue-monitor.stats')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::get('queue-monitor/failed-jobs', [QueueMonitorController::class, 'getFailedJobs'])
+    ->name('queue-monitor.failed-jobs')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::post('queue-monitor/retry', [QueueMonitorController::class, 'retryJob'])
+    ->name('queue-monitor.retry')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::delete('queue-monitor/job', [QueueMonitorController::class, 'deleteJob'])
+    ->name('queue-monitor.delete')
+    ->middleware(['auth', 'verified', 'permission:view users']);
+
+Route::post('queue-monitor/clear', [QueueMonitorController::class, 'clearFailedJobs'])
+    ->name('queue-monitor.clear')
+    ->middleware(['auth', 'verified', 'permission:view users']);

@@ -35,8 +35,13 @@ it('persists selected language when creating a TOS', function () {
             'evaluate' => 0,
             'create' => 0,
         ],
+        'question_types' => [
+            'multiple_choice' => 5,
+            'true_false' => 0,
+            'essay' => 0,
+            'identification' => 0,
+        ],
         'difficulty_level' => 'mixed',
-        'question_type' => 'multiple_choice',
         'language' => 'filipino',
         'additional_instructions' => null,
     ];
@@ -72,8 +77,13 @@ it('validates language is within the allowed values', function () {
             'evaluate' => 0,
             'create' => 0,
         ],
+        'question_types' => [
+            'multiple_choice' => 5,
+            'true_false' => 0,
+            'essay' => 0,
+            'identification' => 0,
+        ],
         'difficulty_level' => 'mixed',
-        'question_type' => 'multiple_choice',
         'language' => 'spanish',
         'additional_instructions' => null,
     ];

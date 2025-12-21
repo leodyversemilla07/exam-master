@@ -17,7 +17,7 @@ class DuplicateDetectionController extends Controller
     public function index(Module $module): Response
     {
         $questions = ExamQuestion::where('module_id', $module->id)
-            ->where('status', 'approved')
+            ->where('is_approved', true)
             ->get();
 
         $duplicates = [];

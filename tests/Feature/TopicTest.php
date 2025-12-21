@@ -29,7 +29,7 @@ test('authenticated user can view topics list', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('Topics/Index')
+        ->component('topics/index')
         ->has('topics', 3)
     );
 });
@@ -140,7 +140,8 @@ test('authenticated user can reorder topics', function () {
     $response = $this->actingAs($this->admin)
         ->patch(route('modules.topics.reorder', $this->module), $reorderData);
 
-    $response->assertSuccessful();
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
 
     $this->assertDatabaseHas('topics', [
         'id' => $topic1->id,

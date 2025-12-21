@@ -6,7 +6,7 @@
     "tailwind": {
         "config": "",
         "css": "resources/css/app.css",
-        "baseColor": "slate",
+        "baseColor": "blue",
         "cssVariables": true,
         "prefix": ""
     },
@@ -16,5 +16,6 @@
         "ui": "@/components/ui",
         "lib": "@/lib",
         "hooks": "@/hooks"
-    }
+    },
+    "iconLibrary": "lucide"
 }

@@ -51,19 +51,21 @@ class TosCalculator
         $distribution = [];
         $totalWeight = 0;
 
-        // Calculate total weight
+        // Calculate total weight (using hours_allocated if available, otherwise use weight)
         foreach ($objectives as $objective) {
-            $totalWeight += $objective['weight'] ?? 1;
+            $weight = $objective['hours_allocated'] ?? $objective['weight'] ?? 1;
+            $totalWeight += $weight;
         }
 
         // Distribute items proportionally
         foreach ($objectives as $objective) {
-            $weight = $objective['weight'] ?? 1;
+            $weight = $objective['hours_allocated'] ?? $objective['weight'] ?? 1;
             $percentage = $totalWeight > 0 ? ($weight / $totalWeight) * 100 : 0;
             $items = round(($percentage / 100) * $tos->total_items);
 
             $distribution[$objective['topic']] = [
                 'weight' => $weight,
+                'hours_allocated' => $objective['hours_allocated'] ?? null,
                 'percentage' => round($percentage, 2),
                 'items' => $items,
                 'cognitive_levels' => $objective['cognitive_levels'] ?? [],

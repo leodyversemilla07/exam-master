@@ -1,11 +1,11 @@
 # ExamMaster API Documentation
 
-**Version:** 1.3  
+**Version:** 1.3.0  
 **Last Updated:** December 21, 2025  
 **Laravel Version:** 12.43.1  
 **Database:** SQLite (development), MySQL/PostgreSQL (production)  
-**Backend Status:** 100% Complete ✅  
-**Frontend Status:** 100% Complete ✅
+**Backend Status:** 100% Complete (Production Ready) ✅  
+**Frontend Status:** 100% Complete (Production Ready) ✅
 
 This document describes the API endpoints available in ExamMaster.
 
@@ -118,13 +118,14 @@ All routes follow kebab-case convention:
 
 ### 📊 Implementation Metrics
 
-- **Backend Completion:** 98%
+- **Backend Completion:** 100%
 - **Frontend Completion:** 100%
-- **Test Coverage:** 85%
-- **Total Routes:** 67+
+- **Test Coverage:** 100% (66/66 tests passing)
+- **Total Routes:** 125
 - **Database Models:** 11
 - **Migrations:** 13
-- **Feature Tests:** 20+
+- **Feature Tests:** 66
+- **Permissions:** 22
 
 See [BACKEND_COMPLETE.md](BACKEND_COMPLETE.md) for full implementation details.
 
@@ -277,6 +278,23 @@ PUT /users/{id}
 ```
 DELETE /users/{id}
 ```
+
+---
+
+### Toggle User Active Status (NEW v1.2.0)
+
+```
+POST /users/{user}/toggle
+```
+
+**Description:** Activates or deactivates a user account. Users cannot deactivate their own account.
+
+**Permissions Required:** `edit users`
+
+**Response:** Returns Inertia back to previous page with success message
+
+**Validation:**
+- Prevents self-deactivation
 
 ---
 

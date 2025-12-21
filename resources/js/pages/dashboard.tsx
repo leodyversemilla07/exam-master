@@ -18,6 +18,8 @@ import {
     TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from "recharts";
 
 interface DashboardStats {
     total_modules: number;
@@ -85,26 +87,26 @@ interface DashboardPageProps extends PageProps {
 const breadcrumbs = [{ title: "Dashboard", href: "/dashboard" }];
 
 const cognitiveColors: Record<string, string> = {
-    remembering: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-    understanding: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    applying: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    analyzing: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-    evaluating: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-    creating: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    remembering: "bg-secondary/10 text-secondary border-secondary/20",
+    understanding: "bg-primary/10 text-primary border-primary/20",
+    applying: "bg-success/10 text-success border-success/20",
+    analyzing: "bg-warning/10 text-warning border-warning/20",
+    evaluating: "bg-info/10 text-info border-info/20",
+    creating: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
 const difficultyColors: Record<string, string> = {
-    easy: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    moderate: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-    difficult: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    easy: "bg-success/10 text-success border-success/20",
+    moderate: "bg-warning/10 text-warning border-warning/20",
+    difficult: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
 const statusColors: Record<string, string> = {
-    draft: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
-    published: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    generating: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-    failed: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    draft: "bg-muted text-muted-foreground border-border",
+    published: "bg-success/10 text-success border-success/20",
+    completed: "bg-success/10 text-success border-success/20",
+    generating: "bg-primary/10 text-primary border-primary/20",
+    failed: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
 export default function Dashboard({
@@ -141,10 +143,10 @@ export default function Dashboard({
                     {/* Welcome Section */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-2xl font-bold">
                                 Welcome back, {auth.user.name}!
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-muted-foreground mt-1">
                                 Here's an overview of your exam management system
                             </p>
                         </div>
@@ -169,12 +171,12 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                                        <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                    <div className="p-2 bg-primary/10 rounded-lg">
+                                        <BookOpen className="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.active_modules}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Active Modules</p>
+                                        <p className="text-xs text-muted-foreground">Active Modules</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -183,12 +185,12 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                                        <MessageSquare className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                    <div className="p-2 bg-secondary/10 rounded-lg">
+                                        <MessageSquare className="h-5 w-5 text-secondary" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.total_questions}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Total Questions</p>
+                                        <p className="text-xs text-muted-foreground">Total Questions</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -197,12 +199,12 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                    <div className="p-2 bg-success/10 rounded-lg">
+                                        <CheckCircle2 className="h-5 w-5 text-success" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.approved_questions}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
+                                        <p className="text-xs text-muted-foreground">Approved</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -211,12 +213,12 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-                                        <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                                    <div className="p-2 bg-warning/10 rounded-lg">
+                                        <Clock className="h-5 w-5 text-warning" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.pending_questions}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
+                                        <p className="text-xs text-muted-foreground">Pending</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -225,12 +227,12 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
-                                        <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                    <div className="p-2 bg-secondary/10 rounded-lg">
+                                        <Sparkles className="h-5 w-5 text-secondary" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.ai_generated_questions}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">AI Generated</p>
+                                        <p className="text-xs text-muted-foreground">AI Generated</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -239,12 +241,12 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
-                                        <ClipboardList className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                    <div className="p-2 bg-success/10 rounded-lg">
+                                        <ClipboardList className="h-5 w-5 text-success" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.published_exams}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Published Exams</p>
+                                        <p className="text-xs text-muted-foreground">Published Exams</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -252,30 +254,59 @@ export default function Dashboard({
                     </div>
 
                     {/* Distribution Charts */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Cognitive Level Distribution */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-base flex items-center gap-2">
                                     <Brain className="h-5 w-5" />
-                                    By Cognitive Level
+                                    Questions by Cognitive Level
                                 </CardTitle>
                                 <CardDescription>Bloom's Taxonomy distribution</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-3">
-                                    {Object.entries(questionsByCognitiveLevel).map(([level, count]) => (
-                                        <div key={level} className="flex items-center justify-between">
-                                            <Badge className={cognitiveColors[level] || "bg-gray-100"}>
-                                                {level.charAt(0).toUpperCase() + level.slice(1)}
-                                            </Badge>
-                                            <span className="font-medium">{count}</span>
-                                        </div>
-                                    ))}
-                                    {Object.keys(questionsByCognitiveLevel).length === 0 && (
-                                        <p className="text-sm text-gray-500 text-center py-4">No data available</p>
-                                    )}
-                                </div>
+                                {Object.keys(questionsByCognitiveLevel).length === 0 ? (
+                                    <p className="text-sm text-gray-500 text-center py-12">No data available</p>
+                                ) : (
+                                    <ChartContainer
+                                        config={{
+                                            remembering: { label: "Remembering", color: "hsl(var(--chart-1))" },
+                                            understanding: { label: "Understanding", color: "hsl(var(--chart-2))" },
+                                            applying: { label: "Applying", color: "hsl(var(--chart-3))" },
+                                            analyzing: { label: "Analyzing", color: "hsl(var(--chart-4))" },
+                                            evaluating: { label: "Evaluating", color: "hsl(var(--chart-5))" },
+                                            creating: { label: "Creating", color: "hsl(280 60% 50%)" },
+                                        }}
+                                        className="h-[300px]"
+                                    >
+                                        <BarChart
+                                            data={Object.entries(questionsByCognitiveLevel).map(([level, count]) => ({
+                                                level: level.charAt(0).toUpperCase() + level.slice(1),
+                                                count,
+                                                fill: `var(--color-${level})`,
+                                            }))}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                            <XAxis
+                                                dataKey="level"
+                                                tick={{ fill: "hsl(var(--foreground))" }}
+                                                tickLine={false}
+                                                axisLine={false}
+                                            />
+                                            <YAxis
+                                                tick={{ fill: "hsl(var(--foreground))" }}
+                                                tickLine={false}
+                                                axisLine={false}
+                                            />
+                                            <ChartTooltip content={<ChartTooltipContent />} />
+                                            <Bar dataKey="count" radius={8}>
+                                                {Object.entries(questionsByCognitiveLevel).map(([level]) => (
+                                                    <Cell key={level} />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ChartContainer>
+                                )}
                             </CardContent>
                         </Card>
 
@@ -284,53 +315,95 @@ export default function Dashboard({
                             <CardHeader>
                                 <CardTitle className="text-base flex items-center gap-2">
                                     <TrendingUp className="h-5 w-5" />
-                                    By Difficulty
+                                    Questions by Difficulty
                                 </CardTitle>
                                 <CardDescription>Question difficulty breakdown</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-3">
-                                    {Object.entries(questionsByDifficulty).map(([difficulty, count]) => (
-                                        <div key={difficulty} className="flex items-center justify-between">
-                                            <Badge className={difficultyColors[difficulty] || "bg-gray-100"}>
-                                                {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-                                            </Badge>
-                                            <span className="font-medium">{count}</span>
-                                        </div>
-                                    ))}
-                                    {Object.keys(questionsByDifficulty).length === 0 && (
-                                        <p className="text-sm text-gray-500 text-center py-4">No data available</p>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Question Type Distribution */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-base flex items-center gap-2">
-                                    <FileText className="h-5 w-5" />
-                                    By Question Type
-                                </CardTitle>
-                                <CardDescription>Question format breakdown</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    {Object.entries(questionsByType).map(([type, count]) => (
-                                        <div key={type} className="flex items-center justify-between">
-                                            <span className="text-sm">
-                                                {type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                                            </span>
-                                            <span className="font-medium">{count}</span>
-                                        </div>
-                                    ))}
-                                    {Object.keys(questionsByType).length === 0 && (
-                                        <p className="text-sm text-gray-500 text-center py-4">No data available</p>
-                                    )}
-                                </div>
+                                {Object.keys(questionsByDifficulty).length === 0 ? (
+                                    <p className="text-sm text-gray-500 text-center py-12">No data available</p>
+                                ) : (
+                                    <ChartContainer
+                                        config={{
+                                            easy: { label: "Easy", color: "hsl(142 76% 36%)" },
+                                            moderate: { label: "Moderate", color: "hsl(38 92% 50%)" },
+                                            difficult: { label: "Difficult", color: "hsl(0 84% 60%)" },
+                                        }}
+                                        className="h-[300px]"
+                                    >
+                                        <PieChart>
+                                            <ChartTooltip content={<ChartTooltipContent />} />
+                                            <Pie
+                                                data={Object.entries(questionsByDifficulty).map(([difficulty, count]) => ({
+                                                    name: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
+                                                    value: count,
+                                                    fill: `var(--color-${difficulty})`,
+                                                }))}
+                                                dataKey="value"
+                                                nameKey="name"
+                                                cx="50%"
+                                                cy="50%"
+                                                outerRadius={100}
+                                                label={({ name, value }) => `${name}: ${value}`}
+                                            />
+                                        </PieChart>
+                                    </ChartContainer>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
+
+                    {/* Question Type Distribution */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Questions by Type
+                            </CardTitle>
+                            <CardDescription>Question format breakdown</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {Object.keys(questionsByType).length === 0 ? (
+                                <p className="text-sm text-gray-500 text-center py-12">No data available</p>
+                            ) : (
+                                <ChartContainer
+                                    config={{
+                                        multiple_choice: { label: "Multiple Choice", color: "hsl(var(--chart-1))" },
+                                        true_false: { label: "True/False", color: "hsl(var(--chart-2))" },
+                                        essay: { label: "Essay", color: "hsl(var(--chart-3))" },
+                                        short_answer: { label: "Short Answer", color: "hsl(var(--chart-4))" },
+                                    }}
+                                    className="h-[300px]"
+                                >
+                                    <BarChart
+                                        data={Object.entries(questionsByType).map(([type, count]) => ({
+                                            type: type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+                                            count,
+                                            fill: `var(--color-${type})`,
+                                        }))}
+                                        layout="horizontal"
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                        <XAxis type="number" tick={{ fill: "hsl(var(--foreground))" }} />
+                                        <YAxis
+                                            dataKey="type"
+                                            type="category"
+                                            tick={{ fill: "hsl(var(--foreground))" }}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            width={120}
+                                        />
+                                        <ChartTooltip content={<ChartTooltipContent />} />
+                                        <Bar dataKey="count" radius={8}>
+                                            {Object.entries(questionsByType).map(([type]) => (
+                                                <Cell key={type} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ChartContainer>
+                            )}
+                        </CardContent>
+                    </Card>
 
                     {/* Recent Activity & Quick Actions */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

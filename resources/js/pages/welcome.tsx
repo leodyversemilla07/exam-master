@@ -70,16 +70,16 @@ export default function Welcome({
     return (
         <>
             <Head title="ExamMaster - AI-Powered Exam Generation" />
-            <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+            <div className="min-h-screen bg-background">
                 {/* Navigation */}
-                <nav className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/80 backdrop-blur-lg dark:border-slate-800/50 dark:bg-slate-950/80">
+                <nav className="sticky top-0 z-50 glass border-b">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <div className="flex size-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-teal-600">
-                                    <Sparkles className="size-6 text-white" />
+                                <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary shadow-primary">
+                                    <Sparkles className="size-6 text-primary-foreground" />
                                 </div>
-                                <span className="text-xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-400 dark:to-teal-400">
+                                <span className="text-xl font-bold text-gradient">
                                     ExamMaster
                                 </span>
                             </div>
@@ -87,7 +87,7 @@ export default function Welcome({
                                 {auth.user ? (
                                     <Link
                                         href={dashboard()}
-                                        className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition hover:shadow-xl hover:shadow-emerald-500/40 dark:shadow-emerald-500/20"
+                                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-primary transition hover:opacity-90"
                                     >
                                         Dashboard
                                         <ArrowRight className="size-4" />
@@ -96,13 +96,13 @@ export default function Welcome({
                                     <>
                                         <Link
                                             href={login()}
-                                            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                                            className="rounded-lg px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
                                         >
                                             Sign In
                                         </Link>
                                         <Link
                                             href={register()}
-                                            className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition hover:shadow-xl hover:shadow-emerald-500/40 dark:shadow-emerald-500/20"
+                                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-primary transition hover:opacity-90"
                                         >
                                             Get Started
                                             <ArrowRight className="size-4" />
@@ -117,23 +117,22 @@ export default function Welcome({
                 {/* Hero Section */}
                 <section className="relative overflow-hidden px-4 py-20 sm:px-6 sm:py-32 lg:px-8">
                     <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]"></div>
-                    <div className="absolute inset-0 -z-10 bg-linear-to-t from-white via-transparent dark:from-slate-950"></div>
 
                     <div className="mx-auto max-w-7xl text-center">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-sm font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
                             <Sparkles className="size-4" />
                             AI-Powered Exam Generation
                         </div>
 
-                        <h1 className="mt-8 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl dark:text-white">
+                        <h1 className="mt-8 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                             Create Perfect Exams
                             <br />
-                            <span className="bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent dark:from-emerald-400 dark:via-teal-400 dark:to-cyan-400">
+                            <span className="text-gradient">
                                 In Seconds
                             </span>
                         </h1>
 
-                        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
+                        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
                             ExamMaster leverages AI to generate comprehensive
                             exam questions with Table of Specifications
                             alignment, ensuring educational standards and
@@ -143,28 +142,28 @@ export default function Welcome({
                         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                             <Link
                                 href={auth.user ? dashboard() : register()}
-                                className="group inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-emerald-500/30 transition hover:shadow-2xl hover:shadow-emerald-500/40 dark:shadow-emerald-500/20"
+                                className="group inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-primary transition hover:opacity-90"
                             >
                                 {auth.user ? "Go to Dashboard" : "Start Free Trial"}
                                 <ArrowRight className="size-5 transition group-hover:translate-x-1" />
                             </Link>
-                            <button className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-8 py-4 text-base font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                            <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-8 py-4 text-base font-semibold text-card-foreground shadow-sm transition hover:bg-accent hover:text-accent-foreground">
                                 <Users className="size-5" />
                                 Request Demo
                             </button>
                         </div>
 
-                        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-slate-600 dark:text-slate-400">
+                        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
-                                <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
+                                <CheckCircle2 className="size-5 text-success" />
                                 No credit card required
                             </div>
                             <div className="flex items-center gap-2">
-                                <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
+                                <CheckCircle2 className="size-5 text-success" />
                                 Free 14-day trial
                             </div>
                             <div className="flex items-center gap-2">
-                                <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
+                                <CheckCircle2 className="size-5 text-success" />
                                 Cancel anytime
                             </div>
                         </div>
@@ -175,10 +174,10 @@ export default function Welcome({
                 <section className="px-4 py-20 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-7xl">
                         <div className="text-center">
-                            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
                                 Everything you need
                             </h2>
-                            <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                            <p className="mt-4 text-lg text-muted-foreground">
                                 Powerful features to streamline your exam
                                 creation workflow
                             </p>
@@ -188,15 +187,15 @@ export default function Welcome({
                             {features.map((feature) => (
                                 <div
                                     key={feature.title}
-                                    className="group relative rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-xl hover:shadow-emerald-500/10 dark:border-slate-800 dark:bg-slate-900"
+                                    className="group relative rounded-2xl border border-border bg-card p-8 shadow-sm transition hover:shadow-lg hover:shadow-primary/10"
                                 >
-                                    <div className="flex size-12 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
+                                    <div className="flex size-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-primary">
                                         <feature.icon className="size-6" />
                                     </div>
-                                    <h3 className="mt-6 text-xl font-semibold text-slate-900 dark:text-white">
+                                    <h3 className="mt-6 text-xl font-semibold">
                                         {feature.title}
                                     </h3>
-                                    <p className="mt-2 text-slate-600 dark:text-slate-400">
+                                    <p className="mt-2 text-muted-foreground">
                                         {feature.description}
                                     </p>
                                 </div>
@@ -210,14 +209,14 @@ export default function Welcome({
                     <div className="mx-auto max-w-7xl">
                         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
                             <div>
-                                <div className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700 dark:border-teal-900 dark:bg-teal-950 dark:text-teal-300">
+                                <div className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-1.5 text-sm font-medium text-secondary">
                                     <Target className="size-4" />
                                     Built for Educators
                                 </div>
-                                <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+                                <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">
                                     Transform Your Assessment Process
                                 </h2>
-                                <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+                                <p className="mt-4 text-lg text-muted-foreground">
                                     ExamMaster combines cutting-edge AI
                                     technology with educational best practices
                                     to deliver unmatched exam creation
@@ -230,10 +229,10 @@ export default function Welcome({
                                             key={benefit}
                                             className="flex items-start gap-3"
                                         >
-                                            <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950">
-                                                <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                                            <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-success/10">
+                                                <CheckCircle2 className="size-4 text-success" />
                                             </div>
-                                            <span className="text-slate-700 dark:text-slate-300">
+                                            <span className="text-foreground">
                                                 {benefit}
                                             </span>
                                         </div>
@@ -243,7 +242,7 @@ export default function Welcome({
                                 <div className="mt-10">
                                     <Link
                                         href={auth.user ? dashboard() : register()}
-                                        className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-primary transition hover:opacity-90"
                                     >
                                         Get Started Now
                                         <ArrowRight className="size-4" />
@@ -252,52 +251,52 @@ export default function Welcome({
                             </div>
 
                             <div className="relative">
-                                <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-emerald-500 to-teal-600 opacity-20 blur-3xl"></div>
-                                <div className="relative space-y-4 rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-                                    <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary to-secondary opacity-20 blur-3xl"></div>
+                                <div className="relative space-y-4 rounded-2xl glass-card p-8">
+                                    <div className="flex items-center justify-between rounded-lg bg-muted p-4">
                                         <div className="flex items-center gap-3">
-                                            <Clock className="size-5 text-emerald-600 dark:text-emerald-400" />
-                                            <span className="font-medium text-slate-900 dark:text-white">
+                                            <Clock className="size-5 text-success" />
+                                            <span className="font-medium">
                                                 Time Saved
                                             </span>
                                         </div>
-                                        <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                                        <span className="text-2xl font-bold text-success">
                                             90%
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+                                    <div className="flex items-center justify-between rounded-lg bg-muted p-4">
                                         <div className="flex items-center gap-3">
-                                            <FileCheck2 className="size-5 text-teal-600 dark:text-teal-400" />
-                                            <span className="font-medium text-slate-900 dark:text-white">
+                                            <FileCheck2 className="size-5 text-primary" />
+                                            <span className="font-medium">
                                                 Questions Generated
                                             </span>
                                         </div>
-                                        <span className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                                        <span className="text-2xl font-bold text-primary">
                                             10K+
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+                                    <div className="flex items-center justify-between rounded-lg bg-muted p-4">
                                         <div className="flex items-center gap-3">
-                                            <Users className="size-5 text-cyan-600 dark:text-cyan-400" />
-                                            <span className="font-medium text-slate-900 dark:text-white">
+                                            <Users className="size-5 text-secondary" />
+                                            <span className="font-medium">
                                                 Active Users
                                             </span>
                                         </div>
-                                        <span className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
+                                        <span className="text-2xl font-bold text-secondary">
                                             500+
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+                                    <div className="flex items-center justify-between rounded-lg bg-muted p-4">
                                         <div className="flex items-center gap-3">
-                                            <BarChart3 className="size-5 text-indigo-600 dark:text-indigo-400" />
-                                            <span className="font-medium text-slate-900 dark:text-white">
+                                            <BarChart3 className="size-5 text-info" />
+                                            <span className="font-medium">
                                                 Quality Score
                                             </span>
                                         </div>
-                                        <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                        <span className="text-2xl font-bold text-info">
                                             98%
                                         </span>
                                     </div>
@@ -310,14 +309,14 @@ export default function Welcome({
                 {/* CTA Section */}
                 <section className="px-4 py-20 sm:px-6 lg:px-8">
                     <div className="mx-auto max-w-7xl">
-                        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-emerald-600 via-teal-600 to-cyan-600 px-8 py-16 text-center shadow-2xl sm:px-16">
+                        <div className="relative overflow-hidden rounded-3xl gradient-animated px-8 py-16 text-center shadow-2xl sm:px-16">
                             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)] bg-size-[24px_24px]"></div>
 
                             <div className="relative">
                                 <h2 className="text-3xl font-bold text-white sm:text-4xl">
                                     Ready to revolutionize your exam creation?
                                 </h2>
-                                <p className="mx-auto mt-4 max-w-2xl text-lg text-emerald-50">
+                                <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
                                     Join hundreds of educators who are already
                                     saving time and improving assessment quality
                                     with ExamMaster.
@@ -326,7 +325,7 @@ export default function Welcome({
                                 <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                                     <Link
                                         href={auth.user ? dashboard() : register()}
-                                        className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-base font-semibold text-emerald-600 shadow-xl transition hover:bg-slate-50"
+                                        className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-base font-semibold text-primary shadow-xl transition hover:bg-white/90"
                                     >
                                         {auth.user ? "Go to Dashboard" : "Start Free Trial"}
                                         <ArrowRight className="size-5" />
@@ -341,18 +340,18 @@ export default function Welcome({
                 </section>
 
                 {/* Footer */}
-                <footer className="border-t border-slate-200 bg-white px-4 py-12 dark:border-slate-800 dark:bg-slate-950">
+                <footer className="border-t border-border bg-card px-4 py-12">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2">
-                                <div className="flex size-8 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-teal-600">
-                                    <Sparkles className="size-5 text-white" />
+                                <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary shadow-primary">
+                                    <Sparkles className="size-5 text-primary-foreground" />
                                 </div>
-                                <span className="font-bold text-slate-900 dark:text-white">
+                                <span className="font-bold">
                                     ExamMaster
                                 </span>
                             </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 © {new Date().getFullYear()} ExamMaster. All
                                 rights reserved.
                             </p>

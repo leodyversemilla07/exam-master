@@ -377,11 +377,12 @@
                             @php
                                 $letter = chr(65 + $index); // A, B, C, D...
                                 $isCorrect = $withAnswers && strtoupper($question['correct_answer']) === $letter;
+                                $optionText = is_array($option) ? ($option['text'] ?? '') : $option;
                             @endphp
                             <div class="option {{ $isCorrect ? 'option-correct' : '' }}">
                                 <div class="option-letter">{{ $letter }}.</div>
                                 <div class="option-text">
-                                    {{ $option }}
+                                    {{ $optionText }}
                                     @if($isCorrect)
                                         <strong>✓</strong>
                                     @endif

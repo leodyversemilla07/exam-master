@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTosGenerateRequest;
 use App\Jobs\GenerateQuestionsJob;
-use App\Models\ExamQuestion;
 use App\Models\Module;
 use App\Models\TosGenerate;
 use App\Services\AI\QuestionGeneratorService;
 use App\Services\TosCalculator;
+use App\Services\TosPdfExporter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -206,5 +207,40 @@ class TosGenerateController extends Controller
         $summary = $this->tosCalculator->generateSummary($tosGenerate);
 
         return response()->json($summary);
+    }
+
+    /**
+     * Export TOS to PDF.
+     */
+    public function exportPdf(TosGenerate $tosGenerate, TosPdfExporter $exporter): HttpResponse
+    {
+        abort_unless(auth()->user()->can('view tos'), 403);
+
+        $pdf = $exporter->export($tosGenerate);
+        $filename = $exporter->getFilename($tosGenerate);
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Duplicate a TOS.
+     */
+    public function duplicate(TosGenerate $tosGenerate): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('create tos'), 403);
+
+        $duplicate = DB::transaction(function () use ($tosGenerate) {
+            $newTos = $tosGenerate->replicate();
+            $newTos->created_by = auth()->id();
+            $newTos->status = 'draft';
+            $newTos->subject = $tosGenerate->subject.' (Copy)';
+            $newTos->save();
+
+            return $newTos;
+        });
+
+        return redirect()
+            ->route('tos-generates.show', $duplicate)
+            ->with('success', 'TOS duplicated successfully.');
     }
 }

@@ -16,6 +16,9 @@ import { index as tosgenerates } from "@/routes/tos-generates";
 import { index as questionBank } from "@/routes/question-bank";
 import { index as examBuilder } from "@/routes/exam-builder";
 import { index as users } from "@/routes/users";
+import { index as analytics } from "@/routes/analytics";
+import { index as systemLogs } from "@/routes/system-logs";
+import { index as queueMonitor } from "@/routes/queue-monitor";
 import { type NavItem, type SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
 import {
@@ -28,6 +31,9 @@ import {
     Users,
     ClipboardList,
     MessageSquare,
+    BarChart3,
+    ScrollText,
+    Activity,
 } from "lucide-react";
 import AppLogo from "./app-logo";
 
@@ -62,9 +68,27 @@ const mainNavItems: NavItem[] = [
         permission: "create exams",
     },
     {
+        title: "Analytics",
+        href: analytics(),
+        icon: BarChart3,
+        permission: "view analytics",
+    },
+    {
         title: "Users",
         href: users(),
         icon: Users,
+        permission: "view users",
+    },
+    {
+        title: "System Logs",
+        href: systemLogs(),
+        icon: ScrollText,
+        permission: "view users",
+    },
+    {
+        title: "Queue Monitor",
+        href: queueMonitor(),
+        icon: Activity,
         permission: "view users",
     },
 ];

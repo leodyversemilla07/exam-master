@@ -312,4 +312,28 @@ class ExamBuilderController extends Controller
 
         return $pdf->download($filename);
     }
+
+    /**
+     * Archive an exam.
+     */
+    public function archive(Exam $exam): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('edit exams'), 403);
+
+        $exam->update(['status' => 'archived']);
+
+        return back()->with('success', 'Exam archived successfully.');
+    }
+
+    /**
+     * Unarchive an exam.
+     */
+    public function unarchive(Exam $exam): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('edit exams'), 403);
+
+        $exam->update(['status' => 'draft']);
+
+        return back()->with('success', 'Exam unarchived successfully.');
+    }
 }
