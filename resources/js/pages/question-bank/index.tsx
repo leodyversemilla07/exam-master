@@ -88,13 +88,13 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
 
     const getDifficultyBadge = (difficulty: string) => {
         const colors = {
-            easy: 'bg-green-100 text-green-800',
-            moderate: 'bg-yellow-100 text-yellow-800',
-            difficult: 'bg-red-100 text-red-800',
+            easy: 'bg-success/10 text-success border-success/20',
+            moderate: 'bg-warning/10 text-warning border-warning/20',
+            difficult: 'bg-destructive/10 text-destructive border-destructive/20',
         } as const;
 
         return (
-            <Badge className={colors[difficulty as keyof typeof colors] || 'bg-gray-100 text-gray-800'}>
+            <Badge className={colors[difficulty as keyof typeof colors] || 'bg-muted text-muted-foreground'}>
                 {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
             </Badge>
         );
@@ -248,9 +248,9 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
-                                    <Search className="mx-auto h-12 w-12 text-gray-400" />
-                                    <h3 className="mt-2 text-sm font-semibold text-gray-900">No questions found</h3>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <Search className="mx-auto h-12 w-12 text-muted-foreground" />
+                                    <h3 className="mt-2 text-sm font-semibold text-foreground">No questions found</h3>
+                                    <p className="mt-1 text-sm text-muted-foreground">
                                         {Object.values(filters).some(v => v) 
                                             ? 'Try adjusting your filters or search terms'
                                             : 'Get started by adding your first question'}
@@ -275,7 +275,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                             <div className="flex-1">
                                                 <div className="flex items-start gap-4 mb-3">
                                                     <div className="flex-1">
-                                                        <h3 className="text-base font-medium text-gray-900 line-clamp-2">
+                                                        <h3 className="text-base font-medium text-foreground line-clamp-2">
                                                             {question.question_text}
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -293,18 +293,18 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                                 {question.points} {question.points === 1 ? 'point' : 'points'}
                                                             </Badge>
                                                             {question.is_approved ? (
-                                                                <Badge className="bg-green-100 text-green-800">
+                                                                <Badge className="bg-success/10 text-success border-success/20">
                                                                     <CheckCircle2 className="mr-1 h-3 w-3" />
                                                                     Approved
                                                                 </Badge>
                                                             ) : (
-                                                                <Badge className="bg-yellow-100 text-yellow-800">
+                                                                <Badge className="bg-warning/10 text-warning border-warning/20">
                                                                     <XCircle className="mr-1 h-3 w-3" />
                                                                     Pending
                                                                 </Badge>
                                                             )}
                                                         </div>
-                                                        <div className="mt-2 text-sm text-gray-500">
+                                                        <div className="mt-2 text-sm text-muted-foreground">
                                                             Created by {question.creator.name}
                                                             {question.tosGenerate && (
                                                                 <span> • {question.tosGenerate.title}</span>
@@ -329,7 +329,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => handleDelete(question)}
-                                                    className="text-red-600 hover:text-red-700"
+                                                    className="text-destructive hover:text-destructive/80"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -349,7 +349,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     >
                                         Previous
                                     </Button>
-                                    <span className="text-sm text-gray-600">
+                                    <span className="text-sm text-muted-foreground">
                                         Page {questions.current_page} of {questions.last_page}
                                     </span>
                                     <Button

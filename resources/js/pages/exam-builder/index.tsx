@@ -111,13 +111,13 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
 
     const getTypeBadge = (type: string) => {
         const colors = {
-            formative: 'bg-blue-100 text-blue-800',
-            summative: 'bg-green-100 text-green-800',
-            diagnostic: 'bg-purple-100 text-purple-800',
+            formative: 'bg-info/10 text-info border-info/20',
+            summative: 'bg-success/10 text-success border-success/20',
+            diagnostic: 'bg-secondary/10 text-secondary border-secondary/20',
         } as const;
 
         return (
-            <Badge className={colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'}>
+            <Badge className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground'}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
             </Badge>
         );
@@ -131,8 +131,8 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                 <div className="mx-auto max-w-7xl">
                     <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Exam Builder</h1>
-                            <p className="text-gray-600">Create complete exams by combining questions from your question bank</p>
+                            <h1 className="text-2xl font-bold text-foreground">Exam Builder</h1>
+                            <p className="text-muted-foreground">Create complete exams by combining questions from your question bank</p>
                         </div>
                         <Button asChild className="mt-4 sm:mt-0">
                             <Link href="/exam-builder/create">
@@ -222,7 +222,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-start justify-between mb-2">
-                                                <h3 className="text-lg font-semibold text-gray-900">
+                                                <h3 className="text-lg font-semibold text-foreground">
                                                     {exam.title}
                                                 </h3>
                                                 <div className="flex gap-2 ml-4">
@@ -232,12 +232,12 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                             </div>
 
                                             {exam.description && (
-                                                <p className="text-gray-600 mb-3 line-clamp-2">
+                                                <p className="text-muted-foreground mb-3 line-clamp-2">
                                                     {exam.description}
                                                 </p>
                                             )}
 
-                                            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+                                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                                                 <div className="flex items-center gap-1">
                                                     <FileText className="h-4 w-4" />
                                                     {exam.module.code} - {exam.module.name}
@@ -257,7 +257,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                 </div>
                                             </div>
 
-                                            <div className="text-sm text-gray-500">
+                                            <div className="text-sm text-muted-foreground">
                                                 Created by {exam.creator.name}
                                                 {exam.tos_generate && (
                                                     <span> • Based on {exam.tos_generate.title}</span>
@@ -287,7 +287,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() => handleDelete(exam)}
-                                                className="text-red-600 hover:text-red-700"
+                                                className="text-destructive hover:text-destructive/80"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
@@ -302,9 +302,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="text-center py-12">
-                                    <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                                    <h3 className="mt-2 text-sm font-semibold text-gray-900">No exams found</h3>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                                    <h3 className="mt-2 text-sm font-semibold text-foreground">No exams found</h3>
+                                    <p className="mt-1 text-sm text-muted-foreground">
                                         Get started by creating your first exam.
                                     </p>
                                     <div className="mt-6">
@@ -335,7 +335,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

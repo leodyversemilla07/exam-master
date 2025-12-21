@@ -86,13 +86,13 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
 
     const getTypeBadge = (type: string) => {
         const colors = {
-            formative: 'bg-blue-100 text-blue-800',
-            summative: 'bg-green-100 text-green-800',
-            diagnostic: 'bg-purple-100 text-purple-800',
+            formative: 'bg-info/10 text-info border-info/20',
+            summative: 'bg-success/10 text-success border-success/20',
+            diagnostic: 'bg-secondary/10 text-secondary border-secondary/20',
         } as const;
 
         return (
-            <Badge className={colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'}>
+            <Badge className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground'}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
             </Badge>
         );
@@ -151,7 +151,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <h1 className="text-2xl font-bold text-gray-900">{exam.title}</h1>
+                                    <h1 className="text-2xl font-bold text-foreground">{exam.title}</h1>
                                     <div className="flex gap-2">
                                         {getStatusBadge(exam.status)}
                                         {getTypeBadge(exam.exam_type)}
@@ -159,31 +159,31 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                 </div>
 
                                 {exam.description && (
-                                    <p className="text-gray-600 mb-4">{exam.description}</p>
+                                    <p className="text-muted-foreground mb-4">{exam.description}</p>
                                 )}
 
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                     <div className="flex items-center gap-2">
-                                        <FileText className="h-4 w-4 text-gray-400" />
+                                        <FileText className="h-4 w-4 text-muted-foreground" />
                                         <span>{exam.module.code} - {exam.module.name}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Users className="h-4 w-4 text-gray-400" />
+                                        <Users className="h-4 w-4 text-muted-foreground" />
                                         <span>{exam.questions.length} questions</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Settings className="h-4 w-4 text-gray-400" />
+                                        <Settings className="h-4 w-4 text-muted-foreground" />
                                         <span>{totalPoints} points</span>
                                     </div>
                                     {exam.time_limit && (
                                         <div className="flex items-center gap-2">
-                                            <Clock className="h-4 w-4 text-gray-400" />
+                                            <Clock className="h-4 w-4 text-muted-foreground" />
                                             <span>{exam.time_limit} minutes</span>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="mt-2 text-sm text-gray-500">
+                                <div className="mt-2 text-sm text-muted-foreground">
                                     Created by {exam.creator.name}
                                     {exam.tos_generate && (
                                         <span> • Based on {exam.tos_generate.title}</span>
@@ -241,7 +241,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             <CardContent className="space-y-3">
                                 <div>
                                     <Label className="text-sm font-medium">Passing Score</Label>
-                                    <p className="text-2xl font-bold text-green-600">{exam.passing_score}%</p>
+                                    <p className="text-2xl font-bold text-success">{exam.passing_score}%</p>
                                 </div>
                                 {exam.time_limit && (
                                     <div>
@@ -268,7 +268,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                 {exam.instructions ? (
                                     <p className="whitespace-pre-wrap">{exam.instructions}</p>
                                 ) : (
-                                    <p className="text-gray-500 italic">No instructions provided</p>
+                                    <p className="text-muted-foreground italic">No instructions provided</p>
                                 )}
                             </CardContent>
                         </Card>
@@ -293,9 +293,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                         <CardContent>
                             {exam.questions.length === 0 ? (
                                 <div className="text-center py-8">
-                                    <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                                    <h3 className="mt-2 text-sm font-semibold text-gray-900">No questions added</h3>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                                    <h3 className="mt-2 text-sm font-semibold text-foreground">No questions added</h3>
+                                    <p className="mt-1 text-sm text-muted-foreground">
                                         Add questions to build your exam.
                                     </p>
                                 </div>
@@ -303,7 +303,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                 <div className="space-y-4">
                                     {exam.questions.map((question, index) => (
                                         <div key={question.id} className="flex items-start gap-4 p-4 border rounded-lg">
-                                            <div className="flex items-center gap-2 text-gray-500">
+                                            <div className="flex items-center gap-2 text-muted-foreground">
                                                 <GripVertical className="h-4 w-4" />
                                                 <span className="text-sm font-medium">{index + 1}.</span>
                                             </div>
@@ -314,7 +314,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                                         <p className="text-sm font-medium mb-1">
                                                             {question.question}
                                                         </p>
-                                                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                                             <span>{question.module?.code}</span>
                                                             <span>{question.points || 0} points</span>
                                                             <Badge variant="outline" className="text-xs">
@@ -327,7 +327,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                                         variant="ghost"
                                                         size="sm"
                                                         onClick={() => handleRemoveQuestion(question)}
-                                                        className="text-red-600 hover:text-red-700"
+                                                        className="text-destructive hover:text-destructive/80"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -354,7 +354,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
 
                     <div className="max-h-96 overflow-y-auto">
                         {availableQuestions.length === 0 ? (
-                            <p className="text-center py-8 text-gray-500">
+                            <p className="text-center py-8 text-muted-foreground">
                                 No available questions found for this module.
                             </p>
                         ) : (
@@ -375,7 +375,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                         />
                                         <div className="flex-1">
                                             <p className="text-sm font-medium">{question.question}</p>
-                                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                                            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                                                 <span>{question.module?.code}</span>
                                                 <span>{question.points || 0} points</span>
                                                 <Badge variant="outline" className="text-xs">
@@ -414,7 +414,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmRemoveQuestion} className="bg-red-600 hover:bg-red-700">
+                        <AlertDialogAction onClick={confirmRemoveQuestion} className="bg-destructive hover:bg-destructive/90">
                             Remove
                         </AlertDialogAction>
                     </AlertDialogFooter>

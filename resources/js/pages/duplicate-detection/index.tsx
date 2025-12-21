@@ -26,10 +26,10 @@ interface PageProps {
 }
 
 const getSimilarityColor = (score: number): string => {
-    if (score >= 90) return 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border-red-200 dark:border-red-800';
-    if (score >= 75) return 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300 border-orange-200 dark:border-orange-800';
-    if (score >= 60) return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
-    return 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border-green-200 dark:border-green-800';
+    if (score >= 90) return 'bg-destructive/10 text-destructive border-destructive/20';
+    if (score >= 75) return 'bg-warning/10 text-warning border-warning/20';
+    if (score >= 60) return 'bg-info/10 text-info border-info/20';
+    return 'bg-success/10 text-success border-success/20';
 };
 
 const getSimilarityLabel = (score: number): string => {
@@ -240,25 +240,25 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                     </CardHeader>
                     <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-green-500" />
+                            <div className="size-4 rounded bg-success" />
                             <span className="text-sm">
                                 <strong>Low (60-74%):</strong> Minor similarities
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-yellow-500" />
+                            <div className="size-4 rounded bg-info" />
                             <span className="text-sm">
                                 <strong>Moderate (75-89%):</strong> Notable overlap
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-orange-500" />
+                            <div className="size-4 rounded bg-warning" />
                             <span className="text-sm">
                                 <strong>High (90-94%):</strong> Very similar
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="size-4 rounded bg-red-500" />
+                            <div className="size-4 rounded bg-destructive" />
                             <span className="text-sm">
                                 <strong>Very High (95%+):</strong> Near duplicates
                             </span>

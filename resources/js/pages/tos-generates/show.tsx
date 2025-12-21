@@ -46,25 +46,25 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
     const statusConfig = {
         draft: {
             icon: Clock,
-            color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
+            color: 'bg-muted text-muted-foreground',
             label: 'Draft',
             animate: false,
         },
         generating: {
             icon: Loader2,
-            color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+            color: 'bg-info/10 text-info border border-info/20',
             label: 'Generating',
             animate: true,
         },
         completed: {
             icon: CheckCircle2,
-            color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+            color: 'bg-success/10 text-success border border-success/20',
             label: 'Completed',
             animate: false,
         },
         failed: {
             icon: AlertCircle,
-            color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+            color: 'bg-destructive/10 text-destructive border border-destructive/20',
             label: 'Failed',
             animate: false,
         },
@@ -205,15 +205,15 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
 
                 {/* Generating Status Alert */}
                 {tosGenerate.status === 'generating' && (
-                    <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+                    <Card className="border-info/20 bg-info/10">
                         <CardContent className="pt-6">
                             <div className="flex items-center gap-3">
-                                <Loader2 className="size-5 animate-spin text-blue-600 dark:text-blue-400" />
+                                <Loader2 className="size-5 animate-spin text-info" />
                                 <div>
-                                    <p className="font-medium text-blue-900 dark:text-blue-100">
+                                    <p className="font-medium text-foreground">
                                         Questions are being generated...
                                     </p>
-                                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    <p className="text-sm text-muted-foreground">
                                         This may take 2-5 minutes depending on the number of questions.
                                         This page will refresh automatically when complete.
                                     </p>
@@ -225,19 +225,19 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
 
                 {/* Failed Status Alert */}
                 {tosGenerate.status === 'failed' && (
-                    <Card className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
+                    <Card className="border-destructive/20 bg-destructive/10">
                         <CardContent className="pt-6">
                             <div className="flex items-center gap-3">
-                                <AlertCircle className="size-5 text-red-600 dark:text-red-400" />
+                                <AlertCircle className="size-5 text-destructive" />
                                 <div className="flex-1">
-                                    <p className="font-medium text-red-900 dark:text-red-100">
+                                    <p className="font-medium text-foreground">
                                         Generation failed
                                     </p>
-                                    <p className="text-sm text-red-700 dark:text-red-300">
+                                    <p className="text-sm text-muted-foreground">
                                         {tosGenerate.error_message || 'An error occurred during generation.'}
                                     </p>
                                     {tosGenerate.questions && tosGenerate.questions.length > 0 && (
-                                        <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+                                        <p className="mt-2 text-sm text-muted-foreground">
                                             Note: Questions shown below are from a previous successful generation.
                                         </p>
                                     )}
@@ -247,7 +247,7 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="border-red-300 text-red-700 hover:bg-red-100 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900"
+                                            className="border-destructive/30 text-destructive hover:bg-destructive/10"
                                         >
                                             <Sparkles className="mr-2 size-4" />
                                             Retry
@@ -429,7 +429,7 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                                     </div>
                                                     <div className="h-2 rounded-full bg-muted">
                                                         <div
-                                                            className="h-2 rounded-full bg-blue-500"
+                                                            className="h-2 rounded-full bg-primary"
                                                             style={{
                                                                 width: `${(count / tosGenerate.total_items) * 100}%`,
                                                             }}

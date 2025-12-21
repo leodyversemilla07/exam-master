@@ -94,7 +94,7 @@ export default function QueueMonitorIndex({ auth }: PageProps) {
     }, []);
 
     return (
-        <AppLayout user={auth.user}>
+        <AppLayout>
             <Head title="Queue Monitor" />
 
             <div className="space-y-6">
@@ -167,13 +167,13 @@ export default function QueueMonitorIndex({ auth }: PageProps) {
                             <div className="flex items-center gap-2">
                                 {stats?.failed_jobs === 0 ? (
                                     <>
-                                        <CheckCircle className="h-5 w-5 text-green-500" />
-                                        <span className="text-lg font-semibold text-green-500">Healthy</span>
+                                        <CheckCircle className="h-5 w-5 text-success" />
+                                        <span className="text-lg font-semibold text-success">Healthy</span>
                                     </>
                                 ) : (
                                     <>
-                                        <AlertCircle className="h-5 w-5 text-yellow-500" />
-                                        <span className="text-lg font-semibold text-yellow-500">Attention Needed</span>
+                                        <AlertCircle className="h-5 w-5 text-warning" />
+                                        <span className="text-lg font-semibold text-warning">Attention Needed</span>
                                     </>
                                 )}
                             </div>
@@ -202,8 +202,8 @@ export default function QueueMonitorIndex({ auth }: PageProps) {
                             </div>
                         ) : failedJobs.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
-                                <CheckCircle className="h-12 w-12 mb-4 text-green-500" />
-                                <p className="text-green-600 font-medium">No failed jobs!</p>
+                                <CheckCircle className="h-12 w-12 mb-4 text-success" />
+                                <p className="text-success font-medium">No failed jobs!</p>
                                 <p className="text-sm">All queue jobs are running smoothly</p>
                             </div>
                         ) : (

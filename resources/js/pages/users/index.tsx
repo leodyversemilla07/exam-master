@@ -211,7 +211,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                             </TableCell>
                                             <TableCell>
                                                 {user.email_verified_at ? (
-                                                    <CheckCircle className="size-5 text-green-500" />
+                                                    <CheckCircle className="size-5 text-success" />
                                                 ) : (
                                                     <XCircle className="size-5 text-muted-foreground" />
                                                 )}

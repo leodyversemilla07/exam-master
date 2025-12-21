@@ -30,14 +30,14 @@ interface LogEntry {
 }
 
 const levelColors: Record<string, string> = {
-    EMERGENCY: "bg-red-600 text-white",
-    ALERT: "bg-red-500 text-white",
-    CRITICAL: "bg-red-500 text-white",
-    ERROR: "bg-red-400 text-white",
-    WARNING: "bg-yellow-500 text-white",
-    NOTICE: "bg-blue-400 text-white",
-    INFO: "bg-blue-500 text-white",
-    DEBUG: "bg-gray-500 text-white",
+    EMERGENCY: "bg-destructive text-destructive-foreground",
+    ALERT: "bg-destructive text-destructive-foreground",
+    CRITICAL: "bg-destructive text-destructive-foreground",
+    ERROR: "bg-destructive/80 text-destructive-foreground",
+    WARNING: "bg-warning text-warning-foreground",
+    NOTICE: "bg-info text-info-foreground",
+    INFO: "bg-info text-info-foreground",
+    DEBUG: "bg-muted text-muted-foreground",
 };
 
 const levelIcons: Record<string, React.ReactNode> = {
@@ -110,7 +110,7 @@ export default function SystemLogsIndex({ auth }: PageProps) {
     }, []);
 
     return (
-        <AppLayout user={auth.user}>
+        <AppLayout>
             <Head title="System Logs" />
 
             <div className="space-y-6">
@@ -223,7 +223,7 @@ export default function SystemLogsIndex({ auth }: PageProps) {
                                             className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/50"
                                             onClick={() => log.stack_trace && toggleExpand(index)}
                                         >
-                                            <Badge className={`${levelColors[log.level] || 'bg-gray-500'} flex items-center gap-1`}>
+                                            <Badge className={`${levelColors[log.level] || 'bg-muted'} flex items-center gap-1`}>
                                                 {levelIcons[log.level]}
                                                 {log.level}
                                             </Badge>

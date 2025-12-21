@@ -10,7 +10,7 @@ export default function InputError({
     ...props
 }: InputErrorProps) {
     return message ? (
-        <p {...props} className={"text-sm text-red-600 " + className}>
+        <p {...props} className={"text-sm text-destructive " + className}>
             {message}
         </p>
     ) : null;

@@ -98,7 +98,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                                 </SelectContent>
                                             </Select>
                                             {form.errors.module_id && (
-                                                <p className="text-sm text-red-600">{form.errors.module_id}</p>
+                                                <p className="text-sm text-destructive">{form.errors.module_id}</p>
                                             )}
                                         </div>
 
@@ -120,7 +120,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                                 </SelectContent>
                                             </Select>
                                             {form.errors.tos_generate_id && (
-                                                <p className="text-sm text-red-600">{form.errors.tos_generate_id}</p>
+                                                <p className="text-sm text-destructive">{form.errors.tos_generate_id}</p>
                                             )}
                                         </div>
                                     </div>
@@ -134,7 +134,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                             placeholder="Enter exam title"
                                         />
                                         {form.errors.title && (
-                                            <p className="text-sm text-red-600">{form.errors.title}</p>
+                                            <p className="text-sm text-destructive">{form.errors.title}</p>
                                         )}
                                     </div>
 
@@ -148,7 +148,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                             rows={3}
                                         />
                                         {form.errors.description && (
-                                            <p className="text-sm text-red-600">{form.errors.description}</p>
+                                            <p className="text-sm text-destructive">{form.errors.description}</p>
                                         )}
                                     </div>
 
@@ -169,7 +169,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                                 </SelectContent>
                                             </Select>
                                             {form.errors.exam_type && (
-                                                <p className="text-sm text-red-600">{form.errors.exam_type}</p>
+                                                <p className="text-sm text-destructive">{form.errors.exam_type}</p>
                                             )}
                                         </div>
 
@@ -185,7 +185,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                                 max="600"
                                             />
                                             {form.errors.time_limit && (
-                                                <p className="text-sm text-red-600">{form.errors.time_limit}</p>
+                                                <p className="text-sm text-destructive">{form.errors.time_limit}</p>
                                             )}
                                         </div>
 
@@ -202,7 +202,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                                 step="0.01"
                                             />
                                             {form.errors.passing_score && (
-                                                <p className="text-sm text-red-600">{form.errors.passing_score}</p>
+                                                <p className="text-sm text-destructive">{form.errors.passing_score}</p>
                                             )}
                                         </div>
                                     </div>
@@ -217,7 +217,7 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                             rows={4}
                                         />
                                         {form.errors.instructions && (
-                                            <p className="text-sm text-red-600">{form.errors.instructions}</p>
+                                            <p className="text-sm text-destructive">{form.errors.instructions}</p>
                                         )}
                                     </div>
 

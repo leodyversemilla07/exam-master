@@ -24,37 +24,37 @@ const cognitiveLevels: { value: CognitiveLevel; label: string; description: stri
         value: "remembering",
         label: "Remembering",
         description: "Recall facts and basic concepts",
-        color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+        color: "bg-primary/10 text-primary border border-primary/20",
     },
     {
         value: "understanding",
         label: "Understanding",
         description: "Explain ideas or concepts",
-        color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+        color: "bg-success/10 text-success border border-success/20",
     },
     {
         value: "applying",
         label: "Applying",
         description: "Use information in new situations",
-        color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+        color: "bg-warning/10 text-warning border border-warning/20",
     },
     {
         value: "analyzing",
         label: "Analyzing",
         description: "Draw connections among ideas",
-        color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+        color: "bg-info/10 text-info border border-info/20",
     },
     {
         value: "evaluating",
         label: "Evaluating",
         description: "Justify decisions or course of action",
-        color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+        color: "bg-secondary/10 text-secondary border border-secondary/20",
     },
     {
         value: "creating",
         label: "Creating",
         description: "Produce new or original work",
-        color: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300",
+        color: "bg-destructive/10 text-destructive border border-destructive/20",
     },
 ];
 

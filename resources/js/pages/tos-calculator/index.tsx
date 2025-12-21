@@ -47,13 +47,13 @@ interface PageProps {
     }[];
 }
 
-const cognitiveLevelColors: Record<CognitiveLevel, { bg: string; text: string; border: string }> = {
-    remembering: { bg: 'bg-blue-50 dark:bg-blue-950', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
-    understanding: { bg: 'bg-green-50 dark:bg-green-950', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800' },
-    applying: { bg: 'bg-yellow-50 dark:bg-yellow-950', text: 'text-yellow-700 dark:text-yellow-300', border: 'border-yellow-200 dark:border-yellow-800' },
-    analyzing: { bg: 'bg-orange-50 dark:bg-orange-950', text: 'text-orange-700 dark:text-orange-300', border: 'border-orange-200 dark:border-orange-800' },
-    evaluating: { bg: 'bg-purple-50 dark:bg-purple-950', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800' },
-    creating: { bg: 'bg-pink-50 dark:bg-pink-950', text: 'text-pink-700 dark:text-pink-300', border: 'border-pink-200 dark:border-pink-800' },
+const cognitiveLevelColors: Record<CognitiveLevel, { bg: string; text: string; border: string; bar: string }> = {
+    remembering: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20', bar: 'bg-primary' },
+    understanding: { bg: 'bg-success/10', text: 'text-success', border: 'border-success/20', bar: 'bg-success' },
+    applying: { bg: 'bg-warning/10', text: 'text-warning', border: 'border-warning/20', bar: 'bg-warning' },
+    analyzing: { bg: 'bg-info/10', text: 'text-info', border: 'border-info/20', bar: 'bg-info' },
+    evaluating: { bg: 'bg-secondary/10', text: 'text-secondary', border: 'border-secondary/20', bar: 'bg-secondary' },
+    creating: { bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', bar: 'bg-destructive' },
 };
 
 const cognitiveLevels: CognitiveLevel[] = ['remembering', 'understanding', 'applying', 'analyzing', 'evaluating', 'creating'];
@@ -265,7 +265,7 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                                         </div>
                                         <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                                             <div
-                                                className={`h-full ${colors.bg.replace('50', '500').replace('dark:bg-', 'dark:bg-').replace('950', '600')}`}
+                                                className={`h-full ${colors.bar}`}
                                                 style={{ width: `${percentage}%` }}
                                             />
                                         </div>
@@ -292,9 +292,9 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                                     >
                                         <div className="flex items-center gap-3">
                                             {item.status === 'balanced' ? (
-                                                <CheckCircle2 className="size-5 text-green-600 dark:text-green-400" />
+                                                <CheckCircle2 className="size-5 text-success" />
                                             ) : (
-                                                <AlertCircle className={`size-5 ${item.status === 'over' ? 'text-orange-600 dark:text-orange-400' : 'text-yellow-600 dark:text-yellow-400'}`} />
+                                                <AlertCircle className={`size-5 ${item.status === 'over' ? 'text-destructive' : 'text-warning'}`} />
                                             )}
                                             <div>
                                                 <div className="font-medium capitalize">{item.level}</div>
@@ -307,10 +307,10 @@ export default function TosCalculatorIndex({ module, matrix, distribution, stati
                                             variant={item.status === 'balanced' ? 'default' : 'secondary'}
                                             className={
                                                 item.status === 'balanced'
-                                                    ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
+                                                    ? 'bg-success/10 text-success border-success/20'
                                                     : item.status === 'over'
-                                                      ? 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300'
-                                                      : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'
+                                                      ? 'bg-destructive/10 text-destructive border-destructive/20'
+                                                      : 'bg-warning/10 text-warning border-warning/20'
                                             }
                                         >
                                             {item.status === 'balanced' ? 'Balanced' : item.status === 'over' ? 'Over-represented' : 'Under-represented'}

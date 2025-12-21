@@ -105,7 +105,7 @@ const statusColors: Record<string, string> = {
     draft: "bg-muted text-muted-foreground border-border",
     published: "bg-success/10 text-success border-success/20",
     completed: "bg-success/10 text-success border-success/20",
-    generating: "bg-primary/10 text-primary border-primary/20",
+    generating: "bg-info/10 text-info border-info/20",
     failed: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
@@ -143,7 +143,7 @@ export default function Dashboard({
                     {/* Welcome Section */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold">
+                            <h1 className="text-2xl font-bold text-foreground">
                                 Welcome back, {auth.user.name}!
                             </h1>
                             <p className="text-muted-foreground mt-1">
@@ -227,8 +227,8 @@ export default function Dashboard({
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-secondary/10 rounded-lg">
-                                        <Sparkles className="h-5 w-5 text-secondary" />
+                                    <div className="p-2 bg-info/10 rounded-lg">
+                                        <Sparkles className="h-5 w-5 text-info" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">{stats.ai_generated_questions}</p>
@@ -266,16 +266,16 @@ export default function Dashboard({
                             </CardHeader>
                             <CardContent>
                                 {Object.keys(questionsByCognitiveLevel).length === 0 ? (
-                                    <p className="text-sm text-gray-500 text-center py-12">No data available</p>
+                                    <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
                                 ) : (
                                     <ChartContainer
                                         config={{
-                                            remembering: { label: "Remembering", color: "hsl(var(--chart-1))" },
-                                            understanding: { label: "Understanding", color: "hsl(var(--chart-2))" },
-                                            applying: { label: "Applying", color: "hsl(var(--chart-3))" },
-                                            analyzing: { label: "Analyzing", color: "hsl(var(--chart-4))" },
-                                            evaluating: { label: "Evaluating", color: "hsl(var(--chart-5))" },
-                                            creating: { label: "Creating", color: "hsl(280 60% 50%)" },
+                                            remembering: { label: "Remembering", color: "hsl(var(--primary))" },
+                                            understanding: { label: "Understanding", color: "hsl(var(--success))" },
+                                            applying: { label: "Applying", color: "hsl(var(--warning))" },
+                                            analyzing: { label: "Analyzing", color: "hsl(var(--info))" },
+                                            evaluating: { label: "Evaluating", color: "hsl(var(--secondary))" },
+                                            creating: { label: "Creating", color: "hsl(var(--destructive))" },
                                         }}
                                         className="h-[300px]"
                                     >
@@ -321,13 +321,13 @@ export default function Dashboard({
                             </CardHeader>
                             <CardContent>
                                 {Object.keys(questionsByDifficulty).length === 0 ? (
-                                    <p className="text-sm text-gray-500 text-center py-12">No data available</p>
+                                    <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
                                 ) : (
                                     <ChartContainer
                                         config={{
-                                            easy: { label: "Easy", color: "hsl(142 76% 36%)" },
-                                            moderate: { label: "Moderate", color: "hsl(38 92% 50%)" },
-                                            difficult: { label: "Difficult", color: "hsl(0 84% 60%)" },
+                                            easy: { label: "Easy", color: "hsl(var(--success))" },
+                                            moderate: { label: "Moderate", color: "hsl(var(--warning))" },
+                                            difficult: { label: "Difficult", color: "hsl(var(--destructive))" },
                                         }}
                                         className="h-[300px]"
                                     >
@@ -364,7 +364,7 @@ export default function Dashboard({
                         </CardHeader>
                         <CardContent>
                             {Object.keys(questionsByType).length === 0 ? (
-                                <p className="text-sm text-gray-500 text-center py-12">No data available</p>
+                                <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
                             ) : (
                                 <ChartContainer
                                     config={{
@@ -440,15 +440,15 @@ export default function Dashboard({
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 {question.is_approved ? (
-                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <CheckCircle2 className="h-4 w-4 text-success" />
                                                 ) : (
-                                                    <Clock className="h-4 w-4 text-yellow-500" />
+                                                    <Clock className="h-4 w-4 text-warning" />
                                                 )}
                                             </div>
                                         </div>
                                     ))}
                                     {recentQuestions.length === 0 && (
-                                        <p className="text-sm text-gray-500 text-center py-8">No questions yet</p>
+                                        <p className="text-sm text-muted-foreground text-center py-8">No questions yet</p>
                                     )}
                                 </div>
                             </CardContent>
@@ -483,7 +483,7 @@ export default function Dashboard({
                                                     <Badge variant="outline" className="text-xs">
                                                         {exam.module?.code || "N/A"}
                                                     </Badge>
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className="text-xs text-muted-foreground">
                                                         {exam.total_items} items
                                                     </span>
                                                 </div>
@@ -494,7 +494,7 @@ export default function Dashboard({
                                         </div>
                                     ))}
                                     {recentExams.length === 0 && (
-                                        <p className="text-sm text-gray-500 text-center py-8">No exams yet</p>
+                                        <p className="text-sm text-muted-foreground text-center py-8">No exams yet</p>
                                     )}
                                 </div>
                             </CardContent>
@@ -521,11 +521,11 @@ export default function Dashboard({
                                     <Link
                                         key={module.id}
                                         href={`/modules/${module.id}`}
-                                        className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                        className="p-4 border rounded-lg hover:bg-accent transition-colors"
                                     >
                                         <p className="font-medium text-sm truncate">{module.name}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{module.code}</p>
-                                        <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+                                        <p className="text-xs text-muted-foreground mb-3">{module.code}</p>
+                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                             <span className="flex items-center gap-1">
                                                 <MessageSquare className="h-3 w-3" />
                                                 {module.questions_count}
@@ -542,9 +542,9 @@ export default function Dashboard({
                                     </Link>
                                 ))}
                                 {moduleStats.length === 0 && (
-                                    <p className="text-sm text-gray-500 text-center py-8 col-span-full">
+                                    <p className="text-sm text-muted-foreground text-center py-8 col-span-full">
                                         No modules yet.{" "}
-                                        <Link href="/modules/create" className="text-blue-600 hover:underline">
+                                        <Link href="/modules/create" className="text-primary hover:underline">
                                             Create one
                                         </Link>
                                     </p>
@@ -558,8 +558,8 @@ export default function Dashboard({
                         <Card className="hover:shadow-lg transition-shadow">
                             <CardHeader>
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                                        <MessageSquare className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                    <div className="p-2 bg-primary/10 rounded-lg">
+                                        <MessageSquare className="h-6 w-6 text-primary" />
                                     </div>
                                     <div>
                                         <CardTitle>Question Bank</CardTitle>
@@ -568,7 +568,7 @@ export default function Dashboard({
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-muted-foreground">
                                     Create, organize, and manage your collection of exam questions.
                                 </p>
                                 <Button asChild className="w-full">
@@ -583,8 +583,8 @@ export default function Dashboard({
                         <Card className="hover:shadow-lg transition-shadow">
                             <CardHeader>
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                                        <ClipboardList className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                    <div className="p-2 bg-success/10 rounded-lg">
+                                        <ClipboardList className="h-6 w-6 text-success" />
                                     </div>
                                     <div>
                                         <CardTitle>Exam Builder</CardTitle>
@@ -593,7 +593,7 @@ export default function Dashboard({
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-muted-foreground">
                                     Combine questions to create complete, ready-to-use exams.
                                 </p>
                                 <Button asChild className="w-full">

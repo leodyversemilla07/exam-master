@@ -170,7 +170,7 @@ export default function ExamShow({ question }: PageProps) {
                                             key={option.key}
                                             className={`rounded-lg border p-3 ${
                                                 option.key === question.correct_answer
-                                                    ? 'border-green-500 bg-green-50 dark:bg-green-950'
+                                                    ? 'border-success bg-success/10'
                                                     : ''
                                             }`}
                                         >
@@ -178,7 +178,7 @@ export default function ExamShow({ question }: PageProps) {
                                                 <span className="font-semibold">{option.key}.</span>
                                                 <span>{option.text}</span>
                                                 {option.key === question.correct_answer && (
-                                                    <CheckCircle2 className="ml-auto size-5 text-green-600" />
+                                                    <CheckCircle2 className="ml-auto size-5 text-success" />
                                                 )}
                                             </div>
                                         </div>
@@ -190,7 +190,7 @@ export default function ExamShow({ question }: PageProps) {
                         {!question.options && (
                             <div>
                                 <h3 className="mb-2 font-semibold">Correct Answer</h3>
-                                <p className="rounded-lg border border-green-500 bg-green-50 p-3 dark:bg-green-950">
+                                <p className="rounded-lg border border-success bg-success/10 p-3">
                                     {question.correct_answer}
                                 </p>
                             </div>
