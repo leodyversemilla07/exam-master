@@ -108,72 +108,72 @@ class DatabaseSeeder extends Seeder
         // Create Super Admin user
         $superAdminUser = User::factory()->create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
+            'email' => 'leobrielzilvrak@gmail.com',
         ]);
         $superAdminUser->assignRole('super-admin');
 
         // Create Admin user
         $adminUser = User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'admin@example.com',
+            'email' => 'lunarspectre00@gmail.com',
         ]);
         $adminUser->assignRole('admin');
 
         // Create Educator user
         $educatorUser = User::factory()->create([
             'name' => 'Educator User',
-            'email' => 'educator@example.com',
+            'email' => 'leodyversemilla07@gmail.com',
         ]);
         $educatorUser->assignRole('educator');
 
         // Create realistic modules for educator
         $mathModule = \App\Models\Module::create([
-            'code' => 'MATH-10',
-            'name' => 'Advanced Algebra',
-            'description' => 'This module covers advanced topics in algebra including quadratic equations, polynomials, and systems of equations.',
-            'subject_area' => 'Mathematics',
-            'grade_level' => 'Grade 10',
+            'code' => 'WEB-DEV-101',
+            'name' => 'Web Development Fundamentals',
+            'description' => 'This module covers essential web development topics including HTML, CSS, JavaScript, and responsive design principles.',
+            'subject_area' => 'Information Technology',
+            'grade_level' => 'Grade 11',
             'curriculum_year' => 2024,
             'is_active' => true,
             'created_by' => $educatorUser->id,
         ]);
 
         $scienceModule = \App\Models\Module::create([
-            'code' => 'SCI-9',
-            'name' => 'Biology: Ecosystems and Biodiversity',
-            'description' => 'Study of ecosystems, food chains, biodiversity, and environmental conservation.',
-            'subject_area' => 'Science',
-            'grade_level' => 'Grade 9',
+            'code' => 'DB-MGT-201',
+            'name' => 'Database Management Systems',
+            'description' => 'Introduction to database concepts, SQL, relational database design, normalization, and database administration.',
+            'subject_area' => 'Information Technology',
+            'grade_level' => 'Grade 12',
             'curriculum_year' => 2024,
             'is_active' => true,
             'created_by' => $educatorUser->id,
         ]);
 
         $englishModule = \App\Models\Module::create([
-            'code' => 'ENG-8',
-            'name' => 'English Literature and Composition',
-            'description' => 'Analysis of literary texts, essay writing, and critical thinking skills.',
-            'subject_area' => 'English',
-            'grade_level' => 'Grade 8',
+            'code' => 'NET-FND-101',
+            'name' => 'Networking Fundamentals',
+            'description' => 'Introduction to computer networks, TCP/IP, network protocols, network security, and network troubleshooting.',
+            'subject_area' => 'Information Technology',
+            'grade_level' => 'Grade 11',
             'curriculum_year' => 2024,
             'is_active' => true,
             'created_by' => $educatorUser->id,
         ]);
 
-        // Create realistic TOS for Math Module
+        // Create realistic TOS for Web Development Module
         \App\Models\TosGenerate::create([
             'module_id' => $mathModule->id,
             'created_by' => $educatorUser->id,
-            'grade_level' => 'Grade 10',
-            'subject' => 'Mathematics',
+            'grade_level' => 'Grade 11',
+            'subject' => 'Information Technology',
             'quarter' => 'Q2',
             'total_items' => 40,
             'learning_objectives' => [
-                ['code' => 'MATH-10-01', 'description' => 'Solve quadratic equations using various methods'],
-                ['code' => 'MATH-10-02', 'description' => 'Factor polynomials of different degrees'],
-                ['code' => 'MATH-10-03', 'description' => 'Graph quadratic functions and identify key features'],
-                ['code' => 'MATH-10-04', 'description' => 'Apply algebraic concepts to real-world problems'],
-                ['code' => 'MATH-10-05', 'description' => 'Solve systems of linear equations'],
+                ['code' => 'WEB-DEV-01', 'description' => 'Create semantic HTML5 markup for web pages'],
+                ['code' => 'WEB-DEV-02', 'description' => 'Apply CSS styling and layout techniques'],
+                ['code' => 'WEB-DEV-03', 'description' => 'Implement responsive design using media queries'],
+                ['code' => 'WEB-DEV-04', 'description' => 'Write JavaScript code for interactive features'],
+                ['code' => 'WEB-DEV-05', 'description' => 'Debug and troubleshoot web applications'],
             ],
             'cognitive_levels' => [
                 'Remembering' => 8,
@@ -197,20 +197,20 @@ class DatabaseSeeder extends Seeder
             'status' => 'draft',
         ]);
 
-        // Create realistic TOS for Science Module
+        // Create realistic TOS for Database Module
         \App\Models\TosGenerate::create([
             'module_id' => $scienceModule->id,
             'created_by' => $educatorUser->id,
-            'grade_level' => 'Grade 9',
-            'subject' => 'Science',
+            'grade_level' => 'Grade 12',
+            'subject' => 'Information Technology',
             'quarter' => 'Q3',
             'total_items' => 50,
             'learning_objectives' => [
-                ['code' => 'SCI-9-01', 'description' => 'Describe the components and interactions in ecosystems'],
-                ['code' => 'SCI-9-02', 'description' => 'Explain food chains and energy flow in ecosystems'],
-                ['code' => 'SCI-9-03', 'description' => 'Identify factors affecting biodiversity'],
-                ['code' => 'SCI-9-04', 'description' => 'Analyze the impact of human activities on ecosystems'],
-                ['code' => 'SCI-9-05', 'description' => 'Propose solutions for environmental conservation'],
+                ['code' => 'DB-MGT-01', 'description' => 'Design normalized database schemas'],
+                ['code' => 'DB-MGT-02', 'description' => 'Write SQL queries to retrieve and manipulate data'],
+                ['code' => 'DB-MGT-03', 'description' => 'Implement database relationships and constraints'],
+                ['code' => 'DB-MGT-04', 'description' => 'Optimize database queries for performance'],
+                ['code' => 'DB-MGT-05', 'description' => 'Apply database security and backup strategies'],
             ],
             'cognitive_levels' => [
                 'Remembering' => 10,
@@ -235,20 +235,20 @@ class DatabaseSeeder extends Seeder
             'status' => 'draft',
         ]);
 
-        // Create realistic TOS for English Module
+        // Create realistic TOS for Networking Module
         \App\Models\TosGenerate::create([
             'module_id' => $englishModule->id,
             'created_by' => $educatorUser->id,
-            'grade_level' => 'Grade 8',
-            'subject' => 'English',
+            'grade_level' => 'Grade 11',
+            'subject' => 'Information Technology',
             'quarter' => 'Q1',
             'total_items' => 35,
             'learning_objectives' => [
-                ['code' => 'ENG-8-01', 'description' => 'Identify literary devices in poems and short stories'],
-                ['code' => 'ENG-8-02', 'description' => 'Analyze character development and plot structure'],
-                ['code' => 'ENG-8-03', 'description' => 'Write coherent and well-structured essays'],
-                ['code' => 'ENG-8-04', 'description' => 'Apply grammar rules in writing'],
-                ['code' => 'ENG-8-05', 'description' => 'Evaluate themes and author\'s purpose in literary texts'],
+                ['code' => 'NET-FND-01', 'description' => 'Explain OSI and TCP/IP network models'],
+                ['code' => 'NET-FND-02', 'description' => 'Configure IP addressing and subnetting'],
+                ['code' => 'NET-FND-03', 'description' => 'Identify network hardware and their functions'],
+                ['code' => 'NET-FND-04', 'description' => 'Troubleshoot basic network connectivity issues'],
+                ['code' => 'NET-FND-05', 'description' => 'Apply network security best practices'],
             ],
             'cognitive_levels' => [
                 'Remembering' => 7,
@@ -270,6 +270,278 @@ class DatabaseSeeder extends Seeder
             ],
             'difficulty_level' => 'medium',
             'status' => 'draft',
+        ]);
+
+        // Create Topics for Web Development Module
+        $mathTopic1 = \App\Models\Topic::create([
+            'module_id' => $mathModule->id,
+            'code' => 'WEB-DEV-T1',
+            'title' => 'HTML5 and Semantic Markup',
+            'description' => 'Introduction to HTML5 structure, semantic elements, and best practices',
+            'order' => 1,
+            'hours_allocated' => 8,
+            'weight_percentage' => 30,
+            'is_active' => true,
+        ]);
+
+        $mathTopic2 = \App\Models\Topic::create([
+            'module_id' => $mathModule->id,
+            'code' => 'WEB-DEV-T2',
+            'title' => 'CSS Styling and Layouts',
+            'description' => 'Cascading Style Sheets, flexbox, grid, and responsive design',
+            'order' => 2,
+            'hours_allocated' => 6,
+            'weight_percentage' => 25,
+            'is_active' => true,
+        ]);
+
+        $mathTopic3 = \App\Models\Topic::create([
+            'module_id' => $mathModule->id,
+            'code' => 'WEB-DEV-T3',
+            'title' => 'JavaScript Fundamentals',
+            'description' => 'JavaScript programming basics, DOM manipulation, and event handling',
+            'order' => 3,
+            'hours_allocated' => 6,
+            'weight_percentage' => 25,
+            'is_active' => true,
+        ]);
+
+        // Create Topics for Database Module
+        $sciTopic1 = \App\Models\Topic::create([
+            'module_id' => $scienceModule->id,
+            'code' => 'DB-MGT-T1',
+            'title' => 'Database Design and Normalization',
+            'description' => 'Entity-relationship modeling, normalization forms, and schema design',
+            'order' => 1,
+            'hours_allocated' => 5,
+            'weight_percentage' => 30,
+            'is_active' => true,
+        ]);
+
+        $sciTopic2 = \App\Models\Topic::create([
+            'module_id' => $scienceModule->id,
+            'code' => 'DB-MGT-T2',
+            'title' => 'SQL Queries and Transactions',
+            'description' => 'Writing complex SQL queries, joins, subqueries, and transaction management',
+            'order' => 2,
+            'hours_allocated' => 7,
+            'weight_percentage' => 40,
+            'is_active' => true,
+        ]);
+
+        // Create Learning Objectives for Web Development Topics
+        \App\Models\LearningObjective::create([
+            'topic_id' => $mathTopic1->id,
+            'code' => 'WEB-DEV-LO1',
+            'objective' => 'Create well-structured HTML5 documents',
+            'cognitive_level' => 'applying',
+            'order' => 1,
+            'assessment_criteria' => 'Student can create valid HTML5 pages with proper semantic elements',
+            'is_active' => true,
+        ]);
+
+        \App\Models\LearningObjective::create([
+            'topic_id' => $mathTopic1->id,
+            'code' => 'WEB-DEV-LO2',
+            'objective' => 'Implement accessible web forms',
+            'cognitive_level' => 'applying',
+            'order' => 2,
+            'assessment_criteria' => 'Student can create forms with proper labels, validation, and accessibility features',
+            'is_active' => true,
+        ]);
+
+        \App\Models\LearningObjective::create([
+            'topic_id' => $mathTopic2->id,
+            'code' => 'WEB-DEV-LO3',
+            'objective' => 'Design responsive layouts using CSS',
+            'cognitive_level' => 'analyzing',
+            'order' => 1,
+            'assessment_criteria' => 'Student can create layouts that work across different screen sizes',
+            'is_active' => true,
+        ]);
+
+        // Create Learning Objectives for Database Topics
+        \App\Models\LearningObjective::create([
+            'topic_id' => $sciTopic1->id,
+            'code' => 'DB-MGT-LO1',
+            'objective' => 'Design entity-relationship diagrams',
+            'cognitive_level' => 'remembering',
+            'order' => 1,
+            'assessment_criteria' => 'Student can correctly create ERDs with proper relationships and cardinality',
+            'is_active' => true,
+        ]);
+
+        \App\Models\LearningObjective::create([
+            'topic_id' => $sciTopic1->id,
+            'code' => 'DB-MGT-LO2',
+            'objective' => 'Normalize database tables to 3NF',
+            'cognitive_level' => 'understanding',
+            'order' => 2,
+            'assessment_criteria' => 'Student can apply normalization rules to eliminate redundancy',
+            'is_active' => true,
+        ]);
+
+        \App\Models\LearningObjective::create([
+            'topic_id' => $sciTopic2->id,
+            'code' => 'DB-MGT-LO3',
+            'objective' => 'Write complex SQL queries with joins',
+            'cognitive_level' => 'evaluating',
+            'order' => 1,
+            'assessment_criteria' => 'Student can write queries using multiple joins and subqueries',
+            'is_active' => true,
+        ]);
+
+        // Create sample exam questions
+        $question1 = \App\Models\ExamQuestion::create([
+            'module_id' => $mathModule->id,
+            'created_by' => $educatorUser->id,
+            'question_type' => 'multiple_choice',
+            'question' => 'Which HTML5 element is used to define a navigation section?',
+            'options' => [
+                ['key' => 'A', 'text' => '<nav>'],
+                ['key' => 'B', 'text' => '<navigation>'],
+                ['key' => 'C', 'text' => '<menu>'],
+                ['key' => 'D', 'text' => '<navbar>'],
+            ],
+            'correct_answer' => 'A',
+            'explanation' => 'The <nav> element is the semantic HTML5 element for navigation sections',
+            'cognitive_level' => 'applying',
+            'difficulty' => 'moderate',
+            'learning_objective_code' => 'WEB-DEV-LO1',
+            'points' => 2,
+            'is_approved' => true,
+            'is_ai_generated' => false,
+        ]);
+
+        $question2 = \App\Models\ExamQuestion::create([
+            'module_id' => $mathModule->id,
+            'created_by' => $educatorUser->id,
+            'question_type' => 'multiple_choice',
+            'question' => 'Which CSS property is used to create flexible layouts?',
+            'options' => [
+                ['key' => 'A', 'text' => 'display: flex'],
+                ['key' => 'B', 'text' => 'position: flex'],
+                ['key' => 'C', 'text' => 'layout: flex'],
+                ['key' => 'D', 'text' => 'flex: true'],
+            ],
+            'correct_answer' => 'A',
+            'explanation' => 'The display: flex property enables the flexbox layout model',
+            'cognitive_level' => 'remembering',
+            'difficulty' => 'easy',
+            'learning_objective_code' => 'WEB-DEV-LO3',
+            'points' => 1,
+            'is_approved' => true,
+            'is_ai_generated' => false,
+        ]);
+
+        $question3 = \App\Models\ExamQuestion::create([
+            'module_id' => $scienceModule->id,
+            'created_by' => $educatorUser->id,
+            'question_type' => 'multiple_choice',
+            'question' => 'Which SQL clause is used to filter rows in a query?',
+            'options' => [
+                ['key' => 'A', 'text' => 'HAVING'],
+                ['key' => 'B', 'text' => 'FILTER'],
+                ['key' => 'C', 'text' => 'WHERE'],
+                ['key' => 'D', 'text' => 'SELECT'],
+            ],
+            'correct_answer' => 'C',
+            'explanation' => 'The WHERE clause is used to filter rows based on specified conditions',
+            'cognitive_level' => 'remembering',
+            'difficulty' => 'easy',
+            'learning_objective_code' => 'DB-MGT-LO3',
+            'points' => 1,
+            'is_approved' => true,
+            'is_ai_generated' => false,
+        ]);
+
+        $question4 = \App\Models\ExamQuestion::create([
+            'module_id' => $scienceModule->id,
+            'created_by' => $educatorUser->id,
+            'question_type' => 'true_false',
+            'question' => 'Normalization is the process of organizing data to reduce redundancy.',
+            'correct_answer' => 'true',
+            'explanation' => 'Normalization eliminates redundant data and ensures data integrity',
+            'cognitive_level' => 'understanding',
+            'difficulty' => 'easy',
+            'learning_objective_code' => 'DB-MGT-LO2',
+            'points' => 1,
+            'is_approved' => true,
+            'is_ai_generated' => false,
+        ]);
+
+        // Create sample exams
+        $mathExam = \App\Models\Exam::create([
+            'module_id' => $mathModule->id,
+            'created_by' => $educatorUser->id,
+            'title' => 'Web Development Fundamentals Exam',
+            'description' => 'Comprehensive test covering HTML5, CSS, and JavaScript basics',
+            'exam_type' => 'summative',
+            'time_limit' => 90,
+            'passing_score' => 75.00,
+            'instructions' => 'Read each question carefully. Choose the best answer for each question.',
+            'total_points' => 0,
+            'total_items' => 0,
+            'status' => 'draft',
+            'shuffle_questions' => false,
+            'show_answers' => false,
+        ]);
+
+        $scienceExam = \App\Models\Exam::create([
+            'module_id' => $scienceModule->id,
+            'created_by' => $educatorUser->id,
+            'title' => 'Database Concepts Quiz',
+            'description' => 'Short quiz on database design and SQL fundamentals',
+            'exam_type' => 'formative',
+            'time_limit' => 45,
+            'passing_score' => 70.00,
+            'instructions' => 'Choose the best answer for each question.',
+            'total_points' => 0,
+            'total_items' => 0,
+            'status' => 'draft',
+            'shuffle_questions' => true,
+            'show_answers' => true,
+        ]);
+
+        // Add questions to Math Exam
+        \App\Models\ExamItem::create([
+            'exam_id' => $mathExam->id,
+            'exam_question_id' => $question1->id,
+            'order' => 1,
+            'points' => 2,
+        ]);
+
+        \App\Models\ExamItem::create([
+            'exam_id' => $mathExam->id,
+            'exam_question_id' => $question2->id,
+            'order' => 2,
+            'points' => 1,
+        ]);
+
+        // Add questions to Science Exam
+        \App\Models\ExamItem::create([
+            'exam_id' => $scienceExam->id,
+            'exam_question_id' => $question3->id,
+            'order' => 1,
+            'points' => 1,
+        ]);
+
+        \App\Models\ExamItem::create([
+            'exam_id' => $scienceExam->id,
+            'exam_question_id' => $question4->id,
+            'order' => 2,
+            'points' => 1,
+        ]);
+
+        // Update exam totals
+        $mathExam->update([
+            'total_items' => 2,
+            'total_points' => 3,
+        ]);
+
+        $scienceExam->update([
+            'total_items' => 2,
+            'total_points' => 2,
         ]);
 
         // Create additional users with random roles

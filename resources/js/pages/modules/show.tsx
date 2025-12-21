@@ -45,19 +45,18 @@ export default function ModuleShow({ module }: PageProps) {
             <Head title={module.name} />
 
             <div className="p-4 md:p-6 space-y-6">
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline" className="font-mono text-base px-3 py-1">
-                            {module.code}
-                        </Badge>
-                        {!module.is_active && (
-                            <Badge variant="secondary">Inactive</Badge>
-                        )}
-                    </div>
-                </div>
                 <PageHeader
-                    title={module.name}
+                    title={
+                        <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="font-mono text-base px-3 py-1">
+                                {module.code}
+                            </Badge>
+                            <span>{module.name}</span>
+                            {!module.is_active && (
+                                <Badge variant="secondary">Inactive</Badge>
+                            )}
+                        </div>
+                    }
                     description={module.description || undefined}
                     actions={
                         <>

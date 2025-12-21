@@ -2,7 +2,7 @@
 
 ## AI-Powered Exam Question Generator with Table of Specifications (TOS) Creator
 
-**Status:** Backend 100% Complete ✅ | Frontend Fully Implemented ✅  
+**Status:** Backend 100% Complete | Frontend Fully Implemented  
 **Last Updated:** December 21, 2025
 
 ---
@@ -102,13 +102,13 @@ The study will also gather feedback from educators to evaluate the system's ease
 
 #### Laptop Requirements
 
-| Component   | Specification                                                  | Description                                                                                                               |
-| ----------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Component   | Specification                                                 | Description                                                                                                               |
+| ----------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **CPU**     | Intel® Core™ i5-1135G7 (or higher) or AMD Ryzen 5 5000 series | To handle multitasking efficiently and run development tools without lag                                                  |
-| **RAM**     | 8GB DDR4 (16GB preferred for dev)                              | For optimal performance, especially when running multiple applications or large datasets for exam creation                |
-| **Storage** | 256GB SSD minimum (512GB recommended)                          | For faster boot times and system performance, enabling quick data access and smooth operation of development environments |
-| **Display** | Full HD (1920x1080) or higher                                  | For efficient workspace with multiple windows open during development                                                     |
-| **Network** | Stable Wi-Fi or Ethernet (minimum 25 Mbps)                     | To allow cloud synchronization, real-time updates, and API calls                                                          |
+| **RAM**     | 8GB DDR4 (16GB preferred for dev)                             | For optimal performance, especially when running multiple applications or large datasets for exam creation                |
+| **Storage** | 256GB SSD minimum (512GB recommended)                         | For faster boot times and system performance, enabling quick data access and smooth operation of development environments |
+| **Display** | Full HD (1920x1080) or higher                                 | For efficient workspace with multiple windows open during development                                                     |
+| **Network** | Stable Wi-Fi or Ethernet (minimum 25 Mbps)                    | To allow cloud synchronization, real-time updates, and API calls                                                          |
 
 #### Mobile Phone Requirements (Optional)
 
@@ -170,16 +170,17 @@ The study will also gather feedback from educators to evaluate the system's ease
 
 The database consists of several interconnected tables:
 
-| Table               | Purpose                                                                  |
-| ------------------- | ------------------------------------------------------------------------ |
-| **Subjects**        | Categorizes subjects                                                     |
-| **Users**           | Stores user details (educators, admins)                                  |
-| **Topics**          | Links specific topics to subjects                                        |
-| **CognitiveLevels** | Classifies questions based on Bloom's Taxonomy                           |
-| **Questions**       | Stores individual questions with topic and cognitive level associations  |
-| **Exams**           | Tracks exams created by educators                                        |
-| **ExamQuestions**   | Connects questions to specific exams                                     |
-| **TOS**             | Records question distribution by topic and cognitive level for each exam |
+| Table                   | Purpose                                                                |
+| ----------------------- | ---------------------------------------------------------------------- |
+| **Users**               | Stores user details (educators, admins) with RBAC support              |
+| **Modules**             | Course modules with subject area and curriculum information            |
+| **Topics**              | Hierarchical topics with parent-child relationships                    |
+| **LearningObjectives**  | Learning outcomes linked to topics using Bloom's Taxonomy              |
+| **TosGenerates**        | Table of Specifications with AI generation configuration               |
+| **ExamQuestions**       | Question bank with cognitive levels, difficulty, and approval workflow |
+| **Exams**               | Complete exams with metadata and configuration                         |
+| **ExamItems**           | Junction table connecting exams to questions with ordering             |
+| **Roles & Permissions** | RBAC tables for role-based access control                              |
 
 ### Architectural Diagram
 
@@ -196,11 +197,11 @@ The ExamMaster architecture consists of:
 └─────────────────────────┬───────────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────────┐
-│                         Backend                                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │    Exam      │  │     TOS      │  │       Data           │  │
-│  │  Generator   │  │  Generator   │  │    Processing        │  │
-│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+│                         Backend                                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │    Exam      │  │     TOS      │  │       Data           │   │
+│  │  Generator   │  │  Generator   │  │    Processing        │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────────┐
@@ -209,7 +210,7 @@ The ExamMaster architecture consists of:
 └─────────────────────────┬───────────────────────────────────────┘
                           │
 ┌─────────────────────────▼───────────────────────────────────────┐
-│                        Database                                  │
+│                        Database                                 │
 │        (Question Banks, User Info, Exam Data)                   │
 └─────────────────────────────────────────────────────────────────┘
                           │
@@ -284,18 +285,18 @@ The **Scrum methodology** (Agile approach) is used for developing ExamMaster bec
 
 ## Tech Stack
 
-| Layer            | Technology                                            |
-| ---------------- | ----------------------------------------------------- |
-| **Frontend**     | React 19.2.3, TypeScript 5.9.3, Tailwind CSS 4.1.18   |
-| **UI Library**   | shadcn/ui 3.5.1, Radix UI, Lucide React               |
-| **Backend**      | Laravel 12.43.1, PHP 8.3.28                           |
-| **Database**     | SQLite (dev), MySQL/PostgreSQL (production)           |
-| **Routing**      | Laravel Wayfinder 0.1.12, Inertia.js 2.3.3            |
-| **Auth**         | Laravel Fortify 1.33.0, Laravel Sanctum 4.2.1         |
+| Layer              | Technology                                          |
+| ------------------ | --------------------------------------------------- |
+| **Frontend**       | React 19.2.3, TypeScript 5.9.3, Tailwind CSS 4.1.18 |
+| **UI Library**     | shadcn/ui 3.5.1, Radix UI, Lucide React             |
+| **Backend**        | Laravel 12.43.1, PHP 8.3.29                         |
+| **Database**       | MySQL 8.0+ (production-ready)                       |
+| **Routing**        | Laravel Wayfinder 0.1.12, Inertia.js 2.0.16         |
+| **Auth**           | Laravel Fortify 1.33.0, Laravel Sanctum 4.2.1       |
 | **AI Integration** | PrismPHP 0.99.2 (OpenAI, Gemini, Anthropic)         |
-| **AI Models**    | GPT-4o-mini, Gemini 3 Flash Preview, Claude 3.5       |
-| **Testing**      | Pest PHP 4.2.0                                        |
-| **Dev Tools**    | Vite 7.3.0, Laravel Pint 1.26.0, Laravel Boost 1.8+   |
+| **AI Models**      | GPT-4o-mini, Gemini 1.5 Flash, Claude 3.5 Sonnet    |
+| **Testing**        | Pest PHP 4.2.0                                      |
+| **Dev Tools**      | Vite 7.3.0, Laravel Pint 1.26.0, Laravel Boost 1.8+ |
 
 ---
 
@@ -303,10 +304,10 @@ The **Scrum methodology** (Agile approach) is used for developing ExamMaster bec
 
 ### Prerequisites
 
--   PHP 8.2+
+-   PHP 8.3+
 -   Composer
 -   Node.js 18+
--   MySQL
+-   MySQL 8.0+
 
 ### Installation
 
@@ -327,8 +328,13 @@ cp .env.example .env
 # Generate application key
 php artisan key:generate
 
-# Create SQLite database
-touch database/database.sqlite
+# Configure database in .env file
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=examaster
+# DB_USERNAME=root
+# DB_PASSWORD=
 
 # Run migrations
 php artisan migrate
@@ -360,7 +366,7 @@ php artisan queue:work
 npm run dev
 ```
 
-> **⚠️ IMPORTANT**: The queue worker MUST be running for AI question generation to work. Without it, you'll get timeout errors. See [Queue Setup Guide](docs/QUEUE_SETUP.md) for details.
+> **IMPORTANT**: The queue worker MUST be running for AI question generation to work. Without it, you'll get timeout errors. See [Queue Setup Guide](docs/QUEUE_SETUP.md) for details.
 
 ### Running Tests
 
@@ -376,127 +382,138 @@ php artisan test --filter=TopicTest
 ```
 
 **Test Results (Dec 19, 2025):**
-- ✅ 32+ tests passing
-- ✅ 9/9 Exam Builder tests passing
-- ✅ 6/6 Topic backend tests passing
-- ✅ All authentication tests passing
-- ✅ Module, TOS, Question tests passing
-- ✅ No regressions detected
-- ✅ 85% code coverage
+
+-   32+ tests passing
+-   9/9 Exam Builder tests passing
+-   6/6 Topic backend tests passing
+-   All authentication tests passing
+-   Module, TOS, Question tests passing
+-   No regressions detected
+-   85% code coverage
 
 ---
 
 ## Current Implementation Status
 
-### ✅ Backend Complete (98%)
+### Backend Complete (98%)
 
 **Fully Implemented:**
-- Authentication system (Laravel Fortify with 2FA)
-- Role-Based Access Control (3 roles, 21 permissions)
-- User Management (full CRUD with search)
-- Module Management (full CRUD with soft deletes)
-- Topic Management (hierarchical with parent-child relationships)
-- Learning Objectives (Bloom's taxonomy integration, 5 routes)
-- TOS Generator with TosCalculator service (matrix generation, balance analysis)
-- Question Bank with QuestionDuplicateDetector service (Levenshtein algorithm)
-- Exam Builder (complete assembly system, 13 routes)
-- Duplicate Detection (similarity scoring, matching aspects)
+
+-   Authentication system (Laravel Fortify with 2FA)
+-   Role-Based Access Control (3 roles, 21 permissions)
+-   User Management (full CRUD with search)
+-   Module Management (full CRUD with soft deletes)
+-   Topic Management (hierarchical with parent-child relationships)
+-   Learning Objectives (Bloom's taxonomy integration, 5 routes)
+-   TOS Generator with TosCalculator service (matrix generation, balance analysis)
+-   Question Bank with QuestionDuplicateDetector service (Levenshtein algorithm)
+-   Exam Builder (complete assembly system, 13 routes)
+-   Duplicate Detection (similarity scoring, matching aspects)
 
 **Backend Features:**
-- 67+ routes across 11 controllers
-- 13 database migrations with full relationships
-- 11 Eloquent models with factories
-- 2 advanced services (TOS calculations, duplicate detection)
-- Comprehensive testing (32+ passing tests)
-- PSR-12 code standards (Laravel Pint)
-- AI integration (OpenAI, Gemini, Claude via PrismPHP)
-- Kebab-case URL standardization
+
+-   67+ routes across 11 controllers
+-   13 database migrations with full relationships
+-   11 Eloquent models with factories
+-   2 advanced services (TOS calculations, duplicate detection)
+-   Comprehensive testing (32+ passing tests)
+-   PSR-12 code standards (Laravel Pint)
+-   AI integration (OpenAI, Gemini, Claude via PrismPHP)
+-   Kebab-case URL standardization
 
 **See detailed documentation:**
-- [BACKEND_COMPLETE.md](docs/BACKEND_COMPLETE.md) - Full implementation summary
-- [API.md](docs/API.md) - Complete API documentation
-- [ROADMAP.md](docs/ROADMAP.md) - Development progress
-- [RBAC.md](docs/RBAC.md) - Role and permission details
 
-### ✅ Frontend Complete (100%)
+-   [BACKEND_COMPLETE.md](docs/BACKEND_COMPLETE.md) - Full implementation summary
+-   [API.md](docs/API.md) - Complete API documentation
+-   [ROADMAP.md](docs/ROADMAP.md) - Development progress
+-   [RBAC.md](docs/RBAC.md) - Role and permission details
+
+### Frontend Complete (100%)
 
 **Fully Implemented:**
-- All CRUD interfaces with Inertia.js + React
-- TypeScript strict mode support
-- Radix UI components (shadcn/ui)
-- Consistent UI patterns (page-level padding)
-- Dark/light mode support
-- Type-safe routing with Wayfinder
-- Responsive design (mobile-first)
-- Form validation with error handling
-- Search and filter functionality
-- Pagination components
-- Loading states and animations
+
+-   All CRUD interfaces with Inertia.js + React
+-   TypeScript strict mode support
+-   Radix UI components (shadcn/ui)
+-   Consistent UI patterns (page-level padding)
+-   Dark/light mode support
+-   Type-safe routing with Wayfinder
+-   Responsive design (mobile-first)
+-   Form validation with error handling
+-   Search and filter functionality
+-   Pagination components
+-   Loading states and animations
 
 **Pages Implemented:**
-- Dashboard with statistics
-- User management (list, create, edit, delete)
-- Module management (full CRUD)
-- Topic management (hierarchical display)
-- Learning objectives (Bloom's taxonomy UI)
-- TOS generator (create, edit, list, view)
-- TOS calculator (matrix visualization)
-- Question bank (search, filter, CRUD)
-- Duplicate detection (similarity analysis)
-- Exam builder (question management)
-- Profile settings (profile, password, appearance)
+
+-   Dashboard with statistics
+-   User management (list, create, edit, delete)
+-   Module management (full CRUD)
+-   Topic management (hierarchical display)
+-   Learning objectives (Bloom's taxonomy UI)
+-   TOS generator (create, edit, list, view)
+-   TOS calculator (matrix visualization)
+-   Question bank (search, filter, CRUD)
+-   Duplicate detection (similarity analysis)
+-   Exam builder (question management)
+-   Profile settings (profile, password, appearance)
 
 ---
 
 ## Tech Stack
 
 ### Backend
-- **Laravel 12.43.1** - PHP framework with modern features
-- **PHP 8.3.28** - Latest PHP version
-- **SQLite** - Development database (MySQL/PostgreSQL for production)
-- **Laravel Fortify** - Authentication with 2FA support
-- **Spatie Laravel Permission** - Role-Based Access Control
-- **PrismPHP** - AI integration (OpenAI, Gemini, Anthropic)
-- **Laravel Queues** - Background job processing
-- **Laravel Pint** - PHP code formatter
+
+-   **Laravel 12.43.1** - PHP framework with modern features
+-   **PHP 8.3.29** - Latest PHP version
+-   **MySQL 8.0+** - Production-ready relational database
+-   **Laravel Fortify** - Authentication with 2FA support
+-   **Spatie Laravel Permission** - Role-Based Access Control
+-   **PrismPHP** - AI integration (OpenAI, Gemini, Anthropic)
+-   **Laravel Queues** - Background job processing
+-   **Laravel Pint** - PHP code formatter
 
 ### Frontend
-- **React 19.0.0** - UI library
-- **TypeScript 5.9.3** - Type-safe JavaScript
-- **Inertia.js 2.x** - SPA framework without API
-- **Tailwind CSS 4.x** - Utility-first CSS
-- **shadcn/ui** - Component library (Radix UI primitives)
-- **Laravel Wayfinder** - Type-safe routing
-- **Vite 6.0** - Build tool and dev server
+
+-   **React 19.2.3** - UI library
+-   **TypeScript 5.9.3** - Type-safe JavaScript
+-   **Inertia.js 2.0.16** - SPA framework without API
+-   **Tailwind CSS 4.x** - Utility-first CSS
+-   **shadcn/ui** - Component library (Radix UI primitives)
+-   **Laravel Wayfinder** - Type-safe routing
+-   **Vite 6.0** - Build tool and dev server
 
 ### Development Tools
-- **Laravel Herd** - Local development environment
-- **Pest 4.x** - Testing framework with browser testing
-- **PHPUnit** - PHP testing
-- **Git** - Version control
-- **Composer** - PHP dependency manager
-- **npm** - JavaScript package manager
+
+-   **Laravel Herd** - Local development environment
+-   **Pest 4.x** - Testing framework with browser testing
+-   **PHPUnit** - PHP testing
+-   **Git** - Version control
+-   **Composer** - PHP dependency manager
+-   **npm** - JavaScript package manager
 
 ### AI Providers
-- **OpenAI GPT-4o-mini** - Primary AI provider
-- **Google Gemini 3 Flash** - Alternative provider
-- **Anthropic Claude** - Backup provider
+
+-   **OpenAI GPT-4o-mini** - Primary AI provider for question generation
+-   **Google Gemini 3 Flash** - Fast and efficient alternative provider  
+-   **Anthropic Claude 3.5 Sonnet** - High-quality backup provider
 
 ### Key Features
-- ✅ **Fully Implemented Authentication** - Login, register, password reset, 2FA
-- ✅ **Complete RBAC System** - 3 roles, 21 permissions
-- ✅ **Module Management** - Full CRUD with soft deletes
-- ✅ **Hierarchical Topics** - Parent-child relationships
-- ✅ **Learning Objectives** - Bloom's taxonomy integration
-- ✅ **TOS Generator** - AI-powered question generation
-- ✅ **TOS Calculator** - Matrix analysis and balance validation
-- ✅ **Question Bank** - Full CRUD with approval workflow
-- ✅ **Duplicate Detection** - Levenshtein similarity algorithm
-- ✅ **Exam Builder** - Complete exam assembly system
-- ✅ **Dark Mode** - Light/dark/system theme support
-- ✅ **Type-Safe Routing** - Wayfinder integration
-- ✅ **Responsive Design** - Mobile-first approach
-- ✅ **Consistent UI** - shadcn/ui components throughout
+
+-   **Fully Implemented Authentication** - Login, register, password reset, 2FA
+-   **Complete RBAC System** - 3 roles, 21 permissions
+-   **Module Management** - Full CRUD with soft deletes
+-   **Hierarchical Topics** - Parent-child relationships
+-   **Learning Objectives** - Bloom's taxonomy integration
+-   **TOS Generator** - AI-powered question generation
+-   **TOS Calculator** - Matrix analysis and balance validation
+-   **Question Bank** - Full CRUD with approval workflow
+-   **Duplicate Detection** - Levenshtein similarity algorithm
+-   **Exam Builder** - Complete exam assembly system
+-   **Dark Mode** - Light/dark/system theme support
+-   **Type-Safe Routing** - Wayfinder integration
+-   **Responsive Design** - Mobile-first approach
+-   **Consistent UI** - shadcn/ui components throughout
 
 ---
 

@@ -21,11 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
-
-        // Disable CSRF verification in testing environment
-        if (app()->environment('testing')) {
-            $middleware->validateCsrfTokens(except: ['*']);
-        }
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

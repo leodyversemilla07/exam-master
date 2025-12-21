@@ -10,7 +10,7 @@ class TosCalculatorController extends Controller
 {
     public function index(Module $module): Response
     {
-        $module->load(['topics.learning_objectives' => function ($query) {
+        $module->load(['topics.learningObjectives' => function ($query) {
             $query->where('is_active', true)->orderBy('order');
         }]);
 
@@ -39,7 +39,7 @@ class TosCalculatorController extends Controller
                 'total' => 0,
             ];
 
-            foreach ($topic->learning_objectives as $objective) {
+            foreach ($topic->learningObjectives as $objective) {
                 $row[$objective->cognitive_level]++;
                 $row['total']++;
                 $distribution[$objective->cognitive_level]++;
