@@ -105,14 +105,14 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
     };
 
     const getStatusBadge = (status: string) => {
-        const variants = {
-            draft: 'secondary',
-            published: 'default',
-            archived: 'outline',
+        const colors = {
+            draft: 'bg-muted text-muted-foreground border-border',
+            published: 'bg-success/10 text-success border-success/20 dark:bg-success/20 dark:border-success/30',
+            archived: 'bg-secondary/10 text-secondary border-secondary/20 dark:bg-secondary/20 dark:border-secondary/30',
         } as const;
 
         return (
-            <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
+            <Badge className={colors[status as keyof typeof colors] || 'bg-muted text-muted-foreground border-border'}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
             </Badge>
         );
@@ -120,13 +120,13 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
 
     const getTypeBadge = (type: string) => {
         const colors = {
-            formative: 'bg-info/10 text-info border-info/20',
-            summative: 'bg-success/10 text-success border-success/20',
-            diagnostic: 'bg-secondary/10 text-secondary border-secondary/20',
+            formative: 'bg-info/10 text-info border-info/20 dark:bg-info/20 dark:border-info/30',
+            summative: 'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:border-primary/30',
+            diagnostic: 'bg-warning/10 text-warning border-warning/20 dark:bg-warning/20 dark:border-warning/30',
         } as const;
 
         return (
-            <Badge className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground'}>
+            <Badge className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground border-border'}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
             </Badge>
         );
@@ -136,25 +136,22 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Exam Builder" />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-7xl">
-                    <div className="mb-6">
-                        <PageHeader
-                            title="Exam Builder"
-                            description="Create complete exams by combining questions from your question bank"
-                            actions={
-                                <Button asChild>
-                                    <Link href="/exam-builder/create">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Create Exam
-                                    </Link>
-                                </Button>
-                            }
-                        />
-                    </div>
+            <div className="p-4 md:p-6 space-y-6">
+                <PageHeader
+                    title="Exam Builder"
+                    description="Create complete exams by combining questions from your question bank"
+                    actions={
+                        <Button asChild>
+                            <Link href="/exam-builder/create">
+                                <Plus className="mr-2 size-4" />
+                                Create Exam
+                            </Link>
+                        </Button>
+                    }
+                />
 
-                    {/* Filters */}
-                    <Card className="mb-6">
+                {/* Filters */}
+                <Card>
                         <CardContent className="pt-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                 <div>
@@ -232,14 +229,12 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                 <CardContent className="pt-6">
                                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                                         <div className="flex-1">
-                                            <div className="flex items-start justify-between mb-2">
+                                            <div className="flex flex-wrap items-center gap-2 mb-2">
                                                 <h3 className="text-lg font-semibold text-foreground">
                                                     {exam.title}
                                                 </h3>
-                                                <div className="flex gap-2 ml-4">
-                                                    {getStatusBadge(exam.status)}
-                                                    {getTypeBadge(exam.exam_type)}
-                                                </div>
+                                                {getStatusBadge(exam.status)}
+                                                {getTypeBadge(exam.exam_type)}
                                             </div>
 
                                             {exam.description && (
@@ -334,7 +329,6 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                     )}
 
                     {/* Pagination would go here if needed */}
-                </div>
             </div>
 
             {/* Delete Confirmation Dialog */}

@@ -5,13 +5,45 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import { Module } from '@/types/models';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
+import { Plus, Trash2, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
+import PageHeader from '@/components/page-header';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { store } from '@/actions/App/Http/Controllers/TosGenerateController';
+import { extractTosFromModule } from '@/actions/App/Http/Controllers/ModuleController';
+
 
 interface PageProps {
     modules: Module[];
+    flash?: {
+        tosExtraction?: {
+            success: boolean;
+            data?: {
+                learning_objectives?: Array<{ code: string; description: string }>;
+                cognitive_levels?: {
+                    remembering?: number;
+                    understanding?: number;
+                    applying?: number;
+                    analyzing?: number;
+                    evaluating?: number;
+                    creating?: number;
+                };
+                question_types?: {
+                    multiple_choice?: number;
+                    true_false?: number;
+                    essay?: number;
+                    identification?: number;
+                };
+                recommended_total_items?: number;
+                difficulty_level?: string;
+                suggested_quarter?: string;
+            };
+            error?: string;
+        };
+    };
+    [key: string]: unknown;
 }
 
 interface LearningObjective {
@@ -25,9 +57,12 @@ const breadcrumbs = [
 ];
 
 export default function TosGenerateCreate({ modules }: PageProps) {
+    const { props } = usePage<PageProps>();
     const [objectives, setObjectives] = useState<LearningObjective[]>([
         { code: '', description: '' },
     ]);
+    const [isExtracting, setIsExtracting] = useState(false);
+    const [selectedModule, setSelectedModule] = useState<Module | null>(null);
 
     const form = useForm({
         module_id: '',
@@ -55,8 +90,58 @@ export default function TosGenerateCreate({ modules }: PageProps) {
         additional_instructions: '',
     });
 
+    // Handle flash data from TOS extraction using Inertia
+    useEffect(() => {
+        const tosExtraction = props.flash?.tosExtraction;
+        if (!tosExtraction) return;
+
+        setIsExtracting(false);
+
+        if (tosExtraction.success && tosExtraction.data) {
+            const data = tosExtraction.data;
+
+            // Auto-populate learning objectives
+            if (data.learning_objectives && data.learning_objectives.length > 0) {
+                setObjectives(data.learning_objectives);
+            }
+
+            // Auto-populate all fields
+            form.setData({
+                ...form.data,
+                learning_objectives: data.learning_objectives || objectives,
+                total_items: data.recommended_total_items || 50,
+                cognitive_levels: {
+                    remember: data.cognitive_levels?.remembering || 0,
+                    understand: data.cognitive_levels?.understanding || 0,
+                    apply: data.cognitive_levels?.applying || 0,
+                    analyze: data.cognitive_levels?.analyzing || 0,
+                    evaluate: data.cognitive_levels?.evaluating || 0,
+                    create: data.cognitive_levels?.creating || 0,
+                },
+                question_types: {
+                    multiple_choice: data.question_types?.multiple_choice || 0,
+                    true_false: data.question_types?.true_false || 0,
+                    essay: data.question_types?.essay || 0,
+                    identification: data.question_types?.identification || 0,
+                },
+                difficulty_level: data.difficulty_level || 'mixed',
+                quarter: data.suggested_quarter || form.data.quarter,
+            });
+
+            toast.success('Successfully extracted TOS data from PDF!', {
+                description: `Auto-populated ${data.learning_objectives?.length || 0} learning objectives.`
+            });
+        } else if (tosExtraction.error) {
+            toast.error('Failed to extract TOS data', {
+                description: tosExtraction.error || 'Could not analyze the PDF file.'
+            });
+        }
+    }, [props.flash?.tosExtraction]);
+
     const handleModuleChange = (moduleId: string) => {
         const module = modules.find((m) => m.id === Number(moduleId));
+        setSelectedModule(module || null);
+
         if (module) {
             form.setData({
                 ...form.data,
@@ -68,6 +153,25 @@ export default function TosGenerateCreate({ modules }: PageProps) {
             form.setData('module_id', moduleId);
         }
     };
+
+    const handleAutoFillFromPDF = () => {
+        if (!selectedModule || !selectedModule.pdf_file) return;
+
+        setIsExtracting(true);
+
+        // Use Inertia router - the response comes via flash data in useEffect
+        router.post(extractTosFromModule.url(selectedModule.id), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            onError: () => {
+                setIsExtracting(false);
+                toast.error('Extraction failed', {
+                    description: 'An error occurred while analyzing the PDF.'
+                });
+            },
+        });
+    };
+
 
     const addObjective = () => {
         const newObjectives = [...objectives, { code: '', description: '' }];
@@ -114,7 +218,7 @@ export default function TosGenerateCreate({ modules }: PageProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        form.post('/tos-generates');
+        form.post(store.url());
     };
 
     return (
@@ -122,12 +226,10 @@ export default function TosGenerateCreate({ modules }: PageProps) {
             <Head title="Generate Table of Specifications" />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Generate TOS</h1>
-                    <p className="mt-2 text-muted-foreground">
-                        Create a new table of specifications for exam question generation
-                    </p>
-                </div>
+                <PageHeader
+                    title="Generate TOS"
+                    description="Create a new table of specifications for exam question generation"
+                />
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Basic Information */}
@@ -160,6 +262,31 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                     {form.errors.module_id && (
                                         <p className="text-sm text-destructive">{form.errors.module_id}</p>
                                     )}
+
+                                    {/* Auto-Fill Button - Shows when module with PDF is selected */}
+                                    {selectedModule && selectedModule.pdf_file && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAutoFillFromPDF}
+                                            disabled={isExtracting}
+                                            className="w-full mt-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                                        >
+                                            {isExtracting ? (
+                                                <>
+                                                    <Loader2 className="mr-2 size-4 animate-spin" />
+                                                    Analyzing PDF...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles className="mr-2 size-4" />
+                                                    Auto-Fill from PDF
+                                                </>
+                                            )}
+                                        </Button>
+                                    )}
+
                                 </div>
 
                                 <div className="space-y-2">
@@ -303,7 +430,7 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                             min="0"
                                             value={
                                                 form.data.cognitive_levels[
-                                                    level as keyof typeof form.data.cognitive_levels
+                                                level as keyof typeof form.data.cognitive_levels
                                                 ]
                                             }
                                             onChange={(e) =>

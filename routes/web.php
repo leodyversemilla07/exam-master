@@ -59,6 +59,14 @@ Route::post('users/{user}/toggle', [UserController::class, 'toggleActive'])
 Route::resource('modules', ModuleController::class)
     ->middleware(['auth', 'verified', 'permission:view modules']);
 
+Route::post('modules/extract-from-pdf', [ModuleController::class, 'extractFromPdf'])
+    ->name('modules.extract-pdf')
+    ->middleware(['auth', 'verified', 'permission:create modules']);
+
+Route::post('modules/{module}/extract-tos', [ModuleController::class, 'extractTosFromModule'])
+    ->name('modules.extract-tos')
+    ->middleware(['auth', 'verified', 'permission:create tos']);
+
 Route::post('modules/{module}/toggle', [ModuleController::class, 'toggleStatus'])
     ->name('modules.toggle')
     ->middleware(['auth', 'verified', 'permission:edit modules']);

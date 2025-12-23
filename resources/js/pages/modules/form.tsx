@@ -5,12 +5,31 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/app-layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { Module } from '@/types/models';
 import { BreadcrumbItem } from '@/types';
-import { FileText, X } from 'lucide-react';
-import { useState } from 'react';
+import { FileText, X, Sparkles, Loader2, CheckCircle2, AlertCircle, Upload } from 'lucide-react';
+import { useState, useRef } from 'react';
 import PageHeader from '@/components/page-header';
+import axios from 'axios';
+import { store, update, edit, extractFromPdf } from '@/actions/App/Http/Controllers/ModuleController';
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
+
+interface ExtractedTopic {
+    title: string;
+    description?: string;
+    learning_objectives?: string[];
+}
+
+interface ExtractedData {
+    name: string;
+    code: string;
+    description: string;
+    subject_area: string;
+    grade_level: string;
+    curriculum_year: string;
+    topics?: ExtractedTopic[];
+}
 
 interface Props {
     module?: Module;
@@ -21,10 +40,17 @@ export default function ModuleForm({ module }: Props) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Modules', href: '/modules' },
-        { title: isEditing ? 'Edit Module' : 'Create Module', href: isEditing ? `/modules/${module.id}/edit` : '/modules/create' },
+        { title: isEditing ? 'Edit Module' : 'Create Module', href: isEditing ? edit.url(module.id) : '/modules/create' },
     ];
 
     const [fileName, setFileName] = useState<string | null>(null);
+    const [isExtracting, setIsExtracting] = useState(false);
+    const [extractionResult, setExtractionResult] = useState<{
+        success: boolean;
+        message: string;
+        topics?: ExtractedTopic[];
+    } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const form = useForm({
         code: module?.code || '',
@@ -42,25 +68,91 @@ export default function ModuleForm({ module }: Props) {
         if (file) {
             form.setData('pdf_file', file);
             setFileName(file.name);
+            setExtractionResult(null); // Clear previous extraction result
         }
     };
 
     const removeFile = () => {
         form.setData('pdf_file', null);
         setFileName(null);
+        setExtractionResult(null);
+    };
+
+    const handleExtractFromPdf = async () => {
+        if (!form.data.pdf_file) return;
+
+        setIsExtracting(true);
+        setExtractionResult(null);
+
+        try {
+            const formData = new FormData();
+            formData.append('pdf', form.data.pdf_file);
+
+            const response = await axios.post(extractFromPdf.url(), formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.success && response.data.data) {
+                const extracted: ExtractedData = response.data.data;
+
+                // Auto-populate form fields
+                if (extracted.name) form.setData('name', extracted.name);
+                if (extracted.code) form.setData('code', extracted.code);
+                if (extracted.description) form.setData('description', extracted.description);
+                if (extracted.subject_area) form.setData('subject_area', extracted.subject_area);
+                if (extracted.grade_level) form.setData('grade_level', extracted.grade_level);
+                if (extracted.curriculum_year) form.setData('curriculum_year', extracted.curriculum_year);
+
+                // Count what was populated
+                const populated = [
+                    extracted.name && 'Module Name',
+                    extracted.code && 'Code',
+                    extracted.description && 'Description',
+                    extracted.subject_area && 'Subject Area',
+                    extracted.grade_level && 'Grade Level',
+                    extracted.curriculum_year && 'Curriculum Year',
+                ].filter(Boolean);
+
+                setExtractionResult({
+                    success: true,
+                    message: `Successfully extracted ${populated.length} fields: ${populated.join(', ')}`,
+                    topics: extracted.topics,
+                });
+            } else {
+                setExtractionResult({
+                    success: false,
+                    message: response.data.error || 'Failed to extract information from PDF',
+                });
+            }
+        } catch (error: unknown) {
+            const errorMessage = axios.isAxiosError(error)
+                ? error.response?.data?.message || error.message
+                : 'An error occurred while analyzing the PDF';
+            setExtractionResult({
+                success: false,
+                message: errorMessage,
+            });
+        } finally {
+            setIsExtracting(false);
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (isEditing) {
-            form.post(`/modules/${module.id}`, {
+            // Use POST with _method spoofing for file uploads (Laravel convention)
+            router.post(update.url(module.id), {
+                ...form.data,
+                _method: 'put',
+            }, {
                 forceFormData: true,
                 preserveScroll: true,
-                _method: 'put',
             });
         } else {
-            form.post('/modules', {
+            form.post(store.url(), {
                 forceFormData: true,
                 preserveScroll: true,
             });
@@ -78,6 +170,118 @@ export default function ModuleForm({ module }: Props) {
                 />
 
                 <form onSubmit={handleSubmit}>
+                    {/* PDF Upload with AI Extraction - Show first for new modules */}
+                    {!isEditing && (
+                        <div className="mb-6">
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+
+                            {!fileName ? (
+                                <Empty
+                                    className="border-2 border-dashed border-primary/20 bg-primary/5 cursor-pointer hover:border-primary/40 transition-colors"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <EmptyHeader>
+                                        <EmptyMedia variant="icon">
+                                            <Upload className="size-5" />
+                                        </EmptyMedia>
+                                        <EmptyTitle className="flex items-center gap-2">
+                                            <Sparkles className="size-4 text-primary" />
+                                            AI-Powered Auto-Fill
+                                        </EmptyTitle>
+                                        <EmptyDescription>
+                                            Upload a curriculum PDF and let AI extract module information automatically
+                                        </EmptyDescription>
+                                    </EmptyHeader>
+                                    <EmptyContent>
+                                        <Button type="button" variant="outline">
+                                            <Upload className="size-4 mr-2" />
+                                            Choose PDF File
+                                        </Button>
+                                        <p className="text-xs text-muted-foreground">
+                                            PDF files up to 10MB
+                                        </p>
+                                    </EmptyContent>
+                                </Empty>
+                            ) : (
+                                <Card className="border-2 border-primary/20 bg-primary/5">
+                                    <CardContent className="pt-6 space-y-4">
+                                        <div className="flex items-center gap-3 rounded-lg border bg-background p-4">
+                                            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                                                <FileText className="size-5 text-muted-foreground" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate">{fileName}</p>
+                                                <p className="text-xs text-muted-foreground">PDF Document</p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={removeFile}
+                                                className="size-8 p-0"
+                                            >
+                                                <X className="size-4" />
+                                            </Button>
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            onClick={handleExtractFromPdf}
+                                            disabled={isExtracting}
+                                            className="w-full"
+                                        >
+                                            {isExtracting ? (
+                                                <>
+                                                    <Loader2 className="size-4 mr-2 animate-spin" />
+                                                    Analyzing PDF...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles className="size-4 mr-2" />
+                                                    Analyze & Auto-Fill
+                                                </>
+                                            )}
+                                        </Button>
+
+                                        {extractionResult && (
+                                            <div className={`rounded-lg p-3 ${extractionResult.success
+                                                    ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800'
+                                                    : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'
+                                                }`}>
+                                                <div className="flex items-start gap-2">
+                                                    {extractionResult.success ? (
+                                                        <CheckCircle2 className="size-5 text-green-600 dark:text-green-400 mt-0.5" />
+                                                    ) : (
+                                                        <AlertCircle className="size-5 text-red-600 dark:text-red-400 mt-0.5" />
+                                                    )}
+                                                    <div className="flex-1">
+                                                        <p className={`text-sm font-medium ${extractionResult.success
+                                                                ? 'text-green-800 dark:text-green-200'
+                                                                : 'text-red-800 dark:text-red-200'
+                                                            }`}>
+                                                            {extractionResult.message}
+                                                        </p>
+                                                        {extractionResult.topics && extractionResult.topics.length > 0 && (
+                                                            <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                                                                {extractionResult.topics.length} topics detected (can be added after module creation)
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
+                    )}
+
                     <Card>
                         <CardHeader>
                             <CardTitle>Module Information</CardTitle>
@@ -144,41 +348,44 @@ export default function ModuleForm({ module }: Props) {
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="pdf_file">Module PDF (Optional)</Label>
+                            {/* PDF upload for editing mode */}
+                            {isEditing && (
                                 <div className="space-y-2">
-                                    {(fileName || module?.pdf_file) && (
-                                        <div className="flex items-center gap-2 rounded-lg border p-3 bg-muted/50">
-                                            <FileText className="size-5 text-muted-foreground" />
-                                            <span className="flex-1 text-sm font-medium truncate">
-                                                {fileName || (module?.pdf_file ? module.pdf_file.split('/').pop() : '')}
-                                            </span>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={removeFile}
-                                                className="size-8 p-0"
-                                            >
-                                                <X className="size-4" />
-                                            </Button>
-                                        </div>
-                                    )}
-                                    <Input
-                                        id="pdf_file"
-                                        type="file"
-                                        accept=".pdf"
-                                        onChange={handleFileChange}
-                                        className="cursor-pointer"
-                                    />
-                                    <p className="text-xs text-muted-foreground">
-                                        Upload a PDF file of the module content (max 10MB)
-                                    </p>
-                                    {form.errors.pdf_file && (
-                                        <p className="text-sm text-destructive">{form.errors.pdf_file}</p>
-                                    )}
+                                    <Label htmlFor="pdf_file">Module PDF (Optional)</Label>
+                                    <div className="space-y-2">
+                                        {(fileName || module?.pdf_file) && (
+                                            <div className="flex items-center gap-2 rounded-lg border p-3 bg-muted/50">
+                                                <FileText className="size-5 text-muted-foreground" />
+                                                <span className="flex-1 text-sm font-medium truncate">
+                                                    {fileName || (module?.pdf_file ? module.pdf_file.split('/').pop() : '')}
+                                                </span>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={removeFile}
+                                                    className="size-8 p-0"
+                                                >
+                                                    <X className="size-4" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                        <Input
+                                            id="pdf_file"
+                                            type="file"
+                                            accept=".pdf"
+                                            onChange={handleFileChange}
+                                            className="cursor-pointer"
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            Upload a PDF file of the module content (max 10MB)
+                                        </p>
+                                        {form.errors.pdf_file && (
+                                            <p className="text-sm text-destructive">{form.errors.pdf_file}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">

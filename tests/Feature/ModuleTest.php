@@ -6,10 +6,7 @@ use Spatie\Permission\Models\Permission;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\delete;
 use function Pest\Laravel\get;
-use function Pest\Laravel\patch;
-use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -143,4 +140,37 @@ it('toggles module active status', function () {
         ->assertSessionHas('success');
 
     expect($module->fresh()->is_active)->toBeFalse();
+});
+
+it('rejects extraction without a PDF file', function () {
+    $this->postJson(route('modules.extract-pdf'), [])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['pdf']);
+});
+
+it('rejects extraction with non-PDF file', function () {
+    $file = \Illuminate\Http\UploadedFile::fake()->create('document.txt', 100);
+
+    $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['pdf']);
+});
+
+it('requires authentication for PDF extraction', function () {
+    auth()->logout();
+
+    $file = \Illuminate\Http\UploadedFile::fake()->create('module.pdf', 100);
+
+    $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
+        ->assertStatus(401);
+});
+
+it('requires create modules permission for extraction', function () {
+    // Remove the create modules permission
+    $this->user->revokePermissionTo('create modules');
+
+    $file = \Illuminate\Http\UploadedFile::fake()->create('module.pdf', 100);
+
+    $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
+        ->assertStatus(403);
 });

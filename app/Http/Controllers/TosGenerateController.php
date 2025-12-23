@@ -46,7 +46,7 @@ class TosGenerateController extends Controller
         $modules = Module::query()
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'code', 'name', 'subject_area', 'grade_level']);
+            ->get(['id', 'code', 'name', 'subject_area', 'grade_level', 'pdf_file']);
 
         return Inertia::render('tos-generates/create', [
             'modules' => $modules,

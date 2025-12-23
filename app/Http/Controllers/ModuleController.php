@@ -4,12 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreModuleRequest;
 use App\Models\Module;
+use App\Services\AI\ModuleExtractorService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ModuleController extends Controller
 {
+    /**
+     * Extract module information from uploaded PDF using AI.
+     */
+    public function extractFromPdf(Request $request, ModuleExtractorService $extractor): JsonResponse
+    {
+        abort_unless(auth()->user()->can('create modules'), 403);
+
+        $request->validate([
+            'pdf' => 'required|file|mimes:pdf|max:10240', // Max 10MB
+        ]);
+
+        $result = $extractor->extractFromPdf($request->file('pdf'));
+
+        return response()->json($result);
+    }
+
+    /**
+     * Extract TOS data from a module's already-uploaded PDF.
+     */
+    public function extractTosFromModule(Module $module, \App\Services\AI\TosExtractorService $extractor): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('create tos'), 403);
+
+        $result = $extractor->extractFromModule($module);
+
+        // Return data via Inertia flash session so frontend can use router.post
+        return back()->with('tosExtraction', $result);
+    }
+
     /**
      * Display a listing of modules.
      */

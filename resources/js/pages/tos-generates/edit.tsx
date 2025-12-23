@@ -9,6 +9,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
 import { Module, TosGenerate } from '@/types/models';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import PageHeader from '@/components/page-header';
 import { useState, useEffect } from 'react';
 
 interface PageProps {
@@ -126,17 +127,15 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
             <Head title={`Edit TOS: ${tosGenerate.subject}`} />
 
             <div className="p-4 md:p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Edit TOS</h1>
-                        <p className="mt-2 text-muted-foreground">
-                            Update table of specifications details
-                        </p>
-                    </div>
-                    <Badge variant="outline" className="font-mono">
-                        {tosGenerate.module?.code}
-                    </Badge>
-                </div>
+                <PageHeader
+                    title="Edit TOS"
+                    description="Update table of specifications details"
+                    actions={
+                        <Badge variant="outline" className="font-mono">
+                            {tosGenerate.module?.code}
+                        </Badge>
+                    }
+                />
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Basic Information */}
