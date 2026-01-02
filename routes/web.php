@@ -5,11 +5,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DuplicateDetectionController;
 use App\Http\Controllers\ExamBuilderController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamSessionController;
 use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\LearningObjectiveController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueueMonitorController;
+use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\SystemLogsController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TosCalculatorController;
@@ -79,17 +82,17 @@ Route::post('tos-generates/{tos_generate}/generate', [TosGenerateController::cla
     ->name('tos-generates.generate')
     ->middleware(['auth', 'verified', 'permission:generate questions']);
 
-Route::resource('question-bank', ExamController::class)
-    ->parameters(['question-bank' => 'exam'])
-    ->middleware(['auth', 'verified', 'permission:view exams']);
+Route::delete('question-bank/bulk-destroy', [ExamController::class, 'bulkDestroy'])
+    ->name('question-bank.bulk-destroy')
+    ->middleware(['auth', 'verified', 'permission:bulk delete questions']);
 
 Route::post('question-bank/{exam}/approve', [ExamController::class, 'approve'])
     ->name('question-bank.approve')
     ->middleware(['auth', 'verified', 'permission:approve questions']);
 
-Route::delete('question-bank/bulk-destroy', [ExamController::class, 'bulkDestroy'])
-    ->name('question-bank.bulk-destroy')
-    ->middleware(['auth', 'verified', 'permission:bulk delete questions']);
+Route::resource('question-bank', ExamController::class)
+    ->parameters(['question-bank' => 'exam'])
+    ->middleware(['auth', 'verified', 'permission:view exams']);
 
 // Exam Builder Routes
 Route::resource('exam-builder', ExamBuilderController::class)
@@ -113,7 +116,7 @@ Route::patch('exam-builder/{examId}/questions/{questionId}/points', [ExamBuilder
 
 Route::post('exam-builder/{examId}/publish', [ExamBuilderController::class, 'publish'])
     ->name('exam-builder.publish')
-    ->middleware(['auth', 'verified', 'permission:approve questions']);
+    ->middleware(['auth', 'verified', 'permission:publish exams']);
 
 Route::post('exam-builder/{examId}/duplicate', [ExamBuilderController::class, 'duplicate'])
     ->name('exam-builder.duplicate')
@@ -134,6 +137,21 @@ Route::get('exam-builder/{examId}/export-pdf', [ExamBuilderController::class, 'e
 Route::get('exam-builder/{examId}/export-pdf-answers', [ExamBuilderController::class, 'exportPdfWithAnswers'])
     ->name('exam-builder.export-pdf-answers')
     ->middleware(['auth', 'verified', 'permission:view exams']);
+
+Route::get('exam-builder/{examId}/export-docx', [ExamBuilderController::class, 'exportDocx'])
+    ->name('exam-builder.export-docx')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
+Route::get('exam-builder/{examId}/export-docx-answers', [ExamBuilderController::class, 'exportDocxWithAnswers'])
+    ->name('exam-builder.export-docx-answers')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
+Route::get('exam-builder/{examId}/preview', [ExamBuilderController::class, 'preview'])
+    ->name('exam-builder.preview')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
+
+Route::resource('exam-templates', \App\Http\Controllers\ExamTemplateController::class)
+    ->middleware(['auth', 'verified']);
 
 // Topic Management Routes
 Route::patch('modules/{module}/topics/reorder', [TopicController::class, 'reorder'])
@@ -226,6 +244,22 @@ Route::get('analytics/export-csv', [AnalyticsController::class, 'exportCsv'])
     ->name('analytics.export-csv')
     ->middleware(['auth', 'verified', 'permission:view analytics']);
 
+Route::get('analytics/student-performance', [AnalyticsController::class, 'studentPerformance'])
+    ->name('analytics.student-performance')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/question-difficulty', [AnalyticsController::class, 'questionDifficultyAnalysis'])
+    ->name('analytics.question-difficulty')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/session-performance', [AnalyticsController::class, 'sessionPerformance'])
+    ->name('analytics.session-performance')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
+Route::get('analytics/export-student-performance', [AnalyticsController::class, 'exportStudentPerformance'])
+    ->name('analytics.export-student-performance')
+    ->middleware(['auth', 'verified', 'permission:view analytics']);
+
 // System Logs Routes
 Route::get('system-logs', [SystemLogsController::class, 'index'])
     ->name('system-logs.index')
@@ -267,3 +301,49 @@ Route::delete('queue-monitor/job', [QueueMonitorController::class, 'deleteJob'])
 Route::post('queue-monitor/clear', [QueueMonitorController::class, 'clearFailedJobs'])
     ->name('queue-monitor.clear')
     ->middleware(['auth', 'verified', 'permission:view users']);
+
+// Exam Sessions Routes (for educators)
+Route::resource('exam-sessions', ExamSessionController::class)
+    ->middleware(['auth', 'verified', 'permission:view exam sessions']);
+
+Route::post('exam-sessions/{examSession}/regenerate-code', [ExamSessionController::class, 'regenerateCode'])
+    ->name('exam-sessions.regenerate-code')
+    ->middleware(['auth', 'verified', 'permission:edit exam sessions']);
+
+Route::get('exam-sessions/{examSession}/results', [ExamSessionController::class, 'results'])
+    ->name('exam-sessions.results')
+    ->middleware(['auth', 'verified', 'permission:view student results']);
+
+Route::get('exam-sessions/{examSession}/export-results', [ExamSessionController::class, 'exportResults'])
+    ->name('exam-sessions.export-results')
+    ->middleware(['auth', 'verified', 'permission:view student results']);
+
+// Student Portal Routes
+Route::prefix('student')->name('student.')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', StudentDashboardController::class)
+        ->name('dashboard');
+
+    Route::post('join-exam', [StudentExamController::class, 'joinByCode'])
+        ->name('join-exam');
+
+    Route::get('exam/{session}/start', [StudentExamController::class, 'showStart'])
+        ->name('exam.start');
+
+    Route::post('exam/{session}/begin', [StudentExamController::class, 'startAttempt'])
+        ->name('exam.begin');
+
+    Route::get('exam/take/{attempt}', [StudentExamController::class, 'take'])
+        ->name('exam.take');
+
+    Route::post('exam/take/{attempt}/save-answer', [StudentExamController::class, 'saveAnswer'])
+        ->name('exam.save-answer');
+
+    Route::post('exam/take/{attempt}/submit', [StudentExamController::class, 'submit'])
+        ->name('exam.submit');
+
+    Route::get('exam/results/{attempt}', [StudentExamController::class, 'results'])
+        ->name('exam.results');
+
+    Route::get('exam-history', [StudentExamController::class, 'history'])
+        ->name('exam.history');
+});

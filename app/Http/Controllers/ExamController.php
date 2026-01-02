@@ -83,6 +83,7 @@ class ExamController extends Controller
         if ($question->module) {
             return $question->module->code.' - '.$question->module->name;
         }
+
         return 'Ungrouped Questions';
     }
 
@@ -110,7 +111,7 @@ class ExamController extends Controller
         ]);
 
         return redirect()
-            ->route('exams.show', $question)
+            ->route('question-bank.show', $question)
             ->with('success', 'Question created successfully.');
     }
 
@@ -147,7 +148,7 @@ class ExamController extends Controller
         $exam->update($request->validated());
 
         return redirect()
-            ->route('exams.show', $exam)
+            ->route('question-bank.show', $exam)
             ->with('success', 'Question updated successfully.');
     }
 
@@ -160,7 +161,7 @@ class ExamController extends Controller
         $exam->delete();
 
         return redirect()
-            ->route('exams.index')
+            ->route('question-bank.index')
             ->with('success', 'Question deleted successfully.');
     }
 

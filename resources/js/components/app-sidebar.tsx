@@ -15,10 +15,13 @@ import { index as modules } from "@/routes/modules";
 import { index as tosgenerates } from "@/routes/tos-generates";
 import { index as questionBank } from "@/routes/question-bank";
 import { index as examBuilder } from "@/routes/exam-builder";
+import { index as examSessions } from "@/routes/exam-sessions";
 import { index as users } from "@/routes/users";
 import { index as analytics } from "@/routes/analytics";
 import { index as systemLogs } from "@/routes/system-logs";
 import { index as queueMonitor } from "@/routes/queue-monitor";
+import { dashboard as studentDashboard } from "@/routes/student";
+import { history as examHistory } from "@/routes/student/exam";
 import { type NavItem, type SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
 import {
@@ -33,6 +36,9 @@ import {
     BarChart3,
     ScrollText,
     Activity,
+    PlayCircle,
+    GraduationCap,
+    Clock,
 } from "lucide-react";
 import AppLogo from "./app-logo";
 
@@ -67,6 +73,12 @@ const mainNavItems: NavItem[] = [
         permission: "create exams",
     },
     {
+        title: "Exam Sessions",
+        href: examSessions(),
+        icon: PlayCircle,
+        permission: "create exam sessions",
+    },
+    {
         title: "Analytics",
         href: analytics(),
         icon: BarChart3,
@@ -89,6 +101,21 @@ const mainNavItems: NavItem[] = [
         href: queueMonitor(),
         icon: Activity,
         permission: "view users",
+    },
+];
+
+const studentNavItems: NavItem[] = [
+    {
+        title: "Student Dashboard",
+        href: studentDashboard(),
+        icon: GraduationCap,
+        permission: "take exams",
+    },
+    {
+        title: "Exam History",
+        href: examHistory(),
+        icon: Clock,
+        permission: "view own results",
     },
 ];
 
@@ -116,6 +143,15 @@ export function AppSidebar() {
         return userPermissions.includes(item.permission);
     });
 
+    const filteredStudentNavItems = studentNavItems.filter((item) => {
+        if (!item.permission) {
+            return true;
+        }
+        return userPermissions.includes(item.permission);
+    });
+
+    const allNavItems = [...filteredNavItems, ...filteredStudentNavItems];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -131,7 +167,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={filteredNavItems} />
+                <NavMain items={allNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

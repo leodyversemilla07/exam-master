@@ -141,6 +141,8 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         <SelectItem value="true_false">True/False</SelectItem>
                                         <SelectItem value="essay">Essay</SelectItem>
                                         <SelectItem value="identification">Identification</SelectItem>
+                                        <SelectItem value="matching">Matching Type</SelectItem>
+                                        <SelectItem value="fill_in_the_blanks">Fill in the Blanks</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

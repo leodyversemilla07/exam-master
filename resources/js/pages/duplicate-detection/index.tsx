@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { Module, ExamQuestion } from '@/types/models';
-import { AlertTriangle, FileQuestion, Search } from 'lucide-react';
+import { AlertTriangle, FileQuestion } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 
 interface DuplicateMatch {

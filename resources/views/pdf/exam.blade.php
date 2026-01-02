@@ -10,18 +10,18 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 11pt;
             line-height: 1.5;
             color: #1a1a1a;
         }
-        
+
         .container {
             padding: 20px 40px;
         }
-        
+
         /* Header Styles */
         .header {
             text-align: center;
@@ -29,40 +29,40 @@
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
-        
+
         .header h1 {
             font-size: 18pt;
             color: #1e3a5f;
             margin-bottom: 5px;
         }
-        
+
         .header .subtitle {
             font-size: 12pt;
             color: #4b5563;
             margin-bottom: 10px;
         }
-        
+
         .exam-meta {
             display: table;
             width: 100%;
             margin-top: 10px;
             font-size: 10pt;
         }
-        
+
         .exam-meta-row {
             display: table-row;
         }
-        
+
         .exam-meta-cell {
             display: table-cell;
             padding: 3px 10px;
         }
-        
+
         .exam-meta-label {
             font-weight: bold;
             color: #374151;
         }
-        
+
         /* Student Info Section */
         .student-info {
             border: 1px solid #d1d5db;
@@ -70,27 +70,27 @@
             margin-bottom: 20px;
             background-color: #f9fafb;
         }
-        
+
         .student-info-row {
             margin-bottom: 10px;
         }
-        
+
         .student-info-row:last-child {
             margin-bottom: 0;
         }
-        
+
         .student-info-label {
             font-weight: bold;
             display: inline-block;
             width: 100px;
         }
-        
+
         .student-info-line {
             display: inline-block;
             border-bottom: 1px solid #374151;
             width: 250px;
         }
-        
+
         /* Instructions */
         .instructions {
             background-color: #eff6ff;
@@ -98,23 +98,23 @@
             padding: 15px;
             margin-bottom: 20px;
         }
-        
+
         .instructions h3 {
             color: #1e40af;
             margin-bottom: 8px;
             font-size: 11pt;
         }
-        
+
         .instructions p {
             font-size: 10pt;
             color: #374151;
         }
-        
+
         /* Questions Section */
         .questions-section {
             margin-top: 20px;
         }
-        
+
         .section-header {
             background-color: #1e3a5f;
             color: white;
@@ -123,24 +123,24 @@
             font-weight: bold;
             margin-bottom: 15px;
         }
-        
+
         .question {
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px dashed #d1d5db;
             page-break-inside: avoid;
         }
-        
+
         .question:last-child {
             border-bottom: none;
         }
-        
+
         .question-header {
             display: table;
             width: 100%;
             margin-bottom: 8px;
         }
-        
+
         .question-number {
             display: table-cell;
             font-weight: bold;
@@ -148,12 +148,12 @@
             width: 40px;
             vertical-align: top;
         }
-        
+
         .question-text {
             display: table-cell;
             vertical-align: top;
         }
-        
+
         .question-points {
             display: table-cell;
             text-align: right;
@@ -162,52 +162,52 @@
             color: #6b7280;
             vertical-align: top;
         }
-        
+
         /* Options */
         .options {
             margin-left: 40px;
             margin-top: 10px;
         }
-        
+
         .option {
             margin-bottom: 6px;
             display: table;
             width: 100%;
         }
-        
+
         .option-letter {
             display: table-cell;
             width: 25px;
             font-weight: bold;
         }
-        
+
         .option-text {
             display: table-cell;
         }
-        
+
         .option-correct {
             background-color: #dcfce7;
             padding: 2px 5px;
         }
-        
+
         /* Answer Line */
         .answer-line {
             margin-left: 40px;
             margin-top: 10px;
         }
-        
+
         .answer-line-label {
             font-weight: bold;
             display: inline-block;
         }
-        
+
         .answer-line-space {
             display: inline-block;
             border-bottom: 1px solid #374151;
             width: 300px;
             margin-left: 10px;
         }
-        
+
         /* Essay Space */
         .essay-space {
             margin-left: 40px;
@@ -216,13 +216,13 @@
             height: 100px;
             background-color: #fafafa;
         }
-        
+
         /* Answer Key Section */
         .answer-key {
             margin-top: 30px;
             page-break-before: always;
         }
-        
+
         .answer-key-header {
             background-color: #dc2626;
             color: white;
@@ -231,30 +231,30 @@
             font-weight: bold;
             margin-bottom: 15px;
         }
-        
+
         .answer-item {
             margin-bottom: 10px;
             padding: 8px;
             background-color: #f9fafb;
             border-left: 3px solid #2563eb;
         }
-        
+
         .answer-item-number {
             font-weight: bold;
             color: #1e3a5f;
         }
-        
+
         .answer-item-answer {
             margin-top: 5px;
         }
-        
+
         .answer-item-explanation {
             margin-top: 5px;
             font-size: 10pt;
             color: #4b5563;
             font-style: italic;
         }
-        
+
         /* Footer */
         .footer {
             position: fixed;
@@ -267,11 +267,11 @@
             border-top: 1px solid #e5e7eb;
             padding-top: 10px;
         }
-        
+
         .page-number:before {
             content: counter(page);
         }
-        
+
         /* Cognitive Level Badge */
         .cognitive-badge {
             display: inline-block;
@@ -281,44 +281,81 @@
             margin-left: 8px;
             vertical-align: middle;
         }
-        
+
         .cognitive-remembering { background-color: #f3e8ff; color: #7c3aed; }
         .cognitive-understanding { background-color: #dbeafe; color: #2563eb; }
         .cognitive-applying { background-color: #dcfce7; color: #16a34a; }
         .cognitive-analyzing { background-color: #fef3c7; color: #d97706; }
         .cognitive-evaluating { background-color: #ffedd5; color: #ea580c; }
         .cognitive-creating { background-color: #fee2e2; color: #dc2626; }
+        /* Dynamic Header & Footer */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
     </style>
+    @if(isset($template) && isset($template['styles']))
+    <style>
+        {!! $template['styles'] !!}
+    </style>
+    @endif
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>{{ $exam->title }}</h1>
-            @if($exam->module)
-                <div class="subtitle">{{ $exam->module->name }} ({{ $exam->module->code }})</div>
-            @endif
-            <div class="exam-meta">
-                <div class="exam-meta-row">
-                    <div class="exam-meta-cell">
-                        <span class="exam-meta-label">Total Items:</span> {{ $exam->total_items ?? count($questions) }}
+    @if(isset($template))
+        <header>
+            {!! $template['header'] !!}
+        </header>
+        <footer>
+            {!! $template['footer'] !!}
+        </footer>
+
+        <!-- Push content down to avoid overlapping header -->
+        <div style="margin-top: 150px; margin-bottom: 100px;">
+    @else
+        <div class="container">
+            <!-- Default Header -->
+            <div class="header">
+                <h1>{{ $exam->title }}</h1>
+                @if($exam->module)
+                    <div class="subtitle">{{ $exam->module->name }} ({{ $exam->module->code }})</div>
+                @endif
+                <div class="exam-meta">
+                    <div class="exam-meta-row">
+                        <div class="exam-meta-cell">
+                            <span class="exam-meta-label">Total Items:</span> {{ $exam->total_items ?? count($questions) }}
+                        </div>
+                        <div class="exam-meta-cell">
+                            <span class="exam-meta-label">Total Points:</span> {{ $exam->total_points ?? array_sum(array_column($questions, 'points')) }}
+                        </div>
+                        @if($exam->time_limit)
+                        <div class="exam-meta-cell">
+                            <span class="exam-meta-label">Time Limit:</span> {{ $exam->time_limit }} minutes
+                        </div>
+                        @endif
+                        @if($exam->passing_score)
+                        <div class="exam-meta-cell">
+                            <span class="exam-meta-label">Passing Score:</span> {{ $exam->passing_score }}%
+                        </div>
+                        @endif
                     </div>
-                    <div class="exam-meta-cell">
-                        <span class="exam-meta-label">Total Points:</span> {{ $exam->total_points ?? array_sum(array_column($questions, 'points')) }}
-                    </div>
-                    @if($exam->time_limit)
-                    <div class="exam-meta-cell">
-                        <span class="exam-meta-label">Time Limit:</span> {{ $exam->time_limit }} minutes
-                    </div>
-                    @endif
-                    @if($exam->passing_score)
-                    <div class="exam-meta-cell">
-                        <span class="exam-meta-label">Passing Score:</span> {{ $exam->passing_score }}%
-                    </div>
-                    @endif
                 </div>
             </div>
-        </div>
+    @endif
 
         @if(!$withAnswers)
         <!-- Student Info -->
@@ -426,6 +463,54 @@
                             <span class="answer-line-space"></span>
                         </div>
                     @endif
+                @elseif($question['type'] === 'matching')
+                    <div class="options">
+                        @if($withAnswers)
+                            <div style="margin-top: 10px; background-color: #f8fafc; padding: 10px; border: 1px solid #e2e8f0;">
+                                <strong>Matches:</strong>
+                                <ul style="margin-top: 5px; list-style-type: none;">
+                                    @foreach($question['options'] as $key => $value)
+                                        <li>{{ $key }}. {{ $value }} → <strong>{{ is_array($question['correct_answer']) ? ($question['correct_answer'][$key] ?? '') : $question['correct_answer'] }}</strong></li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @else
+                            <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50%; text-align: left; padding: 5px; border-bottom: 1px solid #cbd5e1;">Column A (Premise)</th>
+                                        <th style="width: 50%; text-align: left; padding: 5px; border-bottom: 1px solid #cbd5e1;">Column B (Response)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $options = $question['options'];
+                                        $columnB = array_values($options);
+                                        shuffle($columnB);
+                                    @endphp
+                                    @foreach($options as $key => $value)
+                                        <tr>
+                                            <td style="padding: 5px; vertical-align: top;">{{ $key }}. {{ $value }}</td>
+                                            <td style="padding: 5px; vertical-align: top;">{{ chr(65 + $loop->index) }}. {{ $columnB[$loop->index] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
+                @elseif($question['type'] === 'fill_in_the_blanks')
+                    @php
+                        $text = $question['text'];
+                        if (!$withAnswers) {
+                            $text = str_replace('[blank]', '____________________', $text);
+                        } else {
+                            $answer = $question['correct_answer'];
+                            $text = str_replace('[blank]', '<strong style="color: #059669; border-bottom: 1px solid #059669; padding: 0 10px;">' . $answer . '</strong>', $text);
+                        }
+                    @endphp
+                    <div style="margin-left: 40px; margin-top: 10px; line-height: 2;">
+                        {!! $text !!}
+                    </div>
                 @elseif($question['type'] === 'essay')
                     @if($withAnswers && $question['correct_answer'])
                         <div class="answer-line" style="background-color: #f0fdf4; padding: 10px; border-left: 3px solid #22c55e;">
@@ -447,10 +532,11 @@
             @endforeach
         </div>
 
-        <!-- Footer -->
+        @if(!isset($template))
         <div class="footer">
             Generated by ExamMaster on {{ $generatedAt }} | Page <span class="page-number"></span>
         </div>
+        @endif
     </div>
 </body>
 </html>

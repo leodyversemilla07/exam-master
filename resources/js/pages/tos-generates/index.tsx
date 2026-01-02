@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { TosGenerate, Module } from '@/types/models';
-import { Plus, FileText, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Plus, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 
 interface PageProps {
@@ -40,7 +40,7 @@ const breadcrumbs = [
     { title: 'Table of Specifications', href: '/tos-generates' },
 ];
 
-export default function TosGeneratesIndex({ tosGenerates, modules }: PageProps) {
+export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Table of Specifications" />

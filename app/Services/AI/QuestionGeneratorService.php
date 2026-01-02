@@ -137,7 +137,9 @@ You are an expert educational assessment creator for Filipino students in {$tos-
 {$pdfInstruction}- Ensure questions are culturally appropriate for Filipino students
 - Use clear, simple language appropriate for {$tos->grade_level}
 - Each question must align with one of the learning objectives
-- For each question, you MUST include the question_type field with one of these values: multiple_choice, true_false, essay, or identification
+- For each question, you MUST include the question_type field with one of these values: multiple_choice, true_false, essay, identification, matching, or fill_in_the_blanks
+- For matching type: Include Column A items in 'options' (key as 1, 2, 3, etc.) and their corresponding Column B matches. The 'correct_answer' should map the number to the correct letter or value.
+- For fill_in_the_blanks: Use [blank] in the question text.
 - Output must strictly follow the provided JSON schema: the top-level object must contain a `questions` array.{$additionalInstructions}
 
 Generate the questions now.
@@ -158,6 +160,7 @@ PROMPT;
 
             if (! file_exists($pdfPath)) {
                 Log::warning('PDF file not found', ['path' => $pdfPath]);
+
                 return null;
             }
 
@@ -168,10 +171,11 @@ PROMPT;
                     'module_id' => $module->id,
                     'file_size' => $fileSize,
                 ]);
+
                 return null;
             }
 
-            $parser = new PdfParser();
+            $parser = new PdfParser;
             $pdf = $parser->parseFile($pdfPath);
             $text = $pdf->getText();
 
@@ -256,7 +260,7 @@ PROMPT;
                             ),
                             new StringSchema(
                                 name: 'question_type',
-                                description: 'Question type: multiple_choice, true_false, essay, or identification'
+                                description: 'Question type: multiple_choice, true_false, essay, identification, matching, or fill_in_the_blanks'
                             ),
                         ],
                         requiredFields: ['question', 'correct_answer', 'cognitive_level', 'difficulty', 'learning_objective_code', 'question_type']

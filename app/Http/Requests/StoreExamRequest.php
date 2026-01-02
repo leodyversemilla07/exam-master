@@ -16,6 +16,18 @@ class StoreExamRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->exam_template_id === 'null') {
+            $this->merge([
+                'exam_template_id' => null,
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
@@ -23,6 +35,7 @@ class StoreExamRequest extends FormRequest
         return [
             'module_id' => ['required', 'exists:modules,id'],
             'tos_generate_id' => ['nullable', 'exists:tos_generates,id'],
+            'exam_template_id' => ['nullable', 'exists:exam_templates,id'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'exam_type' => ['required', 'string', Rule::in(['formative', 'summative', 'diagnostic'])],

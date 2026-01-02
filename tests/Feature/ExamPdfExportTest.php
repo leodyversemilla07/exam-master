@@ -2,6 +2,7 @@
 
 use App\Models\Exam;
 use App\Models\ExamQuestion;
+use App\Models\ExamTemplate;
 use App\Models\Module;
 use App\Models\TosGenerate;
 use App\Models\User;
@@ -64,6 +65,22 @@ it('exports exam to PDF without answers', function () {
 
 it('exports exam to PDF with answer key', function () {
     get(route('exam-builder.export-pdf-answers', $this->exam))
+        ->assertSuccessful()
+        ->assertHeader('content-type', 'application/pdf');
+});
+
+it('exports exam to PDF using a custom template', function () {
+    $template = ExamTemplate::create([
+        'user_id' => $this->user->id,
+        'name' => 'Custom Template',
+        'header_content' => '<h1>{{school_name}}</h1><p>{{exam_title}}</p>',
+        'footer_content' => '<p>Footer Content</p>',
+        'custom_styles' => 'h1 { color: blue; }',
+    ]);
+
+    $this->exam->update(['exam_template_id' => $template->id]);
+
+    get(route('exam-builder.export-pdf', $this->exam))
         ->assertSuccessful()
         ->assertHeader('content-type', 'application/pdf');
 });

@@ -23,18 +23,24 @@ interface PageProps {
     }[];
     tosTemplates: {
         id: number;
-        title: string;
+        module_id: number;
+        subject: string;
         module: {
             code: string;
             name: string;
         };
     }[];
+    examTemplates: {
+        id: number;
+        name: string;
+    }[];
 }
 
-export default function CreateExam({ modules, tosTemplates }: PageProps) {
+export default function CreateExam({ modules, tosTemplates, examTemplates }: PageProps) {
     const form = useForm({
         module_id: '',
         tos_generate_id: '',
+        exam_template_id: '',
         title: '',
         description: '',
         exam_type: '',
@@ -103,17 +109,44 @@ export default function CreateExam({ modules, tosTemplates }: PageProps) {
                                                     <SelectValue placeholder="Select a TOS template" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {tosTemplates.map((template) => (
-                                                        <SelectItem key={template.id} value={template.id.toString()}>
-                                                            {template.title} ({template.module.code})
-                                                        </SelectItem>
-                                                    ))}
+                                                    {tosTemplates
+                                                        .filter(template => template.module_id === parseInt(form.data.module_id))
+                                                        .map((template) => (
+                                                            <SelectItem key={template.id} value={template.id.toString()}>
+                                                                {template.subject} ({template.module.code})
+                                                            </SelectItem>
+                                                        ))}
                                                 </SelectContent>
                                             </Select>
                                             {form.errors.tos_generate_id && (
                                                 <p className="text-sm text-destructive">{form.errors.tos_generate_id}</p>
                                             )}
                                         </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="exam_template_id">Exam Template (Optional)</Label>
+                                        <Select
+                                            value={form.data.exam_template_id}
+                                            onValueChange={(value) => form.setData('exam_template_id', value)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Default Template" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="null">Default Template</SelectItem>
+                                                {examTemplates.map((template) => (
+                                                    <SelectItem key={template.id} value={template.id.toString()}>
+                                                        {template.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {/* @ts-ignore */}
+                                        {form.errors.exam_template_id && (
+                                            /* @ts-ignore */
+                                            <p className="text-sm text-destructive">{form.errors.exam_template_id}</p>
+                                        )}
                                     </div>
 
                                     <div className="space-y-2">

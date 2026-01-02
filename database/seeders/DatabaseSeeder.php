@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             'create exams',
             'edit exams',
             'delete exams',
+            'publish exams',
             'approve questions',
             'bulk delete questions',
 
@@ -101,6 +102,7 @@ class DatabaseSeeder extends Seeder
             'view exams',
             'create exams',
             'edit exams',
+            'publish exams',
             'edit own profile',
             'change own password',
         ]);

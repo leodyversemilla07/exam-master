@@ -1,0 +1,20 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "C:\\Users\\Leodyver\\.config\\herd-lite\\bin\\php.exe",
+            "args": [
+                "C:\\Users\\Leodyver\\Herd\\exam-master\\artisan",
+                "boost:mcp"
+            ]
+        },
+        "herd": {
+            "command": "C:\\Users\\Leodyver\\.config\\herd-lite\\bin\\php.exe",
+            "args": [
+                "C:/Users/Leodyver/.config/herd/bin/herd-mcp.phar"
+            ],
+            "env": {
+                "SITE_PATH": "C:\\Users\\Leodyver\\Herd\\exam-master"
+            }
+        }
+    }
+}

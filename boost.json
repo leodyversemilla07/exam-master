@@ -1,12 +1,12 @@
 {
     "agents": [
-        "copilot"
+        "phpstorm"
     ],
     "editors": [
-        "vscode"
+        "phpstorm"
     ],
     "guidelines": [
-        "laravel/fortify"
+        "prism-php/prism"
     ],
     "herd_mcp": true
 }

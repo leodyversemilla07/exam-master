@@ -133,20 +133,20 @@ class TosCalculator
         }
 
         // Check for missing lower-order thinking
-        $hasRemembering = isset($distribution['remembering']) && $distribution['remembering']['percentage'] > 0;
-        $hasUnderstanding = isset($distribution['understanding']) && $distribution['understanding']['percentage'] > 0;
+        $hasRemembering = isset($distribution['remember']) && $distribution['remember']['percentage'] > 0;
+        $hasUnderstanding = isset($distribution['understand']) && $distribution['understand']['percentage'] > 0;
 
         if (! $hasRemembering && ! $hasUnderstanding) {
-            $warnings[] = 'No lower-order thinking skills (Remembering/Understanding) included';
+            $warnings[] = 'No lower-order thinking skills (Remember/Understand) included';
         }
 
         // Check for missing higher-order thinking
-        $hasAnalyzing = isset($distribution['analyzing']) && $distribution['analyzing']['percentage'] > 0;
-        $hasEvaluating = isset($distribution['evaluating']) && $distribution['evaluating']['percentage'] > 0;
-        $hasCreating = isset($distribution['creating']) && $distribution['creating']['percentage'] > 0;
+        $hasAnalyzing = isset($distribution['analyze']) && $distribution['analyze']['percentage'] > 0;
+        $hasEvaluating = isset($distribution['evaluate']) && $distribution['evaluate']['percentage'] > 0;
+        $hasCreating = isset($distribution['create']) && $distribution['create']['percentage'] > 0;
 
         if (! $hasAnalyzing && ! $hasEvaluating && ! $hasCreating) {
-            $warnings[] = 'No higher-order thinking skills (Analyzing/Evaluating/Creating) included';
+            $warnings[] = 'No higher-order thinking skills (Analyze/Evaluate/Create) included';
         }
 
         return [

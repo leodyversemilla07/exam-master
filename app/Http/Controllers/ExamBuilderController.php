@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreExamRequest;
 use App\Models\Exam;
 use App\Models\ExamQuestion;
+use App\Models\ExamTemplate;
 use App\Models\Module;
-use App\Models\TosGenerate;
 use App\Services\ExamPdfExporter;
+use App\Services\ExamWordExporter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExamBuilderController extends Controller
 {
@@ -63,10 +65,8 @@ class ExamBuilderController extends Controller
     {
         return Inertia::render('exam-builder/create', [
             'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
-            'tosTemplates' => TosGenerate::where('status', 'completed')
-                ->with('module')
-                ->latest()
-                ->get(),
+            'tosTemplates' => \App\Models\TosGenerate::with('module:id,code,name')->get(['id', 'module_id', 'subject']),
+            'examTemplates' => ExamTemplate::where('user_id', auth()->id())->get(['id', 'name']),
         ]);
     }
 
@@ -110,13 +110,13 @@ class ExamBuilderController extends Controller
      */
     public function edit(Exam $examBuilder): Response
     {
+        $examBuilder->load('module');
+
         return Inertia::render('exam-builder/edit', [
-            'exam' => $examBuilder->load('module'),
+            'exam' => $examBuilder,
             'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
-            'tosTemplates' => TosGenerate::where('status', 'completed')
-                ->with('module')
-                ->latest()
-                ->get(),
+            'tosTemplates' => \App\Models\TosGenerate::with('module:id,code,name')->get(['id', 'module_id', 'subject']),
+            'examTemplates' => ExamTemplate::where('user_id', auth()->id())->get(['id', 'name']),
         ]);
     }
 
@@ -255,7 +255,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('approve questions'), 403);
+        abort_unless(auth()->user()->can('publish exams'), 403);
 
         if ($exam->questions()->count() === 0) {
             return back()->with('error', 'Cannot publish an exam with no questions.');
@@ -336,6 +336,40 @@ class ExamBuilderController extends Controller
     }
 
     /**
+     * Export exam to Word (.docx) format.
+     */
+    public function exportDocx($examId, ExamWordExporter $exporter): BinaryFileResponse
+    {
+        $exam = Exam::findOrFail($examId);
+        abort_unless(auth()->user()->can('view exams'), 403);
+
+        if ($exam->questions()->count() === 0) {
+            abort(400, 'Cannot export an exam with no questions.');
+        }
+
+        $path = $exporter->export($exam);
+
+        return response()->download($path, $exporter->getFilename($exam))->deleteFileAfterSend();
+    }
+
+    /**
+     * Export exam with answer key to Word (.docx) format.
+     */
+    public function exportDocxWithAnswers($examId, ExamWordExporter $exporter): BinaryFileResponse
+    {
+        $exam = Exam::findOrFail($examId);
+        abort_unless(auth()->user()->can('view exams'), 403);
+
+        if ($exam->questions()->count() === 0) {
+            abort(400, 'Cannot export an exam with no questions.');
+        }
+
+        $path = $exporter->export($exam, true);
+
+        return response()->download($path, $exporter->getFilename($exam, true))->deleteFileAfterSend();
+    }
+
+    /**
      * Archive an exam.
      */
     public function archive($examId): RedirectResponse
@@ -361,5 +395,45 @@ class ExamBuilderController extends Controller
         $exam->update(['status' => 'draft']);
 
         return back()->with('success', 'Exam unarchived successfully.');
+    }
+
+    /**
+     * Preview the exam in web format.
+     */
+    public function preview($examId): Response
+    {
+        $exam = Exam::with(['module', 'examTemplate', 'questions' => function ($query) {
+            $query->orderBy('exam_items.order');
+        }])->findOrFail($examId);
+
+        $template = null;
+        if ($exam->examTemplate) {
+            $placeholders = [
+                '{{school_name}}' => 'Your School Name',
+                '{{exam_title}}' => $exam->title,
+                '{{student_name}}' => '____________________',
+                '{{date}}' => now()->format('F j, Y'),
+                '{{score}}' => '___ / '.($exam->total_points ?? 0),
+            ];
+
+            $header = $exam->examTemplate->header_content;
+            $footer = $exam->examTemplate->footer_content;
+
+            foreach ($placeholders as $key => $value) {
+                $header = str_replace($key, $value, $header ?? '');
+                $footer = str_replace($key, $value, $footer ?? '');
+            }
+
+            $template = [
+                'header' => $header,
+                'footer' => $footer,
+                'styles' => $exam->examTemplate->custom_styles,
+            ];
+        }
+
+        return Inertia::render('exam-builder/preview', [
+            'exam' => $exam,
+            'template' => $template,
+        ]);
     }
 }

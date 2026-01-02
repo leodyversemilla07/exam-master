@@ -40,6 +40,8 @@ class StoreTosGenerateRequest extends FormRequest
             'question_types.true_false' => ['nullable', 'integer', 'min:0'],
             'question_types.essay' => ['nullable', 'integer', 'min:0'],
             'question_types.identification' => ['nullable', 'integer', 'min:0'],
+            'question_types.matching' => ['nullable', 'integer', 'min:0'],
+            'question_types.fill_in_the_blanks' => ['nullable', 'integer', 'min:0'],
             'difficulty_level' => ['required', 'in:easy,medium,hard,mixed'],
             'language' => ['nullable', 'in:english,filipino'],
             'additional_instructions' => ['nullable', 'string', 'max:1000'],

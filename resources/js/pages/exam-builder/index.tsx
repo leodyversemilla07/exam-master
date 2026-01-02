@@ -152,183 +152,183 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
 
                 {/* Filters */}
                 <Card>
-                        <CardContent className="pt-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                <div>
-                                    <Input
-                                        placeholder="Search exams..."
-                                        value={search}
-                                        onChange={(e) => handleSearch(e.target.value)}
-                                        className="w-full"
-                                    />
-                                </div>
-                                <Select value={moduleFilter} onValueChange={(value) => {
-                                    setModuleFilter(value);
-                                    applyFilters({ module_id: value === 'all' ? undefined : value || undefined });
-                                }}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Modules" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Modules</SelectItem>
-                                        {modules.map((module) => (
-                                            <SelectItem key={module.id} value={module.id.toString()}>
-                                                {module.code}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Select value={statusFilter} onValueChange={(value) => {
-                                    setStatusFilter(value);
-                                    applyFilters({ status: value === 'all' ? undefined : value || undefined });
-                                }}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="draft">Draft</SelectItem>
-                                        <SelectItem value="published">Published</SelectItem>
-                                        <SelectItem value="archived">Archived</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Select value={typeFilter} onValueChange={(value) => {
-                                    setTypeFilter(value);
-                                    applyFilters({ exam_type: value === 'all' ? undefined : value || undefined });
-                                }}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Types" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Types</SelectItem>
-                                        <SelectItem value="formative">Formative</SelectItem>
-                                        <SelectItem value="summative">Summative</SelectItem>
-                                        <SelectItem value="diagnostic">Diagnostic</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setSearch('');
-                                        setModuleFilter('all');
-                                        setStatusFilter('all');
-                                        setTypeFilter('all');
-                                        router.get('/exam-builder', {}, { preserveState: true });
-                                    }}
-                                >
-                                    Clear Filters
-                                </Button>
+                    <CardContent className="pt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            <div>
+                                <Input
+                                    placeholder="Search exams..."
+                                    value={search}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    className="w-full"
+                                />
                             </div>
-                        </CardContent>
-                    </Card>
+                            <Select value={moduleFilter} onValueChange={(value) => {
+                                setModuleFilter(value);
+                                applyFilters({ module_id: value === 'all' ? undefined : value || undefined });
+                            }}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Modules" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Modules</SelectItem>
+                                    {modules.map((module) => (
+                                        <SelectItem key={module.id} value={module.id.toString()}>
+                                            {module.code}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Select value={statusFilter} onValueChange={(value) => {
+                                setStatusFilter(value);
+                                applyFilters({ status: value === 'all' ? undefined : value || undefined });
+                            }}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="draft">Draft</SelectItem>
+                                    <SelectItem value="published">Published</SelectItem>
+                                    <SelectItem value="archived">Archived</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Select value={typeFilter} onValueChange={(value) => {
+                                setTypeFilter(value);
+                                applyFilters({ exam_type: value === 'all' ? undefined : value || undefined });
+                            }}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Types" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Types</SelectItem>
+                                    <SelectItem value="formative">Formative</SelectItem>
+                                    <SelectItem value="summative">Summative</SelectItem>
+                                    <SelectItem value="diagnostic">Diagnostic</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setSearch('');
+                                    setModuleFilter('all');
+                                    setStatusFilter('all');
+                                    setTypeFilter('all');
+                                    router.get('/exam-builder', {}, { preserveState: true });
+                                }}
+                            >
+                                Clear Filters
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    {/* Exams List */}
-                    <div className="grid gap-6">
-                        {exams.data.map((exam) => (
-                            <Card key={exam.id}>
-                                <CardContent className="pt-6">
-                                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                                                <h3 className="text-lg font-semibold text-foreground">
-                                                    {exam.title}
-                                                </h3>
-                                                {getStatusBadge(exam.status)}
-                                                {getTypeBadge(exam.exam_type)}
+                {/* Exams List */}
+                <div className="grid gap-6">
+                    {exams.data.map((exam) => (
+                        <Card key={exam.id}>
+                            <CardContent className="pt-6">
+                                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
+                                    <div className="flex-1">
+                                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                                            <h3 className="text-lg font-semibold text-foreground">
+                                                {exam.title}
+                                            </h3>
+                                            {getStatusBadge(exam.status)}
+                                            {getTypeBadge(exam.exam_type)}
+                                        </div>
+
+                                        {exam.description && (
+                                            <p className="text-muted-foreground mb-3 line-clamp-2">
+                                                {exam.description}
+                                            </p>
+                                        )}
+
+                                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
+                                            <div className="flex items-center gap-1">
+                                                <FileText className="h-4 w-4" />
+                                                {exam.module.code} - {exam.module.name}
                                             </div>
-
-                                            {exam.description && (
-                                                <p className="text-muted-foreground mb-3 line-clamp-2">
-                                                    {exam.description}
-                                                </p>
+                                            <div className="flex items-center gap-1">
+                                                <Users className="h-4 w-4" />
+                                                {exam.questions_count} questions
+                                            </div>
+                                            {exam.time_limit && (
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="h-4 w-4" />
+                                                    {exam.time_limit} min
+                                                </div>
                                             )}
-
-                                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-                                                <div className="flex items-center gap-1">
-                                                    <FileText className="h-4 w-4" />
-                                                    {exam.module.code} - {exam.module.name}
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Users className="h-4 w-4" />
-                                                    {exam.questions_count} questions
-                                                </div>
-                                                {exam.time_limit && (
-                                                    <div className="flex items-center gap-1">
-                                                        <Clock className="h-4 w-4" />
-                                                        {exam.time_limit} min
-                                                    </div>
-                                                )}
-                                                <div>
-                                                    Passing: {exam.passing_score}%
-                                                </div>
-                                            </div>
-
-                                            <div className="text-sm text-muted-foreground">
-                                                Created by {exam.creator.name}
-                                                {exam.tos_generate && (
-                                                    <span> • Based on {exam.tos_generate.title}</span>
-                                                )}
+                                            <div>
+                                                Passing: {exam.passing_score}%
                                             </div>
                                         </div>
 
-                                        <div className="flex gap-2 mt-4 lg:mt-0 lg:ml-4">
-                                            <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/exam-builder/${exam.id}`}>
-                                                    <Eye className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                            <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/exam-builder/${exam.id}/edit`}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => router.post(`/exam-builder/${exam.id}/duplicate`)}
-                                            >
-                                                <Copy className="h-4 w-4" />
-                                            </Button>
-                                            {canDeleteExam(exam) && (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleDelete(exam)}
-                                                    className="text-destructive hover:text-destructive/80"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                        <div className="text-sm text-muted-foreground">
+                                            Created by {exam.creator.name}
+                                            {exam.tos_generate && (
+                                                <span> • Based on {exam.tos_generate.title}</span>
                                             )}
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
 
-                    {exams.data.length === 0 && (
-                        <Card>
-                            <CardContent className="pt-6">
-                                <div className="text-center py-12">
-                                    <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                                    <h3 className="mt-2 text-sm font-semibold text-foreground">No exams found</h3>
-                                    <p className="mt-1 text-sm text-muted-foreground">
-                                        Get started by creating your first exam.
-                                    </p>
-                                    <div className="mt-6">
-                                        <Button asChild>
-                                            <Link href="/exam-builder/create">
-                                                <Plus className="mr-2 h-4 w-4" />
-                                                Create Exam
+                                    <div className="flex gap-2 mt-4 lg:mt-0 lg:ml-4">
+                                        <Button variant="outline" size="sm" asChild>
+                                            <Link href={`/exam-builder/${exam.id}`}>
+                                                <Eye className="h-4 w-4" />
                                             </Link>
                                         </Button>
+                                        <Button variant="outline" size="sm" asChild>
+                                            <Link href={`/exam-builder/${exam.id}/edit`}>
+                                                <Edit className="h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => router.post(`/exam-builder/${exam.id}/duplicate`)}
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+                                        {canDeleteExam(exam) && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleDelete(exam)}
+                                                className="text-destructive hover:text-destructive/80"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
-                    )}
+                    ))}
+                </div>
 
-                    {/* Pagination would go here if needed */}
+                {exams.data.length === 0 && (
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="text-center py-12">
+                                <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                                <h3 className="mt-2 text-sm font-semibold text-foreground">No exams found</h3>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    Get started by creating your first exam.
+                                </p>
+                                <div className="mt-6">
+                                    <Button asChild>
+                                        <Link href="/exam-builder/create">
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Create Exam
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Pagination would go here if needed */}
             </div>
 
             {/* Delete Confirmation Dialog */}

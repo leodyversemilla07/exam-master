@@ -21,6 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'organization',
         'password',
         'is_active',
     ];
@@ -47,5 +48,45 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the exam templates for the user.
+     */
+    public function examTemplates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ExamTemplate::class);
+    }
+
+    /**
+     * Get the exam attempts for the user.
+     */
+    public function examAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
+    /**
+     * Check if the user is a student.
+     */
+    public function isStudent(): bool
+    {
+        return $this->hasRole('student');
+    }
+
+    /**
+     * Check if the user is an educator.
+     */
+    public function isEducator(): bool
+    {
+        return $this->hasRole('educator');
+    }
+
+    /**
+     * Check if the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin') || $this->hasRole('super-admin');
     }
 }

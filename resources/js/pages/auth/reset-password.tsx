@@ -22,11 +22,11 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             <Form
                 action="/reset-password"
                 method="post"
-                data={{ token, email }}
                 options={{ preserveScroll: true }}
             >
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
+                        <input type="hidden" name="token" value={token} />
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email</Label>
                             <Input

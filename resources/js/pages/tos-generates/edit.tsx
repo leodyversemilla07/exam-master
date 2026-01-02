@@ -452,7 +452,7 @@ export default function TosGenerateEdit({ tosGenerate, modules }: PageProps) {
                                     <Label htmlFor="language">Language *</Label>
                                     <Select
                                         value={form.data.language}
-                                        onValueChange={(value) => form.setData('language', value)}
+                                        onValueChange={(value) => form.setData('language', value as 'english' | 'filipino')}
                                     >
                                         <SelectTrigger id="language">
                                             <SelectValue />

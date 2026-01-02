@@ -34,7 +34,7 @@ interface PageProps {
     from_tos?: TosInfo;
 }
 
-export default function ExamCreate({ modules, from_group, from_group_id, from_group_name, from_tos }: PageProps) {
+export default function ExamCreate({ modules, from_group, from_group_id, from_group_name }: PageProps) {
     const breadcrumbs = from_group && from_group_id && from_group_name
         ? [
             { title: 'Question Bank', href: '/question-bank' },
@@ -67,17 +67,71 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
         difficulty: 'moderate',
         learning_objective_code: '',
         points: 1,
+        // For matching type
+        matching_pairs: [
+            { column_a: '', column_b: '' },
+            { column_a: '', column_b: '' },
+            { column_a: '', column_b: '' },
+        ],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/question-bank');
+        
+        // Convert matching pairs to options format for backend
+        if (data.question_type === 'matching') {
+            const options: Record<string, string> = {};
+            data.matching_pairs.forEach((pair, index) => {
+                if (pair.column_a) {
+                    options[(index + 1).toString()] = pair.column_a;
+                }
+            });
+            
+            const correctAnswers: Record<string, string> = {};
+            data.matching_pairs.forEach((pair, index) => {
+                if (pair.column_b) {
+                    correctAnswers[(index + 1).toString()] = pair.column_b;
+                }
+            });
+            
+            // Transform the data before submission using the transform option
+            post('/question-bank', {
+                forceFormData: true,
+                onBefore: () => {
+                    // Update data with transformed values before submission
+                    setData((prev) => ({
+                        ...prev,
+                        options: options as unknown as typeof prev.options,
+                        correct_answer: JSON.stringify(correctAnswers),
+                    }));
+                },
+            });
+        } else {
+            post('/question-bank');
+        }
     };
 
     const handleOptionChange = (index: number, text: string) => {
         const newOptions = [...data.options];
         newOptions[index] = { ...newOptions[index], text };
         setData('options', newOptions);
+    };
+
+    const handleMatchingChange = (index: number, field: 'column_a' | 'column_b', value: string) => {
+        const newPairs = [...data.matching_pairs];
+        newPairs[index] = { ...newPairs[index], [field]: value };
+        setData('matching_pairs', newPairs);
+    };
+
+    const addMatchingPair = () => {
+        setData('matching_pairs', [...data.matching_pairs, { column_a: '', column_b: '' }]);
+    };
+
+    const removeMatchingPair = (index: number) => {
+        if (data.matching_pairs.length > 2) {
+            const newPairs = data.matching_pairs.filter((_, i) => i !== index);
+            setData('matching_pairs', newPairs);
+        }
     };
 
     return (
@@ -147,6 +201,8 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         <SelectItem value="true_false">True/False</SelectItem>
                                         <SelectItem value="essay">Essay</SelectItem>
                                         <SelectItem value="identification">Identification</SelectItem>
+                                        <SelectItem value="matching">Matching Type</SelectItem>
+                                        <SelectItem value="fill_in_the_blanks">Fill in the Blanks</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </Field>
@@ -170,6 +226,71 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         ))}
                                     </div>
                                 </Field>
+                            )}
+
+                            {/* Matching Type Pairs */}
+                            {data.question_type === 'matching' && (
+                                <Field>
+                                    <FieldLabel>Matching Pairs *</FieldLabel>
+                                    <div className="space-y-3">
+                                        <div className="grid grid-cols-2 gap-2 text-sm font-medium mb-2">
+                                            <div>Column A</div>
+                                            <div>Column B</div>
+                                        </div>
+                                        {data.matching_pairs.map((pair, index) => (
+                                            <div key={index} className="flex gap-2">
+                                                <Badge variant="outline" className="h-10 w-10 items-center justify-center shrink-0">
+                                                    {index + 1}
+                                                </Badge>
+                                                <Input
+                                                    value={pair.column_a}
+                                                    onChange={(e) => handleMatchingChange(index, 'column_a', e.target.value)}
+                                                    placeholder={`Item ${index + 1}`}
+                                                />
+                                                <Input
+                                                    value={pair.column_b}
+                                                    onChange={(e) => handleMatchingChange(index, 'column_b', e.target.value)}
+                                                    placeholder={`Match ${index + 1}`}
+                                                />
+                                                {data.matching_pairs.length > 2 && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => removeMatchingPair(index)}
+                                                    >
+                                                        ×
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        ))}
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={addMatchingPair}
+                                        >
+                                            <Plus className="mr-2 size-4" />
+                                            Add Pair
+                                        </Button>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                        Create pairs that students will match. Column B will be shuffled in the exam.
+                                    </p>
+                                </Field>
+                            )}
+
+                            {/* Fill in the Blanks Help */}
+                            {data.question_type === 'fill_in_the_blanks' && (
+                                <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-4 text-sm">
+                                    <p className="font-medium mb-2">Fill in the Blanks Instructions:</p>
+                                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                        <li>Use <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">[blank]</code> in your question text where you want blanks</li>
+                                        <li>Example: &quot;The capital of France is [blank].&quot;</li>
+                                        <li>Enter the correct answer(s) in the &quot;Correct Answer&quot; field below</li>
+                                        <li>For multiple blanks, separate answers with commas</li>
+                                    </ul>
+                                </div>
                             )}
 
                             {/* Correct Answer */}
@@ -204,12 +325,20 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                             <SelectItem value="False">False</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                ) : data.question_type === 'matching' ? (
+                                    <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
+                                        Correct answers are automatically determined from your matching pairs above.
+                                    </div>
                                 ) : (
                                     <Input
                                         id="correct_answer"
                                         value={data.correct_answer}
                                         onChange={(e) => setData('correct_answer', e.target.value)}
-                                        placeholder="Enter correct answer"
+                                        placeholder={
+                                            data.question_type === 'fill_in_the_blanks' 
+                                                ? "Enter answer(s), comma-separated for multiple blanks" 
+                                                : "Enter correct answer"
+                                        }
                                     />
                                 )}
                                 {errors.correct_answer && <FieldError>{errors.correct_answer}</FieldError>}

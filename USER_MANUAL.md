@@ -10,6 +10,16 @@
 2. [Getting Started](#getting-started)
 3. [User Roles Overview](#user-roles-overview)
 4. [Educator User Guide](#educator-user-guide)
+   - [1. Module Management](#1-module-management)
+   - [2. Topic Management](#2-topic-management)
+   - [3. Learning Objectives](#3-learning-objectives)
+   - [4. TOS Generation](#4-tos-generation)
+   - [5. Question Bank](#5-question-bank)
+   - [6. Exam Building](#6-exam-building)
+   - [7. Exam Templates](#7-exam-templates)
+   - [8. Analytics](#8-analytics)
+   - [9. Queue Monitor](#9-queue-monitor)
+   - [10. Profile & Settings](#10-profile--settings)
 5. [Administrator User Guide](#administrator-user-guide)
 6. [Super Administrator User Guide](#super-administrator-user-guide)
 7. [Common Features](#common-features)
@@ -571,6 +581,41 @@ After creating exam:
 
 ---
 
+### 7. Exam Templates
+
+Exam templates allow you to customize the header, footer, and styling of your exported PDF exams.
+
+#### Creating a Template
+
+1. Navigate to **"Exam Templates"** in the sidebar.
+2. Click **"Create Template"**.
+3. Fill in the form:
+   - **Name:** Internal name for the template (e.g., "Standard Term Exam").
+   - **Header Content:** HTML/Text for the top of the exam.
+   - **Footer Content:** HTML/Text for the bottom of the exam.
+   - **Custom Styles:** (Optional) CSS to customize the appearance.
+4. Click **"Create Template"**.
+
+#### Using Dynamic Placeholders
+
+Templates support dynamic placeholders that are replaced with actual data when exporting:
+
+- `{{school_name}}`: Your school/organization name (set in Profile).
+- `{{exam_title}}`: The title of the exam.
+- `{{student_name}}`: A line for the student to write their name.
+- `{{date}}`: The current date.
+- `{{score}}`: A placeholder for the student's score.
+
+#### Assigning a Template to an Exam
+
+1. Go to the **"Exams"** list or **"Exam Builder"**.
+2. Create or edit an exam.
+3. In the **"Exam Settings"** or creation form, select your template from the **"Exam Template"** dropdown.
+4. Save the exam.
+5. When you click **"Export to PDF"**, your chosen template will be applied.
+
+---
+
 ### 8. Analytics
 
 View statistics and insights about your content. Note: Analytics access requires the 'view analytics' permission (typically Admin/Super Admin).
@@ -646,6 +691,7 @@ Manage your account information.
 3. Edit:
    - Name
    - Email (requires verification if changed)
+   - School / Organization (used in PDF templates)
 4. Click **"Save Changes"**
 
 #### Changing Password

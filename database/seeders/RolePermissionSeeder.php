@@ -42,27 +42,39 @@ class RolePermissionSeeder extends Seeder
             'create exams',
             'edit exams',
             'delete exams',
+            'publish exams',
             'approve questions',
             'bulk delete questions',
+            'view analytics',
 
             // Profile management
             'edit own profile',
             'change own password',
+
+            // Template management
+            'view templates',
+            'create templates',
+            'edit templates',
+            'delete templates',
+
+            // Student Portal
+            'take exams',
+            'view own results',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
 
         // Super Admin - has all permissions
-        $superAdmin = Role::create(['name' => 'super-admin']);
-        $superAdmin->givePermissionTo(Permission::all());
+        $superAdmin = Role::firstOrCreate(['name' => 'super-admin']);
+        $superAdmin->syncPermissions(Permission::all());
 
         // Admin - can manage users and all content
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo([
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->syncPermissions([
             'view users',
             'create users',
             'edit users',
@@ -81,13 +93,17 @@ class RolePermissionSeeder extends Seeder
             'delete exams',
             'approve questions',
             'bulk delete questions',
+            'view templates',
+            'create templates',
+            'edit templates',
+            'delete templates',
             'edit own profile',
             'change own password',
         ]);
 
         // Educator - can create and manage own content
-        $educator = Role::create(['name' => 'educator']);
-        $educator->givePermissionTo([
+        $educator = Role::firstOrCreate(['name' => 'educator']);
+        $educator->syncPermissions([
             'view modules',
             'create modules',
             'edit modules',
@@ -99,6 +115,19 @@ class RolePermissionSeeder extends Seeder
             'create exams',
             'edit exams',
             'approve questions',
+            'view templates',
+            'create templates',
+            'edit templates',
+            'delete templates',
+            'edit own profile',
+            'change own password',
+        ]);
+
+        // Student - can take exams and view results
+        $student = Role::firstOrCreate(['name' => 'student']);
+        $student->syncPermissions([
+            'take exams',
+            'view own results',
             'edit own profile',
             'change own password',
         ]);

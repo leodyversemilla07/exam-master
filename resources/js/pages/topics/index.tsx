@@ -3,7 +3,7 @@ import { Head, Link } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import { Module, Topic } from "@/types/models";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Plus, FolderTree, Edit, Trash2, Clock, Percent } from "lucide-react";

@@ -31,6 +31,7 @@ export default function Profile({
         useForm({
             name: auth.user.name,
             email: auth.user.email,
+            organization: (auth.user.organization as string) || "",
         });
 
     const submit: FormEventHandler = (e) => {
@@ -91,6 +92,25 @@ export default function Profile({
                             <InputError
                                 className="mt-2"
                                 message={errors.email}
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="organization">School / Organization</Label>
+
+                            <Input
+                                id="organization"
+                                className="mt-1 block w-full"
+                                value={data.organization}
+                                onChange={(e) =>
+                                    setData("organization", e.target.value)
+                                }
+                                placeholder="e.g. University of Example"
+                            />
+
+                            <InputError
+                                className="mt-2"
+                                message={errors.organization}
                             />
                         </div>
 
