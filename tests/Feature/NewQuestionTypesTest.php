@@ -110,10 +110,6 @@ it('validates matching type requires options', function () {
 });
 
 it('can update a matching type question', function () {
-    // Skipping for now - update functionality needs investigation
-    // The critical functionality (create, export, filter) is working
-    $this->markTestSkipped('Update functionality needs investigation - not critical for MVP');
-
     $question = ExamQuestion::factory()->create([
         'module_id' => $this->module->id,
         'created_by' => $this->user->id,
@@ -141,7 +137,7 @@ it('can update a matching type question', function () {
             '3' => 'Match 3',
         ]),
         'cognitive_level' => 'understanding',
-        'difficulty' => 'moderate',
+        'difficulty' => 'medium',
         'learning_objective_code' => 'TEST-001',
         'points' => 3,
     ];
