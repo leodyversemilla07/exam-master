@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class GenerateQuestionsJob implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of times the job may be attempted.
