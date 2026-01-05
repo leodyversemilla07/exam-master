@@ -30,11 +30,11 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $permission) {
-        $perm = Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
-        if (!$role->hasPermissionTo($permission)) {
-            $role->givePermissionTo($perm);
-        }
+        Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
     }
+
+    // Give all permissions to the educator role
+    $role->syncPermissions($permissions);
 });
 
 describe('Exam Builder List', function () {
@@ -66,7 +66,7 @@ describe('Exam Builder List', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $exam = Exam::factory()->create([
             'title' => 'Midterm Examination',
             'module_id' => $module->id,
@@ -87,7 +87,7 @@ describe('Exam Creation Flow', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        Module::factory()->create(['user_id' => $user->id]);
+        Module::factory()->create(['created_by' => $user->id]);
 
         $this->actingAs($user);
 
@@ -101,7 +101,7 @@ describe('Exam Creation Flow', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        Module::factory()->create(['user_id' => $user->id]);
+        Module::factory()->create(['created_by' => $user->id]);
 
         $this->actingAs($user);
 
@@ -128,7 +128,7 @@ describe('Exam Creation Flow', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
 
         $this->actingAs($user);
 
@@ -145,7 +145,7 @@ describe('Exam Detail View', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $exam = Exam::factory()->create([
             'title' => 'Detailed Exam View',
             'module_id' => $module->id,
@@ -164,7 +164,7 @@ describe('Exam Detail View', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $exam = Exam::factory()->create([
             'module_id' => $module->id,
             'created_by' => $user->id,
@@ -181,7 +181,7 @@ describe('Exam Detail View', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $exam = Exam::factory()->create([
             'module_id' => $module->id,
             'created_by' => $user->id,
@@ -200,7 +200,7 @@ describe('Exam Export', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $exam = Exam::factory()->create([
             'module_id' => $module->id,
             'created_by' => $user->id,
@@ -228,7 +228,7 @@ describe('Exam Actions', function () {
         $user = User::factory()->create();
         $user->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $user->id]);
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $exam = Exam::factory()->create([
             'module_id' => $module->id,
             'created_by' => $user->id,

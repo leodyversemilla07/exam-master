@@ -22,8 +22,6 @@ beforeEach(function () {
     Role::firstOrCreate(['name' => 'student', 'guard_name' => 'web']);
     Role::firstOrCreate(['name' => 'educator', 'guard_name' => 'web']);
 
-    $studentRole = Role::where('name', 'student')->first();
-
     $permissions = [
         'take exams',
         'view own results',
@@ -32,6 +30,10 @@ beforeEach(function () {
     foreach ($permissions as $permission) {
         Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
     }
+
+    // Give permissions to student role
+    $studentRole = Role::where('name', 'student')->first();
+    $studentRole->syncPermissions($permissions);
 });
 
 describe('Student Dashboard', function () {
@@ -109,7 +111,7 @@ describe('Exam Taking Experience', function () {
         $educator = User::factory()->create();
         $educator->assignRole('educator');
 
-        $module = Module::factory()->create(['user_id' => $educator->id]);
+        $module = Module::factory()->create(['created_by' => $educator->id]);
         $exam = Exam::factory()->create([
             'module_id' => $module->id,
             'created_by' => $educator->id,

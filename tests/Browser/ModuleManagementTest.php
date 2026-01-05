@@ -25,11 +25,11 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $permission) {
-        $perm = Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
-        if (!$role->hasPermissionTo($permission)) {
-            $role->givePermissionTo($perm);
-        }
+        Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
     }
+
+    // Give all permissions to the educator role
+    $role->syncPermissions($permissions);
 });
 
 describe('Module List View', function () {
@@ -64,7 +64,7 @@ describe('Module List View', function () {
         $module = Module::factory()->create([
             'name' => 'Test Mathematics Module',
             'code' => 'MATH101',
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -147,7 +147,7 @@ describe('Module Detail View', function () {
         $module = Module::factory()->create([
             'name' => 'Detail Test Module',
             'code' => 'DTM101',
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -163,7 +163,7 @@ describe('Module Detail View', function () {
         $user->assignRole('educator');
 
         $module = Module::factory()->create([
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -180,7 +180,7 @@ describe('Module Editing', function () {
         $user->assignRole('educator');
 
         $module = Module::factory()->create([
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -197,7 +197,7 @@ describe('Module Editing', function () {
         $module = Module::factory()->create([
             'name' => 'Existing Module Name',
             'code' => 'EXIST01',
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -216,13 +216,13 @@ describe('Module Search and Filter', function () {
         Module::factory()->create([
             'name' => 'Searchable Module',
             'code' => 'SRCH01',
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         Module::factory()->create([
             'name' => 'Hidden Module',
             'code' => 'HID01',
-            'user_id' => $user->id,
+            'created_by' => $user->id,
         ]);
 
         $this->actingAs($user);
