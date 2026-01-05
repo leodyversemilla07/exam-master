@@ -566,6 +566,315 @@ test('auto grading works for identification with trimming', function () {
     expect($answer->is_correct)->toBeTrue();
 });
 
+test('auto grading works for matching type with correct answers', function () {
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create(['module_id' => $module->id]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'matching',
+        'question' => 'Match the countries with their capitals',
+        'options' => [
+            ['premise' => 'France', 'response' => 'Paris'],
+            ['premise' => 'Germany', 'response' => 'Berlin'],
+            ['premise' => 'Italy', 'response' => 'Rome'],
+        ],
+        'correct_answer' => json_encode(['France' => 'Paris', 'Germany' => 'Berlin', 'Italy' => 'Rome']),
+        'points' => 3,
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 3,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Test',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDay(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => User::factory()->create()->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'answer_data' => [
+            'France' => 'Paris',
+            'Germany' => 'Berlin',
+            'Italy' => 'Rome',
+        ],
+        'max_points' => 3,
+    ]);
+    $answer->autoGrade();
+
+    expect($answer->is_correct)->toBeTrue();
+    expect((float) $answer->points_earned)->toBe(3.0);
+});
+
+test('auto grading marks wrong matching answers as incorrect', function () {
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create(['module_id' => $module->id]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'matching',
+        'question' => 'Match the countries with their capitals',
+        'options' => [
+            ['premise' => 'France', 'response' => 'Paris'],
+            ['premise' => 'Germany', 'response' => 'Berlin'],
+        ],
+        'correct_answer' => json_encode(['France' => 'Paris', 'Germany' => 'Berlin']),
+        'points' => 2,
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 2,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Test',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDay(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => User::factory()->create()->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'answer_data' => [
+            'France' => 'Berlin',  // Wrong!
+            'Germany' => 'Paris',  // Wrong!
+        ],
+        'max_points' => 2,
+    ]);
+    $answer->autoGrade();
+
+    expect($answer->is_correct)->toBeFalse();
+    expect((float) $answer->points_earned)->toBe(0.0);
+});
+
+test('auto grading works for fill in the blanks with correct answers', function () {
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create(['module_id' => $module->id]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'fill_in_the_blanks',
+        'question' => 'The capital of France is [blank] and it is located in [blank].',
+        'correct_answer' => 'Paris, Europe',
+        'points' => 2,
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 2,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Test',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDay(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => User::factory()->create()->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'answer' => 'Paris, Europe',
+        'max_points' => 2,
+    ]);
+    $answer->autoGrade();
+
+    expect($answer->is_correct)->toBeTrue();
+    expect((float) $answer->points_earned)->toBe(2.0);
+});
+
+test('auto grading works for fill in the blanks with case insensitivity', function () {
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create(['module_id' => $module->id]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'fill_in_the_blanks',
+        'question' => 'The [blank] is the largest planet in our solar system.',
+        'correct_answer' => 'Jupiter',
+        'points' => 1,
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 1,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Test',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDay(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => User::factory()->create()->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'answer' => 'jupiter',  // lowercase
+        'max_points' => 1,
+    ]);
+    $answer->autoGrade();
+
+    expect($answer->is_correct)->toBeTrue();
+});
+
+test('auto grading marks wrong fill in the blanks as incorrect', function () {
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create(['module_id' => $module->id]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'fill_in_the_blanks',
+        'question' => 'The capital of France is [blank].',
+        'correct_answer' => 'Paris',
+        'points' => 1,
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 1,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Test',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDay(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => User::factory()->create()->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'answer' => 'London',  // Wrong!
+        'max_points' => 1,
+    ]);
+    $answer->autoGrade();
+
+    expect($answer->is_correct)->toBeFalse();
+    expect((float) $answer->points_earned)->toBe(0.0);
+});
+
+test('auto grading works for fill in the blanks with answer_data array', function () {
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create(['module_id' => $module->id]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'fill_in_the_blanks',
+        'question' => 'The [blank] is blue and the grass is [blank].',
+        'correct_answer' => 'sky, green',
+        'points' => 2,
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 2,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Test',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDay(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => User::factory()->create()->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'answer_data' => ['sky', 'green'],
+        'max_points' => 2,
+    ]);
+    $answer->autoGrade();
+
+    expect($answer->is_correct)->toBeTrue();
+    expect((float) $answer->points_earned)->toBe(2.0);
+});
+
 test('educator can export results to CSV', function () {
     $educator = User::factory()->create();
     $educator->assignRole('educator');
