@@ -124,11 +124,30 @@ class ExamBuilderController extends Controller
     }
 
     /**
+     * Check if user can edit exam as owner or editor collaborator
+     */
+    private function canEditExam(Exam $exam): bool
+    {
+        $userId = auth()->id();
+
+        // Owner can always edit
+        if ($userId === $exam->created_by) {
+            return true;
+        }
+
+        // Check if user is an editor collaborator
+        return $exam->collaborators()
+            ->where('user_id', $userId)
+            ->where('exam_collaborators.role', 'editor')
+            ->exists();
+    }
+
+    /**
      * Show the form for editing the specified exam.
      */
     public function edit(Exam $examBuilder): Response
     {
-        abort_unless($this->canAccessExam($examBuilder), 403);
+        abort_unless($this->canEditExam($examBuilder), 403);
 
         $examBuilder->load(['module', 'collaborators']);
 
@@ -146,7 +165,7 @@ class ExamBuilderController extends Controller
     public function update(StoreExamRequest $request, Exam $examBuilder): RedirectResponse
     {
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canAccessExam($examBuilder),
+            auth()->user()->can('edit exams') || $this->canEditExam($examBuilder),
             403
         );
 
@@ -190,7 +209,7 @@ class ExamBuilderController extends Controller
         $exam = Exam::findOrFail($examId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            auth()->user()->can('edit exams') || $this->canEditExam($exam),
             403
         );
 
@@ -225,7 +244,7 @@ class ExamBuilderController extends Controller
         $question = ExamQuestion::findOrFail($questionId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            auth()->user()->can('edit exams') || $this->canEditExam($exam),
             403
         );
 
@@ -243,7 +262,7 @@ class ExamBuilderController extends Controller
         $exam = Exam::findOrFail($examId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            auth()->user()->can('edit exams') || $this->canEditExam($exam),
             403
         );
 
@@ -273,7 +292,7 @@ class ExamBuilderController extends Controller
         $question = ExamQuestion::findOrFail($questionId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            auth()->user()->can('edit exams') || $this->canEditExam($exam),
             403
         );
 

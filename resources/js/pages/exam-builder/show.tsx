@@ -157,7 +157,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                             Edit Exam
                                         </Link>
                                     </Button>
-                            {exam.status === 'draft' && (
+                                    {exam.status === 'draft' && (
                                         <>
                                             <Button asChild variant="outline" onClick={() => setShowAddQuestions(true)}>
                                                 <Plus className="mr-2 h-4 w-4" />

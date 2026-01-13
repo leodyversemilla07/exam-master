@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ExamCollaboratorController extends Controller
 {
@@ -18,9 +19,12 @@ class ExamCollaboratorController extends Controller
     {
         $exam->load(['collaborators', 'creator']);
 
+        abort_unless($exam->created_by === auth()->id() || $exam->collaborators->contains(auth()->id()), 403);
+
+
         return Inertia::render('exam-collaborators/index', [
             'exam' => $exam,
-            'availableUsers' => User::whereNotIn('id', [$exam->created_by, ...$exam->collaborators->pluck('id')])
+            'availableUsers' => User::whereNotIn('id', [$exam->created_by, ...$exam->collaborators->pluck('id')->toArray()])
                 ->orderBy('name')
                 ->get(['id', 'name', 'email']),
         ]);
@@ -59,7 +63,7 @@ class ExamCollaboratorController extends Controller
     public function update(Request $request, Exam $exam, User $user): RedirectResponse
     {
         // Only owner can update collaborator
-        abort_unless($exam->created_by === $user->id, 403, 'You can only update collaborators you own.');
+        abort_unless($exam->created_by === auth()->id(), 403, 'You can only update collaborators you own.');
 
         // Check if user is a collaborator
         abort_unless($exam->collaborators()->where('user_id', $user->id)->exists(), 403);
@@ -78,9 +82,10 @@ class ExamCollaboratorController extends Controller
     public function destroy(Exam $exam, User $user): RedirectResponse
     {
         // Only owner can remove collaborator
-        abort_unless($exam->created_by === $user->id, 403, 'You can only remove collaborators you own.');
+        abort_unless($exam->created_by === auth()->id(), 403, 'You can only remove collaborators from exams you own.');
 
-        $exam->collaborators()->where('user_id', $user->id)->exists(), 403);
+        abort_unless($exam->collaborators()->where('user_id', $user->id)->exists(), 403, 'User is not a collaborator.');
+
         $exam->collaborators()->detach($user->id);
 
         return back()->with('success', 'Collaborator removed successfully.');
@@ -105,18 +110,19 @@ class ExamCollaboratorController extends Controller
         $exam = Exam::findOrFail($request->exam_id);
         abort_unless($exam->created_by === auth()->id(), 403, 'You can only search users for exams you own.');
 
-        $excludedUserIds = [$exam->created_by, ...$exam->collaborators()->pluck('id')];
-        $excludedUserIds[] = array_filter($excludedUserIds);
+        $excludedUserIds = [$exam->created_by, ...$exam->collaborators->pluck('id')->toArray()];
+        $excludedUserIds = array_filter($excludedUserIds);
 
-        $query = $request->input('query');
+        $searchTerm = $request->input('query');
+
         $users = User::whereNotIn('id', $excludedUserIds)
-            ->where(function ($query) use ($user) {
-                $user->where('name', 'like', '%'.$query.'%')
-                    ->orWhere('email', 'like', '%'.$query.'%')
-                })
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('email', 'like', '%'.$searchTerm.'%');
+            })
             ->limit(10)
             ->get(['id', 'name', 'email'])
-            ->map(fn($user) => [
+            ->map(fn ($user) => [
                 'id' => (int) $user->id,
                 'name' => (string) $user->name,
                 'email' => (string) $user->email,

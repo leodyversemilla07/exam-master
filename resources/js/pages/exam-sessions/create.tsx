@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { 
-    Select, 
-    SelectContent, 
-    SelectItem, 
-    SelectTrigger, 
-    SelectValue 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
 } from '@/components/ui/select';
 import { Save, Clock, Calendar, Settings } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
@@ -109,8 +109,8 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="exam_id">Exam *</Label>
-                                        <Select 
-                                            value={data.exam_id} 
+                                        <Select
+                                            value={data.exam_id}
                                             onValueChange={handleExamChange}
                                         >
                                             <SelectTrigger id="exam_id">
@@ -256,8 +256,8 @@ export default function Create({ exams, selectedExamId }: PageProps) {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="max_attempts">Maximum Attempts *</Label>
-                                            <Select 
-                                                value={data.max_attempts} 
+                                            <Select
+                                                value={data.max_attempts}
                                                 onValueChange={(v) => setData('max_attempts', v)}
                                             >
                                                 <SelectTrigger id="max_attempts">
@@ -367,6 +367,7 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                             </div>
                         </form>
                     )}
+                </div>
             </div>
         </AppLayout>
     );

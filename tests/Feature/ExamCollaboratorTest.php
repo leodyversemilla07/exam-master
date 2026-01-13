@@ -6,15 +6,30 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Inertia\Testing\AssertableInertia as Assert;
+
+beforeEach(function () {
+    Role::create(['name' => 'educator']);
+    Permission::create(['name' => 'manage collaborators']);
+    Permission::create(['name' => 'view exams']);
+    $role = Role::findByName('educator');
+    $role->givePermissionTo('view exams');
+});
+
 test('exam owner can view collaborators page', function () {
     $exam = Exam::factory()->create();
     $owner = User::factory()->create()->assignRole('educator');
     $exam->update(['created_by' => $owner->id]);
 
-    $this->actingAs($owner)
-        ->get(route('exam-builder.collaborators', $exam))
-        ->assertStatus(200)
-        ->assertInertiaProp('exam');
+    $response = $this->actingAs($owner)
+        ->get(route('exam-builder.collaborators', $exam));
+
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('exam-collaborators/index')
+        ->has('exam')
+    );
 });
 
 test('non-owner cannot view collaborators page', function () {
@@ -58,7 +73,7 @@ test('cannot add owner as collaborator', function () {
             'user_id' => $owner->id,
             'role' => 'editor',
         ])
-        ->assertSessionHas('error');
+        ->assertSessionHasErrors('user_id');
 
     $this->assertDatabaseMissing('exam_collaborators', [
         'exam_id' => $exam->id,
@@ -166,37 +181,40 @@ test('collaborator can leave exam', function () {
 });
 
 test('search users endpoint returns available users', function () {
-    $exam = Exam::factory()->create();
     $owner = User::factory()->create()->assignRole('educator');
-    $collaborator = User::factory()->create(['name' => 'John Doe', 'email' => 'john@example.com']);
     $owner->givePermissionTo('manage collaborators');
-    $exam->update(['created_by' => $owner->id]);
-    $exam->collaborators()->attach($collaborator->id);
+    $module = \App\Models\Module::factory()->create(['created_by' => $owner->id]);
+    $exam = Exam::factory()->create(['created_by' => $owner->id, 'module_id' => $module->id]);
+    
+    // Create a user who is NOT a collaborator
+    $userToFind = User::factory()->create(['name' => 'John Doe', 'email' => 'john@example.com']);
 
     $response = $this->actingAs($owner)
-        ->get(route('exam-builder.collaborators.search'), [
+        ->get(route('exam-builder.collaborators.search', [
             'exam_id' => $exam->id,
             'query' => 'john',
-        ]);
+        ]));
 
     $response->assertStatus(200);
     $response->assertJsonCount(1);
+    $response->assertJsonFragment(['email' => 'john@example.com']);
 });
 
 test('collaborators are excluded from search results', function () {
-    $exam = Exam::factory()->create();
     $owner = User::factory()->create()->assignRole('educator');
+    $owner->givePermissionTo('manage collaborators');
+    $module = \App\Models\Module::factory()->create(['created_by' => $owner->id]);
+    $exam = Exam::factory()->create(['created_by' => $owner->id, 'module_id' => $module->id]);
+    
     $user1 = User::factory()->create(['name' => 'Alice', 'email' => 'alice@test.com']);
     $user2 = User::factory()->create(['name' => 'Bob', 'email' => 'bob@test.com']);
-    $owner->givePermissionTo('manage collaborators');
-    $exam->update(['created_by' => $owner->id]);
     $exam->collaborators()->attach([$user1->id, $user2->id]);
 
     $response = $this->actingAs($owner)
-        ->get(route('exam-builder.collaborators.search'), [
+        ->get(route('exam-builder.collaborators.search', [
             'exam_id' => $exam->id,
             'query' => 'a',
-        ]);
+        ]));
 
     $response->assertStatus(200);
     $response->assertJsonCount(0);

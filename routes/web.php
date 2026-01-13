@@ -96,6 +96,38 @@ Route::resource('question-bank', ExamController::class)
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
 // Exam Builder Routes
+Route::post('exam-builder/{exam}/add-questions', [ExamBuilderController::class, 'addQuestions'])
+    ->name('exam-builder.add-questions')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::delete('exam-builder/{exam}/questions/{question}', [ExamBuilderController::class, 'removeQuestion'])
+    ->name('exam-builder.remove-question')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::patch('exam-builder/{exam}/questions/reorder', [ExamBuilderController::class, 'reorderQuestions'])
+    ->name('exam-builder.reorder-questions')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::patch('exam-builder/{exam}/questions/{question}/points', [ExamBuilderController::class, 'updateQuestionPoints'])
+    ->name('exam-builder.update-points')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::post('exam-builder/{exam}/publish', [ExamBuilderController::class, 'publish'])
+    ->name('exam-builder.publish')
+    ->middleware(['auth', 'verified', 'permission:publish exams']);
+
+Route::post('exam-builder/{exam}/duplicate', [ExamBuilderController::class, 'duplicate'])
+    ->name('exam-builder.duplicate')
+    ->middleware(['auth', 'verified', 'permission:create exams']);
+
+Route::post('exam-builder/{exam}/archive', [ExamBuilderController::class, 'archive'])
+    ->name('exam-builder.archive')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::post('exam-builder/{exam}/unarchive', [ExamBuilderController::class, 'unarchive'])
+    ->name('exam-builder.unarchive')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
 Route::resource('exam-builder', ExamBuilderController::class)
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
@@ -103,6 +135,30 @@ Route::resource('exam-builder', ExamBuilderController::class)
 Route::get('exam-builder/{exam}/collaborators', [ExamCollaboratorController::class, 'index'])
     ->name('exam-builder.collaborators')
     ->middleware(['auth', 'verified']);
+
+Route::post('exam-builder/{exam}/collaborators', [ExamCollaboratorController::class, 'store'])
+    ->name('exam-builder.collaborators.store')
+    ->middleware(['auth', 'verified']);
+
+Route::patch('exam-builder/{exam}/collaborators/{user}', [ExamCollaboratorController::class, 'update'])
+    ->name('exam-builder.collaborators.update')
+    ->middleware(['auth', 'verified']);
+
+Route::delete('exam-builder/{exam}/collaborators/{user}', [ExamCollaboratorController::class, 'destroy'])
+    ->name('exam-builder.collaborators.destroy')
+    ->middleware(['auth', 'verified']);
+
+Route::post('exam-builder/{exam}/collaborators/leave', [ExamCollaboratorController::class, 'leave'])
+    ->name('exam-builder.collaborators.leave')
+    ->middleware(['auth', 'verified']);
+
+Route::get('exam-builder/collaborators/search', [ExamCollaboratorController::class, 'searchUsers'])
+    ->name('exam-builder.collaborators.search')
+    ->middleware(['auth', 'verified']);
+
+Route::get('exam-builder/{examId}/export-pdf', [ExamBuilderController::class, 'exportPdf'])
+    ->name('exam-builder.export-pdf')
+    ->middleware(['auth', 'verified', 'permission:view exams']);
 
 Route::get('exam-builder/{examId}/export-pdf-answers', [ExamBuilderController::class, 'exportPdfWithAnswers'])
     ->name('exam-builder.export-pdf-answers')
