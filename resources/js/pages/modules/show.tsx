@@ -33,7 +33,11 @@ export default function ModuleShow({ module }: PageProps) {
         { title: module.name, href: `/modules/${module.id}` },
     ];
     const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this module? This will also delete all associated topics, questions, and exams.')) {
+        if (
+            confirm(
+                'Are you sure you want to delete this module? This will also delete all associated topics, questions, and exams.',
+            )
+        ) {
             router.delete(`/modules/${module.id}`, {
                 onSuccess: () => router.visit('/modules'),
             });
@@ -52,9 +56,7 @@ export default function ModuleShow({ module }: PageProps) {
                                 {module.code}
                             </Badge>
                             <span>{module.name}</span>
-                            {!module.is_active && (
-                                <Badge variant="secondary">Inactive</Badge>
-                            )}
+                            {!module.is_active && <Badge variant="secondary">Inactive</Badge>}
                         </div>
                     }
                     description={module.description || undefined}
@@ -135,8 +137,12 @@ export default function ModuleShow({ module }: PageProps) {
                             >
                                 <FileText className="size-8 text-primary" />
                                 <div className="flex-1">
-                                    <p className="font-medium">{module.pdf_file.split('/').pop()}</p>
-                                    <p className="text-sm text-muted-foreground">Module PDF Document</p>
+                                    <p className="font-medium">
+                                        {module.pdf_file.split('/').pop()}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Module PDF Document
+                                    </p>
                                 </div>
                                 <Download className="size-5 text-muted-foreground" />
                             </a>
@@ -155,7 +161,10 @@ export default function ModuleShow({ module }: PageProps) {
                     <CardContent>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <Link href={`/modules/${module.id}/topics`}>
-                                <Button variant="outline" className="h-auto w-full flex-col items-start gap-2 p-4">
+                                <Button
+                                    variant="outline"
+                                    className="h-auto w-full flex-col items-start gap-2 p-4"
+                                >
                                     <FolderTree className="size-5" />
                                     <div className="text-left">
                                         <div className="font-semibold">Topics</div>
@@ -167,7 +176,10 @@ export default function ModuleShow({ module }: PageProps) {
                             </Link>
 
                             <Link href={`/modules/${module.id}/tos-calculator`}>
-                                <Button variant="outline" className="h-auto w-full flex-col items-start gap-2 p-4">
+                                <Button
+                                    variant="outline"
+                                    className="h-auto w-full flex-col items-start gap-2 p-4"
+                                >
                                     <Calculator className="size-5" />
                                     <div className="text-left">
                                         <div className="font-semibold">TOS Calculator</div>
@@ -179,7 +191,10 @@ export default function ModuleShow({ module }: PageProps) {
                             </Link>
 
                             <Link href={`/modules/${module.id}/duplicate-detection`}>
-                                <Button variant="outline" className="h-auto w-full flex-col items-start gap-2 p-4">
+                                <Button
+                                    variant="outline"
+                                    className="h-auto w-full flex-col items-start gap-2 p-4"
+                                >
                                     <Search className="size-5" />
                                     <div className="text-left">
                                         <div className="font-semibold">Duplicate Detection</div>
@@ -191,7 +206,10 @@ export default function ModuleShow({ module }: PageProps) {
                             </Link>
 
                             <Link href={`/tos-generates?module=${module.id}`}>
-                                <Button variant="outline" className="h-auto w-full flex-col items-start gap-2 p-4">
+                                <Button
+                                    variant="outline"
+                                    className="h-auto w-full flex-col items-start gap-2 p-4"
+                                >
                                     <FileText className="size-5" />
                                     <div className="text-left">
                                         <div className="font-semibold">TOS Generation</div>
@@ -240,7 +258,11 @@ export default function ModuleShow({ module }: PageProps) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <Badge variant={tos.status === 'completed' ? 'default' : 'secondary'}>
+                                        <Badge
+                                            variant={
+                                                tos.status === 'completed' ? 'default' : 'secondary'
+                                            }
+                                        >
                                             {tos.status}
                                         </Badge>
                                     </Link>

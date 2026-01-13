@@ -1,14 +1,24 @@
-import AppLayout from "@/layouts/app-layout";
-import { Head, Link } from "@inertiajs/react";
-import { PageProps } from "@/types";
-import { Module, Topic } from "@/types/models";
-import { Button } from "@/components/ui/button";
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { Module, Topic } from '@/types/models';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from "@/components/ui/badge";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { Plus, FolderTree, Edit, Trash2, Clock, Percent } from "lucide-react";
-import { index as topicsIndex, create as topicsCreate } from "@/actions/App/Http/Controllers/TopicController";
-import PageHeader from "@/components/page-header";
+import { Badge } from '@/components/ui/badge';
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
+import { Plus, FolderTree, Edit, Trash2, Clock, Percent } from 'lucide-react';
+import {
+    index as topicsIndex,
+    create as topicsCreate,
+} from '@/actions/App/Http/Controllers/TopicController';
+import PageHeader from '@/components/page-header';
 
 interface Props extends PageProps {
     module: Module;
@@ -17,9 +27,9 @@ interface Props extends PageProps {
 
 export default function TopicsIndex({ module, topics }: Props) {
     const breadcrumbs = [
-        { title: "Modules", href: "/modules" },
+        { title: 'Modules', href: '/modules' },
         { title: module.name, href: `/modules/${module.id}` },
-        { title: "Topics", href: topicsIndex.url(module.id) },
+        { title: 'Topics', href: topicsIndex.url(module.id) },
     ];
 
     // Organize topics into a tree structure
@@ -31,7 +41,7 @@ export default function TopicsIndex({ module, topics }: Props) {
 
         return (
             <div key={topic.id} className="group">
-                <Card className={`mb-2 ${level > 0 ? `ml-${indent * 4}` : ""}`}>
+                <Card className={`mb-2 ${level > 0 ? `ml-${indent * 4}` : ''}`}>
                     <CardContent className="flex items-center justify-between p-4">
                         <div className="flex items-center gap-4 flex-1">
                             {children.length > 0 && (
@@ -65,9 +75,12 @@ export default function TopicsIndex({ module, topics }: Props) {
                                             <span>{topic.weight_percentage}%</span>
                                         </div>
                                     )}
-                                    {topic.learning_objectives && topic.learning_objectives.length > 0 && (
-                                        <span>{topic.learning_objectives.length} objectives</span>
-                                    )}
+                                    {topic.learning_objectives &&
+                                        topic.learning_objectives.length > 0 && (
+                                            <span>
+                                                {topic.learning_objectives.length} objectives
+                                            </span>
+                                        )}
                                 </div>
                             </div>
                         </div>
@@ -133,9 +146,7 @@ export default function TopicsIndex({ module, topics }: Props) {
                         </EmptyContent>
                     </Empty>
                 ) : (
-                    <div className="space-y-2">
-                        {rootTopics.map((topic) => renderTopic(topic))}
-                    </div>
+                    <div className="space-y-2">{rootTopics.map((topic) => renderTopic(topic))}</div>
                 )}
             </div>
         </AppLayout>

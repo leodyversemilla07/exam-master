@@ -1,19 +1,14 @@
-import { PageProps } from "@/types";
-import { ExamAttempt } from "@/types/models";
-import { Head, router } from "@inertiajs/react";
-import { useState, useEffect, useCallback } from "react";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { PageProps } from '@/types';
+import { ExamAttempt } from '@/types/models';
+import { Head, router } from '@inertiajs/react';
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,17 +18,14 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/alert-dialog';
+import { Progress } from '@/components/ui/progress';
+import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
-    Clock,
-    ChevronLeft,
-    ChevronRight,
-    Send,
-    AlertTriangle,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { submit, saveAnswer as saveAnswerRoute } from "@/actions/App/Http/Controllers/StudentExamController";
+    submit,
+    saveAnswer as saveAnswerRoute,
+} from '@/actions/App/Http/Controllers/StudentExamController';
 
 interface Question {
     id: number;
@@ -58,7 +50,9 @@ export default function ExamTake({
     timeRemaining: initialTimeRemaining,
 }: ExamTakeProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Record<number, { answer: string | null; answer_data: Record<string, unknown> | null }>>({});
+    const [answers, setAnswers] = useState<
+        Record<number, { answer: string | null; answer_data: Record<string, unknown> | null }>
+    >({});
     const [timeRemaining, setTimeRemaining] = useState(initialTimeRemaining);
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const [showTimeWarning, setShowTimeWarning] = useState(false);
@@ -66,7 +60,10 @@ export default function ExamTake({
 
     // Initialize answers from props
     useEffect(() => {
-        const initialAnswers: Record<number, { answer: string | null; answer_data: Record<string, unknown> | null }> = {};
+        const initialAnswers: Record<
+            number,
+            { answer: string | null; answer_data: Record<string, unknown> | null }
+        > = {};
         questions.forEach((q) => {
             initialAnswers[q.answer_id] = {
                 answer: q.current_answer,
@@ -98,9 +95,13 @@ export default function ExamTake({
     }, []);
 
     const handleAutoSubmit = useCallback(() => {
-        router.post(submit.url(attempt.id), {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            submit.url(attempt.id),
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     }, [attempt.id]);
 
     const formatTime = (seconds: number) => {
@@ -109,21 +110,28 @@ export default function ExamTake({
         const secs = seconds % 60;
 
         if (hours > 0) {
-            return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
-        return `${minutes}:${secs.toString().padStart(2, "0")}`;
+        return `${minutes}:${secs.toString().padStart(2, '0')}`;
     };
 
     const currentQuestion = questions[currentQuestionIndex];
 
-    const saveAnswer = async (answerId: number, answer: string | null, answerData: Record<string, unknown> | null) => {
+    const saveAnswer = async (
+        answerId: number,
+        answer: string | null,
+        answerData: Record<string, unknown> | null,
+    ) => {
         setIsSaving(true);
         try {
             await fetch(saveAnswerRoute.url(attempt.id), {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content') || '',
                 },
                 body: JSON.stringify({
                     answer_id: answerId,
@@ -132,13 +140,17 @@ export default function ExamTake({
                 }),
             });
         } catch (error) {
-            console.error("Failed to save answer:", error);
+            console.error('Failed to save answer:', error);
         } finally {
             setIsSaving(false);
         }
     };
 
-    const handleAnswerChange = (answerId: number, answer: string | null, answerData: Record<string, unknown> | null = null) => {
+    const handleAnswerChange = (
+        answerId: number,
+        answer: string | null,
+        answerData: Record<string, unknown> | null = null,
+    ) => {
         setAnswers((prev) => ({
             ...prev,
             [answerId]: { answer, answer_data: answerData },
@@ -151,7 +163,7 @@ export default function ExamTake({
     };
 
     const answeredCount = Object.values(answers).filter(
-        (a) => a.answer !== null || (a.answer_data && Object.keys(a.answer_data).length > 0)
+        (a) => a.answer !== null || (a.answer_data && Object.keys(a.answer_data).length > 0),
     ).length;
 
     const progressPercentage = (answeredCount / questions.length) * 100;
@@ -160,11 +172,13 @@ export default function ExamTake({
         const currentAnswer = answers[currentQuestion.answer_id];
 
         switch (currentQuestion.question_type) {
-            case "multiple_choice":
+            case 'multiple_choice':
                 return (
                     <RadioGroup
-                        value={currentAnswer?.answer || ""}
-                        onValueChange={(value) => handleAnswerChange(currentQuestion.answer_id, value)}
+                        value={currentAnswer?.answer || ''}
+                        onValueChange={(value) =>
+                            handleAnswerChange(currentQuestion.answer_id, value)
+                        }
                     >
                         <div className="space-y-3">
                             {currentQuestion.options?.map((option) => (
@@ -172,7 +186,10 @@ export default function ExamTake({
                                     key={option.key}
                                     className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                                 >
-                                    <RadioGroupItem value={option.key} id={`option-${option.key}`} />
+                                    <RadioGroupItem
+                                        value={option.key}
+                                        id={`option-${option.key}`}
+                                    />
                                     <Label
                                         htmlFor={`option-${option.key}`}
                                         className="flex-1 cursor-pointer"
@@ -186,22 +203,30 @@ export default function ExamTake({
                     </RadioGroup>
                 );
 
-            case "true_false":
+            case 'true_false':
                 return (
                     <RadioGroup
-                        value={currentAnswer?.answer || ""}
-                        onValueChange={(value) => handleAnswerChange(currentQuestion.answer_id, value)}
+                        value={currentAnswer?.answer || ''}
+                        onValueChange={(value) =>
+                            handleAnswerChange(currentQuestion.answer_id, value)
+                        }
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                                 <RadioGroupItem value="true" id="option-true" />
-                                <Label htmlFor="option-true" className="flex-1 cursor-pointer font-medium">
+                                <Label
+                                    htmlFor="option-true"
+                                    className="flex-1 cursor-pointer font-medium"
+                                >
                                     True
                                 </Label>
                             </div>
                             <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                                 <RadioGroupItem value="false" id="option-false" />
-                                <Label htmlFor="option-false" className="flex-1 cursor-pointer font-medium">
+                                <Label
+                                    htmlFor="option-false"
+                                    className="flex-1 cursor-pointer font-medium"
+                                >
                                     False
                                 </Label>
                             </div>
@@ -209,31 +234,37 @@ export default function ExamTake({
                     </RadioGroup>
                 );
 
-            case "identification":
-            case "short_answer":
+            case 'identification':
+            case 'short_answer':
                 return (
                     <Input
-                        value={currentAnswer?.answer || ""}
-                        onChange={(e) => handleAnswerChange(currentQuestion.answer_id, e.target.value)}
+                        value={currentAnswer?.answer || ''}
+                        onChange={(e) =>
+                            handleAnswerChange(currentQuestion.answer_id, e.target.value)
+                        }
                         placeholder="Type your answer here..."
                         className="text-lg"
                     />
                 );
 
-            case "essay":
+            case 'essay':
                 return (
                     <Textarea
-                        value={currentAnswer?.answer || ""}
-                        onChange={(e) => handleAnswerChange(currentQuestion.answer_id, e.target.value)}
+                        value={currentAnswer?.answer || ''}
+                        onChange={(e) =>
+                            handleAnswerChange(currentQuestion.answer_id, e.target.value)
+                        }
                         placeholder="Write your answer here..."
                         className="min-h-50"
                     />
                 );
 
-            case "fill_in_the_blanks":
+            case 'fill_in_the_blanks':
                 const blanksCount = (currentQuestion.question.match(/\[blank\]/gi) || []).length;
-                const blanksAnswers = (currentAnswer?.answer_data as unknown as string[]) || Array(blanksCount).fill("");
-                
+                const blanksAnswers =
+                    (currentAnswer?.answer_data as unknown as string[]) ||
+                    Array(blanksCount).fill('');
+
                 return (
                     <div className="space-y-4">
                         <p className="text-muted-foreground text-sm">
@@ -243,14 +274,14 @@ export default function ExamTake({
                             <div key={index} className="flex items-center gap-3">
                                 <span className="font-medium">Blank {index + 1}:</span>
                                 <Input
-                                    value={blanksAnswers[index] || ""}
+                                    value={blanksAnswers[index] || ''}
                                     onChange={(e) => {
                                         const newBlanks = [...blanksAnswers];
                                         newBlanks[index] = e.target.value;
                                         handleAnswerChange(
                                             currentQuestion.answer_id,
-                                            newBlanks.join(","),
-                                            newBlanks as unknown as Record<string, unknown>
+                                            newBlanks.join(','),
+                                            newBlanks as unknown as Record<string, unknown>,
                                         );
                                     }}
                                     placeholder={`Answer for blank ${index + 1}`}
@@ -261,9 +292,10 @@ export default function ExamTake({
                     </div>
                 );
 
-            case "matching":
-                const matchingAnswers = (currentAnswer?.answer_data as Record<string, string>) || {};
-                
+            case 'matching':
+                const matchingAnswers =
+                    (currentAnswer?.answer_data as Record<string, string>) || {};
+
                 return (
                     <div className="space-y-4">
                         <p className="text-muted-foreground text-sm">
@@ -276,14 +308,14 @@ export default function ExamTake({
                                 </div>
                                 <span className="text-muted-foreground">→</span>
                                 <Input
-                                    value={matchingAnswers[option.premise || ""] || ""}
+                                    value={matchingAnswers[option.premise || ''] || ''}
                                     onChange={(e) => {
                                         const newMatching = { ...matchingAnswers };
-                                        newMatching[option.premise || ""] = e.target.value;
+                                        newMatching[option.premise || ''] = e.target.value;
                                         handleAnswerChange(
                                             currentQuestion.answer_id,
                                             JSON.stringify(newMatching),
-                                            newMatching
+                                            newMatching,
                                         );
                                     }}
                                     placeholder="Enter matching answer"
@@ -297,8 +329,10 @@ export default function ExamTake({
             default:
                 return (
                     <Textarea
-                        value={currentAnswer?.answer || ""}
-                        onChange={(e) => handleAnswerChange(currentQuestion.answer_id, e.target.value)}
+                        value={currentAnswer?.answer || ''}
+                        onChange={(e) =>
+                            handleAnswerChange(currentQuestion.answer_id, e.target.value)
+                        }
                         placeholder="Type your answer here..."
                         className="min-h-37.5"
                     />
@@ -328,7 +362,7 @@ export default function ExamTake({
                             )}
                             {timeRemaining !== null && (
                                 <Badge
-                                    variant={timeRemaining < 300 ? "destructive" : "outline"}
+                                    variant={timeRemaining < 300 ? 'destructive' : 'outline'}
                                     className="text-lg font-mono"
                                 >
                                     <Clock className="h-4 w-4 mr-2" />
@@ -361,17 +395,21 @@ export default function ExamTake({
                                             const isAnswered =
                                                 answers[q.answer_id]?.answer !== null ||
                                                 (answers[q.answer_id]?.answer_data &&
-                                                    Object.keys(answers[q.answer_id]?.answer_data || {}).length > 0);
+                                                    Object.keys(
+                                                        answers[q.answer_id]?.answer_data || {},
+                                                    ).length > 0);
                                             const isCurrent = index === currentQuestionIndex;
 
                                             return (
                                                 <Button
                                                     key={q.id}
-                                                    variant={isCurrent ? "default" : "outline"}
+                                                    variant={isCurrent ? 'default' : 'outline'}
                                                     size="sm"
                                                     className={cn(
-                                                        "w-full h-10",
-                                                        isAnswered && !isCurrent && "bg-green-100 border-green-300 hover:bg-green-200"
+                                                        'w-full h-10',
+                                                        isAnswered &&
+                                                            !isCurrent &&
+                                                            'bg-green-100 border-green-300 hover:bg-green-200',
                                                     )}
                                                     onClick={() => setCurrentQuestionIndex(index)}
                                                 >
@@ -400,9 +438,13 @@ export default function ExamTake({
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <Badge variant="outline">
-                                            Question {currentQuestionIndex + 1} of {questions.length}
+                                            Question {currentQuestionIndex + 1} of{' '}
+                                            {questions.length}
                                         </Badge>
-                                        <Badge>{currentQuestion.points} point{currentQuestion.points !== 1 ? "s" : ""}</Badge>
+                                        <Badge>
+                                            {currentQuestion.points} point
+                                            {currentQuestion.points !== 1 ? 's' : ''}
+                                        </Badge>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
@@ -410,14 +452,16 @@ export default function ExamTake({
                                         <p className="text-lg">{currentQuestion.question}</p>
                                     </div>
 
-                                    <div className="pt-4 border-t">
-                                        {renderQuestion()}
-                                    </div>
+                                    <div className="pt-4 border-t">{renderQuestion()}</div>
 
                                     <div className="flex justify-between pt-4">
                                         <Button
                                             variant="outline"
-                                            onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
+                                            onClick={() =>
+                                                setCurrentQuestionIndex((prev) =>
+                                                    Math.max(0, prev - 1),
+                                                )
+                                            }
                                             disabled={currentQuestionIndex === 0}
                                         >
                                             <ChevronLeft className="h-4 w-4 mr-2" />
@@ -426,7 +470,7 @@ export default function ExamTake({
                                         <Button
                                             onClick={() =>
                                                 setCurrentQuestionIndex((prev) =>
-                                                    Math.min(questions.length - 1, prev + 1)
+                                                    Math.min(questions.length - 1, prev + 1),
                                                 )
                                             }
                                             disabled={currentQuestionIndex === questions.length - 1}
@@ -449,22 +493,25 @@ export default function ExamTake({
                         <AlertDialogTitle>Submit Exam?</AlertDialogTitle>
                         <AlertDialogDescription className="space-y-2">
                             <p>
-                                You have answered {answeredCount} out of {questions.length} questions.
+                                You have answered {answeredCount} out of {questions.length}{' '}
+                                questions.
                             </p>
                             {answeredCount < questions.length && (
                                 <p className="text-yellow-600 flex items-center gap-2">
                                     <AlertTriangle className="h-4 w-4" />
-                                    You have {questions.length - answeredCount} unanswered question(s).
+                                    You have {questions.length - answeredCount} unanswered
+                                    question(s).
                                 </p>
                             )}
-                            <p>Are you sure you want to submit your exam? This action cannot be undone.</p>
+                            <p>
+                                Are you sure you want to submit your exam? This action cannot be
+                                undone.
+                            </p>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Continue Exam</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleSubmit}>
-                            Submit Exam
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={handleSubmit}>Submit Exam</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -474,12 +521,11 @@ export default function ExamTake({
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle className="flex items-center gap-2 text-yellow-600">
-                            <Clock className="h-5 w-5" />
-                            5 Minutes Remaining
+                            <Clock className="h-5 w-5" />5 Minutes Remaining
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            You have 5 minutes left to complete your exam. 
-                            Please review your answers and submit when ready.
+                            You have 5 minutes left to complete your exam. Please review your
+                            answers and submit when ready.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

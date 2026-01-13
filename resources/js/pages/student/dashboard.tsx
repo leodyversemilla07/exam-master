@@ -1,18 +1,12 @@
-import AppLayout from "@/layouts/app-layout";
-import { PageProps } from "@/types";
-import { ExamAttempt, ExamSession } from "@/types/models";
-import { Head, Link, useForm } from "@inertiajs/react";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import PageHeader from "@/components/page-header";
+import AppLayout from '@/layouts/app-layout';
+import { PageProps } from '@/types';
+import { ExamAttempt, ExamSession } from '@/types/models';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import PageHeader from '@/components/page-header';
 import {
     ClipboardList,
     Clock,
@@ -24,9 +18,14 @@ import {
     CheckCircle2,
     Timer,
     History,
-} from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
-import { joinByCode, take, showStart, history } from "@/actions/App/Http/Controllers/StudentExamController";
+} from 'lucide-react';
+import { formatDistanceToNow, format } from 'date-fns';
+import {
+    joinByCode,
+    take,
+    showStart,
+    history,
+} from '@/actions/App/Http/Controllers/StudentExamController';
 
 interface StudentDashboardProps extends PageProps {
     availableSessions: ExamSession[];
@@ -47,7 +46,7 @@ export default function StudentDashboard({
     stats,
 }: StudentDashboardProps) {
     const joinForm = useForm({
-        access_code: "",
+        access_code: '',
     });
 
     const handleJoinExam = (e: React.FormEvent) => {
@@ -56,16 +55,14 @@ export default function StudentDashboard({
     };
 
     const getScoreColor = (percentage: number) => {
-        if (percentage >= 80) return "text-green-600";
-        if (percentage >= 60) return "text-yellow-600";
-        return "text-red-600";
+        if (percentage >= 80) return 'text-green-600';
+        if (percentage >= 60) return 'text-yellow-600';
+        return 'text-red-600';
     };
 
     const getScoreBadge = (percentage: number) => {
-        if (percentage >= 80)
-            return <Badge className="bg-green-100 text-green-800">Passed</Badge>;
-        if (percentage >= 60)
-            return <Badge className="bg-yellow-100 text-yellow-800">Fair</Badge>;
+        if (percentage >= 80) return <Badge className="bg-green-100 text-green-800">Passed</Badge>;
+        if (percentage >= 60) return <Badge className="bg-yellow-100 text-yellow-800">Fair</Badge>;
         return <Badge className="bg-red-100 text-red-800">Needs Improvement</Badge>;
     };
 
@@ -105,7 +102,9 @@ export default function StudentDashboard({
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className={`text-2xl font-bold ${getScoreColor(stats.average_score)}`}>
+                            <div
+                                className={`text-2xl font-bold ${getScoreColor(stats.average_score)}`}
+                            >
                                 {stats.average_score.toFixed(1)}%
                             </div>
                         </CardContent>
@@ -138,21 +137,25 @@ export default function StudentDashboard({
                                 placeholder="Enter 8-character access code"
                                 value={joinForm.data.access_code}
                                 onChange={(e) =>
-                                    joinForm.setData("access_code", e.target.value.toUpperCase())
+                                    joinForm.setData('access_code', e.target.value.toUpperCase())
                                 }
                                 className="max-w-xs font-mono text-lg tracking-wider uppercase"
                                 maxLength={8}
                             />
                             <Button
                                 type="submit"
-                                disabled={joinForm.processing || joinForm.data.access_code.length !== 8}
+                                disabled={
+                                    joinForm.processing || joinForm.data.access_code.length !== 8
+                                }
                             >
                                 <Play className="h-4 w-4 mr-2" />
                                 Join Exam
                             </Button>
                         </form>
                         {joinForm.errors.access_code && (
-                            <p className="text-sm text-red-500 mt-2">{joinForm.errors.access_code}</p>
+                            <p className="text-sm text-red-500 mt-2">
+                                {joinForm.errors.access_code}
+                            </p>
                         )}
                     </CardContent>
                 </Card>
@@ -182,7 +185,11 @@ export default function StudentDashboard({
                                                     {attempt.exam_session?.exam?.title}
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    Started {formatDistanceToNow(new Date(attempt.started_at), { addSuffix: true })}
+                                                    Started{' '}
+                                                    {formatDistanceToNow(
+                                                        new Date(attempt.started_at),
+                                                        { addSuffix: true },
+                                                    )}
                                                 </p>
                                             </div>
                                             <Button asChild>
@@ -205,9 +212,7 @@ export default function StudentDashboard({
                                 <ClipboardList className="h-5 w-5" />
                                 Available Exams
                             </CardTitle>
-                            <CardDescription>
-                                Exams you can take right now
-                            </CardDescription>
+                            <CardDescription>Exams you can take right now</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {availableSessions.length === 0 ? (
@@ -224,7 +229,7 @@ export default function StudentDashboard({
                                             <div>
                                                 <p className="font-medium">{session.title}</p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {session.exam?.module?.name} •{" "}
+                                                    {session.exam?.module?.name} •{' '}
                                                     {session.exam?.total_items} questions
                                                 </p>
                                                 <div className="flex gap-2 mt-1">
@@ -260,9 +265,7 @@ export default function StudentDashboard({
                                     <Trophy className="h-5 w-5" />
                                     Recent Results
                                 </CardTitle>
-                                <CardDescription>
-                                    Your latest exam results
-                                </CardDescription>
+                                <CardDescription>Your latest exam results</CardDescription>
                             </div>
                             <Button variant="ghost" asChild>
                                 <Link href={history.url()}>
@@ -289,12 +292,17 @@ export default function StudentDashboard({
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {result.submitted_at
-                                                        ? format(new Date(result.submitted_at), "MMM d, yyyy")
-                                                        : "In progress"}
+                                                        ? format(
+                                                              new Date(result.submitted_at),
+                                                              'MMM d, yyyy',
+                                                          )
+                                                        : 'In progress'}
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <p className={`text-lg font-bold ${getScoreColor(result.percentage || 0)}`}>
+                                                <p
+                                                    className={`text-lg font-bold ${getScoreColor(result.percentage || 0)}`}
+                                                >
                                                     {result.percentage?.toFixed(1)}%
                                                 </p>
                                                 {getScoreBadge(result.percentage || 0)}

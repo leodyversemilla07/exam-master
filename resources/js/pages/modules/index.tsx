@@ -8,9 +8,7 @@ import { BookOpen, Plus, FileText, Calculator, FolderTree, Edit, Trash2 } from '
 import { BreadcrumbItem } from '@/types';
 import PageHeader from '@/components/page-header';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Modules', href: '/modules' },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Modules', href: '/modules' }];
 
 interface PageProps {
     modules: {
@@ -28,7 +26,11 @@ interface PageProps {
 
 export default function ModuleIndex({ modules }: PageProps) {
     const handleDelete = (moduleId: number) => {
-        if (confirm('Are you sure you want to delete this module? This will also delete all associated topics, questions, and exams.')) {
+        if (
+            confirm(
+                'Are you sure you want to delete this module? This will also delete all associated topics, questions, and exams.',
+            )
+        ) {
             router.delete(`/modules/${moduleId}`, {
                 preserveScroll: true,
             });
@@ -79,14 +81,19 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <Badge variant="outline" className="font-mono text-xs">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-mono text-xs"
+                                                    >
                                                         {module.code}
                                                     </Badge>
                                                     {!module.is_active && (
                                                         <Badge variant="secondary">Inactive</Badge>
                                                     )}
                                                 </div>
-                                                <CardTitle className="text-lg">{module.name}</CardTitle>
+                                                <CardTitle className="text-lg">
+                                                    {module.name}
+                                                </CardTitle>
                                                 <CardDescription className="mt-1 line-clamp-2">
                                                     {module.description || 'No description'}
                                                 </CardDescription>
@@ -97,20 +104,32 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         {/* Module Info */}
                                         <div className="grid grid-cols-2 gap-2 text-sm">
                                             <div>
-                                                <span className="text-muted-foreground">Subject:</span>
+                                                <span className="text-muted-foreground">
+                                                    Subject:
+                                                </span>
                                                 <p className="font-medium">{module.subject_area}</p>
                                             </div>
                                             <div>
-                                                <span className="text-muted-foreground">Grade Level:</span>
+                                                <span className="text-muted-foreground">
+                                                    Grade Level:
+                                                </span>
                                                 <p className="font-medium">{module.grade_level}</p>
                                             </div>
                                             <div>
-                                                <span className="text-muted-foreground">Curriculum:</span>
-                                                <p className="font-medium">{module.curriculum_year}</p>
+                                                <span className="text-muted-foreground">
+                                                    Curriculum:
+                                                </span>
+                                                <p className="font-medium">
+                                                    {module.curriculum_year}
+                                                </p>
                                             </div>
                                             <div>
-                                                <span className="text-muted-foreground">Created by:</span>
-                                                <p className="font-medium">{module.creator?.name || 'Unknown'}</p>
+                                                <span className="text-muted-foreground">
+                                                    Created by:
+                                                </span>
+                                                <p className="font-medium">
+                                                    {module.creator?.name || 'Unknown'}
+                                                </p>
                                             </div>
                                         </div>
 
@@ -129,13 +148,21 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         {/* Quick Actions */}
                                         <div className="grid grid-cols-2 gap-2 pt-2 border-t">
                                             <Link href={`/modules/${module.id}/topics`}>
-                                                <Button variant="outline" size="sm" className="w-full">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full"
+                                                >
                                                     <FolderTree className="mr-2 size-4" />
                                                     Topics
                                                 </Button>
                                             </Link>
                                             <Link href={`/modules/${module.id}/tos-calculator`}>
-                                                <Button variant="outline" size="sm" className="w-full">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full"
+                                                >
                                                     <Calculator className="mr-2 size-4" />
                                                     TOS
                                                 </Button>
@@ -145,7 +172,11 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         {/* Edit/Delete Actions */}
                                         <div className="flex items-center gap-2 pt-2 border-t">
                                             <Link href={`/modules/${module.id}`} className="flex-1">
-                                                <Button variant="outline" size="sm" className="w-full">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full"
+                                                >
                                                     View Details
                                                 </Button>
                                             </Link>
@@ -178,7 +209,9 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         variant="outline"
                                         size="sm"
                                         disabled={modules.current_page === 1}
-                                        onClick={() => router.get(`/modules?page=${modules.current_page - 1}`)}
+                                        onClick={() =>
+                                            router.get(`/modules?page=${modules.current_page - 1}`)
+                                        }
                                     >
                                         Previous
                                     </Button>
@@ -189,7 +222,9 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         variant="outline"
                                         size="sm"
                                         disabled={modules.current_page === modules.last_page}
-                                        onClick={() => router.get(`/modules?page=${modules.current_page + 1}`)}
+                                        onClick={() =>
+                                            router.get(`/modules?page=${modules.current_page + 1}`)
+                                        }
                                     >
                                         Next
                                     </Button>

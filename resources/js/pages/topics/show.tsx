@@ -1,14 +1,14 @@
-import AppLayout from "@/layouts/app-layout";
-import { Head, Link } from "@inertiajs/react";
-import { PageProps } from "@/types";
-import { Module, Topic } from "@/types/models";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Clock, Percent, Plus } from "lucide-react";
-import { edit as topicsEdit } from "@/actions/App/Http/Controllers/TopicController";
-import { index as objectivesIndex } from "@/actions/App/Http/Controllers/LearningObjectiveController";
-import PageHeader from "@/components/page-header";
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { Module, Topic } from '@/types/models';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Edit, Trash2, Clock, Percent, Plus } from 'lucide-react';
+import { edit as topicsEdit } from '@/actions/App/Http/Controllers/TopicController';
+import { index as objectivesIndex } from '@/actions/App/Http/Controllers/LearningObjectiveController';
+import PageHeader from '@/components/page-header';
 
 interface Props extends PageProps {
     module: Module;
@@ -16,19 +16,19 @@ interface Props extends PageProps {
 }
 
 const cognitiveLevelColors: Record<string, string> = {
-    remembering: "bg-primary/10 text-primary border border-primary/20",
-    understanding: "bg-success/10 text-success border border-success/20",
-    applying: "bg-warning/10 text-warning border border-warning/20",
-    analyzing: "bg-info/10 text-info border border-info/20",
-    evaluating: "bg-secondary/10 text-secondary border border-secondary/20",
-    creating: "bg-destructive/10 text-destructive border border-destructive/20",
+    remembering: 'bg-primary/10 text-primary border border-primary/20',
+    understanding: 'bg-success/10 text-success border border-success/20',
+    applying: 'bg-warning/10 text-warning border border-warning/20',
+    analyzing: 'bg-info/10 text-info border border-info/20',
+    evaluating: 'bg-secondary/10 text-secondary border border-secondary/20',
+    creating: 'bg-destructive/10 text-destructive border border-destructive/20',
 };
 
 export default function TopicShow({ module, topic }: Props) {
     const breadcrumbs = [
-        { title: "Modules", href: "/modules" },
+        { title: 'Modules', href: '/modules' },
         { title: module.name, href: `/modules/${module.id}` },
-        { title: "Topics", href: `/modules/${module.id}/topics` },
+        { title: 'Topics', href: `/modules/${module.id}/topics` },
         { title: topic.title, href: `#` },
     ];
 
@@ -41,9 +41,7 @@ export default function TopicShow({ module, topic }: Props) {
                     <Badge variant="outline" className="font-mono">
                         {topic.code}
                     </Badge>
-                    {!topic.is_active && (
-                        <Badge variant="secondary">Inactive</Badge>
-                    )}
+                    {!topic.is_active && <Badge variant="secondary">Inactive</Badge>}
                 </div>
                 <PageHeader
                     title={topic.title}
@@ -74,7 +72,7 @@ export default function TopicShow({ module, topic }: Props) {
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-bold">
-                                {topic.hours_allocated ? `${topic.hours_allocated}h` : "N/A"}
+                                {topic.hours_allocated ? `${topic.hours_allocated}h` : 'N/A'}
                             </p>
                         </CardContent>
                     </Card>
@@ -88,7 +86,7 @@ export default function TopicShow({ module, topic }: Props) {
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-bold">
-                                {topic.weight_percentage ? `${topic.weight_percentage}%` : "N/A"}
+                                {topic.weight_percentage ? `${topic.weight_percentage}%` : 'N/A'}
                             </p>
                         </CardContent>
                     </Card>
@@ -120,10 +118,13 @@ export default function TopicShow({ module, topic }: Props) {
                             <div>
                                 <CardTitle>Learning Objectives</CardTitle>
                                 <CardDescription>
-                                    Specific learning outcomes for this topic based on Bloom's Taxonomy
+                                    Specific learning outcomes for this topic based on Bloom's
+                                    Taxonomy
                                 </CardDescription>
                             </div>
-                            <Link href={objectivesIndex.url({ module: module.id, topic: topic.id })}>
+                            <Link
+                                href={objectivesIndex.url({ module: module.id, topic: topic.id })}
+                            >
                                 <Button>
                                     <Plus className="mr-2 h-4 w-4" />
                                     Add Objective
@@ -146,7 +147,9 @@ export default function TopicShow({ module, topic }: Props) {
                                             <p className="font-medium">{objective.objective}</p>
                                         </div>
                                         <Badge
-                                            className={cognitiveLevelColors[objective.cognitive_level]}
+                                            className={
+                                                cognitiveLevelColors[objective.cognitive_level]
+                                            }
                                         >
                                             {objective.cognitive_level}
                                         </Badge>
@@ -156,7 +159,12 @@ export default function TopicShow({ module, topic }: Props) {
                         ) : (
                             <div className="text-center py-8 text-muted-foreground">
                                 <p>No learning objectives yet.</p>
-                                <Link href={objectivesIndex.url({ module: module.id, topic: topic.id })}>
+                                <Link
+                                    href={objectivesIndex.url({
+                                        module: module.id,
+                                        topic: topic.id,
+                                    })}
+                                >
                                     <Button className="mt-4" variant="outline">
                                         <Plus className="mr-2 h-4 w-4" />
                                         Add Your First Objective
@@ -171,9 +179,7 @@ export default function TopicShow({ module, topic }: Props) {
                     <Card>
                         <CardHeader>
                             <CardTitle>Subtopics</CardTitle>
-                            <CardDescription>
-                                Child topics nested under this topic
-                            </CardDescription>
+                            <CardDescription>Child topics nested under this topic</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
@@ -188,11 +194,13 @@ export default function TopicShow({ module, topic }: Props) {
                                                 {child.code}
                                             </Badge>
                                             <span className="font-medium">{child.title}</span>
-                                            {child.learning_objectives && child.learning_objectives.length > 0 && (
-                                                <span className="text-sm text-muted-foreground">
-                                                    ({child.learning_objectives.length} objectives)
-                                                </span>
-                                            )}
+                                            {child.learning_objectives &&
+                                                child.learning_objectives.length > 0 && (
+                                                    <span className="text-sm text-muted-foreground">
+                                                        ({child.learning_objectives.length}{' '}
+                                                        objectives)
+                                                    </span>
+                                                )}
                                         </div>
                                     </Link>
                                 ))}

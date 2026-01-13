@@ -63,7 +63,8 @@ export default function Index({ templates }: PageProps) {
                                 <CardHeader>
                                     <CardTitle>{template.name}</CardTitle>
                                     <CardDescription>
-                                        Created on {new Date(template.created_at).toLocaleDateString()}
+                                        Created on{' '}
+                                        {new Date(template.created_at).toLocaleDateString()}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -84,15 +85,20 @@ export default function Index({ templates }: PageProps) {
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogTitle>
+                                                        Are you sure?
+                                                    </AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        This action cannot be undone. This will permanently delete the template
-                                                        "{template.name}".
+                                                        This action cannot be undone. This will
+                                                        permanently delete the template "
+                                                        {template.name}".
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleDelete(template.id)}>
+                                                    <AlertDialogAction
+                                                        onClick={() => handleDelete(template.id)}
+                                                    >
                                                         Delete
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>

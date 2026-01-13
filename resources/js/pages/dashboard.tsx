@@ -1,6 +1,6 @@
-import AppLayout from "@/layouts/app-layout";
-import { PageProps } from "@/types";
-import { Head, Link } from "@inertiajs/react";
+import AppLayout from '@/layouts/app-layout';
+import { PageProps } from '@/types';
+import { Head, Link } from '@inertiajs/react';
 import {
     Card,
     CardContent,
@@ -8,8 +8,8 @@ import {
     CardHeader,
     CardTitle,
     CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
     MessageSquare,
     ClipboardList,
@@ -22,24 +22,11 @@ import {
     Sparkles,
     TableProperties,
     TrendingUp,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import PageHeader from "@/components/page-header";
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Pie,
-    PieChart,
-    XAxis,
-    YAxis,
-} from "recharts";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import PageHeader from '@/components/page-header';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 'recharts';
 
 interface DashboardStats {
     total_modules: number;
@@ -104,23 +91,23 @@ interface DashboardPageProps extends PageProps {
     moduleStats: ModuleStat[];
 }
 
-const breadcrumbs = [{ title: "Dashboard", href: "/dashboard" }];
+const breadcrumbs = [{ title: 'Dashboard', href: '/dashboard' }];
 
 const cognitiveColors: Record<string, string> = {
-    remembering: "bg-secondary/10 text-secondary border-secondary/20",
-    understanding: "bg-primary/10 text-primary border-primary/20",
-    applying: "bg-success/10 text-success border-success/20",
-    analyzing: "bg-warning/10 text-warning border-warning/20",
-    evaluating: "bg-info/10 text-info border-info/20",
-    creating: "bg-destructive/10 text-destructive border-destructive/20",
+    remembering: 'bg-secondary/10 text-secondary border-secondary/20',
+    understanding: 'bg-primary/10 text-primary border-primary/20',
+    applying: 'bg-success/10 text-success border-success/20',
+    analyzing: 'bg-warning/10 text-warning border-warning/20',
+    evaluating: 'bg-info/10 text-info border-info/20',
+    creating: 'bg-destructive/10 text-destructive border-destructive/20',
 };
 
 const statusColors: Record<string, string> = {
-    draft: "bg-muted text-muted-foreground border-border",
-    published: "bg-success/10 text-success border-success/20",
-    completed: "bg-success/10 text-success border-success/20",
-    generating: "bg-info/10 text-info border-info/20",
-    failed: "bg-destructive/10 text-destructive border-destructive/20",
+    draft: 'bg-muted text-muted-foreground border-border',
+    published: 'bg-success/10 text-success border-success/20',
+    completed: 'bg-success/10 text-success border-success/20',
+    generating: 'bg-info/10 text-info border-info/20',
+    failed: 'bg-destructive/10 text-destructive border-destructive/20',
 };
 
 export default function Dashboard({
@@ -135,7 +122,7 @@ export default function Dashboard({
 }: DashboardPageProps) {
     const truncateText = (text: string, maxLength: number = 50) => {
         if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + "...";
+        return text.substring(0, maxLength) + '...';
     };
 
     return (
@@ -175,9 +162,7 @@ export default function Dashboard({
                                         <BookOpen className="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold">
-                                            {stats.active_modules}
-                                        </p>
+                                        <p className="text-2xl font-bold">{stats.active_modules}</p>
                                         <p className="text-xs text-muted-foreground">
                                             Active Modules
                                         </p>
@@ -214,9 +199,7 @@ export default function Dashboard({
                                         <p className="text-2xl font-bold">
                                             {stats.approved_questions}
                                         </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            Approved
-                                        </p>
+                                        <p className="text-xs text-muted-foreground">Approved</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -232,9 +215,7 @@ export default function Dashboard({
                                         <p className="text-2xl font-bold">
                                             {stats.pending_questions}
                                         </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            Pending
-                                        </p>
+                                        <p className="text-xs text-muted-foreground">Pending</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -286,13 +267,10 @@ export default function Dashboard({
                                     <Brain className="h-5 w-5" />
                                     Questions by Cognitive Level
                                 </CardTitle>
-                                <CardDescription>
-                                    Bloom's Taxonomy distribution
-                                </CardDescription>
+                                <CardDescription>Bloom's Taxonomy distribution</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {Object.keys(questionsByCognitiveLevel)
-                                    .length === 0 ? (
+                                {Object.keys(questionsByCognitiveLevel).length === 0 ? (
                                     <p className="text-sm text-muted-foreground text-center py-12">
                                         No data available
                                     </p>
@@ -300,44 +278,42 @@ export default function Dashboard({
                                     <ChartContainer
                                         config={{
                                             remembering: {
-                                                label: "Remembering",
-                                                color: "var(--chart-1)",
+                                                label: 'Remembering',
+                                                color: 'var(--chart-1)',
                                             },
                                             understanding: {
-                                                label: "Understanding",
-                                                color: "var(--chart-2)",
+                                                label: 'Understanding',
+                                                color: 'var(--chart-2)',
                                             },
                                             applying: {
-                                                label: "Applying",
-                                                color: "var(--chart-3)",
+                                                label: 'Applying',
+                                                color: 'var(--chart-3)',
                                             },
                                             analyzing: {
-                                                label: "Analyzing",
-                                                color: "var(--chart-4)",
+                                                label: 'Analyzing',
+                                                color: 'var(--chart-4)',
                                             },
                                             evaluating: {
-                                                label: "Evaluating",
-                                                color: "var(--chart-5)",
+                                                label: 'Evaluating',
+                                                color: 'var(--chart-5)',
                                             },
                                             creating: {
-                                                label: "Creating",
-                                                color: "var(--chart-1)",
+                                                label: 'Creating',
+                                                color: 'var(--chart-1)',
                                             },
                                         }}
                                         className="h-75"
                                     >
                                         <BarChart
                                             accessibilityLayer
-                                            data={Object.entries(
-                                                questionsByCognitiveLevel,
-                                            ).map(([level, count]) => ({
-                                                level:
-                                                    level
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                    level.slice(1),
-                                                count,
-                                            }))}
+                                            data={Object.entries(questionsByCognitiveLevel).map(
+                                                ([level, count]) => ({
+                                                    level:
+                                                        level.charAt(0).toUpperCase() +
+                                                        level.slice(1),
+                                                    count,
+                                                }),
+                                            )}
                                         >
                                             <CartesianGrid vertical={false} />
                                             <XAxis
@@ -346,27 +322,20 @@ export default function Dashboard({
                                                 tickMargin={10}
                                                 axisLine={false}
                                             />
-                                            <YAxis
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
+                                            <YAxis tickLine={false} axisLine={false} />
                                             <ChartTooltip
                                                 cursor={false}
-                                                content={
-                                                    <ChartTooltipContent
-                                                        hideLabel
-                                                    />
-                                                }
+                                                content={<ChartTooltipContent hideLabel />}
                                             />
                                             <Bar dataKey="count" radius={8}>
-                                                {Object.entries(
-                                                    questionsByCognitiveLevel,
-                                                ).map(([level], index) => (
-                                                    <Cell
-                                                        key={level}
-                                                        fill={`var(--color-chart-${(index % 5) + 1})`}
-                                                    />
-                                                ))}
+                                                {Object.entries(questionsByCognitiveLevel).map(
+                                                    ([level], index) => (
+                                                        <Cell
+                                                            key={level}
+                                                            fill={`var(--color-chart-${(index % 5) + 1})`}
+                                                        />
+                                                    ),
+                                                )}
                                             </Bar>
                                         </BarChart>
                                     </ChartContainer>
@@ -374,8 +343,7 @@ export default function Dashboard({
                             </CardContent>
                             <CardFooter className="flex-col items-start gap-2 text-sm">
                                 <div className="text-muted-foreground leading-none">
-                                    Showing cognitive level distribution of
-                                    questions
+                                    Showing cognitive level distribution of questions
                                 </div>
                             </CardFooter>
                         </Card>
@@ -387,13 +355,10 @@ export default function Dashboard({
                                     <TrendingUp className="h-5 w-5" />
                                     Questions by Difficulty
                                 </CardTitle>
-                                <CardDescription>
-                                    Question difficulty breakdown
-                                </CardDescription>
+                                <CardDescription>Question difficulty breakdown</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 pb-0">
-                                {Object.keys(questionsByDifficulty).length ===
-                                0 ? (
+                                {Object.keys(questionsByDifficulty).length === 0 ? (
                                     <p className="text-sm text-muted-foreground text-center py-12">
                                         No data available
                                     </p>
@@ -401,16 +366,16 @@ export default function Dashboard({
                                     <ChartContainer
                                         config={{
                                             easy: {
-                                                label: "Easy",
-                                                color: "var(--chart-1)",
+                                                label: 'Easy',
+                                                color: 'var(--chart-1)',
                                             },
                                             moderate: {
-                                                label: "Moderate",
-                                                color: "var(--chart-2)",
+                                                label: 'Moderate',
+                                                color: 'var(--chart-2)',
                                             },
                                             difficult: {
-                                                label: "Difficult",
-                                                color: "var(--chart-3)",
+                                                label: 'Difficult',
+                                                color: 'var(--chart-3)',
                                             },
                                         }}
                                         className="mx-auto aspect-square max-h-62.5"
@@ -418,24 +383,13 @@ export default function Dashboard({
                                         <PieChart>
                                             <ChartTooltip
                                                 cursor={false}
-                                                content={
-                                                    <ChartTooltipContent
-                                                        hideLabel
-                                                    />
-                                                }
+                                                content={<ChartTooltipContent hideLabel />}
                                             />
                                             <Pie
-                                                data={Object.entries(
-                                                    questionsByDifficulty,
-                                                ).map(
-                                                    (
-                                                        [difficulty, count],
-                                                        index,
-                                                    ) => ({
+                                                data={Object.entries(questionsByDifficulty).map(
+                                                    ([difficulty, count], index) => ({
                                                         name:
-                                                            difficulty
-                                                                .charAt(0)
-                                                                .toUpperCase() +
+                                                            difficulty.charAt(0).toUpperCase() +
                                                             difficulty.slice(1),
                                                         value: count,
                                                         fill: `var(--color-chart-${index + 1})`,
@@ -468,9 +422,7 @@ export default function Dashboard({
                                     <FileText className="h-5 w-5" />
                                     Questions by Type
                                 </CardTitle>
-                                <CardDescription>
-                                    Question format breakdown
-                                </CardDescription>
+                                <CardDescription>Question format breakdown</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {Object.keys(questionsByType).length === 0 ? (
@@ -481,36 +433,34 @@ export default function Dashboard({
                                     <ChartContainer
                                         config={{
                                             multiple_choice: {
-                                                label: "Multiple Choice",
-                                                color: "var(--chart-1)",
+                                                label: 'Multiple Choice',
+                                                color: 'var(--chart-1)',
                                             },
                                             true_false: {
-                                                label: "True/False",
-                                                color: "var(--chart-2)",
+                                                label: 'True/False',
+                                                color: 'var(--chart-2)',
                                             },
                                             essay: {
-                                                label: "Essay",
-                                                color: "var(--chart-3)",
+                                                label: 'Essay',
+                                                color: 'var(--chart-3)',
                                             },
                                             short_answer: {
-                                                label: "Short Answer",
-                                                color: "var(--chart-4)",
+                                                label: 'Short Answer',
+                                                color: 'var(--chart-4)',
                                             },
                                         }}
                                         className="h-75"
                                     >
                                         <BarChart
                                             accessibilityLayer
-                                            data={Object.entries(
-                                                questionsByType,
-                                            ).map(([type, count]) => ({
-                                                type: type
-                                                    .replace(/_/g, " ")
-                                                    .replace(/\b\w/g, (l) =>
-                                                        l.toUpperCase(),
-                                                    ),
-                                                count,
-                                            }))}
+                                            data={Object.entries(questionsByType).map(
+                                                ([type, count]) => ({
+                                                    type: type
+                                                        .replace(/_/g, ' ')
+                                                        .replace(/\b\w/g, (l) => l.toUpperCase()),
+                                                    count,
+                                                }),
+                                            )}
                                         >
                                             <CartesianGrid vertical={false} />
                                             <XAxis
@@ -518,31 +468,22 @@ export default function Dashboard({
                                                 tickLine={false}
                                                 tickMargin={10}
                                                 axisLine={false}
-                                                tickFormatter={(value) =>
-                                                    value.slice(0, 3)
-                                                }
+                                                tickFormatter={(value) => value.slice(0, 3)}
                                             />
-                                            <YAxis
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
+                                            <YAxis tickLine={false} axisLine={false} />
                                             <ChartTooltip
                                                 cursor={false}
-                                                content={
-                                                    <ChartTooltipContent
-                                                        hideLabel
-                                                    />
-                                                }
+                                                content={<ChartTooltipContent hideLabel />}
                                             />
                                             <Bar dataKey="count" radius={8}>
-                                                {Object.entries(
-                                                    questionsByType,
-                                                ).map(([type], index) => (
-                                                    <Cell
-                                                        key={type}
-                                                        fill={`var(--color-chart-${index + 1})`}
-                                                    />
-                                                ))}
+                                                {Object.entries(questionsByType).map(
+                                                    ([type], index) => (
+                                                        <Cell
+                                                            key={type}
+                                                            fill={`var(--color-chart-${index + 1})`}
+                                                        />
+                                                    ),
+                                                )}
                                             </Bar>
                                         </BarChart>
                                     </ChartContainer>
@@ -562,9 +503,7 @@ export default function Dashboard({
                                     <ClipboardList className="h-5 w-5" />
                                     Exams by Status
                                 </CardTitle>
-                                <CardDescription>
-                                    Published vs draft exams
-                                </CardDescription>
+                                <CardDescription>Published vs draft exams</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 pb-0">
                                 {stats.total_exams === 0 ? (
@@ -575,12 +514,12 @@ export default function Dashboard({
                                     <ChartContainer
                                         config={{
                                             published: {
-                                                label: "Published",
-                                                color: "var(--chart-1)",
+                                                label: 'Published',
+                                                color: 'var(--chart-1)',
                                             },
                                             draft: {
-                                                label: "Draft",
-                                                color: "var(--chart-2)",
+                                                label: 'Draft',
+                                                color: 'var(--chart-2)',
                                             },
                                         }}
                                         className="mx-auto aspect-square max-h-62.5"
@@ -588,23 +527,19 @@ export default function Dashboard({
                                         <PieChart>
                                             <ChartTooltip
                                                 cursor={false}
-                                                content={
-                                                    <ChartTooltipContent
-                                                        hideLabel
-                                                    />
-                                                }
+                                                content={<ChartTooltipContent hideLabel />}
                                             />
                                             <Pie
                                                 data={[
                                                     {
-                                                        name: "Published",
+                                                        name: 'Published',
                                                         value: stats.published_exams,
-                                                        fill: "var(--color-chart-1)",
+                                                        fill: 'var(--color-chart-1)',
                                                     },
                                                     {
-                                                        name: "Draft",
+                                                        name: 'Draft',
                                                         value: stats.draft_exams,
-                                                        fill: "var(--color-chart-2)",
+                                                        fill: 'var(--color-chart-2)',
                                                     },
                                                 ]}
                                                 dataKey="value"
@@ -631,9 +566,7 @@ export default function Dashboard({
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">
-                                        Recent Questions
-                                    </CardTitle>
+                                    <CardTitle className="text-base">Recent Questions</CardTitle>
                                     <CardDescription>
                                         Latest questions added to the bank
                                     </CardDescription>
@@ -654,25 +587,16 @@ export default function Dashboard({
                                         >
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium truncate">
-                                                    {truncateText(
-                                                        question.question,
-                                                        60,
-                                                    )}
+                                                    {truncateText(question.question, 60)}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-xs"
-                                                    >
-                                                        {question.module
-                                                            ?.code || "N/A"}
+                                                    <Badge variant="outline" className="text-xs">
+                                                        {question.module?.code || 'N/A'}
                                                     </Badge>
                                                     <Badge
-                                                        className={`text-xs ${cognitiveColors[question.cognitive_level] || ""}`}
+                                                        className={`text-xs ${cognitiveColors[question.cognitive_level] || ''}`}
                                                     >
-                                                        {
-                                                            question.cognitive_level
-                                                        }
+                                                        {question.cognitive_level}
                                                     </Badge>
                                                 </div>
                                             </div>
@@ -698,12 +622,8 @@ export default function Dashboard({
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">
-                                        Recent Exams
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Latest exams created
-                                    </CardDescription>
+                                    <CardTitle className="text-base">Recent Exams</CardTitle>
+                                    <CardDescription>Latest exams created</CardDescription>
                                 </div>
                                 <Button asChild variant="ghost" size="sm">
                                     <Link href="/exam-builder">
@@ -724,30 +644,18 @@ export default function Dashboard({
                                                     href={`/exam-builder/${exam.id}`}
                                                     className="text-sm font-medium hover:underline truncate block"
                                                 >
-                                                    {truncateText(
-                                                        exam.title,
-                                                        40,
-                                                    )}
+                                                    {truncateText(exam.title, 40)}
                                                 </Link>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-xs"
-                                                    >
-                                                        {exam.module?.code ||
-                                                            "N/A"}
+                                                    <Badge variant="outline" className="text-xs">
+                                                        {exam.module?.code || 'N/A'}
                                                     </Badge>
                                                     <span className="text-xs text-muted-foreground">
                                                         {exam.total_items} items
                                                     </span>
                                                 </div>
                                             </div>
-                                            <Badge
-                                                className={
-                                                    statusColors[exam.status] ||
-                                                    ""
-                                                }
-                                            >
+                                            <Badge className={statusColors[exam.status] || ''}>
                                                 {exam.status}
                                             </Badge>
                                         </div>
@@ -766,9 +674,7 @@ export default function Dashboard({
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle className="text-base">
-                                    Top Modules
-                                </CardTitle>
+                                <CardTitle className="text-base">Top Modules</CardTitle>
                                 <CardDescription>
                                     Most active modules by question count
                                 </CardDescription>
@@ -812,7 +718,7 @@ export default function Dashboard({
                                 ))}
                                 {moduleStats.length === 0 && (
                                     <p className="text-sm text-muted-foreground text-center py-8 col-span-full">
-                                        No modules yet.{" "}
+                                        No modules yet.{' '}
                                         <Link
                                             href="/modules/create"
                                             className="text-primary hover:underline"
@@ -843,8 +749,7 @@ export default function Dashboard({
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Create, organize, and manage your collection
-                                    of exam questions.
+                                    Create, organize, and manage your collection of exam questions.
                                 </p>
                                 <Button asChild className="w-full">
                                     <Link href="/question-bank">
@@ -871,8 +776,7 @@ export default function Dashboard({
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Combine questions to create complete,
-                                    ready-to-use exams.
+                                    Combine questions to create complete, ready-to-use exams.
                                 </p>
                                 <Button asChild className="w-full">
                                     <Link href="/exam-builder">

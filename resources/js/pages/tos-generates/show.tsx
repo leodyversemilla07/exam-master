@@ -95,12 +95,16 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
 
     const handleGenerateQuestions = () => {
         setIsGenerateDialogOpen(false);
-        router.post(`/tos-generates/${tosGenerate.id}/generate`, {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                // Refresh will start automatically due to status change
+        router.post(
+            `/tos-generates/${tosGenerate.id}/generate`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Refresh will start automatically due to status change
+                },
             },
-        });
+        );
     };
 
     const handleDelete = () => {
@@ -117,7 +121,9 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                 <PageHeader
                     title={
                         <div className="flex items-center gap-3 flex-wrap">
-                            <span>{tosGenerate.subject} - {tosGenerate.grade_level}</span>
+                            <span>
+                                {tosGenerate.subject} - {tosGenerate.grade_level}
+                            </span>
                             <Badge className={status.color}>
                                 <StatusIcon
                                     className={`mr-1 size-3 ${status.animate ? 'animate-spin' : ''}`}
@@ -140,7 +146,10 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                             Edit
                                         </Link>
                                     </Button>
-                                    <AlertDialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
+                                    <AlertDialog
+                                        open={isGenerateDialogOpen}
+                                        onOpenChange={setIsGenerateDialogOpen}
+                                    >
                                         <AlertDialogTrigger asChild>
                                             <Button>
                                                 <Sparkles className="mr-2 size-4" />
@@ -149,16 +158,23 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
                                             <AlertDialogHeader>
-                                                <AlertDialogTitle>Generate Questions?</AlertDialogTitle>
+                                                <AlertDialogTitle>
+                                                    Generate Questions?
+                                                </AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    This will start generating {tosGenerate.total_items} questions based on this Table of Specifications.
-                                                    The process may take 2-5 minutes depending on the number of questions.
-                                                    You can navigate away from this page while generation is in progress.
+                                                    This will start generating{' '}
+                                                    {tosGenerate.total_items} questions based on
+                                                    this Table of Specifications. The process may
+                                                    take 2-5 minutes depending on the number of
+                                                    questions. You can navigate away from this page
+                                                    while generation is in progress.
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={handleGenerateQuestions}>
+                                                <AlertDialogAction
+                                                    onClick={handleGenerateQuestions}
+                                                >
                                                     Continue
                                                 </AlertDialogAction>
                                             </AlertDialogFooter>
@@ -166,13 +182,18 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                     </AlertDialog>
                                 </>
                             )}
-                            {tosGenerate.status === 'completed' && tosGenerate.questions && tosGenerate.questions.length > 0 && (
-                                <Button variant="outline">
-                                    <Download className="mr-2 size-4" />
-                                    Export
-                                </Button>
-                            )}
-                            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                            {tosGenerate.status === 'completed' &&
+                                tosGenerate.questions &&
+                                tosGenerate.questions.length > 0 && (
+                                    <Button variant="outline">
+                                        <Download className="mr-2 size-4" />
+                                        Export
+                                    </Button>
+                                )}
+                            <AlertDialog
+                                open={isDeleteDialogOpen}
+                                onOpenChange={setIsDeleteDialogOpen}
+                            >
                                 <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="icon">
                                         <Trash2 className="size-4 text-destructive" />
@@ -182,8 +203,9 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Delete TOS?</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            Are you sure you want to delete this Table of Specifications?
-                                            This action cannot be undone and will permanently remove all associated data.
+                                            Are you sure you want to delete this Table of
+                                            Specifications? This action cannot be undone and will
+                                            permanently remove all associated data.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -212,8 +234,9 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                         Questions are being generated...
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        This may take 2-5 minutes depending on the number of questions.
-                                        This page will refresh automatically when complete.
+                                        This may take 2-5 minutes depending on the number of
+                                        questions. This page will refresh automatically when
+                                        complete.
                                     </p>
                                 </div>
                             </div>
@@ -228,15 +251,15 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                             <div className="flex items-center gap-3">
                                 <AlertCircle className="size-5 text-destructive" />
                                 <div className="flex-1">
-                                    <p className="font-medium text-foreground">
-                                        Generation failed
-                                    </p>
+                                    <p className="font-medium text-foreground">Generation failed</p>
                                     <p className="text-sm text-muted-foreground">
-                                        {tosGenerate.error_message || 'An error occurred during generation.'}
+                                        {tosGenerate.error_message ||
+                                            'An error occurred during generation.'}
                                     </p>
                                     {tosGenerate.questions && tosGenerate.questions.length > 0 && (
                                         <p className="mt-2 text-sm text-muted-foreground">
-                                            Note: Questions shown below are from a previous successful generation.
+                                            Note: Questions shown below are from a previous
+                                            successful generation.
                                         </p>
                                     )}
                                 </div>
@@ -253,10 +276,14 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
-                                            <AlertDialogTitle>Retry Question Generation?</AlertDialogTitle>
+                                            <AlertDialogTitle>
+                                                Retry Question Generation?
+                                            </AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                This will attempt to generate {tosGenerate.total_items} questions again based on this Table of Specifications.
-                                                The process may take 2-5 minutes.
+                                                This will attempt to generate{' '}
+                                                {tosGenerate.total_items} questions again based on
+                                                this Table of Specifications. The process may take
+                                                2-5 minutes.
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
@@ -292,7 +319,9 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Quarter</p>
-                                        <p className="font-medium">{tosGenerate.quarter || 'N/A'}</p>
+                                        <p className="font-medium">
+                                            {tosGenerate.quarter || 'N/A'}
+                                        </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Total Items</p>
@@ -324,17 +353,21 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-2">
-                                    {tosGenerate.learning_objectives.map((objective: any, index: number) => (
-                                        <div
-                                            key={index}
-                                            className="flex gap-3 rounded-lg border p-3"
-                                        >
-                                            <Badge variant="outline" className="font-mono">
-                                                {objective.code}
-                                            </Badge>
-                                            <p className="flex-1 text-sm">{objective.description}</p>
-                                        </div>
-                                    ))}
+                                    {tosGenerate.learning_objectives.map(
+                                        (objective: any, index: number) => (
+                                            <div
+                                                key={index}
+                                                className="flex gap-3 rounded-lg border p-3"
+                                            >
+                                                <Badge variant="outline" className="font-mono">
+                                                    {objective.code}
+                                                </Badge>
+                                                <p className="flex-1 text-sm">
+                                                    {objective.description}
+                                                </p>
+                                            </div>
+                                        ),
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -364,7 +397,9 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                                 {tosGenerate.questions.length} questions generated
                                             </CardDescription>
                                         </div>
-                                        <Link href={`/question-bank?tos_generate_id=${tosGenerate.id}`}>
+                                        <Link
+                                            href={`/question-bank?tos_generate_id=${tosGenerate.id}`}
+                                        >
                                             <Button variant="outline" size="sm">
                                                 View All
                                             </Button>
@@ -390,10 +425,13 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                                     {question.question ? (
                                                         <>
                                                             {question.question.substring(0, 150)}
-                                                            {question.question.length > 150 && '...'}
+                                                            {question.question.length > 150 &&
+                                                                '...'}
                                                         </>
                                                     ) : (
-                                                        <span className="text-muted-foreground italic">No question text</span>
+                                                        <span className="text-muted-foreground italic">
+                                                            No question text
+                                                        </span>
                                                     )}
                                                 </p>
                                             </div>
@@ -420,9 +458,16 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                                             .map(([type, count]) => (
                                                 <div key={type} className="space-y-1">
                                                     <div className="flex items-center justify-between text-sm">
-                                                        <span className="capitalize">{type.replace('_', ' ')}</span>
+                                                        <span className="capitalize">
+                                                            {type.replace('_', ' ')}
+                                                        </span>
                                                         <span className="font-medium">
-                                                            {count} ({Math.round((count / tosGenerate.total_items) * 100)}%)
+                                                            {count} (
+                                                            {Math.round(
+                                                                (count / tosGenerate.total_items) *
+                                                                    100,
+                                                            )}
+                                                            %)
                                                         </span>
                                                     </div>
                                                     <div className="h-2 rounded-full bg-muted">
@@ -448,24 +493,30 @@ export default function TosGenerateShow({ tosGenerate }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    {Object.entries(tosGenerate.cognitive_levels).map(([level, count]) => (
-                                        <div key={level} className="space-y-1">
-                                            <div className="flex items-center justify-between text-sm">
-                                                <span className="capitalize">{level}</span>
-                                                <span className="font-medium">
-                                                    {count} ({Math.round((count / tosGenerate.total_items) * 100)}%)
-                                                </span>
+                                    {Object.entries(tosGenerate.cognitive_levels).map(
+                                        ([level, count]) => (
+                                            <div key={level} className="space-y-1">
+                                                <div className="flex items-center justify-between text-sm">
+                                                    <span className="capitalize">{level}</span>
+                                                    <span className="font-medium">
+                                                        {count} (
+                                                        {Math.round(
+                                                            (count / tosGenerate.total_items) * 100,
+                                                        )}
+                                                        %)
+                                                    </span>
+                                                </div>
+                                                <div className="h-2 rounded-full bg-muted">
+                                                    <div
+                                                        className="h-2 rounded-full bg-primary"
+                                                        style={{
+                                                            width: `${(count / tosGenerate.total_items) * 100}%`,
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="h-2 rounded-full bg-muted">
-                                                <div
-                                                    className="h-2 rounded-full bg-primary"
-                                                    style={{
-                                                        width: `${(count / tosGenerate.total_items) * 100}%`,
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

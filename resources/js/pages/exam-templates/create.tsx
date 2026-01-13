@@ -79,7 +79,13 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+                onClick={() =>
+                    editor
+                        .chain()
+                        .focus()
+                        .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                        .run()
+                }
                 type="button"
             >
                 <Grid3X3 className="h-4 w-4" />
@@ -87,19 +93,49 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
             <div className="w-[1px] h-6 bg-border mx-1" />
 
-            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().insertContent('{{school_name}}').run()} type="button" className="text-xs">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => editor.chain().focus().insertContent('{{school_name}}').run()}
+                type="button"
+                className="text-xs"
+            >
                 School Name
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().insertContent('{{exam_title}}').run()} type="button" className="text-xs">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => editor.chain().focus().insertContent('{{exam_title}}').run()}
+                type="button"
+                className="text-xs"
+            >
                 Title
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().insertContent('{{student_name}}').run()} type="button" className="text-xs">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => editor.chain().focus().insertContent('{{student_name}}').run()}
+                type="button"
+                className="text-xs"
+            >
                 Student Name
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().insertContent('{{date}}').run()} type="button" className="text-xs">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => editor.chain().focus().insertContent('{{date}}').run()}
+                type="button"
+                className="text-xs"
+            >
                 Date
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().insertContent('{{score}}').run()} type="button" className="text-xs">
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => editor.chain().focus().insertContent('{{score}}').run()}
+                type="button"
+                className="text-xs"
+            >
                 Score
             </Button>
         </div>
@@ -109,7 +145,8 @@ const MenuBar = ({ editor }: { editor: any }) => {
 export default function Create() {
     const form = useForm({
         name: '',
-        header_content: '<p style="text-align: center"><strong>YOUR SCHOOL NAME</strong><br>Address Line 1<br>Address Line 2</p>',
+        header_content:
+            '<p style="text-align: center"><strong>YOUR SCHOOL NAME</strong><br>Address Line 1<br>Address Line 2</p>',
         footer_content: '<p style="text-align: center">Page <span class="page-number"></span></p>',
         custom_styles: '',
     });
@@ -188,7 +225,9 @@ export default function Create() {
                                         required
                                     />
                                     {form.errors.name && (
-                                        <p className="text-sm text-destructive">{form.errors.name}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.name}
+                                        </p>
                                     )}
                                 </div>
                             </CardContent>
@@ -208,7 +247,9 @@ export default function Create() {
                                         <EditorContent editor={headerEditor} className="flex-1" />
                                     </div>
                                     {form.errors.header_content && (
-                                        <p className="text-sm text-destructive mt-2">{form.errors.header_content}</p>
+                                        <p className="text-sm text-destructive mt-2">
+                                            {form.errors.header_content}
+                                        </p>
                                     )}
                                 </CardContent>
                             </Card>
@@ -226,7 +267,9 @@ export default function Create() {
                                         <EditorContent editor={footerEditor} className="flex-1" />
                                     </div>
                                     {form.errors.footer_content && (
-                                        <p className="text-sm text-destructive mt-2">{form.errors.footer_content}</p>
+                                        <p className="text-sm text-destructive mt-2">
+                                            {form.errors.footer_content}
+                                        </p>
                                     )}
                                 </CardContent>
                             </Card>

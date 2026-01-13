@@ -13,7 +13,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, Search, UserMinus, Shield, Edit, X, Eye, Users } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
@@ -63,9 +69,10 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
     const [canDelete, setCanDelete] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-    const filteredUsers = availableUsers.filter((user) =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredUsers = availableUsers.filter(
+        (user) =>
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     const handleAddCollaborator = () => {
@@ -87,7 +94,7 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                     setCanDelete(false);
                 },
                 preserveScroll: true,
-            }
+            },
         );
     };
 
@@ -104,24 +111,32 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
 
     const handleLeaveExam = () => {
         if (confirm('Are you sure you want to leave this exam? You will lose access to edit it.')) {
-            router.post(`/exam-builder/${exam.id}/collaborators/leave`, {} as any, {
-                onSuccess: () => {
-                    window.location.href = '/exam-builder';
-                },
-            } as any);
+            router.post(
+                `/exam-builder/${exam.id}/collaborators/leave`,
+                {} as any,
+                {
+                    onSuccess: () => {
+                        window.location.href = '/exam-builder';
+                    },
+                } as any,
+            );
         }
     };
 
     const handleUpdateCollaborator = (userId: number, newRole: string, newCanDelete: boolean) => {
-        router.patch(`/exam-builder/${exam.id}/collaborators/${userId}`, {
-            role: newRole,
-            can_delete: newCanDelete,
-        } as any, {
-            onSuccess: () => {
-                // Refresh handled by Inertia
-            },
-            preserveScroll: true,
-        } as any);
+        router.patch(
+            `/exam-builder/${exam.id}/collaborators/${userId}`,
+            {
+                role: newRole,
+                can_delete: newCanDelete,
+            } as any,
+            {
+                onSuccess: () => {
+                    // Refresh handled by Inertia
+                },
+                preserveScroll: true,
+            } as any,
+        );
     };
 
     const isOwner = exam.created_by === (currentUserId as number);
@@ -149,7 +164,10 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                     </Button>
                                 </Link>
                                 {isOwner && (
-                                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                                    <Dialog
+                                        open={isAddDialogOpen}
+                                        onOpenChange={setIsAddDialogOpen}
+                                    >
                                         <DialogTrigger asChild>
                                             <Button size="sm">
                                                 <UserPlus className="mr-2 h-4 w-4" />
@@ -160,7 +178,8 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                             <DialogHeader>
                                                 <DialogTitle>Add Collaborator</DialogTitle>
                                                 <DialogDescription>
-                                                    Invite another educator to collaborate on this exam.
+                                                    Invite another educator to collaborate on this
+                                                    exam.
                                                 </DialogDescription>
                                             </DialogHeader>
                                             <div className="space-y-4 py-4">
@@ -172,7 +191,9 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                             id="search"
                                                             placeholder="Search by name or email..."
                                                             value={searchQuery}
-                                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                                            onChange={(e) =>
+                                                                setSearchQuery(e.target.value)
+                                                            }
                                                             className="pl-9"
                                                         />
                                                     </div>
@@ -183,13 +204,22 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                         {filteredUsers.map((user) => (
                                                             <div
                                                                 key={user.id}
-                                                                className={`p-3 cursor-pointer hover:bg-accent flex items-center justify-between ${selectedUser === user.id ? 'bg-accent' : ''
-                                                                    }`}
-                                                                onClick={() => setSelectedUser(user.id)}
+                                                                className={`p-3 cursor-pointer hover:bg-accent flex items-center justify-between ${
+                                                                    selectedUser === user.id
+                                                                        ? 'bg-accent'
+                                                                        : ''
+                                                                }`}
+                                                                onClick={() =>
+                                                                    setSelectedUser(user.id)
+                                                                }
                                                             >
                                                                 <div>
-                                                                    <div className="font-medium">{user.name}</div>
-                                                                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                                                                    <div className="font-medium">
+                                                                        {user.name}
+                                                                    </div>
+                                                                    <div className="text-sm text-muted-foreground">
+                                                                        {user.email}
+                                                                    </div>
                                                                 </div>
                                                                 {selectedUser === user.id && (
                                                                     <Shield className="h-4 w-4 text-green-500" />
@@ -209,7 +239,10 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                     <>
                                                         <div>
                                                             <Label htmlFor="role">Role</Label>
-                                                            <Select value={role} onValueChange={setRole}>
+                                                            <Select
+                                                                value={role}
+                                                                onValueChange={setRole}
+                                                            >
                                                                 <SelectTrigger>
                                                                     <SelectValue />
                                                                 </SelectTrigger>
@@ -220,7 +253,8 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                                             <span>Editor</span>
                                                                         </div>
                                                                         <p className="text-xs text-muted-foreground">
-                                                                            Can edit questions, reorder, and export
+                                                                            Can edit questions,
+                                                                            reorder, and export
                                                                         </p>
                                                                     </SelectItem>
                                                                     <SelectItem value="viewer">
@@ -241,16 +275,23 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                                 type="checkbox"
                                                                 id="can_delete"
                                                                 checked={canDelete}
-                                                                onChange={(e) => setCanDelete(e.target.checked)}
+                                                                onChange={(e) =>
+                                                                    setCanDelete(e.target.checked)
+                                                                }
                                                                 className="rounded"
                                                             />
-                                                            <Label htmlFor="can_delete">Allow deletion</Label>
+                                                            <Label htmlFor="can_delete">
+                                                                Allow deletion
+                                                            </Label>
                                                         </div>
                                                     </>
                                                 )}
                                             </div>
                                             <DialogFooter>
-                                                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setIsAddDialogOpen(false)}
+                                                >
                                                     Cancel
                                                 </Button>
                                                 <Button
@@ -308,13 +349,18 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                     {exam.creator?.name?.charAt(0) || 'O'}
                                                 </div>
                                                 <div>
-                                                    <div className="font-medium">{exam.creator?.name}</div>
+                                                    <div className="font-medium">
+                                                        {exam.creator?.name}
+                                                    </div>
                                                     <div className="text-sm text-muted-foreground">
                                                         {exam.creator?.email}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <Badge variant="outline" className="bg-green-100 text-green-800">
+                                            <Badge
+                                                variant="outline"
+                                                className="bg-green-100 text-green-800"
+                                            >
                                                 Owner
                                             </Badge>
                                         </div>
@@ -330,14 +376,17 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                         {collaborator.name.charAt(0)}
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium">{collaborator.name}</div>
+                                                        <div className="font-medium">
+                                                            {collaborator.name}
+                                                        </div>
                                                         <div className="text-sm text-muted-foreground">
                                                             {collaborator.email}
                                                         </div>
                                                         <div className="flex items-center gap-2 mt-1">
                                                             <Badge
                                                                 variant={
-                                                                    collaborator.pivot.role === 'editor'
+                                                                    collaborator.pivot.role ===
+                                                                    'editor'
                                                                         ? 'default'
                                                                         : 'secondary'
                                                                 }
@@ -345,7 +394,10 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                                 {collaborator.pivot.role}
                                                             </Badge>
                                                             {collaborator.pivot.can_delete && (
-                                                                <Badge variant="outline" className="text-xs">
+                                                                <Badge
+                                                                    variant="outline"
+                                                                    className="text-xs"
+                                                                >
                                                                     Can Delete
                                                                 </Badge>
                                                             )}
@@ -361,7 +413,7 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                                 handleUpdateCollaborator(
                                                                     collaborator.id,
                                                                     e.target.value,
-                                                                    collaborator.pivot.can_delete
+                                                                    collaborator.pivot.can_delete,
                                                                 )
                                                             }
                                                             className="rounded border px-3 py-1.5 text-sm"
@@ -375,7 +427,7 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                             onClick={() =>
                                                                 handleRemoveCollaborator(
                                                                     collaborator.id,
-                                                                    collaborator.name
+                                                                    collaborator.name,
                                                                 )
                                                             }
                                                         >

@@ -4,10 +4,10 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { resolveUrl } from "@/lib/utils";
-import { type NavItem } from "@/types";
-import { type ComponentPropsWithoutRef } from "react";
+} from '@/components/ui/sidebar';
+import { resolveUrl } from '@/lib/utils';
+import { type NavItem } from '@/types';
+import { type ComponentPropsWithoutRef } from 'react';
 
 interface NavFooterProps extends ComponentPropsWithoutRef<typeof SidebarGroup> {
     items: NavItem[];
@@ -15,10 +15,7 @@ interface NavFooterProps extends ComponentPropsWithoutRef<typeof SidebarGroup> {
 
 export function NavFooter({ items, className, ...props }: NavFooterProps) {
     return (
-        <SidebarGroup
-            {...props}
-            className={`group-data-[collapsible=icon]:p-0 ${className || ""}`}
-        >
+        <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
             <SidebarGroupContent>
                 <SidebarMenu>
                     {items.map((item) => (
@@ -32,9 +29,7 @@ export function NavFooter({ items, className, ...props }: NavFooterProps) {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    {item.icon && (
-                                        <item.icon className="h-5 w-5" />
-                                    )}
+                                    {item.icon && <item.icon className="h-5 w-5" />}
                                     <span>{item.title}</span>
                                 </a>
                             </SidebarMenuButton>

@@ -1,21 +1,21 @@
-import AppLayout from "@/layouts/app-layout";
-import { Head } from "@inertiajs/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import PageHeader from "@/components/page-header";
-import { 
-    Activity, 
+import AppLayout from '@/layouts/app-layout';
+import { Head } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import PageHeader from '@/components/page-header';
+import {
+    Activity,
     RefreshCw,
     Trash2,
     RotateCcw,
     AlertCircle,
     CheckCircle,
     Clock,
-    XCircle
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import axios from "axios";
+    XCircle,
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface QueueStats {
     failed_jobs: number;
@@ -63,7 +63,7 @@ export default function QueueMonitorIndex() {
         if (!confirm('Are you sure you want to delete this failed job?')) {
             return;
         }
-        
+
         try {
             await axios.delete('/queue-monitor/job', { data: { id } });
             fetchStats();
@@ -73,10 +73,14 @@ export default function QueueMonitorIndex() {
     };
 
     const handleClearAllFailed = async () => {
-        if (!confirm('Are you sure you want to clear all failed jobs? This action cannot be undone.')) {
+        if (
+            !confirm(
+                'Are you sure you want to clear all failed jobs? This action cannot be undone.',
+            )
+        ) {
             return;
         }
-        
+
         try {
             await axios.post('/queue-monitor/clear');
             fetchStats();
@@ -87,7 +91,7 @@ export default function QueueMonitorIndex() {
 
     useEffect(() => {
         fetchStats();
-        
+
         // Auto-refresh every 30 seconds
         const interval = setInterval(fetchStats, 30000);
         return () => clearInterval(interval);
@@ -105,7 +109,9 @@ export default function QueueMonitorIndex() {
                     actions={
                         <>
                             <Button variant="outline" onClick={fetchStats} disabled={loading}>
-                                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw
+                                    className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                                />
                                 Refresh
                             </Button>
                             {failedJobs.length > 0 && (
@@ -122,26 +128,20 @@ export default function QueueMonitorIndex() {
                 <div className="grid gap-4 md:grid-cols-3">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Pending Jobs
-                            </CardTitle>
+                            <CardTitle className="text-sm font-medium">Pending Jobs</CardTitle>
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {stats?.pending_jobs ?? '-'}
-                            </div>
+                            <div className="text-2xl font-bold">{stats?.pending_jobs ?? '-'}</div>
                             <p className="text-xs text-muted-foreground">
                                 Jobs waiting to be processed
                             </p>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Failed Jobs
-                            </CardTitle>
+                            <CardTitle className="text-sm font-medium">Failed Jobs</CardTitle>
                             <XCircle className="h-4 w-4 text-destructive" />
                         </CardHeader>
                         <CardContent>
@@ -153,12 +153,10 @@ export default function QueueMonitorIndex() {
                             </p>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Queue Status
-                            </CardTitle>
+                            <CardTitle className="text-sm font-medium">Queue Status</CardTitle>
                             <Activity className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
@@ -166,12 +164,16 @@ export default function QueueMonitorIndex() {
                                 {stats?.failed_jobs === 0 ? (
                                     <>
                                         <CheckCircle className="h-5 w-5 text-success" />
-                                        <span className="text-lg font-semibold text-success">Healthy</span>
+                                        <span className="text-lg font-semibold text-success">
+                                            Healthy
+                                        </span>
                                     </>
                                 ) : (
                                     <>
                                         <AlertCircle className="h-5 w-5 text-warning" />
-                                        <span className="text-lg font-semibold text-warning">Attention Needed</span>
+                                        <span className="text-lg font-semibold text-warning">
+                                            Attention Needed
+                                        </span>
                                     </>
                                 )}
                             </div>
@@ -189,9 +191,7 @@ export default function QueueMonitorIndex() {
                             <AlertCircle className="h-5 w-5 text-destructive" />
                             Failed Jobs
                         </CardTitle>
-                        <CardDescription>
-                            Recent failed jobs that need attention
-                        </CardDescription>
+                        <CardDescription>Recent failed jobs that need attention</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {loading ? (
@@ -218,15 +218,19 @@ export default function QueueMonitorIndex() {
                                     </thead>
                                     <tbody>
                                         {failedJobs.map((job) => (
-                                            <tr key={job.id} className="border-b last:border-0 hover:bg-muted/50">
-                                                <td className="p-3 font-mono text-xs">
-                                                    {job.id}
-                                                </td>
+                                            <tr
+                                                key={job.id}
+                                                className="border-b last:border-0 hover:bg-muted/50"
+                                            >
+                                                <td className="p-3 font-mono text-xs">{job.id}</td>
                                                 <td className="p-3">
                                                     <Badge variant="outline">{job.queue}</Badge>
                                                 </td>
                                                 <td className="p-3">
-                                                    <p className="text-xs text-muted-foreground max-w-md truncate" title={job.exception}>
+                                                    <p
+                                                        className="text-xs text-muted-foreground max-w-md truncate"
+                                                        title={job.exception}
+                                                    >
                                                         {job.exception}
                                                     </p>
                                                 </td>
@@ -235,15 +239,15 @@ export default function QueueMonitorIndex() {
                                                 </td>
                                                 <td className="p-3 text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <Button 
-                                                            variant="outline" 
+                                                        <Button
+                                                            variant="outline"
                                                             size="sm"
                                                             onClick={() => handleRetryJob(job.id)}
                                                         >
                                                             <RotateCcw className="h-3 w-3" />
                                                         </Button>
-                                                        <Button 
-                                                            variant="destructive" 
+                                                        <Button
+                                                            variant="destructive"
                                                             size="sm"
                                                             onClick={() => handleDeleteJob(job.id)}
                                                         >

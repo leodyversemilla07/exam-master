@@ -1,11 +1,11 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { type SharedData } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { type SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 
 interface AppShellProps {
     children: React.ReactNode;
-    variant?: "header" | "sidebar";
+    variant?: 'header' | 'sidebar';
 }
 
 // Helper function to get cookie value
@@ -18,27 +18,25 @@ function getCookie(name: string): string | null {
     return null;
 }
 
-export function AppShell({ children, variant = "header" }: AppShellProps) {
+export function AppShell({ children, variant = 'header' }: AppShellProps) {
     const serverSidebarOpen = usePage<SharedData>().props.sidebarOpen;
     const [sidebarOpen, setSidebarOpen] = useState<boolean | undefined>(undefined);
 
     useEffect(() => {
         // Read the sidebar state from the cookie
-        const cookieValue = getCookie("sidebar_state");
+        const cookieValue = getCookie('sidebar_state');
 
         if (cookieValue !== null) {
             // Cookie exists, use its value
-            setSidebarOpen(cookieValue === "true");
+            setSidebarOpen(cookieValue === 'true');
         } else {
             // No cookie, use server-side value or default to true
             setSidebarOpen(serverSidebarOpen ?? true);
         }
     }, [serverSidebarOpen]);
 
-    if (variant === "header") {
-        return (
-            <div className="flex min-h-screen w-full flex-col">{children}</div>
-        );
+    if (variant === 'header') {
+        return <div className="flex min-h-screen w-full flex-col">{children}</div>;
     }
 
     // Show loading state while checking cookie to avoid flash of white

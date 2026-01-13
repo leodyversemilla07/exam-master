@@ -1,29 +1,16 @@
-import AppLayout from "@/layouts/app-layout";
-import { PageProps } from "@/types";
-import { ExamAttempt, ExamSession } from "@/types/models";
-import { Head, Link, router } from "@inertiajs/react";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import PageHeader from "@/components/page-header";
-import {
-    Clock,
-    Play,
-    AlertTriangle,
-    FileText,
-    User,
-    Target,
-    RotateCcw,
-} from "lucide-react";
-import { format } from "date-fns";
-import { startAttempt, take } from "@/actions/App/Http/Controllers/StudentExamController";
-import DashboardController from "@/actions/App/Http/Controllers/DashboardController";
+import AppLayout from '@/layouts/app-layout';
+import { PageProps } from '@/types';
+import { ExamAttempt, ExamSession } from '@/types/models';
+import { Head, Link, router } from '@inertiajs/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import PageHeader from '@/components/page-header';
+import { Clock, Play, AlertTriangle, FileText, User, Target, RotateCcw } from 'lucide-react';
+import { format } from 'date-fns';
+import { startAttempt, take } from '@/actions/App/Http/Controllers/StudentExamController';
+import DashboardController from '@/actions/App/Http/Controllers/DashboardController';
 
 interface ExamStartProps extends PageProps {
     session: ExamSession;
@@ -31,19 +18,15 @@ interface ExamStartProps extends PageProps {
     canAttempt: boolean;
 }
 
-export default function ExamStart({
-    session,
-    previousAttempts,
-    canAttempt,
-}: ExamStartProps) {
+export default function ExamStart({ session, previousAttempts, canAttempt }: ExamStartProps) {
     const handleStartExam = () => {
         router.post(startAttempt.url(session.id));
     };
 
     const getScoreColor = (percentage: number) => {
-        if (percentage >= 80) return "text-green-600";
-        if (percentage >= 60) return "text-yellow-600";
-        return "text-red-600";
+        if (percentage >= 80) return 'text-green-600';
+        if (percentage >= 60) return 'text-yellow-600';
+        return 'text-red-600';
     };
 
     const remainingAttempts = session.max_attempts - previousAttempts.length;
@@ -55,7 +38,7 @@ export default function ExamStart({
             <div className="max-w-3xl mx-auto">
                 <PageHeader
                     title={session.title}
-                    description={session.description || "Ready to begin your exam"}
+                    description={session.description || 'Ready to begin your exam'}
                 />
 
                 <div className="space-y-6">
@@ -72,38 +55,62 @@ export default function ExamStart({
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2">
                                         <Target className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Subject:</span>
-                                        <span className="font-medium">{session.exam?.module?.name}</span>
+                                        <span className="text-sm text-muted-foreground">
+                                            Subject:
+                                        </span>
+                                        <span className="font-medium">
+                                            {session.exam?.module?.name}
+                                        </span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <FileText className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Questions:</span>
-                                        <span className="font-medium">{session.exam?.total_items}</span>
+                                        <span className="text-sm text-muted-foreground">
+                                            Questions:
+                                        </span>
+                                        <span className="font-medium">
+                                            {session.exam?.total_items}
+                                        </span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Target className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Total Points:</span>
-                                        <span className="font-medium">{session.exam?.total_points}</span>
+                                        <span className="text-sm text-muted-foreground">
+                                            Total Points:
+                                        </span>
+                                        <span className="font-medium">
+                                            {session.exam?.total_points}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     {session.time_limit_minutes && (
                                         <div className="flex items-center gap-2">
                                             <Clock className="h-4 w-4 text-muted-foreground" />
-                                            <span className="text-sm text-muted-foreground">Time Limit:</span>
-                                            <span className="font-medium">{session.time_limit_minutes} minutes</span>
+                                            <span className="text-sm text-muted-foreground">
+                                                Time Limit:
+                                            </span>
+                                            <span className="font-medium">
+                                                {session.time_limit_minutes} minutes
+                                            </span>
                                         </div>
                                     )}
                                     <div className="flex items-center gap-2">
                                         <RotateCcw className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Attempts Remaining:</span>
-                                        <Badge variant={remainingAttempts > 0 ? "default" : "destructive"}>
+                                        <span className="text-sm text-muted-foreground">
+                                            Attempts Remaining:
+                                        </span>
+                                        <Badge
+                                            variant={
+                                                remainingAttempts > 0 ? 'default' : 'destructive'
+                                            }
+                                        >
                                             {remainingAttempts} / {session.max_attempts}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <User className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Instructor:</span>
+                                        <span className="text-sm text-muted-foreground">
+                                            Instructor:
+                                        </span>
                                         <span className="font-medium">{session.creator?.name}</span>
                                     </div>
                                 </div>
@@ -155,15 +162,20 @@ export default function ExamStart({
                                             className="flex items-center justify-between p-3 border rounded-lg"
                                         >
                                             <div>
-                                                <p className="font-medium">Attempt #{attempt.attempt_number}</p>
+                                                <p className="font-medium">
+                                                    Attempt #{attempt.attempt_number}
+                                                </p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {attempt.submitted_at
-                                                        ? format(new Date(attempt.submitted_at), "MMM d, yyyy 'at' h:mm a")
-                                                        : "In progress"}
+                                                        ? format(
+                                                              new Date(attempt.submitted_at),
+                                                              "MMM d, yyyy 'at' h:mm a",
+                                                          )
+                                                        : 'In progress'}
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                {attempt.status === "in_progress" ? (
+                                                {attempt.status === 'in_progress' ? (
                                                     <Button asChild size="sm">
                                                         <Link href={take.url(attempt.id)}>
                                                             Continue
@@ -171,11 +183,14 @@ export default function ExamStart({
                                                     </Button>
                                                 ) : (
                                                     <>
-                                                        <p className={`text-lg font-bold ${getScoreColor(attempt.percentage || 0)}`}>
+                                                        <p
+                                                            className={`text-lg font-bold ${getScoreColor(attempt.percentage || 0)}`}
+                                                        >
                                                             {attempt.percentage?.toFixed(1)}%
                                                         </p>
                                                         <p className="text-sm text-muted-foreground">
-                                                            {attempt.correct_answers} / {attempt.total_questions} correct
+                                                            {attempt.correct_answers} /{' '}
+                                                            {attempt.total_questions} correct
                                                         </p>
                                                     </>
                                                 )}
@@ -193,9 +208,9 @@ export default function ExamStart({
                             <AlertTriangle className="h-4 w-4" />
                             <AlertTitle>Timed Exam</AlertTitle>
                             <AlertDescription>
-                                This exam has a time limit of {session.time_limit_minutes} minutes. 
-                                Once you start, the timer will begin counting down. 
-                                Make sure you have a stable internet connection before starting.
+                                This exam has a time limit of {session.time_limit_minutes} minutes.
+                                Once you start, the timer will begin counting down. Make sure you
+                                have a stable internet connection before starting.
                             </AlertDescription>
                         </Alert>
                     )}
@@ -206,7 +221,8 @@ export default function ExamStart({
                             {canAttempt ? (
                                 <div className="text-center space-y-4">
                                     <p className="text-muted-foreground">
-                                        When you're ready, click the button below to start your exam.
+                                        When you're ready, click the button below to start your
+                                        exam.
                                     </p>
                                     <Button size="lg" onClick={handleStartExam}>
                                         <Play className="h-5 w-5 mr-2" />
@@ -219,7 +235,8 @@ export default function ExamStart({
                                         <AlertTriangle className="h-4 w-4" />
                                         <AlertTitle>No Attempts Remaining</AlertTitle>
                                         <AlertDescription>
-                                            You have used all {session.max_attempts} attempts for this exam.
+                                            You have used all {session.max_attempts} attempts for
+                                            this exam.
                                         </AlertDescription>
                                     </Alert>
                                     <Button variant="outline" asChild>

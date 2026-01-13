@@ -91,7 +91,14 @@ export interface ExamQuestion {
     module_id: number;
     tos_generate_id: number | null;
     question: string;
-    question_type: 'multiple_choice' | 'true_false' | 'essay' | 'short_answer' | 'identification' | 'matching' | 'fill_in_the_blanks';
+    question_type:
+        | 'multiple_choice'
+        | 'true_false'
+        | 'essay'
+        | 'short_answer'
+        | 'identification'
+        | 'matching'
+        | 'fill_in_the_blanks';
     options: Array<{
         key: string;
         text: string;

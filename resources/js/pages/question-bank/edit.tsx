@@ -4,7 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { Save } from 'lucide-react';
@@ -76,10 +82,7 @@ export default function ExamEdit({ question, modules }: PageProps) {
 
             <div className="p-4 md:p-6 space-y-6">
                 {/* Header */}
-                <PageHeader
-                    title="Edit Question"
-                    description="Update question details"
-                />
+                <PageHeader title="Edit Question" description="Update question details" />
 
                 {/* Edit Form */}
                 <form onSubmit={handleSubmit}>
@@ -100,7 +103,10 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {modules.map((module) => (
-                                            <SelectItem key={module.id} value={module.id.toString()}>
+                                            <SelectItem
+                                                key={module.id}
+                                                value={module.id.toString()}
+                                            >
                                                 {module.code} - {module.name}
                                             </SelectItem>
                                         ))}
@@ -137,12 +143,18 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
+                                        <SelectItem value="multiple_choice">
+                                            Multiple Choice
+                                        </SelectItem>
                                         <SelectItem value="true_false">True/False</SelectItem>
                                         <SelectItem value="essay">Essay</SelectItem>
-                                        <SelectItem value="identification">Identification</SelectItem>
+                                        <SelectItem value="identification">
+                                            Identification
+                                        </SelectItem>
                                         <SelectItem value="matching">Matching Type</SelectItem>
-                                        <SelectItem value="fill_in_the_blanks">Fill in the Blanks</SelectItem>
+                                        <SelectItem value="fill_in_the_blanks">
+                                            Fill in the Blanks
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -153,12 +165,17 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     <Label>Options</Label>
                                     {data.options.map((option, index) => (
                                         <div key={option.key} className="flex gap-2">
-                                            <Badge variant="outline" className="h-10 w-10 items-center justify-center">
+                                            <Badge
+                                                variant="outline"
+                                                className="h-10 w-10 items-center justify-center"
+                                            >
                                                 {option.key}
                                             </Badge>
                                             <Input
                                                 value={option.text}
-                                                onChange={(e) => handleOptionChange(index, e.target.value)}
+                                                onChange={(e) =>
+                                                    handleOptionChange(index, e.target.value)
+                                                }
                                                 placeholder={`Option ${option.key}`}
                                             />
                                         </div>
@@ -194,7 +211,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     />
                                 )}
                                 {errors.correct_answer && (
-                                    <p className="text-sm text-destructive">{errors.correct_answer}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.correct_answer}
+                                    </p>
                                 )}
                             </div>
 
@@ -252,11 +271,15 @@ export default function ExamEdit({ question, modules }: PageProps) {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {/* Learning Objective Code */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="learning_objective_code">Learning Objective Code</Label>
+                                    <Label htmlFor="learning_objective_code">
+                                        Learning Objective Code
+                                    </Label>
                                     <Input
                                         id="learning_objective_code"
                                         value={data.learning_objective_code}
-                                        onChange={(e) => setData('learning_objective_code', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('learning_objective_code', e.target.value)
+                                        }
                                         placeholder="e.g., LO-001"
                                     />
                                 </div>
@@ -269,7 +292,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         type="number"
                                         min="1"
                                         value={data.points}
-                                        onChange={(e) => setData('points', parseInt(e.target.value))}
+                                        onChange={(e) =>
+                                            setData('points', parseInt(e.target.value))
+                                        }
                                     />
                                 </div>
                             </div>

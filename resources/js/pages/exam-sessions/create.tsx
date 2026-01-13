@@ -11,7 +11,7 @@ import {
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue
+    SelectValue,
 } from '@/components/ui/select';
 import { Save, Clock, Calendar, Settings } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
@@ -55,7 +55,7 @@ export default function Create({ exams, selectedExamId }: PageProps) {
         allow_review: true,
     });
 
-    const selectedExam = exams.find(e => e.id.toString() === data.exam_id);
+    const selectedExam = exams.find((e) => e.id.toString() === data.exam_id);
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -65,7 +65,7 @@ export default function Create({ exams, selectedExamId }: PageProps) {
     // Set default title when exam is selected
     const handleExamChange = (value: string) => {
         setData('exam_id', value);
-        const exam = exams.find(e => e.id.toString() === value);
+        const exam = exams.find((e) => e.id.toString() === value);
         if (exam && !data.title) {
             setData('title', `${exam.title} - Session`);
         }
@@ -87,12 +87,11 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                             <CardContent className="flex flex-col items-center justify-center py-12">
                                 <h3 className="text-lg font-semibold mb-2">No Published Exams</h3>
                                 <p className="text-muted-foreground text-center mb-4">
-                                    You need to create and publish an exam before creating a session.
+                                    You need to create and publish an exam before creating a
+                                    session.
                                 </p>
                                 <Button asChild>
-                                    <Link href="/exam-builder">
-                                        Go to Exam Builder
-                                    </Link>
+                                    <Link href="/exam-builder">Go to Exam Builder</Link>
                                 </Button>
                             </CardContent>
                         </Card>
@@ -118,7 +117,10 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {exams.map((exam) => (
-                                                    <SelectItem key={exam.id} value={exam.id.toString()}>
+                                                    <SelectItem
+                                                        key={exam.id}
+                                                        value={exam.id.toString()}
+                                                    >
                                                         <div className="flex flex-col">
                                                             <span>{exam.title}</span>
                                                             {exam.module && (
@@ -131,23 +133,39 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        {errors.exam_id && <p className="text-sm text-destructive">{errors.exam_id}</p>}
+                                        {errors.exam_id && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.exam_id}
+                                            </p>
+                                        )}
                                     </div>
 
                                     {selectedExam && (
                                         <div className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-muted">
                                             <div>
-                                                <p className="text-sm text-muted-foreground">Questions</p>
-                                                <p className="font-medium">{selectedExam.total_items}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">Total Points</p>
-                                                <p className="font-medium">{selectedExam.total_points}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">Time Limit</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Questions
+                                                </p>
                                                 <p className="font-medium">
-                                                    {selectedExam.time_limit ? `${selectedExam.time_limit} min` : 'No limit'}
+                                                    {selectedExam.total_items}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Total Points
+                                                </p>
+                                                <p className="font-medium">
+                                                    {selectedExam.total_points}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Time Limit
+                                                </p>
+                                                <p className="font-medium">
+                                                    {selectedExam.time_limit
+                                                        ? `${selectedExam.time_limit} min`
+                                                        : 'No limit'}
                                                 </p>
                                             </div>
                                         </div>
@@ -172,7 +190,11 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                             onChange={(e) => setData('title', e.target.value)}
                                             placeholder="e.g., Midterm Exam - Section A"
                                         />
-                                        {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+                                        {errors.title && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.title}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="space-y-2">
@@ -184,7 +206,11 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                             placeholder="Additional instructions or notes for students..."
                                             rows={3}
                                         />
-                                        {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
+                                        {errors.description && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.description}
+                                            </p>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -208,9 +234,15 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                                 id="start_time"
                                                 type="datetime-local"
                                                 value={data.start_time}
-                                                onChange={(e) => setData('start_time', e.target.value)}
+                                                onChange={(e) =>
+                                                    setData('start_time', e.target.value)
+                                                }
                                             />
-                                            {errors.start_time && <p className="text-sm text-destructive">{errors.start_time}</p>}
+                                            {errors.start_time && (
+                                                <p className="text-sm text-destructive">
+                                                    {errors.start_time}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div className="space-y-2">
@@ -219,9 +251,15 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                                 id="end_time"
                                                 type="datetime-local"
                                                 value={data.end_time}
-                                                onChange={(e) => setData('end_time', e.target.value)}
+                                                onChange={(e) =>
+                                                    setData('end_time', e.target.value)
+                                                }
                                             />
-                                            {errors.end_time && <p className="text-sm text-destructive">{errors.end_time}</p>}
+                                            {errors.end_time && (
+                                                <p className="text-sm text-destructive">
+                                                    {errors.end_time}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 </CardContent>
@@ -238,20 +276,32 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                 <CardContent className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="time_limit_minutes">Time Limit (minutes)</Label>
+                                            <Label htmlFor="time_limit_minutes">
+                                                Time Limit (minutes)
+                                            </Label>
                                             <Input
                                                 id="time_limit_minutes"
                                                 type="number"
                                                 min="1"
                                                 max="480"
                                                 value={data.time_limit_minutes}
-                                                onChange={(e) => setData('time_limit_minutes', e.target.value)}
-                                                placeholder={selectedExam?.time_limit ? `Default: ${selectedExam.time_limit}` : 'No limit'}
+                                                onChange={(e) =>
+                                                    setData('time_limit_minutes', e.target.value)
+                                                }
+                                                placeholder={
+                                                    selectedExam?.time_limit
+                                                        ? `Default: ${selectedExam.time_limit}`
+                                                        : 'No limit'
+                                                }
                                             />
                                             <p className="text-xs text-muted-foreground">
                                                 Leave empty to use exam's default time limit
                                             </p>
-                                            {errors.time_limit_minutes && <p className="text-sm text-destructive">{errors.time_limit_minutes}</p>}
+                                            {errors.time_limit_minutes && (
+                                                <p className="text-sm text-destructive">
+                                                    {errors.time_limit_minutes}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div className="space-y-2">
@@ -271,7 +321,11 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            {errors.max_attempts && <p className="text-sm text-destructive">{errors.max_attempts}</p>}
+                                            {errors.max_attempts && (
+                                                <p className="text-sm text-destructive">
+                                                    {errors.max_attempts}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 </CardContent>
@@ -285,7 +339,12 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                 <CardContent className="space-y-6">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="shuffle_questions" className="text-base">Shuffle Questions</Label>
+                                            <Label
+                                                htmlFor="shuffle_questions"
+                                                className="text-base"
+                                            >
+                                                Shuffle Questions
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
                                                 Randomize the order of questions for each student
                                             </p>
@@ -293,27 +352,39 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                         <Switch
                                             id="shuffle_questions"
                                             checked={data.shuffle_questions}
-                                            onCheckedChange={(checked) => setData('shuffle_questions', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('shuffle_questions', checked)
+                                            }
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="shuffle_options" className="text-base">Shuffle Answer Options</Label>
+                                            <Label htmlFor="shuffle_options" className="text-base">
+                                                Shuffle Answer Options
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
-                                                Randomize the order of answer options for each question
+                                                Randomize the order of answer options for each
+                                                question
                                             </p>
                                         </div>
                                         <Switch
                                             id="shuffle_options"
                                             checked={data.shuffle_options}
-                                            onCheckedChange={(checked) => setData('shuffle_options', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('shuffle_options', checked)
+                                            }
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="show_results_immediately" className="text-base">Show Results Immediately</Label>
+                                            <Label
+                                                htmlFor="show_results_immediately"
+                                                className="text-base"
+                                            >
+                                                Show Results Immediately
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
                                                 Display score and percentage right after submission
                                             </p>
@@ -321,13 +392,20 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                         <Switch
                                             id="show_results_immediately"
                                             checked={data.show_results_immediately}
-                                            onCheckedChange={(checked) => setData('show_results_immediately', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('show_results_immediately', checked)
+                                            }
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="show_correct_answers" className="text-base">Show Correct Answers</Label>
+                                            <Label
+                                                htmlFor="show_correct_answers"
+                                                className="text-base"
+                                            >
+                                                Show Correct Answers
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
                                                 Show correct answers after exam submission
                                             </p>
@@ -335,21 +413,28 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                         <Switch
                                             id="show_correct_answers"
                                             checked={data.show_correct_answers}
-                                            onCheckedChange={(checked) => setData('show_correct_answers', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('show_correct_answers', checked)
+                                            }
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="allow_review" className="text-base">Allow Review</Label>
+                                            <Label htmlFor="allow_review" className="text-base">
+                                                Allow Review
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
-                                                Allow students to review their answers after submission
+                                                Allow students to review their answers after
+                                                submission
                                             </p>
                                         </div>
                                         <Switch
                                             id="allow_review"
                                             checked={data.allow_review}
-                                            onCheckedChange={(checked) => setData('allow_review', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('allow_review', checked)
+                                            }
                                         />
                                     </div>
                                 </CardContent>

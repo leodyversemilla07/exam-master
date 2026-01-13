@@ -55,7 +55,12 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                 {/* Header */}
                 <PageHeader
                     title="Duplicate Detection"
-                    description={<>Question similarity analysis for <strong>{module.code}</strong> - {module.name}</>}
+                    description={
+                        <>
+                            Question similarity analysis for <strong>{module.code}</strong> -{' '}
+                            {module.name}
+                        </>
+                    }
                 />
 
                 {/* Statistics Cards */}
@@ -67,9 +72,7 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{statistics.total_questions}</div>
-                            <p className="text-xs text-muted-foreground">
-                                In question bank
-                            </p>
+                            <p className="text-xs text-muted-foreground">In question bank</p>
                         </CardContent>
                     </Card>
 
@@ -80,22 +83,22 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{statistics.duplicate_groups}</div>
-                            <p className="text-xs text-muted-foreground">
-                                Questions with matches
-                            </p>
+                            <p className="text-xs text-muted-foreground">Questions with matches</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Highest Similarity</CardTitle>
+                            <CardTitle className="text-sm font-medium">
+                                Highest Similarity
+                            </CardTitle>
                             <AlertTriangle className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{statistics.highest_similarity.toFixed(1)}%</div>
-                            <p className="text-xs text-muted-foreground">
-                                Maximum detected
-                            </p>
+                            <div className="text-2xl font-bold">
+                                {statistics.highest_similarity.toFixed(1)}%
+                            </div>
+                            <p className="text-xs text-muted-foreground">Maximum detected</p>
                         </CardContent>
                     </Card>
 
@@ -105,10 +108,10 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                             <AlertTriangle className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{statistics.questions_with_duplicates}</div>
-                            <p className="text-xs text-muted-foreground">
-                                Need review
-                            </p>
+                            <div className="text-2xl font-bold">
+                                {statistics.questions_with_duplicates}
+                            </div>
+                            <p className="text-xs text-muted-foreground">Need review</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -131,13 +134,16 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                 <CardHeader>
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
-                                            <CardTitle className="text-base">Question #{group.question.id}</CardTitle>
+                                            <CardTitle className="text-base">
+                                                Question #{group.question.id}
+                                            </CardTitle>
                                             <CardDescription className="mt-2 line-clamp-2">
                                                 {group.question.question}
                                             </CardDescription>
                                         </div>
                                         <Badge variant="outline" className="ml-4">
-                                            {group.matches.length} {group.matches.length === 1 ? 'match' : 'matches'}
+                                            {group.matches.length}{' '}
+                                            {group.matches.length === 1 ? 'match' : 'matches'}
                                         </Badge>
                                     </div>
                                 </CardHeader>
@@ -155,18 +161,31 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                         </span>
                                                         <Badge
                                                             variant="secondary"
-                                                            className={getSimilarityColor(match.similarity_score)}
+                                                            className={getSimilarityColor(
+                                                                match.similarity_score,
+                                                            )}
                                                         >
-                                                            {match.similarity_score.toFixed(1)}% - {getSimilarityLabel(match.similarity_score)}
+                                                            {match.similarity_score.toFixed(1)}% -{' '}
+                                                            {getSimilarityLabel(
+                                                                match.similarity_score,
+                                                            )}
                                                         </Badge>
                                                     </div>
-                                                    <p className="mt-2 text-sm">{match.question.question}</p>
+                                                    <p className="mt-2 text-sm">
+                                                        {match.question.question}
+                                                    </p>
                                                     <div className="mt-3 flex flex-wrap gap-2">
-                                                        {match.matching_aspects.map((aspect, aspectIndex) => (
-                                                            <Badge key={aspectIndex} variant="outline" className="text-xs">
-                                                                {aspect}
-                                                            </Badge>
-                                                        ))}
+                                                        {match.matching_aspects.map(
+                                                            (aspect, aspectIndex) => (
+                                                                <Badge
+                                                                    key={aspectIndex}
+                                                                    variant="outline"
+                                                                    className="text-xs"
+                                                                >
+                                                                    {aspect}
+                                                                </Badge>
+                                                            ),
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -179,19 +198,33 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                     </h4>
                                                     <div className="space-y-1 text-sm">
                                                         <div>
-                                                            <span className="font-medium">Type:</span> {group.question.question_type}
+                                                            <span className="font-medium">
+                                                                Type:
+                                                            </span>{' '}
+                                                            {group.question.question_type}
                                                         </div>
                                                         <div>
-                                                            <span className="font-medium">Difficulty:</span>{' '}
-                                                            <span className="capitalize">{group.question.difficulty}</span>
+                                                            <span className="font-medium">
+                                                                Difficulty:
+                                                            </span>{' '}
+                                                            <span className="capitalize">
+                                                                {group.question.difficulty}
+                                                            </span>
                                                         </div>
                                                         <div>
-                                                            <span className="font-medium">Cognitive Level:</span>{' '}
-                                                            <span className="capitalize">{group.question.cognitive_level}</span>
+                                                            <span className="font-medium">
+                                                                Cognitive Level:
+                                                            </span>{' '}
+                                                            <span className="capitalize">
+                                                                {group.question.cognitive_level}
+                                                            </span>
                                                         </div>
                                                         {group.question.correct_answer && (
                                                             <div>
-                                                                <span className="font-medium">Answer:</span> {group.question.correct_answer}
+                                                                <span className="font-medium">
+                                                                    Answer:
+                                                                </span>{' '}
+                                                                {group.question.correct_answer}
                                                             </div>
                                                         )}
                                                     </div>
@@ -203,19 +236,33 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                     </h4>
                                                     <div className="space-y-1 text-sm">
                                                         <div>
-                                                            <span className="font-medium">Type:</span> {match.question.question_type}
+                                                            <span className="font-medium">
+                                                                Type:
+                                                            </span>{' '}
+                                                            {match.question.question_type}
                                                         </div>
                                                         <div>
-                                                            <span className="font-medium">Difficulty:</span>{' '}
-                                                            <span className="capitalize">{match.question.difficulty}</span>
+                                                            <span className="font-medium">
+                                                                Difficulty:
+                                                            </span>{' '}
+                                                            <span className="capitalize">
+                                                                {match.question.difficulty}
+                                                            </span>
                                                         </div>
                                                         <div>
-                                                            <span className="font-medium">Cognitive Level:</span>{' '}
-                                                            <span className="capitalize">{match.question.cognitive_level}</span>
+                                                            <span className="font-medium">
+                                                                Cognitive Level:
+                                                            </span>{' '}
+                                                            <span className="capitalize">
+                                                                {match.question.cognitive_level}
+                                                            </span>
                                                         </div>
                                                         {match.question.correct_answer && (
                                                             <div>
-                                                                <span className="font-medium">Answer:</span> {match.question.correct_answer}
+                                                                <span className="font-medium">
+                                                                    Answer:
+                                                                </span>{' '}
+                                                                {match.question.correct_answer}
                                                             </div>
                                                         )}
                                                     </div>

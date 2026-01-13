@@ -38,8 +38,6 @@ interface PageProps {
 }
 
 export default function ExamShow({ question }: PageProps) {
-
-
     if (!question) {
         return (
             <AppLayout>
@@ -83,7 +81,9 @@ export default function ExamShow({ question }: PageProps) {
                     }
                     actions={
                         <>
-                            <Button onClick={() => router.visit(`/question-bank/${question.id}/edit`)}>
+                            <Button
+                                onClick={() => router.visit(`/question-bank/${question.id}/edit`)}
+                            >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
                             </Button>
@@ -119,7 +119,14 @@ export default function ExamShow({ question }: PageProps) {
                                         </Badge>
                                     )}
                                     {question.question_type && (
-                                        <Badge variant={question.question_type === 'multiple_choice' ? 'default' : 'secondary'} className="capitalize">
+                                        <Badge
+                                            variant={
+                                                question.question_type === 'multiple_choice'
+                                                    ? 'default'
+                                                    : 'secondary'
+                                            }
+                                            className="capitalize"
+                                        >
                                             {question.question_type.replace(/_/g, ' ')}
                                         </Badge>
                                     )}
@@ -160,10 +167,11 @@ export default function ExamShow({ question }: PageProps) {
                                     {question.options.map((option) => (
                                         <div
                                             key={option.key}
-                                            className={`rounded-lg border p-3 ${option.key === question.correct_answer
+                                            className={`rounded-lg border p-3 ${
+                                                option.key === question.correct_answer
                                                     ? 'border-success bg-success/10'
                                                     : ''
-                                                }`}
+                                            }`}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <span className="font-semibold">{option.key}.</span>
@@ -210,7 +218,8 @@ export default function ExamShow({ question }: PageProps) {
                                     <div>
                                         <p className="text-sm text-muted-foreground">TOS</p>
                                         <p className="font-medium">
-                                            {question.tos_generate.subject} - {question.tos_generate.grade_level}
+                                            {question.tos_generate.subject} -{' '}
+                                            {question.tos_generate.grade_level}
                                         </p>
                                     </div>
                                 )}

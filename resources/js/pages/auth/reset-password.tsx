@@ -1,10 +1,10 @@
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import AuthLayout from "@/layouts/auth-layout";
-import { Form, Head } from "@inertiajs/react";
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import AuthLayout from '@/layouts/auth-layout';
+import { Form, Head } from '@inertiajs/react';
 
 interface ResetPasswordProps {
     token: string;
@@ -13,17 +13,10 @@ interface ResetPasswordProps {
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
     return (
-        <AuthLayout
-            title="Reset password"
-            description="Please enter your new password below"
-        >
+        <AuthLayout title="Reset password" description="Please enter your new password below">
             <Head title="Reset password" />
 
-            <Form
-                action="/reset-password"
-                method="post"
-                options={{ preserveScroll: true }}
-            >
+            <Form action="/reset-password" method="post" options={{ preserveScroll: true }}>
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <input type="hidden" name="token" value={token} />
@@ -38,10 +31,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 className="mt-1 block w-full"
                                 readOnly
                             />
-                            <InputError
-                                message={errors.email}
-                                className="mt-2"
-                            />
+                            <InputError message={errors.email} className="mt-2" />
                         </div>
 
                         <input type="hidden" name="token" value={token} />
@@ -61,9 +51,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">
-                                Confirm password
-                            </Label>
+                            <Label htmlFor="password_confirmation">Confirm password</Label>
                             <Input
                                 id="password_confirmation"
                                 type="password"
@@ -72,17 +60,10 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 className="mt-1 block w-full"
                                 placeholder="Confirm password"
                             />
-                            <InputError
-                                message={errors.password_confirmation}
-                                className="mt-2"
-                            />
+                            <InputError message={errors.password_confirmation} className="mt-2" />
                         </div>
 
-                        <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={processing}
-                        >
+                        <Button type="submit" className="mt-4 w-full" disabled={processing}>
                             {processing && <Spinner />}
                             Reset password
                         </Button>

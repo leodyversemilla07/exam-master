@@ -1,18 +1,24 @@
-import AppLayout from "@/layouts/app-layout";
-import { Head, useForm } from "@inertiajs/react";
-import { PageProps } from "@/types";
-import { Module, Topic, LearningObjective, CognitiveLevel } from "@/types/models";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit2, Trash2, GripVertical } from "lucide-react";
-import { store, update, destroy } from "@/actions/App/Http/Controllers/LearningObjectiveController";
-import { useState } from "react";
-import PageHeader from "@/components/page-header";
+import AppLayout from '@/layouts/app-layout';
+import { Head, useForm } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { Module, Topic, LearningObjective, CognitiveLevel } from '@/types/models';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
+import { store, update, destroy } from '@/actions/App/Http/Controllers/LearningObjectiveController';
+import { useState } from 'react';
+import PageHeader from '@/components/page-header';
 
 interface Props extends PageProps {
     module: Module;
@@ -20,42 +26,47 @@ interface Props extends PageProps {
     objectives: LearningObjective[];
 }
 
-const cognitiveLevels: { value: CognitiveLevel; label: string; description: string; color: string }[] = [
+const cognitiveLevels: {
+    value: CognitiveLevel;
+    label: string;
+    description: string;
+    color: string;
+}[] = [
     {
-        value: "remembering",
-        label: "Remembering",
-        description: "Recall facts and basic concepts",
-        color: "bg-primary/10 text-primary border border-primary/20",
+        value: 'remembering',
+        label: 'Remembering',
+        description: 'Recall facts and basic concepts',
+        color: 'bg-primary/10 text-primary border border-primary/20',
     },
     {
-        value: "understanding",
-        label: "Understanding",
-        description: "Explain ideas or concepts",
-        color: "bg-success/10 text-success border border-success/20",
+        value: 'understanding',
+        label: 'Understanding',
+        description: 'Explain ideas or concepts',
+        color: 'bg-success/10 text-success border border-success/20',
     },
     {
-        value: "applying",
-        label: "Applying",
-        description: "Use information in new situations",
-        color: "bg-warning/10 text-warning border border-warning/20",
+        value: 'applying',
+        label: 'Applying',
+        description: 'Use information in new situations',
+        color: 'bg-warning/10 text-warning border border-warning/20',
     },
     {
-        value: "analyzing",
-        label: "Analyzing",
-        description: "Draw connections among ideas",
-        color: "bg-info/10 text-info border border-info/20",
+        value: 'analyzing',
+        label: 'Analyzing',
+        description: 'Draw connections among ideas',
+        color: 'bg-info/10 text-info border border-info/20',
     },
     {
-        value: "evaluating",
-        label: "Evaluating",
-        description: "Justify decisions or course of action",
-        color: "bg-secondary/10 text-secondary border border-secondary/20",
+        value: 'evaluating',
+        label: 'Evaluating',
+        description: 'Justify decisions or course of action',
+        color: 'bg-secondary/10 text-secondary border border-secondary/20',
     },
     {
-        value: "creating",
-        label: "Creating",
-        description: "Produce new or original work",
-        color: "bg-destructive/10 text-destructive border border-destructive/20",
+        value: 'creating',
+        label: 'Creating',
+        description: 'Produce new or original work',
+        color: 'bg-destructive/10 text-destructive border border-destructive/20',
     },
 ];
 
@@ -64,19 +75,19 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
     const [showForm, setShowForm] = useState(false);
 
     const form = useForm({
-        code: "",
-        objective: "",
-        cognitive_level: "remembering" as CognitiveLevel,
-        assessment_criteria: "",
+        code: '',
+        objective: '',
+        cognitive_level: 'remembering' as CognitiveLevel,
+        assessment_criteria: '',
         is_active: true,
     });
 
     const breadcrumbs = [
-        { title: "Modules", href: "/modules" },
+        { title: 'Modules', href: '/modules' },
         { title: module.name, href: `/modules/${module.id}` },
-        { title: "Topics", href: `/modules/${module.id}/topics` },
+        { title: 'Topics', href: `/modules/${module.id}/topics` },
         { title: topic.title, href: `/modules/${module.id}/topics/${topic.id}` },
-        { title: "Learning Objectives", href: "#" },
+        { title: 'Learning Objectives', href: '#' },
     ];
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -107,7 +118,7 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
             code: objective.code,
             objective: objective.objective,
             cognitive_level: objective.cognitive_level,
-            assessment_criteria: objective.assessment_criteria || "",
+            assessment_criteria: objective.assessment_criteria || '',
             is_active: objective.is_active,
         });
         setEditingId(objective.id);
@@ -115,10 +126,13 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
     };
 
     const handleDelete = (objectiveId: number) => {
-        if (confirm("Are you sure you want to delete this learning objective?")) {
-            form.delete(destroy.url({ module: module.id, topic: topic.id, objective: objectiveId }), {
-                preserveScroll: true,
-            });
+        if (confirm('Are you sure you want to delete this learning objective?')) {
+            form.delete(
+                destroy.url({ module: module.id, topic: topic.id, objective: objectiveId }),
+                {
+                    preserveScroll: true,
+                },
+            );
         }
     };
 
@@ -129,7 +143,7 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
     };
 
     const getLevelColor = (level: CognitiveLevel) => {
-        return cognitiveLevels.find((l) => l.value === level)?.color || "";
+        return cognitiveLevels.find((l) => l.value === level)?.color || '';
     };
 
     return (
@@ -153,9 +167,12 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                 {showForm && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>{editingId ? "Edit" : "Create"} Learning Objective</CardTitle>
+                            <CardTitle>
+                                {editingId ? 'Edit' : 'Create'} Learning Objective
+                            </CardTitle>
                             <CardDescription>
-                                Define what students should know or be able to do after learning this topic
+                                Define what students should know or be able to do after learning
+                                this topic
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -166,12 +183,14 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                         <Input
                                             id="code"
                                             value={form.data.code}
-                                            onChange={(e) => form.setData("code", e.target.value)}
+                                            onChange={(e) => form.setData('code', e.target.value)}
                                             placeholder="e.g., LO1, LO2.1"
                                             required
                                         />
                                         {form.errors.code && (
-                                            <p className="text-sm text-destructive">{form.errors.code}</p>
+                                            <p className="text-sm text-destructive">
+                                                {form.errors.code}
+                                            </p>
                                         )}
                                     </div>
 
@@ -180,7 +199,10 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                         <Select
                                             value={form.data.cognitive_level}
                                             onValueChange={(value) =>
-                                                form.setData("cognitive_level", value as CognitiveLevel)
+                                                form.setData(
+                                                    'cognitive_level',
+                                                    value as CognitiveLevel,
+                                                )
                                             }
                                         >
                                             <SelectTrigger>
@@ -188,9 +210,14 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {cognitiveLevels.map((level) => (
-                                                    <SelectItem key={level.value} value={level.value}>
+                                                    <SelectItem
+                                                        key={level.value}
+                                                        value={level.value}
+                                                    >
                                                         <div className="flex flex-col">
-                                                            <span className="font-medium">{level.label}</span>
+                                                            <span className="font-medium">
+                                                                {level.label}
+                                                            </span>
                                                             <span className="text-xs text-muted-foreground">
                                                                 {level.description}
                                                             </span>
@@ -207,13 +234,15 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                     <Textarea
                                         id="objective"
                                         value={form.data.objective}
-                                        onChange={(e) => form.setData("objective", e.target.value)}
+                                        onChange={(e) => form.setData('objective', e.target.value)}
                                         placeholder="Students will be able to..."
                                         rows={3}
                                         required
                                     />
                                     {form.errors.objective && (
-                                        <p className="text-sm text-destructive">{form.errors.objective}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.objective}
+                                        </p>
                                     )}
                                 </div>
 
@@ -222,12 +251,15 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                     <Textarea
                                         id="assessment_criteria"
                                         value={form.data.assessment_criteria}
-                                        onChange={(e) => form.setData("assessment_criteria", e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('assessment_criteria', e.target.value)
+                                        }
                                         placeholder="How will this objective be assessed?"
                                         rows={2}
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Define how students will demonstrate mastery of this objective
+                                        Define how students will demonstrate mastery of this
+                                        objective
                                     </p>
                                 </div>
 
@@ -236,7 +268,11 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                         Cancel
                                     </Button>
                                     <Button type="submit" disabled={form.processing}>
-                                        {form.processing ? "Saving..." : editingId ? "Update" : "Create"}
+                                        {form.processing
+                                            ? 'Saving...'
+                                            : editingId
+                                              ? 'Update'
+                                              : 'Create'}
                                     </Button>
                                 </div>
                             </form>
@@ -249,7 +285,8 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                         <CardHeader>
                             <CardTitle>No Learning Objectives Yet</CardTitle>
                             <CardDescription>
-                                Get started by creating your first learning objective for this topic.
+                                Get started by creating your first learning objective for this
+                                topic.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -275,9 +312,16 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                                     <Badge variant="outline" className="font-mono">
                                                         {objective.code}
                                                     </Badge>
-                                                    <Badge className={getLevelColor(objective.cognitive_level)}>
-                                                        {cognitiveLevels.find((l) => l.value === objective.cognitive_level)
-                                                            ?.label || objective.cognitive_level}
+                                                    <Badge
+                                                        className={getLevelColor(
+                                                            objective.cognitive_level,
+                                                        )}
+                                                    >
+                                                        {cognitiveLevels.find(
+                                                            (l) =>
+                                                                l.value ===
+                                                                objective.cognitive_level,
+                                                        )?.label || objective.cognitive_level}
                                                     </Badge>
                                                     {!objective.is_active && (
                                                         <Badge variant="secondary">Inactive</Badge>
@@ -302,7 +346,9 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                                 </div>
                                             </div>
 
-                                            <p className="text-sm font-medium">{objective.objective}</p>
+                                            <p className="text-sm font-medium">
+                                                {objective.objective}
+                                            </p>
 
                                             {objective.assessment_criteria && (
                                                 <div className="pt-2 border-t">
@@ -331,7 +377,9 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                             {cognitiveLevels.map((level) => (
                                 <div key={level.value} className="flex items-start gap-2">
                                     <Badge className={level.color}>{level.label}</Badge>
-                                    <p className="text-xs text-muted-foreground">{level.description}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {level.description}
+                                    </p>
                                 </div>
                             ))}
                         </div>

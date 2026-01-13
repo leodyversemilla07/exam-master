@@ -85,7 +85,9 @@ export default function Preview({ exam, template }: PageProps) {
                                 />
                             ) : (
                                 <div className="text-center border-b-2 border-primary pb-6 space-y-2">
-                                    <h1 className="text-3xl font-bold uppercase tracking-tight">{exam.title}</h1>
+                                    <h1 className="text-3xl font-bold uppercase tracking-tight">
+                                        {exam.title}
+                                    </h1>
                                     <div className="text-lg text-muted-foreground uppercase font-medium">
                                         {exam.module.code} - {exam.module.name}
                                     </div>
@@ -94,21 +96,29 @@ export default function Preview({ exam, template }: PageProps) {
                                     <div className="grid grid-cols-2 gap-8 border rounded-lg p-6 bg-muted/30 text-left mt-6">
                                         <div className="space-y-4">
                                             <div className="flex items-end gap-2">
-                                                <span className="font-bold whitespace-nowrap text-foreground">NAME:</span>
+                                                <span className="font-bold whitespace-nowrap text-foreground">
+                                                    NAME:
+                                                </span>
                                                 <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
                                             </div>
                                             <div className="flex items-end gap-2">
-                                                <span className="font-bold whitespace-nowrap text-foreground">SECTION:</span>
+                                                <span className="font-bold whitespace-nowrap text-foreground">
+                                                    SECTION:
+                                                </span>
                                                 <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
                                             </div>
                                         </div>
                                         <div className="space-y-4">
                                             <div className="flex items-end gap-2">
-                                                <span className="font-bold whitespace-nowrap text-foreground">DATE:</span>
+                                                <span className="font-bold whitespace-nowrap text-foreground">
+                                                    DATE:
+                                                </span>
                                                 <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
                                             </div>
                                             <div className="flex items-end gap-2">
-                                                <span className="font-bold whitespace-nowrap text-foreground">SCORE:</span>
+                                                <span className="font-bold whitespace-nowrap text-foreground">
+                                                    SCORE:
+                                                </span>
                                                 <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
                                             </div>
                                         </div>
@@ -119,7 +129,9 @@ export default function Preview({ exam, template }: PageProps) {
                             {/* Instructions */}
                             {exam.instructions && (
                                 <div className="bg-primary/5 border-l-4 border-primary p-6 space-y-2">
-                                    <h3 className="font-bold text-lg uppercase">General Instructions:</h3>
+                                    <h3 className="font-bold text-lg uppercase">
+                                        General Instructions:
+                                    </h3>
                                     <p className="whitespace-pre-wrap">{exam.instructions}</p>
                                 </div>
                             )}
@@ -130,19 +142,44 @@ export default function Preview({ exam, template }: PageProps) {
                                     <div key={question.id} className="space-y-4 break-inside-avoid">
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex gap-3">
-                                                <span className="font-bold text-lg">{index + 1}.</span>
+                                                <span className="font-bold text-lg">
+                                                    {index + 1}.
+                                                </span>
                                                 <div className="space-y-4">
-                                                    <p className="text-lg leading-relaxed">{question.question}</p>
+                                                    <p className="text-lg leading-relaxed">
+                                                        {question.question}
+                                                    </p>
 
                                                     {/* Options for Multiple Choice */}
-                                                    {question.question_type === 'multiple_choice' && (
+                                                    {question.question_type ===
+                                                        'multiple_choice' && (
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-2">
-                                                            {question.options && (Array.isArray(question.options) ? question.options : []).map((option: any, optIndex: number) => (
-                                                                <div key={optIndex} className="flex gap-2">
-                                                                    <span className="font-bold">{String.fromCharCode(65 + optIndex)}.</span>
-                                                                    <span>{option.text || option}</span>
-                                                                </div>
-                                                            ))}
+                                                            {question.options &&
+                                                                (Array.isArray(question.options)
+                                                                    ? question.options
+                                                                    : []
+                                                                ).map(
+                                                                    (
+                                                                        option: any,
+                                                                        optIndex: number,
+                                                                    ) => (
+                                                                        <div
+                                                                            key={optIndex}
+                                                                            className="flex gap-2"
+                                                                        >
+                                                                            <span className="font-bold">
+                                                                                {String.fromCharCode(
+                                                                                    65 + optIndex,
+                                                                                )}
+                                                                                .
+                                                                            </span>
+                                                                            <span>
+                                                                                {option.text ||
+                                                                                    option}
+                                                                            </span>
+                                                                        </div>
+                                                                    ),
+                                                                )}
                                                         </div>
                                                     )}
 
@@ -161,7 +198,8 @@ export default function Preview({ exam, template }: PageProps) {
                                                     )}
 
                                                     {/* Identification / Essay Space */}
-                                                    {(question.question_type === 'identification' || question.question_type === 'essay') && (
+                                                    {(question.question_type === 'identification' ||
+                                                        question.question_type === 'essay') && (
                                                         <div className="pt-2">
                                                             <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8 md:h-12"></div>
                                                             {question.question_type === 'essay' && (
@@ -175,7 +213,8 @@ export default function Preview({ exam, template }: PageProps) {
                                                 </div>
                                             </div>
                                             <Badge variant="outline" className="shrink-0 font-mono">
-                                                {question.pivot.points} pt{question.pivot.points !== 1 ? 's' : ''}
+                                                {question.pivot.points} pt
+                                                {question.pivot.points !== 1 ? 's' : ''}
                                             </Badge>
                                         </div>
                                     </div>
@@ -198,8 +237,9 @@ export default function Preview({ exam, template }: PageProps) {
                 </div>
             </div>
 
-            <style dangerouslySetInnerHTML={{
-                __html: `
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
                 @media print {
                     @page { 
                         margin: 0.5in; 
@@ -239,7 +279,9 @@ export default function Preview({ exam, template }: PageProps) {
                     max-width: 100%;
                     height: auto;
                 }
-            `}} />
+            `,
+                }}
+            />
         </AppLayout>
     );
 }

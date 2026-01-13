@@ -4,7 +4,19 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
 import { Exam, ExamQuestion } from '@/types/models';
-import { Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye, Download, Shield } from 'lucide-react';
+import {
+    Edit,
+    Plus,
+    Trash2,
+    GripVertical,
+    Clock,
+    FileText,
+    Users,
+    Settings,
+    Eye,
+    Download,
+    Shield,
+} from 'lucide-react';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import {
@@ -93,7 +105,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
         } as const;
 
         return (
-            <Badge className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground'}>
+            <Badge
+                className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground'}
+            >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
             </Badge>
         );
@@ -101,14 +115,18 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
 
     const handleAddQuestions = () => {
         if (selectedQuestions.length > 0) {
-            router.post(`/exam-builder/${exam.id}/add-questions`, {
-                question_ids: selectedQuestions,
-            }, {
-                onSuccess: () => {
-                    setShowAddQuestions(false);
-                    setSelectedQuestions([]);
+            router.post(
+                `/exam-builder/${exam.id}/add-questions`,
+                {
+                    question_ids: selectedQuestions,
                 },
-            });
+                {
+                    onSuccess: () => {
+                        setShowAddQuestions(false);
+                        setSelectedQuestions([]);
+                    },
+                },
+            );
         }
     };
 
@@ -125,7 +143,11 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
     };
 
     const handlePublish = () => {
-        if (confirm('Are you sure you want to publish this exam? Once published, it cannot be unpublished.')) {
+        if (
+            confirm(
+                'Are you sure you want to publish this exam? Once published, it cannot be unpublished.',
+            )
+        ) {
             router.post(`/exam-builder/${exam.id}/publish`);
         }
     };
@@ -159,15 +181,19 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                     </Button>
                                     {exam.status === 'draft' && (
                                         <>
-                                            <Button asChild variant="outline" onClick={() => setShowAddQuestions(true)}>
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                onClick={() => setShowAddQuestions(true)}
+                                            >
                                                 <Plus className="mr-2 h-4 w-4" />
                                                 Add Questions
                                             </Button>
-                                            <Button onClick={handlePublish}>
-                                                Publish Exam
-                                            </Button>
+                                            <Button onClick={handlePublish}>Publish Exam</Button>
                                             <Button asChild variant="outline">
-                                                <Link href={`/exam-builder/${exam.id}/collaborators`}>
+                                                <Link
+                                                    href={`/exam-builder/${exam.id}/collaborators`}
+                                                >
                                                     <Shield className="mr-2 h-4 w-4" />
                                                     Collaborators
                                                 </Link>
@@ -189,7 +215,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                     {exam.status === 'published' && (
                                         <>
                                             <Button asChild variant="outline">
-                                                <Link href={`/exam-builder/${exam.id}/collaborators`}>
+                                                <Link
+                                                    href={`/exam-builder/${exam.id}/collaborators`}
+                                                >
                                                     <Shield className="mr-2 h-4 w-4" />
                                                     Collaborators
                                                 </Link>
@@ -227,7 +255,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div className="flex items-center gap-2">
                                     <FileText className="h-4 w-4 text-muted-foreground" />
-                                    <span>{exam.module.code} - {exam.module.name}</span>
+                                    <span>
+                                        {exam.module.code} - {exam.module.name}
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Users className="h-4 w-4 text-muted-foreground" />
@@ -259,7 +289,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                         <Card className="mb-6">
                             <CardContent className="p-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-muted-foreground">Export exam as PDF</span>
+                                    <span className="text-sm text-muted-foreground">
+                                        Export exam as PDF
+                                    </span>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="outline" size="sm">
@@ -269,13 +301,19 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem asChild>
-                                                <a href={`/exam-builder/${exam.id}/export-pdf`} download>
+                                                <a
+                                                    href={`/exam-builder/${exam.id}/export-pdf`}
+                                                    download
+                                                >
                                                     <FileText className="mr-2 h-4 w-4" />
                                                     Exam Only
                                                 </a>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
-                                                <a href={`/exam-builder/${exam.id}/export-pdf-answers`} download>
+                                                <a
+                                                    href={`/exam-builder/${exam.id}/export-pdf-answers`}
+                                                    download
+                                                >
                                                     <FileText className="mr-2 h-4 w-4" />
                                                     With Answer Key
                                                 </a>
@@ -296,7 +334,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             <CardContent className="space-y-3">
                                 <div>
                                     <Label className="text-sm font-medium">Passing Score</Label>
-                                    <p className="text-2xl font-bold text-success">{exam.passing_score}%</p>
+                                    <p className="text-2xl font-bold text-success">
+                                        {exam.passing_score}%
+                                    </p>
                                 </div>
                                 {exam.time_limit && (
                                     <div>
@@ -323,7 +363,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                 {exam.instructions ? (
                                     <p className="whitespace-pre-wrap">{exam.instructions}</p>
                                 ) : (
-                                    <p className="text-muted-foreground italic">No instructions provided</p>
+                                    <p className="text-muted-foreground italic">
+                                        No instructions provided
+                                    </p>
                                 )}
                             </CardContent>
                         </Card>
@@ -335,9 +377,7 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <CardTitle>Questions ({exam.questions.length})</CardTitle>
-                                    <CardDescription>
-                                        Total points: {totalPoints}
-                                    </CardDescription>
+                                    <CardDescription>Total points: {totalPoints}</CardDescription>
                                 </div>
                                 <Button onClick={() => setShowAddQuestions(true)}>
                                     <Plus className="mr-2 h-4 w-4" />
@@ -349,7 +389,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             {exam.questions.length === 0 ? (
                                 <div className="text-center py-8">
                                     <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                                    <h3 className="mt-2 text-sm font-semibold text-foreground">No questions added</h3>
+                                    <h3 className="mt-2 text-sm font-semibold text-foreground">
+                                        No questions added
+                                    </h3>
                                     <p className="mt-1 text-sm text-muted-foreground">
                                         Add questions to build your exam.
                                     </p>
@@ -357,10 +399,15 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             ) : (
                                 <div className="space-y-4">
                                     {exam.questions.map((question, index) => (
-                                        <div key={question.id} className="flex items-start gap-4 p-4 border rounded-lg">
+                                        <div
+                                            key={question.id}
+                                            className="flex items-start gap-4 p-4 border rounded-lg"
+                                        >
                                             <div className="flex items-center gap-2 text-muted-foreground">
                                                 <GripVertical className="h-4 w-4" />
-                                                <span className="text-sm font-medium">{index + 1}.</span>
+                                                <span className="text-sm font-medium">
+                                                    {index + 1}.
+                                                </span>
                                             </div>
 
                                             <div className="flex-1">
@@ -371,8 +418,13 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                                         </p>
                                                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                                             <span>{question.module?.code}</span>
-                                                            <span>{question.points || 0} points</span>
-                                                            <Badge variant="outline" className="text-xs">
+                                                            <span>
+                                                                {question.points || 0} points
+                                                            </span>
+                                                            <Badge
+                                                                variant="outline"
+                                                                className="text-xs"
+                                                            >
                                                                 {question.question_type}
                                                             </Badge>
                                                         </div>
@@ -381,7 +433,9 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => handleRemoveQuestion(question)}
+                                                        onClick={() =>
+                                                            handleRemoveQuestion(question)
+                                                        }
                                                         className="text-destructive hover:text-destructive/80"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -403,7 +457,8 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                     <DialogHeader>
                         <DialogTitle>Add Questions</DialogTitle>
                         <DialogDescription>
-                            Select questions to add to this exam. Only approved questions from the same module are shown.
+                            Select questions to add to this exam. Only approved questions from the
+                            same module are shown.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -415,21 +470,33 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                         ) : (
                             <div className="space-y-3">
                                 {availableQuestions.map((question) => (
-                                    <div key={question.id} className="flex items-start gap-3 p-3 border rounded">
+                                    <div
+                                        key={question.id}
+                                        className="flex items-start gap-3 p-3 border rounded"
+                                    >
                                         <input
                                             type="checkbox"
                                             checked={selectedQuestions.includes(question.id)}
                                             onChange={(e) => {
                                                 if (e.target.checked) {
-                                                    setSelectedQuestions([...selectedQuestions, question.id]);
+                                                    setSelectedQuestions([
+                                                        ...selectedQuestions,
+                                                        question.id,
+                                                    ]);
                                                 } else {
-                                                    setSelectedQuestions(selectedQuestions.filter(id => id !== question.id));
+                                                    setSelectedQuestions(
+                                                        selectedQuestions.filter(
+                                                            (id) => id !== question.id,
+                                                        ),
+                                                    );
                                                 }
                                             }}
                                             className="mt-1"
                                         />
                                         <div className="flex-1">
-                                            <p className="text-sm font-medium">{question.question}</p>
+                                            <p className="text-sm font-medium">
+                                                {question.question}
+                                            </p>
                                             <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                                                 <span>{question.module?.code}</span>
                                                 <span>{question.points || 0} points</span>
@@ -452,7 +519,8 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                             onClick={handleAddQuestions}
                             disabled={selectedQuestions.length === 0}
                         >
-                            Add {selectedQuestions.length} Question{selectedQuestions.length !== 1 ? 's' : ''}
+                            Add {selectedQuestions.length} Question
+                            {selectedQuestions.length !== 1 ? 's' : ''}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -469,7 +537,10 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmRemoveQuestion} className="bg-destructive hover:bg-destructive/90">
+                        <AlertDialogAction
+                            onClick={confirmRemoveQuestion}
+                            className="bg-destructive hover:bg-destructive/90"
+                        >
                             Remove
                         </AlertDialogAction>
                     </AlertDialogFooter>

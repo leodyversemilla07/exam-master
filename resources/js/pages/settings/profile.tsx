@@ -1,20 +1,20 @@
-import DeleteUser from "@/components/delete-user";
-import HeadingSmall from "@/components/heading-small";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import AppLayout from "@/layouts/app-layout";
-import SettingsLayout from "@/layouts/settings/layout";
-import { type BreadcrumbItem, type SharedData } from "@/types";
-import { Transition } from "@headlessui/react";
-import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import { FormEventHandler } from "react";
+import DeleteUser from '@/components/delete-user';
+import HeadingSmall from '@/components/heading-small';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
+import SettingsLayout from '@/layouts/settings/layout';
+import { type BreadcrumbItem, type SharedData } from '@/types';
+import { Transition } from '@headlessui/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: "Profile settings",
-        href: "/profile",
+        title: 'Profile settings',
+        href: '/profile',
     },
 ];
 
@@ -27,17 +27,16 @@ export default function Profile({
 }) {
     const { auth } = usePage<SharedData>().props;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } =
-        useForm({
-            name: auth.user.name,
-            email: auth.user.email,
-            organization: (auth.user.organization as string) || "",
-        });
+    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
+        name: auth.user.name,
+        email: auth.user.email,
+        organization: (auth.user.organization as string) || '',
+    });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        patch("/profile");
+        patch('/profile');
     };
 
     return (
@@ -59,18 +58,13 @@ export default function Profile({
                                 id="name"
                                 className="mt-1 block w-full"
                                 value={data.name}
-                                onChange={(e) =>
-                                    setData("name", e.target.value)
-                                }
+                                onChange={(e) => setData('name', e.target.value)}
                                 required
                                 autoComplete="name"
                                 placeholder="Full name"
                             />
 
-                            <InputError
-                                className="mt-2"
-                                message={errors.name}
-                            />
+                            <InputError className="mt-2" message={errors.name} />
                         </div>
 
                         <div className="grid gap-2">
@@ -81,18 +75,13 @@ export default function Profile({
                                 type="email"
                                 className="mt-1 block w-full"
                                 value={data.email}
-                                onChange={(e) =>
-                                    setData("email", e.target.value)
-                                }
+                                onChange={(e) => setData('email', e.target.value)}
                                 required
                                 autoComplete="username"
                                 placeholder="Email address"
                             />
 
-                            <InputError
-                                className="mt-2"
-                                message={errors.email}
-                            />
+                            <InputError className="mt-2" message={errors.email} />
                         </div>
 
                         <div className="grid gap-2">
@@ -102,42 +91,34 @@ export default function Profile({
                                 id="organization"
                                 className="mt-1 block w-full"
                                 value={data.organization}
-                                onChange={(e) =>
-                                    setData("organization", e.target.value)
-                                }
+                                onChange={(e) => setData('organization', e.target.value)}
                                 placeholder="e.g. University of Example"
                             />
 
-                            <InputError
-                                className="mt-2"
-                                message={errors.organization}
-                            />
+                            <InputError className="mt-2" message={errors.organization} />
                         </div>
 
-                        {mustVerifyEmail &&
-                            auth.user.email_verified_at === null && (
-                                <div>
-                                    <p className="-mt-4 text-sm text-muted-foreground">
-                                        Your email address is unverified.{" "}
-                                        <Link
-                                            href="/email/verification-notification"
-                                            method="post"
-                                            as="button"
-                                            className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                        >
-                                            Click here to resend the
-                                            verification email.
-                                        </Link>
-                                    </p>
+                        {mustVerifyEmail && auth.user.email_verified_at === null && (
+                            <div>
+                                <p className="-mt-4 text-sm text-muted-foreground">
+                                    Your email address is unverified.{' '}
+                                    <Link
+                                        href="/email/verification-notification"
+                                        method="post"
+                                        as="button"
+                                        className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                    >
+                                        Click here to resend the verification email.
+                                    </Link>
+                                </p>
 
-                                    {status === "verification-link-sent" && (
-                                        <div className="mt-2 text-sm font-medium text-success">
-                                            A new verification link has been
-                                            sent to your email address.
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                {status === 'verification-link-sent' && (
+                                    <div className="mt-2 text-sm font-medium text-success">
+                                        A new verification link has been sent to your email address.
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-4">
                             <Button disabled={processing}>Save</Button>
@@ -149,9 +130,7 @@ export default function Profile({
                                 leave="transition ease-in-out"
                                 leaveTo="opacity-0"
                             >
-                                <p className="text-sm text-muted-foreground">
-                                    Saved
-                                </p>
+                                <p className="text-sm text-muted-foreground">Saved</p>
                             </Transition>
                         </div>
                     </form>

@@ -2,7 +2,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link, usePage } from '@inertiajs/react';
 import { Exam } from '@/types/models';
@@ -21,9 +27,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { BreadcrumbItem, SharedData } from '@/types';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Builder', href: '/exam-builder' },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Builder', href: '/exam-builder' }];
 
 interface PageProps {
     exams: {
@@ -107,12 +111,19 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
     const getStatusBadge = (status: string) => {
         const colors = {
             draft: 'bg-muted text-muted-foreground border-border',
-            published: 'bg-success/10 text-success border-success/20 dark:bg-success/20 dark:border-success/30',
-            archived: 'bg-secondary/10 text-secondary border-secondary/20 dark:bg-secondary/20 dark:border-secondary/30',
+            published:
+                'bg-success/10 text-success border-success/20 dark:bg-success/20 dark:border-success/30',
+            archived:
+                'bg-secondary/10 text-secondary border-secondary/20 dark:bg-secondary/20 dark:border-secondary/30',
         } as const;
 
         return (
-            <Badge className={colors[status as keyof typeof colors] || 'bg-muted text-muted-foreground border-border'}>
+            <Badge
+                className={
+                    colors[status as keyof typeof colors] ||
+                    'bg-muted text-muted-foreground border-border'
+                }
+            >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
             </Badge>
         );
@@ -121,12 +132,19 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
     const getTypeBadge = (type: string) => {
         const colors = {
             formative: 'bg-info/10 text-info border-info/20 dark:bg-info/20 dark:border-info/30',
-            summative: 'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:border-primary/30',
-            diagnostic: 'bg-warning/10 text-warning border-warning/20 dark:bg-warning/20 dark:border-warning/30',
+            summative:
+                'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:border-primary/30',
+            diagnostic:
+                'bg-warning/10 text-warning border-warning/20 dark:bg-warning/20 dark:border-warning/30',
         } as const;
 
         return (
-            <Badge className={colors[type as keyof typeof colors] || 'bg-muted text-muted-foreground border-border'}>
+            <Badge
+                className={
+                    colors[type as keyof typeof colors] ||
+                    'bg-muted text-muted-foreground border-border'
+                }
+            >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
             </Badge>
         );
@@ -162,10 +180,15 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     className="w-full"
                                 />
                             </div>
-                            <Select value={moduleFilter} onValueChange={(value) => {
-                                setModuleFilter(value);
-                                applyFilters({ module_id: value === 'all' ? undefined : value || undefined });
-                            }}>
+                            <Select
+                                value={moduleFilter}
+                                onValueChange={(value) => {
+                                    setModuleFilter(value);
+                                    applyFilters({
+                                        module_id: value === 'all' ? undefined : value || undefined,
+                                    });
+                                }}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="All Modules" />
                                 </SelectTrigger>
@@ -178,10 +201,15 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select value={statusFilter} onValueChange={(value) => {
-                                setStatusFilter(value);
-                                applyFilters({ status: value === 'all' ? undefined : value || undefined });
-                            }}>
+                            <Select
+                                value={statusFilter}
+                                onValueChange={(value) => {
+                                    setStatusFilter(value);
+                                    applyFilters({
+                                        status: value === 'all' ? undefined : value || undefined,
+                                    });
+                                }}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="All Status" />
                                 </SelectTrigger>
@@ -192,10 +220,15 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     <SelectItem value="archived">Archived</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Select value={typeFilter} onValueChange={(value) => {
-                                setTypeFilter(value);
-                                applyFilters({ exam_type: value === 'all' ? undefined : value || undefined });
-                            }}>
+                            <Select
+                                value={typeFilter}
+                                onValueChange={(value) => {
+                                    setTypeFilter(value);
+                                    applyFilters({
+                                        exam_type: value === 'all' ? undefined : value || undefined,
+                                    });
+                                }}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="All Types" />
                                 </SelectTrigger>
@@ -258,9 +291,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                     {exam.time_limit} min
                                                 </div>
                                             )}
-                                            <div>
-                                                Passing: {exam.passing_score}%
-                                            </div>
+                                            <div>Passing: {exam.passing_score}%</div>
                                         </div>
 
                                         <div className="text-sm text-muted-foreground">
@@ -285,7 +316,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => router.post(`/exam-builder/${exam.id}/duplicate`)}
+                                            onClick={() =>
+                                                router.post(`/exam-builder/${exam.id}/duplicate`)
+                                            }
                                         >
                                             <Copy className="h-4 w-4" />
                                         </Button>
@@ -311,7 +344,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                         <CardContent className="pt-6">
                             <div className="text-center py-12">
                                 <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                                <h3 className="mt-2 text-sm font-semibold text-foreground">No exams found</h3>
+                                <h3 className="mt-2 text-sm font-semibold text-foreground">
+                                    No exams found
+                                </h3>
                                 <p className="mt-1 text-sm text-muted-foreground">
                                     Get started by creating your first exam.
                                 </p>
@@ -337,12 +372,16 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Exam</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete "{deletingExam?.title}"? This action cannot be undone.
+                            Are you sure you want to delete "{deletingExam?.title}"? This action
+                            cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-destructive hover:bg-destructive/90"
+                        >
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

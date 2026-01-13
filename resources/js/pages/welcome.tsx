@@ -1,7 +1,7 @@
-import { PageProps } from "@/types";
-import { Head, Link } from "@inertiajs/react";
-import { dashboard, login, register } from "@/routes";
-import { cn } from "@/lib/utils";
+import { PageProps } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { dashboard, login, register } from '@/routes';
+import { cn } from '@/lib/utils';
 import {
     Sparkles,
     Brain,
@@ -17,7 +17,7 @@ import {
     Monitor,
     ShieldCheck,
     Cpu,
-} from "lucide-react";
+} from 'lucide-react';
 
 export default function Welcome({
     auth,
@@ -25,67 +25,71 @@ export default function Welcome({
     const features = [
         {
             icon: Brain,
-            title: "AI-Powered Generation",
-            description: "Leverage cutting-edge AI to generate high-quality exam questions aligned with learning objectives and Bloom's taxonomy.",
-            className: "md:col-span-2",
+            title: 'AI-Powered Generation',
+            description:
+                "Leverage cutting-edge AI to generate high-quality exam questions aligned with learning objectives and Bloom's taxonomy.",
+            className: 'md:col-span-2',
         },
         {
             icon: FileCheck2,
-            title: "Smart TOS",
-            description: "Automatically create and calculate Table of Specifications to ensure balanced exam distribution.",
-            className: "md:col-span-1",
+            title: 'Smart TOS',
+            description:
+                'Automatically create and calculate Table of Specifications to ensure balanced exam distribution.',
+            className: 'md:col-span-1',
         },
         {
             icon: Shield,
-            title: "Anti-Duplicate",
-            description: "Advanced algorithms prevent duplicate questions, maintaining exam integrity.",
-            className: "md:col-span-1",
+            title: 'Anti-Duplicate',
+            description:
+                'Advanced algorithms prevent duplicate questions, maintaining exam integrity.',
+            className: 'md:col-span-1',
         },
         {
             icon: BarChart3,
-            title: "Deep Analytics",
-            description: "Track exam performance, analyze difficulty, and gain insights to improve assessment quality.",
-            className: "md:col-span-2",
+            title: 'Deep Analytics',
+            description:
+                'Track exam performance, analyze difficulty, and gain insights to improve assessment quality.',
+            className: 'md:col-span-2',
         },
     ];
 
     const pricing = [
         {
-            name: "Free",
-            price: "0",
+            name: 'Free',
+            price: '0',
             features: [
-                "10 questions per exam",
-                "Basic TOS generation",
-                "PDF Export",
-                "Self-managed hosting",
+                '10 questions per exam',
+                'Basic TOS generation',
+                'PDF Export',
+                'Self-managed hosting',
             ],
-            cta: "Get Started",
+            cta: 'Get Started',
             highlighted: false,
         },
         {
-            name: "Pro",
-            price: "29",
+            name: 'Pro',
+            price: '29',
             features: [
-                "Unlimited AI questions",
-                "Advanced TOS analytics",
-                "DOCX & PDF Export",
-                "Priority AI processing",
-                "Duplicate detection",
+                'Unlimited AI questions',
+                'Advanced TOS analytics',
+                'DOCX & PDF Export',
+                'Priority AI processing',
+                'Duplicate detection',
             ],
-            cta: "Start Free Trial",
+            cta: 'Start Free Trial',
             highlighted: true,
         },
         {
-            name: "Enterprise",
-            price: "Custom",
+            name: 'Enterprise',
+            price: 'Custom',
             features: [
-                "Department-wide access",
-                "Custom AI fine-tuning",
-                "SLA & Dedicated support",
-                "Bulk user management",
-                "API Access",
+                'Department-wide access',
+                'Custom AI fine-tuning',
+                'SLA & Dedicated support',
+                'Bulk user management',
+                'API Access',
             ],
-            cta: "Contact Sales",
+            cta: 'Contact Sales',
             highlighted: false,
         },
     ];
@@ -106,7 +110,11 @@ export default function Welcome({
                 <div className="glass flex h-16 items-center justify-between rounded-2xl px-6 shadow-2xl">
                     <div className="flex items-center gap-3">
                         <div className="flex size-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-primary/20">
-                            <img src="/images/logo.png" alt="ExamMaster Logo" className="size-full object-cover scale-150" />
+                            <img
+                                src="/images/logo.png"
+                                alt="ExamMaster Logo"
+                                className="size-full object-cover scale-150"
+                            />
                         </div>
                         <span className="text-xl font-bold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                             ExamMaster
@@ -157,12 +165,16 @@ export default function Welcome({
                                 </div>
                                 <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-8 animate-in fade-in slide-in-from-bottom-6 duration-1000">
                                     Master your <br />
-                                    <span className="text-gradient leading-tight">Assessments</span> <br />
+                                    <span className="text-gradient leading-tight">
+                                        Assessments
+                                    </span>{' '}
+                                    <br />
                                     with AI efficiency.
                                 </h1>
                                 <p className="text-lg lg:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                                    The most advanced platform for creating, managing, and analyzing academic exams.
-                                    Save hours of manual work and ensure educational excellence.
+                                    The most advanced platform for creating, managing, and analyzing
+                                    academic exams. Save hours of manual work and ensure educational
+                                    excellence.
                                 </p>
                                 <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                                     <Link
@@ -179,7 +191,9 @@ export default function Welcome({
                                 </div>
 
                                 <div className="mt-12 flex items-center justify-center lg:justify-start gap-6 grayscale opacity-60">
-                                    <span className="text-sm font-medium uppercase tracking-widest text-muted-foreground">Trusted by over 500+ Educators</span>
+                                    <span className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+                                        Trusted by over 500+ Educators
+                                    </span>
                                 </div>
                             </div>
 
@@ -195,11 +209,15 @@ export default function Welcome({
                                         />
                                         <div className="absolute top-6 left-6 glass px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border-white/20">
                                             <div className="size-2 bg-green-500 rounded-full animate-pulse" />
-                                            <span className="text-xs font-bold text-foreground">AI Generator Active</span>
+                                            <span className="text-xs font-bold text-foreground">
+                                                AI Generator Active
+                                            </span>
                                         </div>
                                         <div className="absolute bottom-6 right-6 glass px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border-white/20">
                                             <ShieldCheck className="size-4 text-primary" />
-                                            <span className="text-xs font-bold text-foreground">98.5% Quality Score</span>
+                                            <span className="text-xs font-bold text-foreground">
+                                                98.5% Quality Score
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -216,7 +234,8 @@ export default function Welcome({
                                 Future-proof your <span className="text-gradient">workflow</span>
                             </h2>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Everything you need to manage a modern educational assessment system in one place.
+                                Everything you need to manage a modern educational assessment system
+                                in one place.
                             </p>
                         </div>
 
@@ -225,8 +244,8 @@ export default function Welcome({
                                 <div
                                     key={i}
                                     className={cn(
-                                        "group relative glass-card p-8 rounded-3xl transition-all duration-300 hover:border-primary/50 hover:shadow-primary/5 cursor-default overflow-hidden",
-                                        feature.className
+                                        'group relative glass-card p-8 rounded-3xl transition-all duration-300 hover:border-primary/50 hover:shadow-primary/5 cursor-default overflow-hidden',
+                                        feature.className,
                                     )}
                                 >
                                     <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-48 h-48 bg-primary/5 blur-3xl rounded-full" />
@@ -256,10 +275,10 @@ export default function Welcome({
                     <div className="mx-auto max-w-7xl px-6">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
                             {[
-                                { label: "Time Saved", value: "90%", icon: Clock },
-                                { label: "Questions Generated", value: "1M+", icon: Cpu },
-                                { label: "Quality Score", value: "98.5%", icon: Star },
-                                { label: "Active Educators", value: "500+", icon: Users },
+                                { label: 'Time Saved', value: '90%', icon: Clock },
+                                { label: 'Questions Generated', value: '1M+', icon: Cpu },
+                                { label: 'Quality Score', value: '98.5%', icon: Star },
+                                { label: 'Active Educators', value: '500+', icon: Users },
                             ].map((stat, i) => (
                                 <div key={i} className="space-y-4">
                                     <div className="mx-auto size-12 flex items-center justify-center rounded-2xl glass mb-6">
@@ -282,10 +301,12 @@ export default function Welcome({
                     <div className="mx-auto max-w-7xl">
                         <div className="text-center mb-20">
                             <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
-                                Simple <span className="text-gradient-accent">Pricing</span> for every scale
+                                Simple <span className="text-gradient-accent">Pricing</span> for
+                                every scale
                             </h2>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Choose the plan that best fits your institution's needs. All plans include 24/7 security.
+                                Choose the plan that best fits your institution's needs. All plans
+                                include 24/7 security.
                             </p>
                         </div>
 
@@ -294,8 +315,10 @@ export default function Welcome({
                                 <div
                                     key={i}
                                     className={cn(
-                                        "relative flex flex-col p-8 rounded-3xl border border-border bg-card transition-all duration-300",
-                                        tier.highlighted ? "lg:scale-105 shadow-2xl border-primary ring-1 ring-primary/50" : "hover:shadow-xl"
+                                        'relative flex flex-col p-8 rounded-3xl border border-border bg-card transition-all duration-300',
+                                        tier.highlighted
+                                            ? 'lg:scale-105 shadow-2xl border-primary ring-1 ring-primary/50'
+                                            : 'hover:shadow-xl',
                                     )}
                                 >
                                     {tier.highlighted && (
@@ -307,9 +330,17 @@ export default function Welcome({
                                     <div className="mb-8">
                                         <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-4xl font-extrabold">{tier.price === "Custom" ? "" : "$"}</span>
-                                            <span className="text-6xl font-extrabold tracking-tight">{tier.price}</span>
-                                            {tier.price !== "Custom" && <span className="text-muted-foreground font-medium">/month</span>}
+                                            <span className="text-4xl font-extrabold">
+                                                {tier.price === 'Custom' ? '' : '$'}
+                                            </span>
+                                            <span className="text-6xl font-extrabold tracking-tight">
+                                                {tier.price}
+                                            </span>
+                                            {tier.price !== 'Custom' && (
+                                                <span className="text-muted-foreground font-medium">
+                                                    /month
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -319,7 +350,9 @@ export default function Welcome({
                                                 <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                                                     <CheckCircle2 className="size-3 text-primary" />
                                                 </div>
-                                                <span className="text-muted-foreground font-medium">{feature}</span>
+                                                <span className="text-muted-foreground font-medium">
+                                                    {feature}
+                                                </span>
                                             </li>
                                         ))}
                                     </ul>
@@ -327,10 +360,10 @@ export default function Welcome({
                                     <Link
                                         href={auth.user ? dashboard() : register()}
                                         className={cn(
-                                            "w-full py-4 px-6 rounded-2xl text-center font-bold transition-all",
+                                            'w-full py-4 px-6 rounded-2xl text-center font-bold transition-all',
                                             tier.highlighted
-                                                ? "bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105"
-                                                : "bg-muted text-foreground hover:bg-accent"
+                                                ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105'
+                                                : 'bg-muted text-foreground hover:bg-accent',
                                         )}
                                     >
                                         {tier.cta}
@@ -350,7 +383,8 @@ export default function Welcome({
 
                             <div className="relative z-10">
                                 <h2 className="text-4xl lg:text-6xl font-extrabold text-white tracking-tight mb-8">
-                                    Ready to automate <br />your assessments?
+                                    Ready to automate <br />
+                                    your assessments?
                                 </h2>
                                 <p className="text-xl text-white/90 max-w-2xl mx-auto mb-12">
                                     Join hundreds of forward-thinking educators today. <br />
@@ -381,18 +415,26 @@ export default function Welcome({
                         <div className="col-span-2">
                             <div className="flex items-center gap-3 mb-8">
                                 <div className="flex size-10 items-center justify-center rounded-xl overflow-hidden">
-                                    <img src="/images/logo.png" alt="ExamMaster Logo" className="size-full object-cover scale-150" />
+                                    <img
+                                        src="/images/logo.png"
+                                        alt="ExamMaster Logo"
+                                        className="size-full object-cover scale-150"
+                                    />
                                 </div>
                                 <span className="text-2xl font-bold tracking-tight text-foreground">
                                     ExamMaster
                                 </span>
                             </div>
                             <p className="text-muted-foreground text-lg max-w-sm mb-8 leading-relaxed">
-                                Empowering educators with AI-driven tools to create, manage, and analyze high-quality academic exams with ease.
+                                Empowering educators with AI-driven tools to create, manage, and
+                                analyze high-quality academic exams with ease.
                             </p>
                             <div className="flex gap-4">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="size-10 rounded-xl bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition-colors">
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div
+                                        key={i}
+                                        className="size-10 rounded-xl bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition-colors"
+                                    >
                                         <div className="size-5 bg-muted-foreground/30 rounded-sm" />
                                     </div>
                                 ))}
@@ -402,34 +444,61 @@ export default function Welcome({
                         <div>
                             <h4 className="font-bold text-lg mb-6">Product</h4>
                             <ul className="space-y-4 text-muted-foreground font-medium">
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">Features</li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">AI Generation</li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">TOS Builder</li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">Pricing</li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    Features
+                                </li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    AI Generation
+                                </li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    TOS Builder
+                                </li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    Pricing
+                                </li>
                             </ul>
                         </div>
 
                         <div>
                             <h4 className="font-bold text-lg mb-6">Support</h4>
                             <ul className="space-y-4 text-muted-foreground font-medium">
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">Documentation</li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">API Reference</li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">Community</li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">Privacy Policy</li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    Documentation
+                                </li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    API Reference
+                                </li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    Community
+                                </li>
+                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                    Privacy Policy
+                                </li>
                             </ul>
                         </div>
                     </div>
 
                     <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-muted-foreground font-medium">
                         <div className="flex items-center gap-2">
-                            <span>© {new Date().getFullYear()} ExamMaster. All rights reserved.</span>
+                            <span>
+                                © {new Date().getFullYear()} ExamMaster. All rights reserved.
+                            </span>
                             <span className="hidden md:inline">•</span>
                             <span>Built with AI by Antigravity</span>
                         </div>
                         <div className="flex items-center gap-8">
-                            <Link href="/design-system" className="hover:text-primary transition-colors cursor-pointer">Design System</Link>
-                            <span className="hover:text-foreground transition-colors cursor-pointer">Status</span>
-                            <span className="hover:text-foreground transition-colors cursor-pointer">Terms</span>
+                            <Link
+                                href="/design-system"
+                                className="hover:text-primary transition-colors cursor-pointer"
+                            >
+                                Design System
+                            </Link>
+                            <span className="hover:text-foreground transition-colors cursor-pointer">
+                                Status
+                            </span>
+                            <span className="hover:text-foreground transition-colors cursor-pointer">
+                                Terms
+                            </span>
                         </div>
                     </div>
                 </div>

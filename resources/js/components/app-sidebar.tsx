@@ -1,6 +1,6 @@
-import { NavFooter } from "@/components/nav-footer";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavFooter } from '@/components/nav-footer';
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
@@ -9,21 +9,21 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { dashboard } from "@/routes";
-import { index as modules } from "@/routes/modules";
-import { index as tosgenerates } from "@/routes/tos-generates";
-import { index as questionBank } from "@/routes/question-bank";
-import { index as examBuilder } from "@/routes/exam-builder";
-import { index as examSessions } from "@/routes/exam-sessions";
-import { index as users } from "@/routes/users";
-import { index as analytics } from "@/routes/analytics";
-import { index as systemLogs } from "@/routes/system-logs";
-import { index as queueMonitor } from "@/routes/queue-monitor";
-import { dashboard as studentDashboard } from "@/routes/student";
-import { history as examHistory } from "@/routes/student/exam";
-import { type NavItem, type SharedData } from "@/types";
-import { Link, usePage } from "@inertiajs/react";
+} from '@/components/ui/sidebar';
+import { dashboard } from '@/routes';
+import { index as modules } from '@/routes/modules';
+import { index as tosgenerates } from '@/routes/tos-generates';
+import { index as questionBank } from '@/routes/question-bank';
+import { index as examBuilder } from '@/routes/exam-builder';
+import { index as examSessions } from '@/routes/exam-sessions';
+import { index as users } from '@/routes/users';
+import { index as analytics } from '@/routes/analytics';
+import { index as systemLogs } from '@/routes/system-logs';
+import { index as queueMonitor } from '@/routes/queue-monitor';
+import { dashboard as studentDashboard } from '@/routes/student';
+import { history as examHistory } from '@/routes/student/exam';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import {
     LayoutGrid,
     BookOpen,
@@ -39,95 +39,95 @@ import {
     PlayCircle,
     GraduationCap,
     Clock,
-} from "lucide-react";
-import AppLogo from "./app-logo";
+} from 'lucide-react';
+import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: "Dashboard",
+        title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
     {
-        title: "Modules",
+        title: 'Modules',
         href: modules(),
         icon: BookOpen,
-        permission: "view modules",
+        permission: 'view modules',
     },
     {
-        title: "Table of Specification",
+        title: 'Table of Specification',
         href: tosgenerates(),
         icon: TableProperties,
-        permission: "view tos",
+        permission: 'view tos',
     },
     {
-        title: "Question Bank",
+        title: 'Question Bank',
         href: questionBank(),
         icon: MessageSquare,
-        permission: "view exams",
+        permission: 'view exams',
     },
     {
-        title: "Exam Builder",
+        title: 'Exam Builder',
         href: examBuilder(),
         icon: ClipboardList,
-        permission: "create exams",
+        permission: 'create exams',
     },
     {
-        title: "Exam Sessions",
+        title: 'Exam Sessions',
         href: examSessions(),
         icon: PlayCircle,
-        permission: "create exam sessions",
+        permission: 'create exam sessions',
     },
     {
-        title: "Analytics",
+        title: 'Analytics',
         href: analytics(),
         icon: BarChart3,
-        permission: "view analytics",
+        permission: 'view analytics',
     },
     {
-        title: "Users",
+        title: 'Users',
         href: users(),
         icon: Users,
-        permission: "view users",
+        permission: 'view users',
     },
     {
-        title: "System Logs",
+        title: 'System Logs',
         href: systemLogs(),
         icon: ScrollText,
-        permission: "view users",
+        permission: 'view users',
     },
     {
-        title: "Queue Monitor",
+        title: 'Queue Monitor',
         href: queueMonitor(),
         icon: Activity,
-        permission: "view users",
+        permission: 'view users',
     },
 ];
 
 const studentNavItems: NavItem[] = [
     {
-        title: "Student Dashboard",
+        title: 'Student Dashboard',
         href: studentDashboard(),
         icon: GraduationCap,
-        permission: "take exams",
+        permission: 'take exams',
     },
     {
-        title: "Exam History",
+        title: 'Exam History',
         href: examHistory(),
         icon: Clock,
-        permission: "view own results",
+        permission: 'view own results',
     },
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: "Repository",
-        href: "https://github.com/hisangge/ExamMaster",
+        title: 'Repository',
+        href: 'https://github.com/hisangge/ExamMaster',
         icon: Folder,
     },
     {
-        title: "Documentation",
-        href: "https://laravel.com/docs",
+        title: 'Documentation',
+        href: 'https://laravel.com/docs',
         icon: BookMarked,
     },
 ];

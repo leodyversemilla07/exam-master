@@ -3,7 +3,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
@@ -34,22 +40,29 @@ interface PageProps {
     from_tos?: TosInfo;
 }
 
-export default function ExamCreate({ modules, from_group, from_group_id, from_group_name }: PageProps) {
-    const breadcrumbs = from_group && from_group_id && from_group_name
-        ? [
-            { title: 'Question Bank', href: '/question-bank' },
-            { 
-                title: from_group_name, 
-                href: from_group === 'tos' 
-                    ? `/question-bank/tos/${from_group_id}` 
-                    : `/question-bank/module/${from_group_id}` 
-            },
-            { title: 'Create', href: '/question-bank/create' },
-        ]
-        : [
-            { title: 'Question Bank', href: '/question-bank' },
-            { title: 'Create', href: '/question-bank/create' },
-        ];
+export default function ExamCreate({
+    modules,
+    from_group,
+    from_group_id,
+    from_group_name,
+}: PageProps) {
+    const breadcrumbs =
+        from_group && from_group_id && from_group_name
+            ? [
+                  { title: 'Question Bank', href: '/question-bank' },
+                  {
+                      title: from_group_name,
+                      href:
+                          from_group === 'tos'
+                              ? `/question-bank/tos/${from_group_id}`
+                              : `/question-bank/module/${from_group_id}`,
+                  },
+                  { title: 'Create', href: '/question-bank/create' },
+              ]
+            : [
+                  { title: 'Question Bank', href: '/question-bank' },
+                  { title: 'Create', href: '/question-bank/create' },
+              ];
 
     const { data, setData, post, processing, errors } = useForm({
         module_id: modules.length > 0 ? modules[0].id : 0,
@@ -77,7 +90,7 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Convert matching pairs to options format for backend
         if (data.question_type === 'matching') {
             const options: Record<string, string> = {};
@@ -86,14 +99,14 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                     options[(index + 1).toString()] = pair.column_a;
                 }
             });
-            
+
             const correctAnswers: Record<string, string> = {};
             data.matching_pairs.forEach((pair, index) => {
                 if (pair.column_b) {
                     correctAnswers[(index + 1).toString()] = pair.column_b;
                 }
             });
-            
+
             // Transform the data before submission using the transform option
             post('/question-bank', {
                 forceFormData: true,
@@ -164,7 +177,10 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                     </SelectTrigger>
                                     <SelectContent>
                                         {modules.map((module) => (
-                                            <SelectItem key={module.id} value={module.id.toString()}>
+                                            <SelectItem
+                                                key={module.id}
+                                                value={module.id.toString()}
+                                            >
                                                 {module.code} - {module.name}
                                             </SelectItem>
                                         ))}
@@ -197,12 +213,18 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
+                                        <SelectItem value="multiple_choice">
+                                            Multiple Choice
+                                        </SelectItem>
                                         <SelectItem value="true_false">True/False</SelectItem>
                                         <SelectItem value="essay">Essay</SelectItem>
-                                        <SelectItem value="identification">Identification</SelectItem>
+                                        <SelectItem value="identification">
+                                            Identification
+                                        </SelectItem>
                                         <SelectItem value="matching">Matching Type</SelectItem>
-                                        <SelectItem value="fill_in_the_blanks">Fill in the Blanks</SelectItem>
+                                        <SelectItem value="fill_in_the_blanks">
+                                            Fill in the Blanks
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </Field>
@@ -214,12 +236,17 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                     <div className="space-y-3">
                                         {data.options.map((option, index) => (
                                             <div key={option.key} className="flex gap-2">
-                                                <Badge variant="outline" className="h-10 w-10 items-center justify-center">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="h-10 w-10 items-center justify-center"
+                                                >
                                                     {option.key}
                                                 </Badge>
                                                 <Input
                                                     value={option.text}
-                                                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleOptionChange(index, e.target.value)
+                                                    }
                                                     placeholder={`Option ${option.key}`}
                                                 />
                                             </div>
@@ -239,17 +266,32 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         </div>
                                         {data.matching_pairs.map((pair, index) => (
                                             <div key={index} className="flex gap-2">
-                                                <Badge variant="outline" className="h-10 w-10 items-center justify-center shrink-0">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="h-10 w-10 items-center justify-center shrink-0"
+                                                >
                                                     {index + 1}
                                                 </Badge>
                                                 <Input
                                                     value={pair.column_a}
-                                                    onChange={(e) => handleMatchingChange(index, 'column_a', e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleMatchingChange(
+                                                            index,
+                                                            'column_a',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                     placeholder={`Item ${index + 1}`}
                                                 />
                                                 <Input
                                                     value={pair.column_b}
-                                                    onChange={(e) => handleMatchingChange(index, 'column_b', e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleMatchingChange(
+                                                            index,
+                                                            'column_b',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                     placeholder={`Match ${index + 1}`}
                                                 />
                                                 {data.matching_pairs.length > 2 && (
@@ -275,7 +317,8 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         </Button>
                                     </div>
                                     <p className="text-sm text-muted-foreground mt-2">
-                                        Create pairs that students will match. Column B will be shuffled in the exam.
+                                        Create pairs that students will match. Column B will be
+                                        shuffled in the exam.
                                     </p>
                                 </Field>
                             )}
@@ -283,11 +326,24 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                             {/* Fill in the Blanks Help */}
                             {data.question_type === 'fill_in_the_blanks' && (
                                 <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-4 text-sm">
-                                    <p className="font-medium mb-2">Fill in the Blanks Instructions:</p>
+                                    <p className="font-medium mb-2">
+                                        Fill in the Blanks Instructions:
+                                    </p>
                                     <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                        <li>Use <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">[blank]</code> in your question text where you want blanks</li>
-                                        <li>Example: &quot;The capital of France is [blank].&quot;</li>
-                                        <li>Enter the correct answer(s) in the &quot;Correct Answer&quot; field below</li>
+                                        <li>
+                                            Use{' '}
+                                            <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">
+                                                [blank]
+                                            </code>{' '}
+                                            in your question text where you want blanks
+                                        </li>
+                                        <li>
+                                            Example: &quot;The capital of France is [blank].&quot;
+                                        </li>
+                                        <li>
+                                            Enter the correct answer(s) in the &quot;Correct
+                                            Answer&quot; field below
+                                        </li>
                                         <li>For multiple blanks, separate answers with commas</li>
                                     </ul>
                                 </div>
@@ -327,7 +383,8 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                     </Select>
                                 ) : data.question_type === 'matching' ? (
                                     <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
-                                        Correct answers are automatically determined from your matching pairs above.
+                                        Correct answers are automatically determined from your
+                                        matching pairs above.
                                     </div>
                                 ) : (
                                     <Input
@@ -335,18 +392,22 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         value={data.correct_answer}
                                         onChange={(e) => setData('correct_answer', e.target.value)}
                                         placeholder={
-                                            data.question_type === 'fill_in_the_blanks' 
-                                                ? "Enter answer(s), comma-separated for multiple blanks" 
-                                                : "Enter correct answer"
+                                            data.question_type === 'fill_in_the_blanks'
+                                                ? 'Enter answer(s), comma-separated for multiple blanks'
+                                                : 'Enter correct answer'
                                         }
                                     />
                                 )}
-                                {errors.correct_answer && <FieldError>{errors.correct_answer}</FieldError>}
+                                {errors.correct_answer && (
+                                    <FieldError>{errors.correct_answer}</FieldError>
+                                )}
                             </Field>
 
                             {/* Explanation */}
                             <Field>
-                                <FieldLabel htmlFor="explanation">Explanation (Optional)</FieldLabel>
+                                <FieldLabel htmlFor="explanation">
+                                    Explanation (Optional)
+                                </FieldLabel>
                                 <Textarea
                                     id="explanation"
                                     value={data.explanation}
@@ -398,11 +459,15 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {/* Learning Objective Code */}
                                 <Field>
-                                    <FieldLabel htmlFor="learning_objective_code">Learning Objective Code</FieldLabel>
+                                    <FieldLabel htmlFor="learning_objective_code">
+                                        Learning Objective Code
+                                    </FieldLabel>
                                     <Input
                                         id="learning_objective_code"
                                         value={data.learning_objective_code}
-                                        onChange={(e) => setData('learning_objective_code', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('learning_objective_code', e.target.value)
+                                        }
                                         placeholder="e.g., LO-001"
                                     />
                                 </Field>
@@ -415,7 +480,9 @@ export default function ExamCreate({ modules, from_group, from_group_id, from_gr
                                         type="number"
                                         min="1"
                                         value={data.points}
-                                        onChange={(e) => setData('points', parseInt(e.target.value) || 1)}
+                                        onChange={(e) =>
+                                            setData('points', parseInt(e.target.value) || 1)
+                                        }
                                     />
                                 </Field>
                             </div>

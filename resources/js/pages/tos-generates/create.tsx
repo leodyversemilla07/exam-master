@@ -3,7 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router, usePage } from '@inertiajs/react';
 import { Module } from '@/types/models';
@@ -13,7 +19,6 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { store } from '@/actions/App/Http/Controllers/TosGenerateController';
 import { extractTosFromModule } from '@/actions/App/Http/Controllers/ModuleController';
-
 
 interface PageProps {
     modules: Module[];
@@ -129,11 +134,11 @@ export default function TosGenerateCreate({ modules }: PageProps) {
             });
 
             toast.success('Successfully extracted TOS data from PDF!', {
-                description: `Auto-populated ${data.learning_objectives?.length || 0} learning objectives.`
+                description: `Auto-populated ${data.learning_objectives?.length || 0} learning objectives.`,
             });
         } else if (tosExtraction.error) {
             toast.error('Failed to extract TOS data', {
-                description: tosExtraction.error || 'Could not analyze the PDF file.'
+                description: tosExtraction.error || 'Could not analyze the PDF file.',
             });
         }
     }, [props.flash?.tosExtraction]);
@@ -160,18 +165,21 @@ export default function TosGenerateCreate({ modules }: PageProps) {
         setIsExtracting(true);
 
         // Use Inertia router - the response comes via flash data in useEffect
-        router.post(extractTosFromModule.url(selectedModule.id), {}, {
-            preserveState: true,
-            preserveScroll: true,
-            onError: () => {
-                setIsExtracting(false);
-                toast.error('Extraction failed', {
-                    description: 'An error occurred while analyzing the PDF.'
-                });
+        router.post(
+            extractTosFromModule.url(selectedModule.id),
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onError: () => {
+                    setIsExtracting(false);
+                    toast.error('Extraction failed', {
+                        description: 'An error occurred while analyzing the PDF.',
+                    });
+                },
             },
-        });
+        );
     };
-
 
     const addObjective = () => {
         const newObjectives = [...objectives, { code: '', description: '' }];
@@ -208,12 +216,12 @@ export default function TosGenerateCreate({ modules }: PageProps) {
 
     const totalCognitiveLevels = Object.values(form.data.cognitive_levels).reduce(
         (sum, val) => sum + val,
-        0
+        0,
     );
 
     const totalQuestionTypes = Object.values(form.data.question_types).reduce(
         (sum, val) => sum + val,
-        0
+        0,
     );
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -253,14 +261,19 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {modules.map((module) => (
-                                                <SelectItem key={module.id} value={module.id.toString()}>
+                                                <SelectItem
+                                                    key={module.id}
+                                                    value={module.id.toString()}
+                                                >
                                                     {module.code} - {module.name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                     {form.errors.module_id && (
-                                        <p className="text-sm text-destructive">{form.errors.module_id}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.module_id}
+                                        </p>
                                     )}
 
                                     {/* Auto-Fill Button - Shows when module with PDF is selected */}
@@ -286,7 +299,6 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                             )}
                                         </Button>
                                     )}
-
                                 </div>
 
                                 <div className="space-y-2">
@@ -298,7 +310,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         placeholder="e.g., 1st Quarter"
                                     />
                                     {form.errors.quarter && (
-                                        <p className="text-sm text-destructive">{form.errors.quarter}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.quarter}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -313,7 +327,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         placeholder="e.g., Mathematics"
                                     />
                                     {form.errors.subject && (
-                                        <p className="text-sm text-destructive">{form.errors.subject}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.subject}
+                                        </p>
                                     )}
                                 </div>
 
@@ -322,11 +338,15 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                     <Input
                                         id="grade_level"
                                         value={form.data.grade_level}
-                                        onChange={(e) => form.setData('grade_level', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('grade_level', e.target.value)
+                                        }
                                         placeholder="e.g., Grade 10"
                                     />
                                     {form.errors.grade_level && (
-                                        <p className="text-sm text-destructive">{form.errors.grade_level}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.grade_level}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -339,10 +359,14 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                     min="1"
                                     max="200"
                                     value={form.data.total_items}
-                                    onChange={(e) => form.setData('total_items', parseInt(e.target.value) || 0)}
+                                    onChange={(e) =>
+                                        form.setData('total_items', parseInt(e.target.value) || 0)
+                                    }
                                 />
                                 {form.errors.total_items && (
-                                    <p className="text-sm text-destructive">{form.errors.total_items}</p>
+                                    <p className="text-sm text-destructive">
+                                        {form.errors.total_items}
+                                    </p>
                                 )}
                             </div>
                         </CardContent>
@@ -358,7 +382,12 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         Define the learning objectives to assess
                                     </CardDescription>
                                 </div>
-                                <Button type="button" variant="outline" size="sm" onClick={addObjective}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={addObjective}
+                                >
                                     <Plus className="mr-2 size-4" />
                                     Add Objective
                                 </Button>
@@ -371,7 +400,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         <Label>Code</Label>
                                         <Input
                                             value={objective.code}
-                                            onChange={(e) => updateObjective(index, 'code', e.target.value)}
+                                            onChange={(e) =>
+                                                updateObjective(index, 'code', e.target.value)
+                                            }
                                             placeholder="e.g., M10-A1"
                                         />
                                     </div>
@@ -380,7 +411,11 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         <Input
                                             value={objective.description}
                                             onChange={(e) =>
-                                                updateObjective(index, 'description', e.target.value)
+                                                updateObjective(
+                                                    index,
+                                                    'description',
+                                                    e.target.value,
+                                                )
                                             }
                                             placeholder="Describe the learning objective"
                                         />
@@ -399,7 +434,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                 </div>
                             ))}
                             {form.errors.learning_objectives && (
-                                <p className="text-sm text-destructive">{form.errors.learning_objectives}</p>
+                                <p className="text-sm text-destructive">
+                                    {form.errors.learning_objectives}
+                                </p>
                             )}
                         </CardContent>
                     </Card>
@@ -430,11 +467,14 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                             min="0"
                                             value={
                                                 form.data.cognitive_levels[
-                                                level as keyof typeof form.data.cognitive_levels
+                                                    level as keyof typeof form.data.cognitive_levels
                                                 ]
                                             }
                                             onChange={(e) =>
-                                                updateCognitiveLevel(level, parseInt(e.target.value) || 0)
+                                                updateCognitiveLevel(
+                                                    level,
+                                                    parseInt(e.target.value) || 0,
+                                                )
                                             }
                                         />
                                     </div>
@@ -444,8 +484,8 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                 <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3">
                                     <AlertCircle className="size-4 text-destructive mt-0.5" />
                                     <p className="text-sm text-destructive">
-                                        The sum of cognitive levels ({totalCognitiveLevels}) must equal the
-                                        total items ({form.data.total_items})
+                                        The sum of cognitive levels ({totalCognitiveLevels}) must
+                                        equal the total items ({form.data.total_items})
                                     </p>
                                 </div>
                             )}
@@ -457,7 +497,8 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                         <CardHeader>
                             <CardTitle>Question Type Distribution</CardTitle>
                             <CardDescription>
-                                Specify the number of questions for each type (must equal total items)
+                                Specify the number of questions for each type (must equal total
+                                items)
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -470,7 +511,10 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         min="0"
                                         value={form.data.question_types.multiple_choice}
                                         onChange={(e) =>
-                                            updateQuestionType('multiple_choice', parseInt(e.target.value) || 0)
+                                            updateQuestionType(
+                                                'multiple_choice',
+                                                parseInt(e.target.value) || 0,
+                                            )
                                         }
                                     />
                                 </div>
@@ -483,7 +527,10 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         min="0"
                                         value={form.data.question_types.true_false}
                                         onChange={(e) =>
-                                            updateQuestionType('true_false', parseInt(e.target.value) || 0)
+                                            updateQuestionType(
+                                                'true_false',
+                                                parseInt(e.target.value) || 0,
+                                            )
                                         }
                                     />
                                 </div>
@@ -496,7 +543,10 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         min="0"
                                         value={form.data.question_types.essay}
                                         onChange={(e) =>
-                                            updateQuestionType('essay', parseInt(e.target.value) || 0)
+                                            updateQuestionType(
+                                                'essay',
+                                                parseInt(e.target.value) || 0,
+                                            )
                                         }
                                     />
                                 </div>
@@ -509,7 +559,10 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         min="0"
                                         value={form.data.question_types.identification}
                                         onChange={(e) =>
-                                            updateQuestionType('identification', parseInt(e.target.value) || 0)
+                                            updateQuestionType(
+                                                'identification',
+                                                parseInt(e.target.value) || 0,
+                                            )
                                         }
                                     />
                                 </div>
@@ -518,7 +571,13 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                             <div className="rounded-lg border bg-muted/50 p-3">
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="font-medium">Total Question Types:</span>
-                                    <span className={totalQuestionTypes !== form.data.total_items ? 'text-destructive font-semibold' : 'font-semibold'}>
+                                    <span
+                                        className={
+                                            totalQuestionTypes !== form.data.total_items
+                                                ? 'text-destructive font-semibold'
+                                                : 'font-semibold'
+                                        }
+                                    >
                                         {totalQuestionTypes} / {form.data.total_items}
                                     </span>
                                 </div>
@@ -528,8 +587,8 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                 <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3">
                                     <AlertCircle className="size-4 text-destructive mt-0.5" />
                                     <p className="text-sm text-destructive">
-                                        The sum of question types ({totalQuestionTypes}) must equal the
-                                        total items ({form.data.total_items})
+                                        The sum of question types ({totalQuestionTypes}) must equal
+                                        the total items ({form.data.total_items})
                                     </p>
                                 </div>
                             )}
@@ -540,7 +599,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                     <Card>
                         <CardHeader>
                             <CardTitle>Additional Configuration</CardTitle>
-                            <CardDescription>Configure difficulty level and language</CardDescription>
+                            <CardDescription>
+                                Configure difficulty level and language
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2">
@@ -548,7 +609,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                     <Label htmlFor="difficulty_level">Difficulty Level *</Label>
                                     <Select
                                         value={form.data.difficulty_level}
-                                        onValueChange={(value) => form.setData('difficulty_level', value)}
+                                        onValueChange={(value) =>
+                                            form.setData('difficulty_level', value)
+                                        }
                                     >
                                         <SelectTrigger id="difficulty_level">
                                             <SelectValue />
@@ -582,7 +645,9 @@ export default function TosGenerateCreate({ modules }: PageProps) {
                                         </SelectContent>
                                     </Select>
                                     {form.errors.language && (
-                                        <p className="text-sm text-destructive">{form.errors.language}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.language}
+                                        </p>
                                     )}
                                 </div>
                             </div>

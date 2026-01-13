@@ -34,9 +34,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { CheckCircle, Pencil, Plus, Search, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Users', href: '/users' },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Users', href: '/users' }];
 
 interface ExtendedUser extends User {
     role?: string;
@@ -201,10 +199,16 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                 <TableBody>
                                     {users.data.map((user) => (
                                         <TableRow key={user.id}>
-                                            <TableCell className="font-medium">{user.name}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {user.name}
+                                            </TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>
-                                                <Badge variant={getRoleBadgeVariant(user.role || 'educator')}>
+                                                <Badge
+                                                    variant={getRoleBadgeVariant(
+                                                        user.role || 'educator',
+                                                    )}
+                                                >
                                                     {getRoleLabel(user.role || 'educator')}
                                                 </Badge>
                                             </TableCell>
@@ -324,7 +328,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                     placeholder="••••••••"
                                 />
                                 {form.errors.password && (
-                                    <p className="text-sm text-destructive">{form.errors.password}</p>
+                                    <p className="text-sm text-destructive">
+                                        {form.errors.password}
+                                    </p>
                                 )}
                             </div>
                             <div className="space-y-2">
@@ -333,7 +339,9 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                     id="password_confirmation"
                                     type="password"
                                     value={form.data.password_confirmation}
-                                    onChange={(e) => form.setData('password_confirmation', e.target.value)}
+                                    onChange={(e) =>
+                                        form.setData('password_confirmation', e.target.value)
+                                    }
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -359,11 +367,19 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                 )}
                             </div>
                             <DialogFooter>
-                                <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setShowCreateDialog(false)}
+                                >
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={form.processing}>
-                                    {form.processing ? 'Saving...' : editingUser ? 'Update' : 'Create'}
+                                    {form.processing
+                                        ? 'Saving...'
+                                        : editingUser
+                                          ? 'Update'
+                                          : 'Create'}
                                 </Button>
                             </DialogFooter>
                         </form>

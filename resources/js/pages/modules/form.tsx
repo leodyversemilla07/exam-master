@@ -12,8 +12,20 @@ import { FileText, X, Sparkles, Loader2, CheckCircle2, AlertCircle, Upload } fro
 import { useState, useRef } from 'react';
 import PageHeader from '@/components/page-header';
 import axios from 'axios';
-import { store, update, edit, extractFromPdf } from '@/actions/App/Http/Controllers/ModuleController';
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
+import {
+    store,
+    update,
+    edit,
+    extractFromPdf,
+} from '@/actions/App/Http/Controllers/ModuleController';
+import {
+    Empty,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+    EmptyDescription,
+    EmptyContent,
+} from '@/components/ui/empty';
 
 interface ExtractedTopic {
     title: string;
@@ -40,7 +52,10 @@ export default function ModuleForm({ module }: Props) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Modules', href: '/modules' },
-        { title: isEditing ? 'Edit Module' : 'Create Module', href: isEditing ? edit.url(module.id) : '/modules/create' },
+        {
+            title: isEditing ? 'Edit Module' : 'Create Module',
+            href: isEditing ? edit.url(module.id) : '/modules/create',
+        },
     ];
 
     const [fileName, setFileName] = useState<string | null>(null);
@@ -103,7 +118,8 @@ export default function ModuleForm({ module }: Props) {
                 if (extracted.description) form.setData('description', extracted.description);
                 if (extracted.subject_area) form.setData('subject_area', extracted.subject_area);
                 if (extracted.grade_level) form.setData('grade_level', extracted.grade_level);
-                if (extracted.curriculum_year) form.setData('curriculum_year', extracted.curriculum_year);
+                if (extracted.curriculum_year)
+                    form.setData('curriculum_year', extracted.curriculum_year);
 
                 // Count what was populated
                 const populated = [
@@ -144,13 +160,17 @@ export default function ModuleForm({ module }: Props) {
 
         if (isEditing) {
             // Use POST with _method spoofing for file uploads (Laravel convention)
-            router.post(update.url(module.id), {
-                ...form.data,
-                _method: 'put',
-            }, {
-                forceFormData: true,
-                preserveScroll: true,
-            });
+            router.post(
+                update.url(module.id),
+                {
+                    ...form.data,
+                    _method: 'put',
+                },
+                {
+                    forceFormData: true,
+                    preserveScroll: true,
+                },
+            );
         } else {
             form.post(store.url(), {
                 forceFormData: true,
@@ -166,7 +186,11 @@ export default function ModuleForm({ module }: Props) {
             <div className="p-4 md:p-6 mx-auto max-w-2xl space-y-6">
                 <PageHeader
                     title={isEditing ? 'Edit Module' : 'Create Module'}
-                    description={isEditing ? 'Update module information' : 'Add a new course module to your system'}
+                    description={
+                        isEditing
+                            ? 'Update module information'
+                            : 'Add a new course module to your system'
+                    }
                 />
 
                 <form onSubmit={handleSubmit}>
@@ -195,7 +219,8 @@ export default function ModuleForm({ module }: Props) {
                                             AI-Powered Auto-Fill
                                         </EmptyTitle>
                                         <EmptyDescription>
-                                            Upload a curriculum PDF and let AI extract module information automatically
+                                            Upload a curriculum PDF and let AI extract module
+                                            information automatically
                                         </EmptyDescription>
                                     </EmptyHeader>
                                     <EmptyContent>
@@ -216,8 +241,12 @@ export default function ModuleForm({ module }: Props) {
                                                 <FileText className="size-5 text-muted-foreground" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">{fileName}</p>
-                                                <p className="text-xs text-muted-foreground">PDF Document</p>
+                                                <p className="text-sm font-medium truncate">
+                                                    {fileName}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    PDF Document
+                                                </p>
                                             </div>
                                             <Button
                                                 type="button"
@@ -250,10 +279,13 @@ export default function ModuleForm({ module }: Props) {
                                         </Button>
 
                                         {extractionResult && (
-                                            <div className={`rounded-lg p-3 ${extractionResult.success
-                                                    ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800'
-                                                    : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'
-                                                }`}>
+                                            <div
+                                                className={`rounded-lg p-3 ${
+                                                    extractionResult.success
+                                                        ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800'
+                                                        : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'
+                                                }`}
+                                            >
                                                 <div className="flex items-start gap-2">
                                                     {extractionResult.success ? (
                                                         <CheckCircle2 className="size-5 text-green-600 dark:text-green-400 mt-0.5" />
@@ -261,17 +293,23 @@ export default function ModuleForm({ module }: Props) {
                                                         <AlertCircle className="size-5 text-red-600 dark:text-red-400 mt-0.5" />
                                                     )}
                                                     <div className="flex-1">
-                                                        <p className={`text-sm font-medium ${extractionResult.success
-                                                                ? 'text-green-800 dark:text-green-200'
-                                                                : 'text-red-800 dark:text-red-200'
-                                                            }`}>
+                                                        <p
+                                                            className={`text-sm font-medium ${
+                                                                extractionResult.success
+                                                                    ? 'text-green-800 dark:text-green-200'
+                                                                    : 'text-red-800 dark:text-red-200'
+                                                            }`}
+                                                        >
                                                             {extractionResult.message}
                                                         </p>
-                                                        {extractionResult.topics && extractionResult.topics.length > 0 && (
-                                                            <p className="text-xs text-green-700 dark:text-green-300 mt-1">
-                                                                {extractionResult.topics.length} topics detected (can be added after module creation)
-                                                            </p>
-                                                        )}
+                                                        {extractionResult.topics &&
+                                                            extractionResult.topics.length > 0 && (
+                                                                <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                                                                    {extractionResult.topics.length}{' '}
+                                                                    topics detected (can be added
+                                                                    after module creation)
+                                                                </p>
+                                                            )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -301,7 +339,9 @@ export default function ModuleForm({ module }: Props) {
                                         required
                                     />
                                     {form.errors.code && (
-                                        <p className="text-sm text-destructive">{form.errors.code}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.code}
+                                        </p>
                                     )}
                                 </div>
 
@@ -310,12 +350,16 @@ export default function ModuleForm({ module }: Props) {
                                     <Input
                                         id="curriculum_year"
                                         value={form.data.curriculum_year}
-                                        onChange={(e) => form.setData('curriculum_year', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('curriculum_year', e.target.value)
+                                        }
                                         placeholder="e.g., 2023-2024"
                                         required
                                     />
                                     {form.errors.curriculum_year && (
-                                        <p className="text-sm text-destructive">{form.errors.curriculum_year}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.curriculum_year}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -344,7 +388,9 @@ export default function ModuleForm({ module }: Props) {
                                     rows={3}
                                 />
                                 {form.errors.description && (
-                                    <p className="text-sm text-destructive">{form.errors.description}</p>
+                                    <p className="text-sm text-destructive">
+                                        {form.errors.description}
+                                    </p>
                                 )}
                             </div>
 
@@ -357,7 +403,10 @@ export default function ModuleForm({ module }: Props) {
                                             <div className="flex items-center gap-2 rounded-lg border p-3 bg-muted/50">
                                                 <FileText className="size-5 text-muted-foreground" />
                                                 <span className="flex-1 text-sm font-medium truncate">
-                                                    {fileName || (module?.pdf_file ? module.pdf_file.split('/').pop() : '')}
+                                                    {fileName ||
+                                                        (module?.pdf_file
+                                                            ? module.pdf_file.split('/').pop()
+                                                            : '')}
                                                 </span>
                                                 <Button
                                                     type="button"
@@ -381,7 +430,9 @@ export default function ModuleForm({ module }: Props) {
                                             Upload a PDF file of the module content (max 10MB)
                                         </p>
                                         {form.errors.pdf_file && (
-                                            <p className="text-sm text-destructive">{form.errors.pdf_file}</p>
+                                            <p className="text-sm text-destructive">
+                                                {form.errors.pdf_file}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -393,12 +444,16 @@ export default function ModuleForm({ module }: Props) {
                                     <Input
                                         id="subject_area"
                                         value={form.data.subject_area}
-                                        onChange={(e) => form.setData('subject_area', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('subject_area', e.target.value)
+                                        }
                                         placeholder="e.g., Mathematics"
                                         required
                                     />
                                     {form.errors.subject_area && (
-                                        <p className="text-sm text-destructive">{form.errors.subject_area}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.subject_area}
+                                        </p>
                                     )}
                                 </div>
 
@@ -407,12 +462,16 @@ export default function ModuleForm({ module }: Props) {
                                     <Input
                                         id="grade_level"
                                         value={form.data.grade_level}
-                                        onChange={(e) => form.setData('grade_level', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('grade_level', e.target.value)
+                                        }
                                         placeholder="e.g., Grade 10"
                                         required
                                     />
                                     {form.errors.grade_level && (
-                                        <p className="text-sm text-destructive">{form.errors.grade_level}</p>
+                                        <p className="text-sm text-destructive">
+                                            {form.errors.grade_level}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -427,7 +486,9 @@ export default function ModuleForm({ module }: Props) {
                                 <Switch
                                     id="is_active"
                                     checked={form.data.is_active}
-                                    onCheckedChange={(checked) => form.setData('is_active', checked)}
+                                    onCheckedChange={(checked) =>
+                                        form.setData('is_active', checked)
+                                    }
                                 />
                             </div>
                         </CardContent>
@@ -442,7 +503,11 @@ export default function ModuleForm({ module }: Props) {
                             Cancel
                         </Button>
                         <Button type="submit" disabled={form.processing}>
-                            {form.processing ? 'Saving...' : isEditing ? 'Update Module' : 'Create Module'}
+                            {form.processing
+                                ? 'Saving...'
+                                : isEditing
+                                  ? 'Update Module'
+                                  : 'Create Module'}
                         </Button>
                     </div>
                 </form>

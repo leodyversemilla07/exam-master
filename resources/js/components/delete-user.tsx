@@ -1,6 +1,6 @@
-import HeadingSmall from "@/components/heading-small";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
+import HeadingSmall from '@/components/heading-small';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogClose,
@@ -9,11 +9,11 @@ import {
     DialogFooter,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useForm } from "@inertiajs/react";
-import { FormEventHandler, useRef } from "react";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useForm } from '@inertiajs/react';
+import { FormEventHandler, useRef } from 'react';
 
 export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
@@ -27,13 +27,13 @@ export default function DeleteUser() {
         errors,
         clearErrors,
     } = useForm({
-        password: "",
+        password: '',
     });
 
     const deleteUser: FormEventHandler = (e) => {
         e.preventDefault();
 
-        destroy("/profile", {
+        destroy('/profile', {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: () => passwordInput.current?.focus(),
@@ -55,9 +55,7 @@ export default function DeleteUser() {
             <div className="space-y-4 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
                 <div className="relative space-y-0.5 text-destructive">
                     <p className="font-medium">Warning</p>
-                    <p className="text-sm">
-                        Please proceed with caution, this cannot be undone.
-                    </p>
+                    <p className="text-sm">Please proceed with caution, this cannot be undone.</p>
                 </div>
 
                 <Dialog>
@@ -65,14 +63,11 @@ export default function DeleteUser() {
                         <Button variant="destructive">Delete account</Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>
-                            Are you sure you want to delete your account?
-                        </DialogTitle>
+                        <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources
-                            and data will also be permanently deleted. Please
-                            enter your password to confirm you would like to
-                            permanently delete your account.
+                            Once your account is deleted, all of its resources and data will also be
+                            permanently deleted. Please enter your password to confirm you would
+                            like to permanently delete your account.
                         </DialogDescription>
 
                         <form onSubmit={deleteUser} className="space-y-6">
@@ -87,9 +82,7 @@ export default function DeleteUser() {
                                     name="password"
                                     ref={passwordInput}
                                     value={data.password}
-                                    onChange={(e) =>
-                                        setData("password", e.target.value)
-                                    }
+                                    onChange={(e) => setData('password', e.target.value)}
                                     placeholder="Password"
                                     autoComplete="current-password"
                                 />
@@ -99,19 +92,12 @@ export default function DeleteUser() {
 
                             <DialogFooter className="gap-2">
                                 <DialogClose asChild>
-                                    <Button
-                                        variant="secondary"
-                                        onClick={resetAndClearErrors}
-                                    >
+                                    <Button variant="secondary" onClick={resetAndClearErrors}>
                                         Cancel
                                     </Button>
                                 </DialogClose>
 
-                                <Button
-                                    variant="destructive"
-                                    disabled={processing}
-                                    type="submit"
-                                >
+                                <Button variant="destructive" disabled={processing} type="submit">
                                     Delete account
                                 </Button>
                             </DialogFooter>

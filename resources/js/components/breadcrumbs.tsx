@@ -5,10 +5,10 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { type BreadcrumbItem as BreadcrumbItemType } from "@/types";
-import { Link } from "@inertiajs/react";
-import { Fragment } from "react";
+} from '@/components/ui/breadcrumb';
+import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
+import { Link } from '@inertiajs/react';
+import { Fragment } from 'react';
 
 interface BreadcrumbsProps {
     breadcrumbs: BreadcrumbItemType[];
@@ -26,14 +26,10 @@ export function Breadcrumbs({ breadcrumbs }: BreadcrumbsProps) {
                                 <Fragment key={index}>
                                     <BreadcrumbItem>
                                         {isLast ? (
-                                            <BreadcrumbPage>
-                                                {item.title}
-                                            </BreadcrumbPage>
+                                            <BreadcrumbPage>{item.title}</BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>
-                                                    {item.title}
-                                                </Link>
+                                                <Link href={item.href}>{item.title}</Link>
                                             </BreadcrumbLink>
                                         )}
                                     </BreadcrumbItem>
