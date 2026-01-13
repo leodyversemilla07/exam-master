@@ -10,8 +10,6 @@
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
-
-
 beforeEach(function () {
     Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
     Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);

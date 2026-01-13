@@ -21,7 +21,6 @@ class ExamCollaboratorController extends Controller
 
         abort_unless($exam->created_by === auth()->id() || $exam->collaborators->contains(auth()->id()), 403);
 
-
         return Inertia::render('exam-collaborators/index', [
             'exam' => $exam,
             'availableUsers' => User::whereNotIn('id', [$exam->created_by, ...$exam->collaborators->pluck('id')->toArray()])

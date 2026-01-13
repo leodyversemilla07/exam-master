@@ -13,8 +13,6 @@ use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-
-
 beforeEach(function () {
     $role = Role::firstOrCreate(['name' => 'educator', 'guard_name' => 'web']);
 

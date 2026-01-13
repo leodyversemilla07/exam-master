@@ -38,8 +38,8 @@ interface PageProps {
 }
 
 export default function ExamShow({ question }: PageProps) {
-    console.log('Question data:', question);
-    
+
+
     if (!question) {
         return (
             <AppLayout>
@@ -160,11 +160,10 @@ export default function ExamShow({ question }: PageProps) {
                                     {question.options.map((option) => (
                                         <div
                                             key={option.key}
-                                            className={`rounded-lg border p-3 ${
-                                                option.key === question.correct_answer
+                                            className={`rounded-lg border p-3 ${option.key === question.correct_answer
                                                     ? 'border-success bg-success/10'
                                                     : ''
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <span className="font-semibold">{option.key}.</span>

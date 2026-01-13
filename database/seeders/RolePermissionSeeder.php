@@ -52,22 +52,22 @@ class RolePermissionSeeder extends Seeder
             'edit own profile',
             'change own password',
 
-        // Template management
-        'view templates',
-        'create templates',
-        'edit templates',
-        'delete templates',
+            // Template management
+            'view templates',
+            'create templates',
+            'edit templates',
+            'delete templates',
 
-        // Collaborator management
-        'manage collaborators',
+            // Collaborator management
+            'manage collaborators',
 
-        // Exam collaboration permissions
-        'view exam collaborators',
-        'add exam collaborator',
-        'remove exam collaborator',
-        'update exam collaborator',
-        'can delete exam',
-        'leave exam',
+            // Exam collaboration permissions
+            'view exam collaborators',
+            'add exam collaborator',
+            'remove exam collaborator',
+            'update exam collaborator',
+            'can delete exam',
+            'leave exam',
 
             // Student Portal
             'take exams',

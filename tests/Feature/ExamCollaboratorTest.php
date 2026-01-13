@@ -6,9 +6,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
     Role::create(['name' => 'educator']);
@@ -185,7 +185,7 @@ test('search users endpoint returns available users', function () {
     $owner->givePermissionTo('manage collaborators');
     $module = \App\Models\Module::factory()->create(['created_by' => $owner->id]);
     $exam = Exam::factory()->create(['created_by' => $owner->id, 'module_id' => $module->id]);
-    
+
     // Create a user who is NOT a collaborator
     $userToFind = User::factory()->create(['name' => 'John Doe', 'email' => 'john@example.com']);
 
@@ -205,7 +205,7 @@ test('collaborators are excluded from search results', function () {
     $owner->givePermissionTo('manage collaborators');
     $module = \App\Models\Module::factory()->create(['created_by' => $owner->id]);
     $exam = Exam::factory()->create(['created_by' => $owner->id, 'module_id' => $module->id]);
-    
+
     $user1 = User::factory()->create(['name' => 'Alice', 'email' => 'alice@test.com']);
     $user2 = User::factory()->create(['name' => 'Bob', 'email' => 'bob@test.com']);
     $exam->collaborators()->attach([$user1->id, $user2->id]);

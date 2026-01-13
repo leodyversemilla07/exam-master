@@ -8,14 +8,11 @@
  */
 
 use App\Models\Exam;
-use App\Models\ExamQuestion;
 use App\Models\ExamSession;
 use App\Models\Module;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-
-
 
 beforeEach(function () {
     // Ensure student role exists

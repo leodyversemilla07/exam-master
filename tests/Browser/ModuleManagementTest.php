@@ -11,8 +11,6 @@ use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-
-
 beforeEach(function () {
     // Ensure roles and permissions exist
     $role = Role::firstOrCreate(['name' => 'educator', 'guard_name' => 'web']);
