@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { 
     Plus, 
     Eye, 
@@ -42,6 +43,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import PageHeader from '@/components/page-header';
 import * as examSessions from '@/routes/exam-sessions';
 import { useState } from 'react';
 
@@ -104,40 +106,41 @@ export default function Index({ sessions }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Exam Sessions" />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-7xl">
-                    <div className="flex justify-between items-center mb-6">
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Exam Sessions</h1>
-                            <p className="text-muted-foreground">
-                                Create and manage online exam sessions for students.
-                            </p>
-                        </div>
+            <div className="p-4 md:p-6 space-y-6">
+                <PageHeader
+                    title="Exam Sessions"
+                    description="Create and manage online exam sessions for students."
+                    actions={
                         <Button asChild>
                             <Link href={examSessions.create.url()}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 Create Session
                             </Link>
                         </Button>
-                    </div>
+                    }
+                />
 
-                    {sessions.data.length === 0 ? (
-                        <Card>
-                            <CardContent className="flex flex-col items-center justify-center py-12">
-                                <Clock className="h-12 w-12 text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-semibold mb-2">No Exam Sessions</h3>
-                                <p className="text-muted-foreground text-center mb-4">
-                                    Create your first exam session to allow students to take exams online.
-                                </p>
-                                <Button asChild>
-                                    <Link href={examSessions.create.url()}>
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Create Session
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ) : (
+                {sessions.data.length === 0 ? (
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <Clock className="size-8" />
+                            </EmptyMedia>
+                            <EmptyTitle>No Exam Sessions</EmptyTitle>
+                            <EmptyDescription>
+                                Create your first exam session to allow students to take exams online.
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button asChild>
+                                <Link href={examSessions.create.url()}>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create Session
+                                </Link>
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                ) : (
                         <Card>
                             <CardHeader>
                                 <CardTitle>All Sessions</CardTitle>
@@ -311,7 +314,6 @@ export default function Index({ sessions }: PageProps) {
                             </CardContent>
                         </Card>
                     )}
-                </div>
             </div>
         </AppLayout>
     );

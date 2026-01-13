@@ -30,8 +30,8 @@ export function AppShell({ children, variant = "header" }: AppShellProps) {
             // Cookie exists, use its value
             setSidebarOpen(cookieValue === "true");
         } else {
-            // No cookie, use server-side value
-            setSidebarOpen(serverSidebarOpen);
+            // No cookie, use server-side value or default to true
+            setSidebarOpen(serverSidebarOpen ?? true);
         }
     }, [serverSidebarOpen]);
 
@@ -41,9 +41,13 @@ export function AppShell({ children, variant = "header" }: AppShellProps) {
         );
     }
 
-    // Don't render until we've checked the cookie to avoid flash
+    // Show loading state while checking cookie to avoid flash of white
     if (sidebarOpen === undefined) {
-        return null;
+        return (
+            <div className="flex min-h-screen w-full items-center justify-center bg-background">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
+        );
     }
 
     return <SidebarProvider defaultOpen={sidebarOpen}>{children}</SidebarProvider>;

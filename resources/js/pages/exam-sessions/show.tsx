@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-    ArrowLeft, 
     Edit, 
     Copy, 
     RefreshCw, 
@@ -42,6 +41,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import * as examSessions from '@/routes/exam-sessions';
 import { useState } from 'react';
+import PageHeader from '@/components/page-header';
 
 const breadcrumbs = (session: SessionWithRelations): BreadcrumbItem[] => [
     { title: 'Exam Sessions', href: examSessions.index.url() },
@@ -156,27 +156,16 @@ export default function Show({ session, stats }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs(session)}>
             <Head title={session.title} />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-7xl">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-6">
-                        <div className="flex items-center gap-4">
-                            <Button variant="outline" size="icon" asChild>
-                                <Link href={examSessions.index.url()}>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </Link>
-                            </Button>
-                            <div>
-                                <div className="flex items-center gap-3">
-                                    <h1 className="text-2xl font-bold tracking-tight">{session.title}</h1>
-                                    {getStatusBadge(session)}
-                                </div>
-                                <p className="text-muted-foreground">
-                                    {session.exam.title}
-                                    {session.exam.module && ` • ${session.exam.module.name}`}
-                                </p>
-                            </div>
+            <div className="p-4 md:p-6 space-y-6">
+                <PageHeader
+                    title={
+                        <div className="flex items-center gap-3">
+                            {session.title}
+                            {getStatusBadge(session)}
                         </div>
+                    }
+                    description={`${session.exam.title}${session.exam.module ? ` • ${session.exam.module.name}` : ''}`}
+                    actions={
                         <div className="flex gap-2">
                             <Button variant="outline" onClick={handleExport} disabled={completedAttempts.length === 0}>
                                 <Download className="mr-2 h-4 w-4" />
@@ -189,9 +178,10 @@ export default function Show({ session, stats }: PageProps) {
                                 </Link>
                             </Button>
                         </div>
-                    </div>
+                    }
+                />
 
-                    <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-6 lg:grid-cols-3">
                         {/* Left Column */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* Stats Cards */}
@@ -483,7 +473,6 @@ export default function Show({ session, stats }: PageProps) {
                             </Card>
                         </div>
                     </div>
-                </div>
             </div>
         </AppLayout>
     );

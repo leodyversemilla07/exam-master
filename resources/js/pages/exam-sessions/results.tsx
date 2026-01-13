@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-    ArrowLeft, 
     Download,
     Clock, 
     Users,
@@ -23,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import * as examSessions from '@/routes/exam-sessions';
 import { useState, useMemo } from 'react';
+import PageHeader from '@/components/page-header';
 
 interface User {
     id: number;
@@ -152,31 +152,20 @@ export default function Results({ session, attempts }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs(session)}>
             <Head title={`Results - ${session.title}`} />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-7xl">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-6">
-                        <div className="flex items-center gap-4">
-                            <Button variant="outline" size="icon" asChild>
-                                <Link href={examSessions.show.url(session.id)}>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </Link>
-                            </Button>
-                            <div>
-                                <h1 className="text-2xl font-bold tracking-tight">Exam Results</h1>
-                                <p className="text-muted-foreground">
-                                    {session.title} • {session.exam.title}
-                                </p>
-                            </div>
-                        </div>
+            <div className="p-4 md:p-6 space-y-6">
+                <PageHeader
+                    title="Exam Results"
+                    description={`${session.title} • ${session.exam.title}`}
+                    actions={
                         <Button onClick={handleExport} disabled={completedAttempts.length === 0}>
                             <Download className="mr-2 h-4 w-4" />
                             Export CSV
                         </Button>
-                    </div>
+                    }
+                />
 
-                    {/* Summary Stats */}
-                    <div className="grid gap-4 md:grid-cols-4 mb-6">
+                {/* Summary Stats */}
+                <div className="grid gap-4 md:grid-cols-4">
                         <Card>
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
@@ -388,7 +377,6 @@ export default function Results({ session, attempts }: PageProps) {
                             )}
                         </CardContent>
                     </Card>
-                </div>
             </div>
         </AppLayout>
     );

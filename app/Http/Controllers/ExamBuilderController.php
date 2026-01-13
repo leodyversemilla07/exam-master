@@ -93,6 +93,8 @@ class ExamBuilderController extends Controller
      */
     public function show(Exam $examBuilder): Response
     {
+        abort_unless($this->canAccessExam($examBuilder), 403);
+
         $examBuilder->load(['module', 'creator', 'tosGenerate', 'questions.module']);
 
         return Inertia::render('exam-builder/show', [
@@ -106,11 +108,29 @@ class ExamBuilderController extends Controller
     }
 
     /**
+     * Check if user can access exam as owner or collaborator
+     */
+    private function canAccessExam(Exam $exam): bool
+    {
+        $userId = auth()->id();
+
+        // Owner can always access
+        if ($userId === $exam->created_by) {
+            return true;
+        }
+
+        // Check if user is a collaborator
+        return $exam->collaborators()->where('user_id', $userId)->exists();
+    }
+
+    /**
      * Show the form for editing the specified exam.
      */
     public function edit(Exam $examBuilder): Response
     {
-        $examBuilder->load('module');
+        abort_unless($this->canAccessExam($examBuilder), 403);
+
+        $examBuilder->load(['module', 'collaborators']);
 
         return Inertia::render('exam-builder/edit', [
             'exam' => $examBuilder,
@@ -125,7 +145,10 @@ class ExamBuilderController extends Controller
      */
     public function update(StoreExamRequest $request, Exam $examBuilder): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(
+            auth()->user()->can('edit exams') || $this->canAccessExam($examBuilder),
+            403
+        );
 
         $examBuilder->update($request->validated());
 
@@ -139,9 +162,16 @@ class ExamBuilderController extends Controller
      */
     public function destroy(Exam $examBuilder): RedirectResponse
     {
-        // Allow deletion if user has permission OR is the creator of the exam
+        // Allow deletion if user has permission, is the creator, OR has delete permission as collaborator
+        $isCollaborator = $examBuilder->collaborators()
+            ->where('user_id', auth()->id())
+            ->where('can_delete', true)
+            ->exists();
+
         abort_unless(
-            auth()->user()->can('delete exams') || auth()->id() === $examBuilder->created_by,
+            auth()->user()->can('delete exams') ||
+            auth()->id() === $examBuilder->created_by ||
+            $isCollaborator,
             403
         );
 
@@ -159,7 +189,10 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(
+            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            403
+        );
 
         $request->validate([
             'question_ids' => ['required', 'array'],
@@ -191,7 +224,10 @@ class ExamBuilderController extends Controller
         $exam = Exam::findOrFail($examId);
         $question = ExamQuestion::findOrFail($questionId);
 
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(
+            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            403
+        );
 
         $exam->questions()->detach($question->id);
         $exam->calculateTotals();
@@ -206,7 +242,10 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(
+            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            403
+        );
 
         $request->validate([
             'questions' => ['required', 'array'],
@@ -233,7 +272,10 @@ class ExamBuilderController extends Controller
         $exam = Exam::findOrFail($examId);
         $question = ExamQuestion::findOrFail($questionId);
 
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(
+            auth()->user()->can('edit exams') || $this->canAccessExam($exam),
+            403
+        );
 
         $request->validate([
             'points' => ['required', 'integer', 'min:1'],

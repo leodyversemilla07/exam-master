@@ -72,6 +72,13 @@ class Exam extends Model
         return $this->hasMany(ExamSession::class);
     }
 
+    public function collaborators(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'exam_collaborators')
+            ->withPivot(['role', 'can_delete'])
+            ->withTimestamps();
+    }
+
     /**
      * Get the attributes that should be cast.
      *

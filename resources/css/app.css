@@ -310,4 +310,44 @@
         background: linear-gradient(var(--background), var(--background)) padding-box,
                     linear-gradient(to right, oklch(var(--primary)), oklch(var(--secondary))) border-box;
     }
+
+    /* Premium Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-muted/50;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-primary/20 rounded-full border-2 border-transparent bg-clip-padding transition-colors;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-primary/40;
+    }
+
+    /* Content Area Refinements */
+    .prose-exam {
+        @apply max-w-none text-foreground leading-relaxed;
+    }
+
+    .prose-exam h1, .prose-exam h2 {
+        @apply text-primary font-bold tracking-tight mb-4;
+    }
+
+    .prose-exam p {
+        @apply mb-4;
+    }
+
+    /* Card Glow Effects */
+    .glow-primary {
+        box-shadow: 0 0 20px -5px oklch(var(--primary) / 0.3);
+    }
+
+    .glow-secondary {
+        box-shadow: 0 0 20px -5px oklch(var(--secondary) / 0.3);
+    }
 }

@@ -13,8 +13,9 @@ import {
     SelectTrigger, 
     SelectValue 
 } from '@/components/ui/select';
-import { ArrowLeft, Save, Clock, Calendar, Settings, AlertCircle } from 'lucide-react';
+import { Save, Clock, Calendar, Settings, AlertCircle } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
+import PageHeader from '@/components/page-header';
 import { ExamSession } from '@/types/models';
 import * as examSessions from '@/routes/exam-sessions';
 import { FormEventHandler } from 'react';
@@ -74,23 +75,13 @@ export default function Edit({ session }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs(session)}>
             <Head title={`Edit ${session.title}`} />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-4xl">
-                    <div className="flex items-center gap-4 mb-6">
-                        <Button variant="outline" size="icon" asChild>
-                            <Link href={examSessions.show.url(session.id)}>
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
-                        </Button>
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Edit Exam Session</h1>
-                            <p className="text-muted-foreground">
-                                Update session settings for {session.title}
-                            </p>
-                        </div>
-                    </div>
+            <div className="p-4 md:p-6 space-y-6 max-w-4xl">
+                <PageHeader
+                    title="Edit Exam Session"
+                    description={`Update session settings for ${session.title}`}
+                />
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Exam Info (Read-only) */}
                         <Card>
                             <CardHeader>
@@ -353,7 +344,6 @@ export default function Edit({ session }: PageProps) {
                             </Button>
                         </div>
                     </form>
-                </div>
             </div>
         </AppLayout>
     );

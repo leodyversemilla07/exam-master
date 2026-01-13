@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
 import { Exam, ExamQuestion } from '@/types/models';
-import { Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye, Download } from 'lucide-react';
+import { Edit, Plus, Trash2, GripVertical, Clock, FileText, Users, Settings, Eye, Download, Shield } from 'lucide-react';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import {
@@ -157,14 +157,54 @@ export default function ShowExam({ exam, availableQuestions }: PageProps) {
                                             Edit Exam
                                         </Link>
                                     </Button>
-                                    {exam.status === 'draft' && (
+                            {exam.status === 'draft' && (
                                         <>
-                                            <Button onClick={() => setShowAddQuestions(true)} variant="outline">
+                                            <Button asChild variant="outline" onClick={() => setShowAddQuestions(true)}>
                                                 <Plus className="mr-2 h-4 w-4" />
                                                 Add Questions
                                             </Button>
                                             <Button onClick={handlePublish}>
                                                 Publish Exam
+                                            </Button>
+                                            <Button asChild variant="outline">
+                                                <Link href={`/exam-builder/${exam.id}/collaborators`}>
+                                                    <Shield className="mr-2 h-4 w-4" />
+                                                    Collaborators
+                                                </Link>
+                                            </Button>
+                                            <Button asChild variant="outline">
+                                                <Link href={`/exam-builder/${exam.id}/edit`}>
+                                                    <Edit className="mr-2 h-4 w-4" />
+                                                    Edit Exam
+                                                </Link>
+                                            </Button>
+                                            <Button asChild variant="outline">
+                                                <Link href={`/exam-builder/${exam.id}/preview`}>
+                                                    <Eye className="mr-2 h-4 w-4" />
+                                                    Preview
+                                                </Link>
+                                            </Button>
+                                        </>
+                                    )}
+                                    {exam.status === 'published' && (
+                                        <>
+                                            <Button asChild variant="outline">
+                                                <Link href={`/exam-builder/${exam.id}/collaborators`}>
+                                                    <Shield className="mr-2 h-4 w-4" />
+                                                    Collaborators
+                                                </Link>
+                                            </Button>
+                                            <Button asChild variant="outline">
+                                                <Link href={`/exam-builder/${exam.id}/edit`}>
+                                                    <Edit className="mr-2 h-4 w-4" />
+                                                    Edit Exam
+                                                </Link>
+                                            </Button>
+                                            <Button asChild variant="outline">
+                                                <Link href={`/exam-builder/${exam.id}/preview`}>
+                                                    <Eye className="mr-2 h-4 w-4" />
+                                                    Preview
+                                                </Link>
                                             </Button>
                                         </>
                                     )}

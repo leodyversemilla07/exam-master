@@ -13,10 +13,11 @@ import {
     SelectTrigger, 
     SelectValue 
 } from '@/components/ui/select';
-import { ArrowLeft, Save, Clock, Calendar, Settings } from 'lucide-react';
+import { Save, Clock, Calendar, Settings } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
 import * as examSessions from '@/routes/exam-sessions';
 import { FormEventHandler } from 'react';
+import PageHeader from '@/components/page-header';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Exam Sessions', href: examSessions.index.url() },
@@ -74,22 +75,13 @@ export default function Create({ exams, selectedExamId }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Exam Session" />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-4xl">
-                    <div className="flex items-center gap-4 mb-6">
-                        <Button variant="outline" size="icon" asChild>
-                            <Link href={examSessions.index.url()}>
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
-                        </Button>
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Create Exam Session</h1>
-                            <p className="text-muted-foreground">
-                                Set up an online exam session for students to take.
-                            </p>
-                        </div>
-                    </div>
+            <div className="p-4 md:p-6 space-y-6 max-w-4xl">
+                <PageHeader
+                    title="Create Exam Session"
+                    description="Set up an online exam session for students to take."
+                />
 
+                <div>
                     {exams.length === 0 ? (
                         <Card>
                             <CardContent className="flex flex-col items-center justify-center py-12">
@@ -375,7 +367,6 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                             </div>
                         </form>
                     )}
-                </div>
             </div>
         </AppLayout>
     );

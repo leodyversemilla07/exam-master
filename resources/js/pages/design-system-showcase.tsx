@@ -189,33 +189,51 @@ export default function DesignSystemShowcase() {
                 </Card>
             </section>
 
-            {/* Animated Gradient Background */}
+            {/* Exam Content Styling */}
             <section className="space-y-4">
-                <h2 className="text-3xl font-semibold">Animated Effects</h2>
-                <div className="gradient-animated h-64 rounded-xl flex items-center justify-center">
-                    <div className="text-center space-y-4">
-                        <h3 className="text-white text-3xl font-bold">
-                            Animated Gradient Background
-                        </h3>
-                        <p className="text-white/90 max-w-md">
-                            Perfect for hero sections and feature highlights
-                        </p>
+                <h2 className="text-3xl font-semibold">Educational Content (Prose)</h2>
+                <Card className="prose-exam p-8">
+                    <h1>Sample Exam Question</h1>
+                    <p>Which of the following best describes the purpose of a Table of Specifications (TOS)?</p>
+                    <ul className="list-disc pl-6 space-y-2">
+                        <li>To ensure balanced cognitive level distribution.</li>
+                        <li>To automate the grading process.</li>
+                        <li>To provide a summary of student attendance.</li>
+                        <li>To calculate terminal velocity of educational progress.</li>
+                    </ul>
+                    <p className="mt-4 text-sm italic text-muted-foreground">
+                        Note: The <code>.prose-exam</code> utility ensures questions are highly legible and professional.
+                    </p>
+                </Card>
+            </section>
+
+            {/* Glow Effects */}
+            <section className="space-y-4">
+                <h2 className="text-3xl font-semibold">Elevation & Glow</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="glow-primary p-12 bg-card rounded-3xl text-center border border-primary/20">
+                        <h3 className="text-primary font-bold">Primary Glow</h3>
+                        <p className="text-sm text-muted-foreground">Soft atmospheric depth for primary focus</p>
+                    </div>
+                    <div className="glow-secondary p-12 bg-card rounded-3xl text-center border border-secondary/20">
+                        <h3 className="text-secondary font-bold">Secondary Glow</h3>
+                        <p className="text-sm text-muted-foreground">Modern highlight for innovative features</p>
                     </div>
                 </div>
             </section>
 
             {/* Button Variants */}
-            <section className="space-y-4">
+            <section className="space-y-4 pb-12">
                 <h2 className="text-3xl font-semibold">Button Variants</h2>
                 <Card>
                     <CardContent className="pt-6">
-                        <div className="flex flex-wrap gap-3">
-                            <Button>Default</Button>
-                            <Button variant="secondary">Secondary</Button>
+                        <div className="flex flex-wrap gap-4">
+                            <Button className="shadow-primary">Primary Action</Button>
+                            <Button variant="secondary" className="shadow-secondary">Secondary Action</Button>
                             <Button variant="destructive">Destructive</Button>
                             <Button variant="outline">Outline</Button>
                             <Button variant="ghost">Ghost</Button>
-                            <Button variant="link">Link</Button>
+                            <Button className="rounded-full px-8">Rounded Full</Button>
                         </div>
                     </CardContent>
                 </Card>

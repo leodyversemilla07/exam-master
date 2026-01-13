@@ -46,16 +46,28 @@ class RolePermissionSeeder extends Seeder
             'approve questions',
             'bulk delete questions',
             'view analytics',
+            'manage collaborators',
 
             // Profile management
             'edit own profile',
             'change own password',
 
-            // Template management
-            'view templates',
-            'create templates',
-            'edit templates',
-            'delete templates',
+        // Template management
+        'view templates',
+        'create templates',
+        'edit templates',
+        'delete templates',
+
+        // Collaborator management
+        'manage collaborators',
+
+        // Exam collaboration permissions
+        'view exam collaborators',
+        'add exam collaborator',
+        'remove exam collaborator',
+        'update exam collaborator',
+        'can delete exam',
+        'leave exam',
 
             // Student Portal
             'take exams',
@@ -99,6 +111,7 @@ class RolePermissionSeeder extends Seeder
             'delete templates',
             'edit own profile',
             'change own password',
+            'manage collaborators',
         ]);
 
         // Educator - can create and manage own content
