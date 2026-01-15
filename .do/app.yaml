@@ -6,14 +6,7 @@ services:
       repo: leodyversemilla07/exam-master
       branch: main
       deploy_on_push: true
-    build_command: |
-      composer install --no-dev --optimize-autoloader
-      npm ci
-      npm run build
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
-    run_command: heroku-php-apache2 public/
+    dockerfile_path: Dockerfile
     envs:
       - key: APP_NAME
         value: "ExamMaster"
@@ -22,14 +15,12 @@ services:
       - key: APP_DEBUG
         value: "false"
       - key: APP_KEY
-        value: "${APP_KEY}"
+        value: "base64:rWo0YOOo77iWYFZWeJ4Si79hnLhenxPpqQqpVVQ3MVQ="
         type: SECRET
-      - key: APP_URL
-        value: "${APP_URL}"
       - key: LOG_CHANNEL
         value: "stderr"
       - key: DB_CONNECTION
-        value: "mysql"
+        value: "pgsql"
       - key: DB_HOST
         value: "${db.HOSTNAME}"
       - key: DB_PORT
@@ -46,23 +37,17 @@ services:
         value: "database"
       - key: QUEUE_CONNECTION
         value: "database"
-      - key: FILESYSTEM_DISK
-        value: "local"
-      - key: PRISM_PROVIDER
-        value: "gemini"
-      - key: GEMINI_API_KEY
-        value: "${GEMINI_API_KEY}"
-        type: SECRET
     instance_count: 1
     instance_size_slug: basic-xxs
     http_port: 8080
 
-  - name: worker
+workers:
+  - name: queue-worker
     github:
       repo: leodyversemilla07/exam-master
       branch: main
       deploy_on_push: true
-    build_command: composer install --no-dev --optimize-autoloader
+    dockerfile_path: Dockerfile
     run_command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
     envs:
       - key: APP_NAME
@@ -72,10 +57,10 @@ services:
       - key: APP_DEBUG
         value: "false"
       - key: APP_KEY
-        value: "${APP_KEY}"
+        value: "base64:rWo0YOOo77iWYFZWeJ4Si79hnLhenxPpqQqpVVQ3MVQ="
         type: SECRET
       - key: DB_CONNECTION
-        value: "mysql"
+        value: "pgsql"
       - key: DB_HOST
         value: "${db.HOSTNAME}"
       - key: DB_PORT
@@ -86,17 +71,11 @@ services:
         value: "${db.USERNAME}"
       - key: DB_PASSWORD
         value: "${db.PASSWORD}"
-      - key: PRISM_PROVIDER
-        value: "gemini"
-      - key: GEMINI_API_KEY
-        value: "${GEMINI_API_KEY}"
-        type: SECRET
     instance_count: 1
     instance_size_slug: basic-xxs
 
 databases:
   - name: db
-    engine: MYSQL
-    version: "8"
-    size: db-s-1vcpu-1gb
-    num_nodes: 1
+    engine: PG
+    version: "16"
+    production: false
