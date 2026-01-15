@@ -41,6 +41,39 @@ services:
     instance_size_slug: basic-xxs
     http_port: 8080
 
+jobs:
+  - name: migrate
+    kind: PRE_DEPLOY
+    github:
+      repo: leodyversemilla07/exam-master
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile
+    run_command: php artisan migrate --force
+    envs:
+      - key: APP_NAME
+        value: "ExamMaster"
+      - key: APP_ENV
+        value: "production"
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: "base64:rWo0YOOo77iWYFZWeJ4Si79hnLhenxPpqQqpVVQ3MVQ="
+        type: SECRET
+      - key: DB_CONNECTION
+        value: "pgsql"
+      - key: DB_HOST
+        value: "${db.HOSTNAME}"
+      - key: DB_PORT
+        value: "${db.PORT}"
+      - key: DB_DATABASE
+        value: "${db.DATABASE}"
+      - key: DB_USERNAME
+        value: "${db.USERNAME}"
+      - key: DB_PASSWORD
+        value: "${db.PASSWORD}"
+    instance_size_slug: basic-xxs
+
 workers:
   - name: queue-worker
     github:
