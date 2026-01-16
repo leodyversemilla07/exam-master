@@ -17,6 +17,10 @@ services:
       - key: APP_KEY
         value: "base64:rWo0YOOo77iWYFZWeJ4Si79hnLhenxPpqQqpVVQ3MVQ="
         type: SECRET
+      - key: APP_URL
+        value: "${APP_URL}"
+      - key: ASSET_URL
+        value: "${APP_URL}"
       - key: LOG_CHANNEL
         value: "stderr"
       - key: DB_CONNECTION
