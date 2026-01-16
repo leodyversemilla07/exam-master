@@ -21,11 +21,149 @@ class AnalyticsController extends Controller
     /**
      * Display analytics dashboard.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         abort_unless(auth()->user()->can('view analytics'), 403);
 
-        return Inertia::render('analytics/index');
+        $validated = $request->validate([
+            'period' => 'nullable|in:day,week,month,year',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $period = $validated['period'] ?? 'month';
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+
+        // Get exams created data
+        $examsData = $this->getExamsCreatedData($period, $startDate, $endDate);
+
+        // Get usage data
+        $usageData = $this->getUsageData();
+
+        // Get educator activity
+        $educatorData = $this->getEducatorActivityData($startDate, $endDate);
+
+        return Inertia::render('analytics/index', [
+            'filters' => [
+                'period' => $period,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ],
+            'examsData' => $examsData,
+            'usageData' => $usageData,
+            'educatorData' => $educatorData,
+        ]);
+    }
+
+    /**
+     * Get exams created data.
+     */
+    private function getExamsCreatedData(string $period, ?string $startDate, ?string $endDate): array
+    {
+        $startDate = $startDate ?? Carbon::now()->subMonth();
+        $endDate = $endDate ?? Carbon::now();
+
+        $isSqlite = DB::getDriverName() === 'sqlite';
+
+        $query = Exam::query()
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        // Group by period
+        if ($period === 'day') {
+            $query->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupByRaw('DATE(created_at)');
+        } elseif ($period === 'week') {
+            if ($isSqlite) {
+                $query->selectRaw("strftime('%Y-%W', created_at) as week, COUNT(*) as count")
+                    ->groupByRaw("strftime('%Y-%W', created_at)");
+            } else {
+                $query->selectRaw('YEARWEEK(created_at) as week, COUNT(*) as count')
+                    ->groupByRaw('YEARWEEK(created_at)');
+            }
+        } elseif ($period === 'month') {
+            if ($isSqlite) {
+                $query->selectRaw("strftime('%Y-%m', created_at) as month, COUNT(*) as count")
+                    ->groupByRaw("strftime('%Y-%m', created_at)");
+            } else {
+                $query->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupByRaw('YEAR(created_at), MONTH(created_at)');
+            }
+        } elseif ($period === 'year') {
+            if ($isSqlite) {
+                $query->selectRaw("strftime('%Y', created_at) as year, COUNT(*) as count")
+                    ->groupByRaw("strftime('%Y', created_at)");
+            } else {
+                $query->selectRaw('YEAR(created_at) as year, COUNT(*) as count')
+                    ->groupByRaw('YEAR(created_at)');
+            }
+        }
+
+        $data = $query->get();
+
+        return [
+            'period' => $period,
+            'data' => $data,
+            'total' => $data->sum('count'),
+        ];
+    }
+
+    /**
+     * Get usage data.
+     */
+    private function getUsageData(int $limit = 10): array
+    {
+        // Most used modules
+        $modules = Module::query()
+            ->withCount('tosGenerates')
+            ->orderByDesc('tos_generates_count')
+            ->limit($limit)
+            ->get(['id', 'code', 'name as title', 'tos_generates_count']);
+
+        // Most used topics
+        $topics = Topic::query()
+            ->join('learning_objectives', 'topics.id', '=', 'learning_objectives.topic_id')
+            ->join('exam_questions', 'learning_objectives.code', '=', 'exam_questions.learning_objective_code')
+            ->join('exam_items', 'exam_questions.id', '=', 'exam_items.exam_question_id')
+            ->selectRaw('topics.id, topics.code, topics.title, COUNT(DISTINCT exam_items.id) as usage_count')
+            ->groupBy('topics.id', 'topics.code', 'topics.title')
+            ->orderByDesc('usage_count')
+            ->limit($limit)
+            ->get();
+
+        return [
+            'modules' => $modules,
+            'topics' => $topics,
+        ];
+    }
+
+    /**
+     * Get educator activity data.
+     */
+    private function getEducatorActivityData(?string $startDate, ?string $endDate): array
+    {
+        $startDate = $startDate ?? Carbon::now()->subMonth();
+        $endDate = $endDate ?? Carbon::now();
+
+        $educators = User::query()
+            ->role('educator')
+            ->withCount([
+                'tosGenerates as tos_created' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                },
+                'exams as exams_created' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                },
+            ])
+            ->get(['id', 'name', 'email', 'tos_created', 'exams_created']);
+
+        return [
+            'educators' => $educators,
+            'period' => [
+                'start' => $startDate,
+                'end' => $endDate,
+            ],
+        ];
     }
 
     /**
@@ -107,7 +245,7 @@ class AnalyticsController extends Controller
             ->withCount('tosGenerates')
             ->orderByDesc('tos_generates_count')
             ->limit($limit)
-            ->get(['id', 'code', 'name', 'tos_generates_count']);
+            ->get(['id', 'code', 'name as title', 'tos_generates_count']);
 
         // Most used topics
         $topics = Topic::query()
@@ -151,9 +289,7 @@ class AnalyticsController extends Controller
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 },
             ])
-            ->having('tos_created', '>', 0)
-            ->orHaving('exams_created', '>', 0)
-            ->get(['id', 'name', 'email']);
+            ->get(['id', 'name', 'email', 'tos_created', 'exams_created']);
 
         return response()->json([
             'educators' => $educators,

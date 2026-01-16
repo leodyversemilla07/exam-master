@@ -39,6 +39,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import * as examSessions from '@/routes/exam-sessions';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
@@ -105,27 +113,27 @@ function getStatusBadge(session: SessionWithRelations) {
     if (session.status === 'ended' || now > endTime) {
         return (
             <Badge variant="secondary" className="gap-1">
-                <XCircle className="h-3 w-3" /> Ended
+                <XCircle className="size-3" /> Ended
             </Badge>
         );
     }
     if (session.status === 'draft') {
         return (
             <Badge variant="outline" className="gap-1">
-                <AlertCircle className="h-3 w-3" /> Draft
+                <AlertCircle className="size-3" /> Draft
             </Badge>
         );
     }
     if (now < startTime) {
         return (
             <Badge variant="outline" className="gap-1 text-blue-600 border-blue-600">
-                <Clock className="h-3 w-3" /> Upcoming
+                <Clock className="size-3" /> Upcoming
             </Badge>
         );
     }
     return (
         <Badge className="gap-1 bg-green-600">
-            <CheckCircle className="h-3 w-3" /> Active
+            <CheckCircle className="size-3" /> Active
         </Badge>
     );
 }
@@ -135,19 +143,19 @@ function getAttemptStatusBadge(status: string) {
         case 'in_progress':
             return (
                 <Badge variant="outline" className="gap-1 text-blue-600 border-blue-600">
-                    <Clock className="h-3 w-3" /> In Progress
+                    <Clock className="size-3" /> In Progress
                 </Badge>
             );
         case 'submitted':
             return (
                 <Badge variant="secondary" className="gap-1">
-                    <CheckCircle className="h-3 w-3" /> Submitted
+                    <CheckCircle className="size-3" /> Submitted
                 </Badge>
             );
         case 'graded':
             return (
                 <Badge className="gap-1 bg-green-600">
-                    <CheckCircle className="h-3 w-3" /> Graded
+                    <CheckCircle className="size-3" /> Graded
                 </Badge>
             );
         default:
@@ -188,7 +196,8 @@ export default function Show({ session, stats }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs(session)}>
             <Head title={session.title} />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl space-y-6">
                 <PageHeader
                     title={
                         <div className="flex items-center gap-3">
@@ -204,12 +213,12 @@ export default function Show({ session, stats }: PageProps) {
                                 onClick={handleExport}
                                 disabled={completedAttempts.length === 0}
                             >
-                                <Download className="mr-2 h-4 w-4" />
+                                <Download className="mr-2 size-4" />
                                 Export CSV
                             </Button>
                             <Button variant="outline" asChild>
                                 <Link href={examSessions.edit.url(session.id)}>
-                                    <Edit className="mr-2 h-4 w-4" />
+                                    <Edit className="mr-2 size-4" />
                                     Edit
                                 </Link>
                             </Button>
@@ -227,7 +236,7 @@ export default function Show({ session, stats }: PageProps) {
                                     <CardTitle className="text-sm font-medium">
                                         Total Attempts
                                     </CardTitle>
-                                    <Users className="h-4 w-4 text-muted-foreground" />
+                                    <Users className="size-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold">{stats.total_attempts}</div>
@@ -243,7 +252,7 @@ export default function Show({ session, stats }: PageProps) {
                                     <CardTitle className="text-sm font-medium">
                                         Average Score
                                     </CardTitle>
-                                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                                    <BarChart3 className="size-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold">
@@ -263,8 +272,8 @@ export default function Show({ session, stats }: PageProps) {
                                         Score Range
                                     </CardTitle>
                                     <div className="flex gap-1">
-                                        <TrendingUp className="h-4 w-4 text-green-600" />
-                                        <TrendingDown className="h-4 w-4 text-red-600" />
+                                        <TrendingUp className="size-4 text-green-600" />
+                                        <TrendingDown className="size-4 text-red-600" />
                                     </div>
                                 </CardHeader>
                                 <CardContent>
@@ -295,13 +304,19 @@ export default function Show({ session, stats }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 {session.attempts.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                                        <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                                        <h3 className="font-semibold mb-2">No Attempts Yet</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            Share the access code with students to get started.
-                                        </p>
-                                    </div>
+                                    <Empty>
+                                        <EmptyMedia>
+                                            <Users className="size-10" />
+                                        </EmptyMedia>
+                                        <EmptyContent>
+                                            <EmptyHeader>
+                                                <EmptyTitle>No Attempts Yet</EmptyTitle>
+                                                <EmptyDescription>
+                                                    Share the access code with students to get started.
+                                                </EmptyDescription>
+                                            </EmptyHeader>
+                                        </EmptyContent>
+                                    </Empty>
                                 ) : (
                                     <Table>
                                         <TableHeader>
@@ -415,12 +430,12 @@ export default function Show({ session, stats }: PageProps) {
                                     >
                                         {copiedCode ? (
                                             <>
-                                                <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                                                <CheckCircle className="mr-2 size-4 text-green-600" />
                                                 Copied!
                                             </>
                                         ) : (
                                             <>
-                                                <Copy className="mr-2 h-4 w-4" />
+                                                <Copy className="mr-2 size-4" />
                                                 Copy
                                             </>
                                         )}
@@ -429,7 +444,7 @@ export default function Show({ session, stats }: PageProps) {
                                         <AlertDialogTrigger asChild>
                                             <Button variant="outline" disabled={regenerating}>
                                                 <RefreshCw
-                                                    className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`}
+                                                    className={`size-4 ${regenerating ? 'animate-spin' : ''}`}
                                                 />
                                             </Button>
                                         </AlertDialogTrigger>
@@ -460,7 +475,7 @@ export default function Show({ session, stats }: PageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Calendar className="h-5 w-5" />
+                                    <Calendar className="size-5" />
                                     Schedule
                                 </CardTitle>
                             </CardHeader>
@@ -492,7 +507,7 @@ export default function Show({ session, stats }: PageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Clock className="h-5 w-5" />
+                                    <Clock className="size-5" />
                                     Settings
                                 </CardTitle>
                             </CardHeader>
@@ -576,6 +591,7 @@ export default function Show({ session, stats }: PageProps) {
                             </CardContent>
                         </Card>
                     </div>
+                </div>
                 </div>
             </div>
         </AppLayout>

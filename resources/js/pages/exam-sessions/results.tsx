@@ -1,8 +1,25 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import { Download, Clock, Users, CheckCircle, Search } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
 import {
@@ -17,6 +34,15 @@ import { Input } from '@/components/ui/input';
 import * as examSessions from '@/routes/exam-sessions';
 import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    getSortedRowModel,
+    SortingState,
+    getFilteredRowModel,
+} from '@tanstack/react-table';
 
 interface User {
     id: number;
@@ -93,19 +119,19 @@ function getAttemptStatusBadge(status: string) {
         case 'in_progress':
             return (
                 <Badge variant="outline" className="gap-1 text-blue-600 border-blue-600">
-                    <Clock className="h-3 w-3" /> In Progress
+                    <Clock className="size-3" /> In Progress
                 </Badge>
             );
         case 'submitted':
             return (
                 <Badge variant="secondary" className="gap-1">
-                    <CheckCircle className="h-3 w-3" /> Submitted
+                    <CheckCircle className="size-3" /> Submitted
                 </Badge>
             );
         case 'graded':
             return (
                 <Badge className="gap-1 bg-green-600">
-                    <CheckCircle className="h-3 w-3" /> Graded
+                    <CheckCircle className="size-3" /> Graded
                 </Badge>
             );
         default:
@@ -120,18 +146,150 @@ function getScoreColor(percentage: number): string {
     return 'text-red-600';
 }
 
-export default function Results({ session, attempts }: PageProps) {
-    const [searchQuery, setSearchQuery] = useState('');
+const columns: ColumnDef<AttemptWithDetails>[] = [
+    {
+        accessorKey: 'user',
+        header: 'Student',
+        cell: ({ row }) => {
+            const user = row.original.user;
+            return (
+                <div>
+                    <div className="font-medium">{user.name}</div>
+                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                </div>
+            );
+        },
+        filterFn: (row, _, filterValue) => {
+            const user = row.original.user;
+            const query = filterValue.toLowerCase();
+            return user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
+        },
+    },
+    {
+        accessorKey: 'attempt_number',
+        header: 'Attempt',
+        cell: ({ row }) => (
+            <Badge variant="outline">#{row.getValue('attempt_number')}</Badge>
+        ),
+    },
+    {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => getAttemptStatusBadge(row.getValue('status')),
+    },
+    {
+        accessorKey: 'score',
+        header: 'Score',
+        cell: ({ row }) => {
+            const score = row.getValue('score') as number | null;
+            return score !== null ? (
+                <span className="font-medium">{score.toFixed(1)}</span>
+            ) : (
+                <span className="text-muted-foreground">—</span>
+            );
+        },
+    },
+    {
+        accessorKey: 'percentage',
+        header: 'Percentage',
+        cell: ({ row }) => {
+            const percentage = row.getValue('percentage') as number | null;
+            return percentage !== null ? (
+                <span className={`font-bold ${getScoreColor(percentage)}`}>
+                    {percentage.toFixed(1)}%
+                </span>
+            ) : (
+                <span className="text-muted-foreground">—</span>
+            );
+        },
+    },
+    {
+        id: 'correct_total',
+        header: 'Correct/Total',
+        cell: ({ row }) => {
+            const attempt = row.original;
+            if (attempt.status === 'in_progress') {
+                return <span className="text-muted-foreground">—</span>;
+            }
+            const correctAnswers = attempt.answers.filter((a) => a.is_correct === true).length;
+            const totalAnswers = attempt.answers.length;
+            return (
+                <div className="flex items-center gap-2">
+                    <CheckCircle className="size-4 text-green-600" />
+                    <span>{correctAnswers}</span>
+                    <span className="text-muted-foreground">/</span>
+                    <span>{totalAnswers}</span>
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: 'time_spent_seconds',
+        header: 'Time Spent',
+        cell: ({ row }) => {
+            const seconds = row.getValue('time_spent_seconds') as number | null;
+            return seconds ? (
+                <div className="flex items-center gap-1">
+                    <Clock className="size-4 text-muted-foreground" />
+                    {Math.floor(seconds / 60)} min
+                </div>
+            ) : (
+                <span className="text-muted-foreground">—</span>
+            );
+        },
+    },
+    {
+        accessorKey: 'submitted_at',
+        header: 'Submitted',
+        cell: ({ row }) => {
+            const submittedAt = row.getValue('submitted_at') as string | null;
+            return submittedAt ? (
+                <div className="text-sm">
+                    {new Date(submittedAt).toLocaleDateString()}
+                    <br />
+                    <span className="text-muted-foreground">
+                        {new Date(submittedAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        })}
+                    </span>
+                </div>
+            ) : (
+                <span className="text-muted-foreground">In progress</span>
+            );
+        },
+    },
+];
 
-    const filteredAttempts = useMemo(() => {
-        if (!searchQuery) return attempts.data;
-        const query = searchQuery.toLowerCase();
-        return attempts.data.filter(
-            (attempt) =>
-                attempt.user.name.toLowerCase().includes(query) ||
-                attempt.user.email.toLowerCase().includes(query),
-        );
-    }, [attempts.data, searchQuery]);
+// Helper to update the page param in the current URL
+function updatePageInUrl(page: number): string {
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', String(page));
+    return url.pathname + url.search;
+}
+
+export default function Results({ session, attempts }: PageProps) {
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [sorting, setSorting] = useState<SortingState>([]);
+
+    const table = useReactTable({
+        data: attempts.data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: (row, _, filterValue) => {
+            const user = row.original.user;
+            const query = filterValue.toLowerCase();
+            return user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
+        },
+        state: {
+            sorting,
+            globalFilter,
+        },
+    });
 
     const handleExport = () => {
         window.location.href = examSessions.exportResults.url(session.id);
@@ -158,13 +316,14 @@ export default function Results({ session, attempts }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs(session)}>
             <Head title={`Results - ${session.title}`} />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="p-6 md:p-8">
+                <div className="max-w-7xl mx-auto space-y-6">
                 <PageHeader
                     title="Exam Results"
                     description={`${session.title} • ${session.exam.title}`}
                     actions={
                         <Button onClick={handleExport} disabled={completedAttempts.length === 0}>
-                            <Download className="mr-2 h-4 w-4" />
+                            <Download className="mr-2 size-4" />
                             Export CSV
                         </Button>
                     }
@@ -237,187 +396,143 @@ export default function Results({ session, attempts }: PageProps) {
                                 </CardDescription>
                             </div>
                             <div className="relative w-64">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search by name or email..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    value={globalFilter}
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
                                     className="pl-9"
                                 />
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        {filteredAttempts.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-12 text-center">
-                                <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                                <h3 className="font-semibold mb-2">
-                                    {searchQuery ? 'No Matching Results' : 'No Attempts Yet'}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    {searchQuery
-                                        ? 'Try a different search term.'
-                                        : 'Students have not yet taken this exam.'}
-                                </p>
-                            </div>
+                        {table.getRowModel().rows.length === 0 ? (
+                            <Empty>
+                                <EmptyMedia>
+                                    <Users className="size-10" />
+                                </EmptyMedia>
+                                <EmptyContent>
+                                    <EmptyHeader>
+                                        <EmptyTitle>
+                                            {globalFilter ? 'No Matching Results' : 'No Attempts Yet'}
+                                        </EmptyTitle>
+                                        <EmptyDescription>
+                                            {globalFilter
+                                                ? 'Try a different search term.'
+                                                : 'Students have not yet taken this exam.'}
+                                        </EmptyDescription>
+                                    </EmptyHeader>
+                                </EmptyContent>
+                            </Empty>
                         ) : (
                             <>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Student</TableHead>
-                                            <TableHead>Attempt</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Score</TableHead>
-                                            <TableHead>Percentage</TableHead>
-                                            <TableHead>Correct/Total</TableHead>
-                                            <TableHead>Time Spent</TableHead>
-                                            <TableHead>Submitted</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredAttempts.map((attempt) => {
-                                            const correctAnswers = attempt.answers.filter(
-                                                (a) => a.is_correct === true,
-                                            ).length;
-                                            const totalAnswers = attempt.answers.length;
-
-                                            return (
-                                                <TableRow key={attempt.id}>
-                                                    <TableCell>
-                                                        <div>
-                                                            <div className="font-medium">
-                                                                {attempt.user.name}
-                                                            </div>
-                                                            <div className="text-sm text-muted-foreground">
-                                                                {attempt.user.email}
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge variant="outline">
-                                                            #{attempt.attempt_number}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {getAttemptStatusBadge(attempt.status)}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {attempt.score !== null ? (
-                                                            <span className="font-medium">
-                                                                {attempt.score.toFixed(1)}
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-muted-foreground">
-                                                                —
-                                                            </span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {attempt.percentage !== null ? (
-                                                            <span
-                                                                className={`font-bold ${getScoreColor(attempt.percentage)}`}
-                                                            >
-                                                                {attempt.percentage.toFixed(1)}%
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-muted-foreground">
-                                                                —
-                                                            </span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {attempt.status !== 'in_progress' ? (
-                                                            <div className="flex items-center gap-2">
-                                                                <CheckCircle className="h-4 w-4 text-green-600" />
-                                                                <span>{correctAnswers}</span>
-                                                                <span className="text-muted-foreground">
-                                                                    /
-                                                                </span>
-                                                                <span>{totalAnswers}</span>
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-muted-foreground">
-                                                                —
-                                                            </span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {attempt.time_spent_seconds ? (
-                                                            <div className="flex items-center gap-1">
-                                                                <Clock className="h-4 w-4 text-muted-foreground" />
-                                                                {Math.floor(
-                                                                    attempt.time_spent_seconds / 60,
-                                                                )}{' '}
-                                                                min
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-muted-foreground">
-                                                                —
-                                                            </span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {attempt.submitted_at ? (
-                                                            <div className="text-sm">
-                                                                {new Date(
-                                                                    attempt.submitted_at,
-                                                                ).toLocaleDateString()}
-                                                                <br />
-                                                                <span className="text-muted-foreground">
-                                                                    {new Date(
-                                                                        attempt.submitted_at,
-                                                                    ).toLocaleTimeString([], {
-                                                                        hour: '2-digit',
-                                                                        minute: '2-digit',
-                                                                    })}
-                                                                </span>
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-muted-foreground">
-                                                                In progress
-                                                            </span>
-                                                        )}
-                                                    </TableCell>
+                                <div className="rounded-md border">
+                                    <Table>
+                                        <TableHeader>
+                                            {table.getHeaderGroups().map((headerGroup) => (
+                                                <TableRow key={headerGroup.id}>
+                                                    {headerGroup.headers.map((header) => (
+                                                        <TableHead key={header.id}>
+                                                            {header.isPlaceholder
+                                                                ? null
+                                                                : flexRender(
+                                                                      header.column.columnDef.header,
+                                                                      header.getContext()
+                                                                  )}
+                                                        </TableHead>
+                                                    ))}
                                                 </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
+                                            ))}
+                                        </TableHeader>
+                                        <TableBody>
+                                            {table.getRowModel().rows.map((row) => (
+                                                <TableRow key={row.id}>
+                                                    {row.getVisibleCells().map((cell) => (
+                                                        <TableCell key={cell.id}>
+                                                            {flexRender(
+                                                                cell.column.columnDef.cell,
+                                                                cell.getContext()
+                                                            )}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
 
                                 {/* Pagination */}
-                                {attempts.last_page > 1 && !searchQuery && (
-                                    <div className="flex items-center justify-center gap-2 mt-6">
-                                        {attempts.links.map((link, i) => (
-                                            <Button
-                                                key={i}
-                                                variant={link.active ? 'default' : 'outline'}
-                                                size="sm"
-                                                disabled={!link.url}
-                                                asChild={!!link.url}
-                                            >
-                                                {link.url ? (
-                                                    <Link
-                                                        href={link.url}
-                                                        dangerouslySetInnerHTML={{
-                                                            __html: link.label,
+                                {attempts.last_page > 1 && !globalFilter && (
+                                    <div className="flex items-center justify-between mt-6">
+                                        <p className="text-sm text-muted-foreground">
+                                            Showing {attempts.data.length} of {attempts.total} attempts
+                                        </p>
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious
+                                                        href="#"
+                                                        onClick={e => {
+                                                            e.preventDefault();
+                                                            if (attempts.current_page > 1) {
+                                                                window.location.href = updatePageInUrl(attempts.current_page - 1);
+                                                            }
                                                         }}
+                                                        className={attempts.current_page === 1 ? 'pointer-events-none opacity-50' : ''}
                                                     />
-                                                ) : (
-                                                    <span
-                                                        dangerouslySetInnerHTML={{
-                                                            __html: link.label,
+                                                </PaginationItem>
+                                                {Array.from({ length: attempts.last_page }, (_, i) => i + 1).map(page => {
+                                                    const showPage =
+                                                        page === 1 ||
+                                                        page === attempts.last_page ||
+                                                        (page >= attempts.current_page - 1 && page <= attempts.current_page + 1);
+                                                    if (!showPage) {
+                                                        if (page === attempts.current_page - 2 || page === attempts.current_page + 2) {
+                                                            return (
+                                                                <PaginationItem key={page}>
+                                                                    <PaginationEllipsis />
+                                                                </PaginationItem>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    }
+                                                    return (
+                                                        <PaginationItem key={page}>
+                                                            <PaginationLink
+                                                                href="#"
+                                                                onClick={e => {
+                                                                    e.preventDefault();
+                                                                    window.location.href = updatePageInUrl(page);
+                                                                }}
+                                                                isActive={page === attempts.current_page}
+                                                            >
+                                                                {page}
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                    );
+                                                })}
+                                                <PaginationItem>
+                                                    <PaginationNext
+                                                        href="#"
+                                                        onClick={e => {
+                                                            e.preventDefault();
+                                                            if (attempts.current_page < attempts.last_page) {
+                                                                window.location.href = updatePageInUrl(attempts.current_page + 1);
+                                                            }
                                                         }}
+                                                        className={attempts.current_page === attempts.last_page ? 'pointer-events-none opacity-50' : ''}
                                                     />
-                                                )}
-                                            </Button>
-                                        ))}
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
                                     </div>
                                 )}
                             </>
                         )}
                     </CardContent>
                 </Card>
+                </div>
             </div>
         </AppLayout>
     );

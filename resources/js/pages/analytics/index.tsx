@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,17 +10,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/date-picker';
 import PageHeader from '@/components/page-header';
-import { BarChart3, Download, TrendingUp, Users, BookOpen, FileText } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { BarChart3, Download, TrendingUp, BookOpen, FileText, BarChart, Users } from 'lucide-react';
+import { useState } from 'react';
+import { format } from 'date-fns';
+import * as analytics from '@/routes/analytics';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, BarChart as RechartsBarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 
-const breadcrumbs = [{ title: 'Analytics & Reports', href: '/analytics' }];
+const breadcrumbs = [{ title: 'Analytics & Reports', href: analytics.index.url() }];
 
 interface ExamsCreatedData {
     period: string;
@@ -69,73 +77,50 @@ interface EducatorActivityData {
     };
 }
 
-export default function AnalyticsIndex({}: PageProps) {
-    const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'year'>('month');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [examsData, setExamsData] = useState<ExamsCreatedData | null>(null);
-    const [usageData, setUsageData] = useState<UsageData | null>(null);
-    const [educatorData, setEducatorData] = useState<EducatorActivityData | null>(null);
-    const [loading, setLoading] = useState(false);
-
-    // Fetch exams created data
-    const fetchExamsData = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.get('/analytics/exams-created', {
-                params: {
-                    period,
-                    start_date: startDate || undefined,
-                    end_date: endDate || undefined,
-                },
-            });
-            setExamsData(response.data);
-        } catch (error) {
-            console.error('Failed to fetch exams data:', error);
-        } finally {
-            setLoading(false);
-        }
+interface AnalyticsPageProps extends PageProps {
+    filters: {
+        period: 'day' | 'week' | 'month' | 'year';
+        start_date?: string;
+        end_date?: string;
     };
+    examsData?: ExamsCreatedData;
+    usageData?: UsageData;
+    educatorData?: EducatorActivityData;
+}
 
-    // Fetch most used modules and topics
-    const fetchUsageData = async () => {
-        try {
-            const response = await axios.get('/analytics/modules-topics', {
-                params: { limit: 10 },
-            });
-            setUsageData(response.data);
-        } catch (error) {
-            console.error('Failed to fetch usage data:', error);
-        }
-    };
+export default function AnalyticsIndex({ filters, examsData, usageData, educatorData }: AnalyticsPageProps) {
+    const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'year'>(filters.period);
+    const [startDate, setStartDate] = useState<Date | undefined>(
+        filters.start_date ? new Date(filters.start_date) : undefined
+    );
+    const [endDate, setEndDate] = useState<Date | undefined>(
+        filters.end_date ? new Date(filters.end_date) : undefined
+    );
 
-    // Fetch educator activity
-    const fetchEducatorActivity = async () => {
-        try {
-            const response = await axios.get('/analytics/educator-activity', {
-                params: { start_date: startDate || undefined, end_date: endDate || undefined },
-            });
-            setEducatorData(response.data);
-        } catch (error) {
-            console.error('Failed to fetch educator activity:', error);
-        }
+    // Apply filters using Inertia
+    const applyFilters = () => {
+        router.visit(analytics.index.url(), {
+            data: {
+                period,
+                ...(startDate && { start_date: format(startDate, 'yyyy-MM-dd') }),
+                ...(endDate && { end_date: format(endDate, 'yyyy-MM-dd') }),
+            },
+            preserveState: true,
+            preserveScroll: true,
+        });
     };
 
     // Export to CSV
     const handleExport = (type: 'exams_created' | 'modules_topics' | 'educator_activity') => {
-        const params = new URLSearchParams({
-            type,
-            ...(startDate && { start_date: startDate }),
-            ...(endDate && { end_date: endDate }),
+        const url = analytics.exportCsv.url({
+            query: {
+                type,
+                ...(startDate && { start_date: format(startDate, 'yyyy-MM-dd') }),
+                ...(endDate && { end_date: format(endDate, 'yyyy-MM-dd') }),
+            },
         });
-        window.location.href = `/analytics/export-csv?${params.toString()}`;
+        window.location.href = url;
     };
-
-    useEffect(() => {
-        fetchExamsData();
-        fetchUsageData();
-        fetchEducatorActivity();
-    }, []);
 
     const formatChartData = () => {
         if (!examsData) return [];
@@ -177,15 +162,15 @@ export default function AnalyticsIndex({}: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Analytics & Reports" />
 
-            <div className="p-4 md:p-6">
-                <div className="space-y-6">
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl space-y-6">
                     {/* Header */}
                     <PageHeader
                         title="Analytics & Reports"
                         description="Comprehensive insights into exam creation and system usage"
                         actions={
-                            <Button variant="outline" onClick={() => fetchExamsData()}>
-                                <TrendingUp className="mr-2 h-4 w-4" />
+                            <Button variant="outline" onClick={applyFilters}>
+                                <TrendingUp className="mr-2 size-4" />
                                 Refresh
                             </Button>
                         }
@@ -218,30 +203,22 @@ export default function AnalyticsIndex({}: PageProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="start_date">Start Date</Label>
-                                    <Input
-                                        id="start_date"
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
+                                    <DatePicker
+                                        date={startDate}
+                                        onSelect={setStartDate}
+                                        placeholder="Select start date"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="end_date">End Date</Label>
-                                    <Input
-                                        id="end_date"
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
+                                    <DatePicker
+                                        date={endDate}
+                                        onSelect={setEndDate}
+                                        placeholder="Select end date"
                                     />
                                 </div>
                                 <div className="flex items-end">
-                                    <Button
-                                        onClick={() => {
-                                            fetchExamsData();
-                                            fetchEducatorActivity();
-                                        }}
-                                        className="w-full"
-                                    >
+                                    <Button onClick={applyFilters} className="w-full">
                                         Apply Filters
                                     </Button>
                                 </div>
@@ -254,7 +231,7 @@ export default function AnalyticsIndex({}: PageProps) {
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5" />
+                                    <BarChart3 className="size-5" />
                                     Exams Created
                                 </CardTitle>
                                 <CardDescription>Track exam creation over time</CardDescription>
@@ -265,17 +242,13 @@ export default function AnalyticsIndex({}: PageProps) {
                                     size="sm"
                                     onClick={() => handleExport('exams_created')}
                                 >
-                                    <Download className="mr-2 h-4 w-4" />
+                                    <Download className="mr-2 size-4" />
                                     Export CSV
                                 </Button>
                             </div>
                         </CardHeader>
                         <CardContent>
-                            {loading ? (
-                                <div className="flex items-center justify-center h-75">
-                                    <p className="text-muted-foreground">Loading...</p>
-                                </div>
-                            ) : examsData ? (
+                            {examsData && examsData.data.length > 0 ? (
                                 <>
                                     <div className="mb-4">
                                         <p className="text-2xl font-bold">{examsData.total}</p>
@@ -283,36 +256,52 @@ export default function AnalyticsIndex({}: PageProps) {
                                             Total exams created
                                         </p>
                                     </div>
-                                    <div className="h-75">
+                                    <ChartContainer 
+                                        config={{
+                                            count: {
+                                                label: 'Exams Created',
+                                                color: 'hsl(var(--primary))',
+                                            },
+                                        }}
+                                        className="h-75 w-full"
+                                    >
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={formatChartData()}>
-                                                <CartesianGrid
-                                                    strokeDasharray="3 3"
-                                                    className="stroke-muted"
-                                                />
-                                                <XAxis
-                                                    dataKey="name"
-                                                    className="text-xs"
-                                                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                                                />
-                                                <YAxis
-                                                    className="text-xs"
-                                                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                                                />
-                                                <ChartTooltip content={<ChartTooltipContent />} />
-                                                <Bar
-                                                    dataKey="count"
-                                                    fill="hsl(var(--primary))"
-                                                    radius={[4, 4, 0, 0]}
-                                                />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
+                                                <RechartsBarChart data={formatChartData()}>
+                                                    <CartesianGrid
+                                                        strokeDasharray="3 3"
+                                                        className="stroke-muted"
+                                                    />
+                                                    <XAxis
+                                                        dataKey="name"
+                                                        className="text-xs"
+                                                        tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                                                    />
+                                                    <YAxis
+                                                        className="text-xs"
+                                                        tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                                                    />
+                                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                                    <Bar
+                                                        dataKey="count"
+                                                        fill="hsl(var(--primary))"
+                                                        radius={[4, 4, 0, 0]}
+                                                    />
+                                                </RechartsBarChart>
+                                            </ResponsiveContainer>
+                                        </ChartContainer>
                                 </>
                             ) : (
-                                <div className="flex items-center justify-center h-75">
-                                    <p className="text-muted-foreground">No data available</p>
-                                </div>
+                                <Empty>
+                                    <EmptyHeader>
+                                        <EmptyMedia variant="icon">
+                                            <BarChart className="size-8" />
+                                        </EmptyMedia>
+                                        <EmptyTitle>No Data Available</EmptyTitle>
+                                        <EmptyDescription>
+                                            No exam data available for the selected period
+                                        </EmptyDescription>
+                                    </EmptyHeader>
+                                </Empty>
                             )}
                         </CardContent>
                     </Card>
@@ -324,7 +313,7 @@ export default function AnalyticsIndex({}: PageProps) {
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="flex items-center gap-2">
-                                        <BookOpen className="h-5 w-5" />
+                                        <BookOpen className="size-5" />
                                         Most Used Modules
                                     </CardTitle>
                                     <CardDescription>
@@ -336,7 +325,7 @@ export default function AnalyticsIndex({}: PageProps) {
                                     size="sm"
                                     onClick={() => handleExport('modules_topics')}
                                 >
-                                    <Download className="h-4 w-4" />
+                                    <Download className="size-4" />
                                 </Button>
                             </CardHeader>
                             <CardContent>
@@ -382,7 +371,7 @@ export default function AnalyticsIndex({}: PageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5" />
+                                    <FileText className="size-5" />
                                     Most Used Topics
                                 </CardTitle>
                                 <CardDescription>Top 10 topics by question usage</CardDescription>
@@ -432,7 +421,7 @@ export default function AnalyticsIndex({}: PageProps) {
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Users className="h-5 w-5" />
+                                    <Users className="size-5" />
                                     Educator Activity
                                 </CardTitle>
                                 <CardDescription>
@@ -444,7 +433,7 @@ export default function AnalyticsIndex({}: PageProps) {
                                 size="sm"
                                 onClick={() => handleExport('educator_activity')}
                             >
-                                <Download className="mr-2 h-4 w-4" />
+                                <Download className="mr-2 size-4" />
                                 Export CSV
                             </Button>
                         </CardHeader>

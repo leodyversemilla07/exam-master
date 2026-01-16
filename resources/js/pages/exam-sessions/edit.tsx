@@ -54,7 +54,6 @@ export default function Edit({ session }: PageProps) {
         description: session.description || '',
         start_time: formatDateTimeLocal(session.start_time),
         end_time: formatDateTimeLocal(session.end_time),
-        time_limit_minutes: session.time_limit_minutes?.toString() || '',
         max_attempts: session.max_attempts.toString(),
         shuffle_questions: session.shuffle_questions,
         shuffle_options: session.shuffle_options,
@@ -69,6 +68,23 @@ export default function Edit({ session }: PageProps) {
         put(examSessions.update.url(session.id));
     };
 
+    // Calculate session duration in minutes
+    const sessionDurationMinutes = (() => {
+        if (!data.start_time || !data.end_time) return null;
+        const start = new Date(data.start_time);
+        const end = new Date(data.end_time);
+        const diffMs = end.getTime() - start.getTime();
+        if (diffMs <= 0) return null;
+        return Math.floor(diffMs / (1000 * 60));
+    })();
+
+    const formatDuration = (minutes: number) => {
+        if (minutes < 60) return `${minutes} minutes`;
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return mins > 0 ? `${hours}h ${mins}m` : `${hours} hour${hours > 1 ? 's' : ''}`;
+    };
+
     const hasAttempts =
         session.exam && 'attempts_count' in session && (session as any).attempts_count > 0;
 
@@ -76,11 +92,12 @@ export default function Edit({ session }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs(session)}>
             <Head title={`Edit ${session.title}`} />
 
-            <div className="p-4 md:p-6 space-y-6 max-w-4xl">
-                <PageHeader
-                    title="Edit Exam Session"
-                    description={`Update session settings for ${session.title}`}
-                />
+            <div className="p-6 md:p-8">
+                <div className="max-w-4xl mx-auto space-y-6">
+                    <PageHeader
+                        title="Edit Exam Session"
+                        description={`Update session settings for ${session.title}`}
+                    />
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Exam Info (Read-only) */}
@@ -114,7 +131,7 @@ export default function Edit({ session }: PageProps) {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Settings className="h-5 w-5" />
+                                <Settings className="size-5" />
                                 Session Details
                             </CardTitle>
                         </CardHeader>
@@ -174,7 +191,7 @@ export default function Edit({ session }: PageProps) {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Calendar className="h-5 w-5" />
+                                <Calendar className="size-5" />
                                 Schedule
                             </CardTitle>
                             <CardDescription>
@@ -213,69 +230,52 @@ export default function Edit({ session }: PageProps) {
                                     )}
                                 </div>
                             </div>
+
+                            {sessionDurationMinutes && sessionDurationMinutes > 0 && (
+                                <div className="p-3 rounded-lg bg-muted">
+                                    <p className="text-sm">
+                                        <span className="text-muted-foreground">Exam duration: </span>
+                                        <span className="font-medium">{formatDuration(sessionDurationMinutes)}</span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Students will have this amount of time to complete the exam
+                                    </p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
-                    {/* Time & Attempts */}
+                    {/* Attempts */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Clock className="h-5 w-5" />
-                                Time & Attempts
+                                <Clock className="size-5" />
+                                Attempts
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="time_limit_minutes">Time Limit (minutes)</Label>
-                                    <Input
-                                        id="time_limit_minutes"
-                                        type="number"
-                                        min="1"
-                                        max="480"
-                                        value={data.time_limit_minutes}
-                                        onChange={(e) =>
-                                            setData('time_limit_minutes', e.target.value)
-                                        }
-                                        placeholder={
-                                            session.exam?.time_limit
-                                                ? `Default: ${session.exam.time_limit}`
-                                                : 'No limit'
-                                        }
-                                    />
-                                    <p className="text-xs text-muted-foreground">
-                                        Leave empty to use exam's default time limit
+                        <CardContent>
+                            <div className="space-y-2">
+                                <Label htmlFor="max_attempts">Maximum Attempts *</Label>
+                                <Select
+                                    value={data.max_attempts}
+                                    onValueChange={(v) => setData('max_attempts', v)}
+                                >
+                                    <SelectTrigger id="max_attempts" className="w-full md:w-48">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {[1, 2, 3, 4, 5].map((n) => (
+                                            <SelectItem key={n} value={n.toString()}>
+                                                {n} attempt{n > 1 ? 's' : ''}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.max_attempts && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.max_attempts}
                                     </p>
-                                    {errors.time_limit_minutes && (
-                                        <p className="text-sm text-destructive">
-                                            {errors.time_limit_minutes}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="max_attempts">Maximum Attempts *</Label>
-                                    <Select
-                                        value={data.max_attempts}
-                                        onValueChange={(v) => setData('max_attempts', v)}
-                                    >
-                                        <SelectTrigger id="max_attempts">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {[1, 2, 3, 4, 5].map((n) => (
-                                                <SelectItem key={n} value={n.toString()}>
-                                                    {n} attempt{n > 1 ? 's' : ''}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.max_attempts && (
-                                        <p className="text-sm text-destructive">
-                                            {errors.max_attempts}
-                                        </p>
-                                    )}
-                                </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -286,7 +286,7 @@ export default function Edit({ session }: PageProps) {
                             <CardTitle>Options</CardTitle>
                             {hasAttempts && (
                                 <div className="flex items-center gap-2 text-sm text-amber-600">
-                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertCircle className="size-4" />
                                     Some options may affect in-progress attempts
                                 </div>
                             )}
@@ -388,11 +388,12 @@ export default function Edit({ session }: PageProps) {
                             <Link href={examSessions.show.url(session.id)}>Cancel</Link>
                         </Button>
                         <Button type="submit" disabled={processing || !isDirty}>
-                            <Save className="mr-2 h-4 w-4" />
+                            <Save className="mr-2 size-4" />
                             {processing ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
                 </form>
+                </div>
             </div>
         </AppLayout>
     );

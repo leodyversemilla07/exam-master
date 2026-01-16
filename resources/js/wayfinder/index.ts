@@ -9,7 +9,7 @@ export type QueryParams = Record<
     | Record<string, string | number | boolean>
 >;
 
-type Method = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options';
+type Method = "get" | "post" | "put" | "delete" | "patch" | "head" | "options";
 
 let urlDefaults: Record<string, unknown> = {};
 
@@ -29,7 +29,7 @@ export type RouteQueryOptions = {
 
 export const queryParams = (options?: RouteQueryOptions) => {
     if (!options || (!options.query && !options.mergeQuery)) {
-        return '';
+        return "";
     }
 
     const query = options.query ?? options.mergeQuery;
@@ -37,18 +37,20 @@ export const queryParams = (options?: RouteQueryOptions) => {
 
     const getValue = (value: string | number | boolean) => {
         if (value === true) {
-            return '1';
+            return "1";
         }
 
         if (value === false) {
-            return '0';
+            return "0";
         }
 
         return value.toString();
     };
 
     const params = new URLSearchParams(
-        includeExisting && typeof window !== 'undefined' ? window.location.search : '',
+        includeExisting && typeof window !== "undefined"
+            ? window.location.search
+            : "",
     );
 
     for (const key in query) {
@@ -65,7 +67,7 @@ export const queryParams = (options?: RouteQueryOptions) => {
             query[key].forEach((value) => {
                 params.append(`${key}[]`, value.toString());
             });
-        } else if (typeof query[key] === 'object') {
+        } else if (typeof query[key] === "object") {
             params.forEach((_, paramKey) => {
                 if (paramKey.startsWith(`${key}[`)) {
                     params.delete(paramKey);
@@ -73,12 +75,19 @@ export const queryParams = (options?: RouteQueryOptions) => {
             });
 
             for (const subKey in query[key]) {
-                if (typeof query[key][subKey] === 'undefined') {
+                if (typeof query[key][subKey] === "undefined") {
                     continue;
                 }
 
-                if (['string', 'number', 'boolean'].includes(typeof query[key][subKey])) {
-                    params.set(`${key}[${subKey}]`, getValue(query[key][subKey]));
+                if (
+                    ["string", "number", "boolean"].includes(
+                        typeof query[key][subKey],
+                    )
+                ) {
+                    params.set(
+                        `${key}[${subKey}]`,
+                        getValue(query[key][subKey]),
+                    );
                 }
             }
         } else {
@@ -88,22 +97,30 @@ export const queryParams = (options?: RouteQueryOptions) => {
 
     const str = params.toString();
 
-    return str.length > 0 ? `?${str}` : '';
+    return str.length > 0 ? `?${str}` : "";
 };
 
 export const setUrlDefaults = (params: Record<string, unknown>) => {
     urlDefaults = params;
 };
 
-export const addUrlDefault = (key: string, value: string | number | boolean) => {
+export const addUrlDefault = (
+    key: string,
+    value: string | number | boolean,
+) => {
     urlDefaults[key] = value;
 };
 
-export const applyUrlDefaults = <T extends Record<string, unknown> | undefined>(existing: T): T => {
+export const applyUrlDefaults = <T extends Record<string, unknown> | undefined>(
+    existing: T,
+): T => {
     const existingParams = { ...(existing ?? ({} as Record<string, unknown>)) };
 
     for (const key in urlDefaults) {
-        if (existingParams[key] === undefined && urlDefaults[key] !== undefined) {
+        if (
+            existingParams[key] === undefined &&
+            urlDefaults[key] !== undefined
+        ) {
             (existingParams as Record<string, unknown>)[key] = urlDefaults[key];
         }
     }
@@ -120,7 +137,9 @@ export const validateParameters = (
 
     for (let i = 0; i < missing.length; i++) {
         if (missing[i] !== expectedMissing[i]) {
-            throw Error('Unexpected optional parameters missing. Unable to generate a URL.');
+            throw Error(
+                "Unexpected optional parameters missing. Unable to generate a URL.",
+            );
         }
     }
 };
