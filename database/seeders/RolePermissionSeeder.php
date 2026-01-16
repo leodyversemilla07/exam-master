@@ -70,8 +70,18 @@ class RolePermissionSeeder extends Seeder
             'leave exam',
 
             // Student Portal
+            'view available exams',
             'take exams',
             'view own results',
+            'view own attempts',
+
+            // Exam Session management (educator)
+            'create exam sessions',
+            'edit exam sessions',
+            'delete exam sessions',
+            'view exam sessions',
+            'view student results',
+            'grade exams',
         ];
 
         foreach ($permissions as $permission) {
@@ -112,6 +122,13 @@ class RolePermissionSeeder extends Seeder
             'edit own profile',
             'change own password',
             'manage collaborators',
+            // Exam session permissions
+            'create exam sessions',
+            'edit exam sessions',
+            'delete exam sessions',
+            'view exam sessions',
+            'view student results',
+            'grade exams',
         ]);
 
         // Educator - can create and manage own content
@@ -134,16 +151,37 @@ class RolePermissionSeeder extends Seeder
             'delete templates',
             'edit own profile',
             'change own password',
+            // Exam session permissions
+            'create exam sessions',
+            'edit exam sessions',
+            'delete exam sessions',
+            'view exam sessions',
+            'view student results',
+            'grade exams',
         ]);
 
         // Student - can take exams and view results
         $student = Role::firstOrCreate(['name' => 'student']);
         $student->syncPermissions([
+            'view available exams',
             'take exams',
             'view own results',
+            'view own attempts',
             'edit own profile',
             'change own password',
         ]);
+
+        // Create default student user if not exists
+        $studentUser = \App\Models\User::firstOrCreate(
+            ['email' => 'student@example.com'],
+            [
+                'name' => 'Student User',
+                'password' => bcrypt('password'),
+            ]
+        );
+        if (! $studentUser->hasRole('student')) {
+            $studentUser->assignRole('student');
+        }
 
         // Assign super-admin role to first user if exists
         $user = \App\Models\User::first();
