@@ -63,7 +63,7 @@ jobs:
       branch: main
       deploy_on_push: true
     dockerfile_path: Dockerfile
-    run_command: php artisan migrate --force && php artisan db:seed --class=RolePermissionSeeder --force
+    run_command: echo "Starting migration..." && php artisan migrate --force && echo "Running RolePermissionSeeder..." && php artisan db:seed --class=RolePermissionSeeder --force && echo "Seeder completed!"
     envs:
       - key: APP_NAME
         value: "ExamMaster"
