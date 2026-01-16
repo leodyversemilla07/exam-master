@@ -44,6 +44,15 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import PageHeader from '@/components/page-header';
 import * as examSessions from '@/routes/exam-sessions';
@@ -80,27 +89,27 @@ function getStatusBadge(session: ExamSession) {
     if (session.status === 'ended' || now > endTime) {
         return (
             <Badge variant="secondary" className="gap-1">
-                <XCircle className="h-3 w-3" /> Ended
+                <XCircle className="size-3" /> Ended
             </Badge>
         );
     }
     if (session.status === 'draft') {
         return (
             <Badge variant="outline" className="gap-1">
-                <AlertCircle className="h-3 w-3" /> Draft
+                <AlertCircle className="size-3" /> Draft
             </Badge>
         );
     }
     if (now < startTime) {
         return (
             <Badge variant="outline" className="gap-1 text-blue-600 border-blue-600">
-                <Clock className="h-3 w-3" /> Upcoming
+                <Clock className="size-3" /> Upcoming
             </Badge>
         );
     }
     return (
         <Badge className="gap-1 bg-green-600">
-            <CheckCircle className="h-3 w-3" /> Active
+            <CheckCircle className="size-3" /> Active
         </Badge>
     );
 }
@@ -122,14 +131,15 @@ export default function Index({ sessions }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Exam Sessions" />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl space-y-6">
                 <PageHeader
                     title="Exam Sessions"
                     description="Create and manage online exam sessions for students."
                     actions={
                         <Button asChild>
                             <Link href={examSessions.create.url()}>
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus className="mr-2 size-4" />
                                 Create Session
                             </Link>
                         </Button>
@@ -151,7 +161,7 @@ export default function Index({ sessions }: PageProps) {
                         <EmptyContent>
                             <Button asChild>
                                 <Link href={examSessions.create.url()}>
-                                    <Plus className="mr-2 h-4 w-4" />
+                                    <Plus className="mr-2 size-4" />
                                     Create Session
                                 </Link>
                             </Button>
@@ -222,9 +232,9 @@ export default function Index({ sessions }: PageProps) {
                                                                 {session.access_code}
                                                                 {copiedCode ===
                                                                 session.access_code ? (
-                                                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                                                    <CheckCircle className="size-4 text-green-600" />
                                                                 ) : (
-                                                                    <Copy className="h-4 w-4" />
+                                                                    <Copy className="size-4" />
                                                                 )}
                                                             </Button>
                                                         </TooltipTrigger>
@@ -266,7 +276,7 @@ export default function Index({ sessions }: PageProps) {
                                             <TableCell>{getStatusBadge(session)}</TableCell>
                                             <TableCell className="text-center">
                                                 <div className="flex items-center justify-center gap-1">
-                                                    <Users className="h-4 w-4 text-muted-foreground" />
+                                                    <Users className="size-4 text-muted-foreground" />
                                                     {session.attempts_count}
                                                 </div>
                                             </TableCell>
@@ -285,7 +295,7 @@ export default function Index({ sessions }: PageProps) {
                                                                             session.id,
                                                                         )}
                                                                     >
-                                                                        <Eye className="h-4 w-4" />
+                                                                        <Eye className="size-4" />
                                                                     </Link>
                                                                 </Button>
                                                             </TooltipTrigger>
@@ -308,7 +318,7 @@ export default function Index({ sessions }: PageProps) {
                                                                             session.id,
                                                                         )}
                                                                     >
-                                                                        <Edit className="h-4 w-4" />
+                                                                        <Edit className="size-4" />
                                                                     </Link>
                                                                 </Button>
                                                             </TooltipTrigger>
@@ -327,7 +337,7 @@ export default function Index({ sessions }: PageProps) {
                                                                     session.attempts_count > 0
                                                                 }
                                                             >
-                                                                <Trash2 className="h-4 w-4" />
+                                                                <Trash2 className="size-4" />
                                                             </Button>
                                                         </AlertDialogTrigger>
                                                         <AlertDialogContent>
@@ -365,32 +375,51 @@ export default function Index({ sessions }: PageProps) {
 
                             {/* Pagination */}
                             {sessions.last_page > 1 && (
-                                <div className="flex items-center justify-center gap-2 mt-6">
-                                    {sessions.links.map((link, i) => (
-                                        <Button
-                                            key={i}
-                                            variant={link.active ? 'default' : 'outline'}
-                                            size="sm"
-                                            disabled={!link.url}
-                                            asChild={!!link.url}
-                                        >
-                                            {link.url ? (
-                                                <Link
-                                                    href={link.url}
-                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                <div className="flex items-center justify-between mt-6">
+                                    <p className="text-sm text-muted-foreground">
+                                        Showing {sessions.data.length} of {sessions.total} sessions
+                                    </p>
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    href={sessions.links[0].url || '#'}
+                                                    className={!sessions.links[0].url ? 'pointer-events-none opacity-50' : ''}
                                                 />
-                                            ) : (
-                                                <span
-                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                            </PaginationItem>
+                                            {sessions.links.slice(1, -1).map((link, i) => {
+                                                if (link.label.includes('...')) {
+                                                    return (
+                                                        <PaginationItem key={i}>
+                                                            <PaginationEllipsis />
+                                                        </PaginationItem>
+                                                    );
+                                                }
+                                                return (
+                                                    <PaginationItem key={i}>
+                                                        <PaginationLink
+                                                            href={link.url || '#'}
+                                                            isActive={link.active}
+                                                        >
+                                                            {link.label}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                );
+                                            })}
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    href={sessions.links[sessions.links.length - 1].url || '#'}
+                                                    className={!sessions.links[sessions.links.length - 1].url ? 'pointer-events-none opacity-50' : ''}
                                                 />
-                                            )}
-                                        </Button>
-                                    ))}
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 )}
+                </div>
             </div>
         </AppLayout>
     );

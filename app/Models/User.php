@@ -67,6 +67,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the TOS generates created by the user.
+     */
+    public function tosGenerates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TosGenerate::class, 'created_by');
+    }
+
+    /**
+     * Get the exams created by the user.
+     */
+    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Exam::class, 'created_by');
+    }
+
+    /**
      * Check if the user is a student.
      */
     public function isStudent(): bool

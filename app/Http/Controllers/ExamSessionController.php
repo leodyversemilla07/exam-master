@@ -51,7 +51,6 @@ class ExamSessionController extends Controller
             'description' => ['nullable', 'string'],
             'start_time' => ['required', 'date', 'after_or_equal:now'],
             'end_time' => ['required', 'date', 'after:start_time'],
-            'time_limit_minutes' => ['nullable', 'integer', 'min:1', 'max:480'],
             'max_attempts' => ['required', 'integer', 'min:1', 'max:10'],
             'shuffle_questions' => ['boolean'],
             'shuffle_options' => ['boolean'],
@@ -60,8 +59,14 @@ class ExamSessionController extends Controller
             'allow_review' => ['boolean'],
         ]);
 
+        // Calculate time limit from session duration
+        $startTime = new \DateTime($validated['start_time']);
+        $endTime = new \DateTime($validated['end_time']);
+        $durationMinutes = (int) (($endTime->getTimestamp() - $startTime->getTimestamp()) / 60);
+
         $session = ExamSession::create([
             ...$validated,
+            'time_limit_minutes' => $durationMinutes,
             'created_by' => auth()->id(),
             'status' => 'active',
         ]);
@@ -106,6 +111,8 @@ class ExamSessionController extends Controller
     {
         $this->authorizeSession($examSession);
 
+        $examSession->load('exam.module');
+
         $exams = Exam::with('module')
             ->where('status', 'published')
             ->when(! auth()->user()->hasRole('super-admin'), function ($query) {
@@ -128,7 +135,6 @@ class ExamSessionController extends Controller
             'description' => ['nullable', 'string'],
             'start_time' => ['required', 'date'],
             'end_time' => ['required', 'date', 'after:start_time'],
-            'time_limit_minutes' => ['nullable', 'integer', 'min:1', 'max:480'],
             'max_attempts' => ['required', 'integer', 'min:1', 'max:10'],
             'shuffle_questions' => ['boolean'],
             'shuffle_options' => ['boolean'],
@@ -138,7 +144,15 @@ class ExamSessionController extends Controller
             'status' => ['required', 'in:draft,active,ended'],
         ]);
 
-        $examSession->update($validated);
+        // Calculate time limit from session duration
+        $startTime = new \DateTime($validated['start_time']);
+        $endTime = new \DateTime($validated['end_time']);
+        $durationMinutes = (int) (($endTime->getTimestamp() - $startTime->getTimestamp()) / 60);
+
+        $examSession->update([
+            ...$validated,
+            'time_limit_minutes' => $durationMinutes,
+        ]);
 
         return redirect()->route('exam-sessions.show', $examSession)
             ->with('success', 'Exam session updated successfully.');

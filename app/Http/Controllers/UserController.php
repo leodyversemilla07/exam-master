@@ -57,6 +57,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'organization' => $request->organization,
             'password' => Hash::make($request->password),
             'email_verified_at' => now(),
         ]);
@@ -78,6 +79,7 @@ class UserController extends Controller
         $data = [
             'name' => $request->name,
             'email' => $request->email,
+            'organization' => $request->organization,
         ];
 
         if ($request->filled('password')) {

@@ -109,13 +109,13 @@ const studentNavItems: NavItem[] = [
         title: 'Student Dashboard',
         href: studentDashboard(),
         icon: GraduationCap,
-        permission: 'take exams',
+        role: 'student',
     },
     {
         title: 'Exam History',
         href: examHistory(),
         icon: Clock,
-        permission: 'view own results',
+        role: 'student',
     },
 ];
 
@@ -135,6 +135,7 @@ const footerNavItems: NavItem[] = [
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
     const userPermissions = auth.user?.permissions || [];
+    const userRoles = auth.user?.roles || [];
 
     const filteredNavItems = mainNavItems.filter((item) => {
         if (!item.permission) {
@@ -144,10 +145,13 @@ export function AppSidebar() {
     });
 
     const filteredStudentNavItems = studentNavItems.filter((item) => {
-        if (!item.permission) {
-            return true;
+        if (item.role) {
+            return userRoles.includes(item.role);
         }
-        return userPermissions.includes(item.permission);
+        if (item.permission) {
+            return userPermissions.includes(item.permission);
+        }
+        return true;
     });
 
     const allNavItems = [...filteredNavItems, ...filteredStudentNavItems];

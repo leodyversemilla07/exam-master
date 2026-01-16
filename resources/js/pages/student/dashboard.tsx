@@ -70,14 +70,15 @@ export default function StudentDashboard({
         <AppLayout>
             <Head title="Student Dashboard" />
 
-            <div className="flex flex-col gap-6">
-                <PageHeader
-                    title="Student Dashboard"
-                    description="Take exams, view results, and track your progress"
-                />
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl space-y-6">
+                    <PageHeader
+                        title="Student Dashboard"
+                        description="Take exams, view results, and track your progress"
+                    />
 
-                {/* Quick Stats */}
-                <div className="grid gap-4 md:grid-cols-4">
+                    {/* Quick Stats */}
+                    <div className="grid gap-4 md:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Attempts</CardTitle>
@@ -313,6 +314,7 @@ export default function StudentDashboard({
                             )}
                         </CardContent>
                     </Card>
+                </div>
                 </div>
             </div>
         </AppLayout>

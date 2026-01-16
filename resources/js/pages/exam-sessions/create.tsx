@@ -46,7 +46,6 @@ export default function Create({ exams, selectedExamId }: PageProps) {
         description: '',
         start_time: '',
         end_time: '',
-        time_limit_minutes: '',
         max_attempts: '1',
         shuffle_questions: false,
         shuffle_options: false,
@@ -56,6 +55,23 @@ export default function Create({ exams, selectedExamId }: PageProps) {
     });
 
     const selectedExam = exams.find((e) => e.id.toString() === data.exam_id);
+
+    // Calculate session duration in minutes
+    const sessionDurationMinutes = (() => {
+        if (!data.start_time || !data.end_time) return null;
+        const start = new Date(data.start_time);
+        const end = new Date(data.end_time);
+        const diffMs = end.getTime() - start.getTime();
+        if (diffMs <= 0) return null;
+        return Math.floor(diffMs / (1000 * 60));
+    })();
+
+    const formatDuration = (minutes: number) => {
+        if (minutes < 60) return `${minutes} minutes`;
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return mins > 0 ? `${hours}h ${mins}m` : `${hours} hour${hours > 1 ? 's' : ''}`;
+    };
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -75,7 +91,8 @@ export default function Create({ exams, selectedExamId }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Exam Session" />
 
-            <div className="p-4 md:p-6 space-y-6 max-w-4xl">
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-4xl space-y-6">
                 <PageHeader
                     title="Create Exam Session"
                     description="Set up an online exam session for students to take."
@@ -177,7 +194,7 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Settings className="h-5 w-5" />
+                                        <Settings className="size-5" />
                                         Session Details
                                     </CardTitle>
                                 </CardHeader>
@@ -219,7 +236,7 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Calendar className="h-5 w-5" />
+                                        <Calendar className="size-5" />
                                         Schedule
                                     </CardTitle>
                                     <CardDescription>
@@ -229,14 +246,12 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                 <CardContent className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="start_time">Start Time *</Label>
+                                            <Label htmlFor="start_time">Start Date & Time *</Label>
                                             <Input
                                                 id="start_time"
                                                 type="datetime-local"
                                                 value={data.start_time}
-                                                onChange={(e) =>
-                                                    setData('start_time', e.target.value)
-                                                }
+                                                onChange={(e) => setData('start_time', e.target.value)}
                                             />
                                             {errors.start_time && (
                                                 <p className="text-sm text-destructive">
@@ -246,14 +261,12 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="end_time">End Time *</Label>
+                                            <Label htmlFor="end_time">End Date & Time *</Label>
                                             <Input
                                                 id="end_time"
                                                 type="datetime-local"
                                                 value={data.end_time}
-                                                onChange={(e) =>
-                                                    setData('end_time', e.target.value)
-                                                }
+                                                onChange={(e) => setData('end_time', e.target.value)}
                                             />
                                             {errors.end_time && (
                                                 <p className="text-sm text-destructive">
@@ -262,71 +275,52 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                             )}
                                         </div>
                                     </div>
+
+                                    {sessionDurationMinutes && sessionDurationMinutes > 0 && (
+                                        <div className="p-3 rounded-lg bg-muted">
+                                            <p className="text-sm">
+                                                <span className="text-muted-foreground">Exam duration: </span>
+                                                <span className="font-medium">{formatDuration(sessionDurationMinutes)}</span>
+                                            </p>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                Students will have this amount of time to complete the exam
+                                            </p>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
 
-                            {/* Time & Attempts */}
+                            {/* Attempts */}
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Clock className="h-5 w-5" />
-                                        Time & Attempts
+                                        <Clock className="size-5" />
+                                        Attempts
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="time_limit_minutes">
-                                                Time Limit (minutes)
-                                            </Label>
-                                            <Input
-                                                id="time_limit_minutes"
-                                                type="number"
-                                                min="1"
-                                                max="480"
-                                                value={data.time_limit_minutes}
-                                                onChange={(e) =>
-                                                    setData('time_limit_minutes', e.target.value)
-                                                }
-                                                placeholder={
-                                                    selectedExam?.time_limit
-                                                        ? `Default: ${selectedExam.time_limit}`
-                                                        : 'No limit'
-                                                }
-                                            />
-                                            <p className="text-xs text-muted-foreground">
-                                                Leave empty to use exam's default time limit
+                                <CardContent>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="max_attempts">Maximum Attempts *</Label>
+                                        <Select
+                                            value={data.max_attempts}
+                                            onValueChange={(v) => setData('max_attempts', v)}
+                                        >
+                                            <SelectTrigger id="max_attempts" className="w-full md:w-48">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {[1, 2, 3, 4, 5].map((n) => (
+                                                    <SelectItem key={n} value={n.toString()}>
+                                                        {n} attempt{n > 1 ? 's' : ''}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.max_attempts && (
+                                            <p className="text-sm text-destructive">
+                                                {errors.max_attempts}
                                             </p>
-                                            {errors.time_limit_minutes && (
-                                                <p className="text-sm text-destructive">
-                                                    {errors.time_limit_minutes}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="max_attempts">Maximum Attempts *</Label>
-                                            <Select
-                                                value={data.max_attempts}
-                                                onValueChange={(v) => setData('max_attempts', v)}
-                                            >
-                                                <SelectTrigger id="max_attempts">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {[1, 2, 3, 4, 5].map((n) => (
-                                                        <SelectItem key={n} value={n.toString()}>
-                                                            {n} attempt{n > 1 ? 's' : ''}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            {errors.max_attempts && (
-                                                <p className="text-sm text-destructive">
-                                                    {errors.max_attempts}
-                                                </p>
-                                            )}
-                                        </div>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -446,12 +440,13 @@ export default function Create({ exams, selectedExamId }: PageProps) {
                                     <Link href={examSessions.index.url()}>Cancel</Link>
                                 </Button>
                                 <Button type="submit" disabled={processing}>
-                                    <Save className="mr-2 h-4 w-4" />
+                                    <Save className="mr-2 size-4" />
                                     {processing ? 'Creating...' : 'Create Session'}
                                 </Button>
                             </div>
                         </form>
                     )}
+                </div>
                 </div>
             </div>
         </AppLayout>

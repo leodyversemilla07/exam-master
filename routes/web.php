@@ -312,10 +312,6 @@ Route::get('queue-monitor/stats', [QueueMonitorController::class, 'getStats'])
     ->name('queue-monitor.stats')
     ->middleware(['auth', 'verified', 'permission:view users']);
 
-Route::get('queue-monitor/failed-jobs', [QueueMonitorController::class, 'getFailedJobs'])
-    ->name('queue-monitor.failed-jobs')
-    ->middleware(['auth', 'verified', 'permission:view users']);
-
 Route::post('queue-monitor/retry', [QueueMonitorController::class, 'retryJob'])
     ->name('queue-monitor.retry')
     ->middleware(['auth', 'verified', 'permission:view users']);
@@ -344,8 +340,129 @@ Route::get('exam-sessions/{examSession}/export-results', [ExamSessionController:
     ->name('exam-sessions.export-results')
     ->middleware(['auth', 'verified', 'permission:view student results']);
 
+Route::get('exam-sessions-preview/results', function () {
+    return Inertia::render('exam-sessions/results', [
+        'session' => [
+            'id' => 1,
+            'title' => 'Midterm Exam - Section A',
+            'status' => 'active',
+            'access_code' => 'ABC12345',
+            'start_time' => now()->subDays(2)->toISOString(),
+            'end_time' => now()->addDays(5)->toISOString(),
+            'exam' => [
+                'id' => 1,
+                'title' => 'Introduction to Computer Science',
+                'module' => ['id' => 1, 'name' => 'CS101 - Fundamentals'],
+            ],
+        ],
+        'attempts' => [
+            'data' => [
+                [
+                    'id' => 1,
+                    'exam_session_id' => 1,
+                    'user_id' => 1,
+                    'status' => 'graded',
+                    'started_at' => now()->subHours(3)->toISOString(),
+                    'completed_at' => now()->subHours(2)->toISOString(),
+                    'submitted_at' => now()->subHours(2)->toISOString(),
+                    'attempt_number' => 1,
+                    'score' => 85.5,
+                    'total_points' => 100,
+                    'percentage' => 85.5,
+                    'time_spent_seconds' => 3420,
+                    'created_at' => now()->subHours(3)->toISOString(),
+                    'updated_at' => now()->subHours(2)->toISOString(),
+                    'user' => ['id' => 1, 'name' => 'John Smith', 'email' => 'john.smith@example.com'],
+                    'answers' => array_map(fn ($i) => ['id' => $i, 'is_correct' => $i <= 17, 'points_earned' => $i <= 17 ? 5 : 0, 'question' => ['id' => $i, 'question_text' => "Question $i", 'points' => 5]], range(1, 20)),
+                ],
+                [
+                    'id' => 2,
+                    'exam_session_id' => 1,
+                    'user_id' => 2,
+                    'status' => 'graded',
+                    'started_at' => now()->subHours(4)->toISOString(),
+                    'completed_at' => now()->subHours(3)->toISOString(),
+                    'submitted_at' => now()->subHours(3)->toISOString(),
+                    'attempt_number' => 1,
+                    'score' => 92.0,
+                    'total_points' => 100,
+                    'percentage' => 92.0,
+                    'time_spent_seconds' => 2880,
+                    'created_at' => now()->subHours(4)->toISOString(),
+                    'updated_at' => now()->subHours(3)->toISOString(),
+                    'user' => ['id' => 2, 'name' => 'Jane Doe', 'email' => 'jane.doe@example.com'],
+                    'answers' => array_map(fn ($i) => ['id' => $i + 20, 'is_correct' => $i <= 18, 'points_earned' => $i <= 18 ? 5 : 0, 'question' => ['id' => $i, 'question_text' => "Question $i", 'points' => 5]], range(1, 20)),
+                ],
+                [
+                    'id' => 3,
+                    'exam_session_id' => 1,
+                    'user_id' => 3,
+                    'status' => 'submitted',
+                    'started_at' => now()->subHours(2)->toISOString(),
+                    'completed_at' => now()->subHour()->toISOString(),
+                    'submitted_at' => now()->subHour()->toISOString(),
+                    'attempt_number' => 1,
+                    'score' => 68.0,
+                    'total_points' => 100,
+                    'percentage' => 68.0,
+                    'time_spent_seconds' => 4200,
+                    'created_at' => now()->subHours(2)->toISOString(),
+                    'updated_at' => now()->subHour()->toISOString(),
+                    'user' => ['id' => 3, 'name' => 'Bob Wilson', 'email' => 'bob.wilson@example.com'],
+                    'answers' => array_map(fn ($i) => ['id' => $i + 40, 'is_correct' => $i <= 14, 'points_earned' => $i <= 14 ? 5 : 0, 'question' => ['id' => $i, 'question_text' => "Question $i", 'points' => 5]], range(1, 20)),
+                ],
+                [
+                    'id' => 4,
+                    'exam_session_id' => 1,
+                    'user_id' => 4,
+                    'status' => 'in_progress',
+                    'started_at' => now()->subMinutes(30)->toISOString(),
+                    'completed_at' => null,
+                    'submitted_at' => null,
+                    'attempt_number' => 1,
+                    'score' => null,
+                    'total_points' => null,
+                    'percentage' => null,
+                    'time_spent_seconds' => null,
+                    'created_at' => now()->subMinutes(30)->toISOString(),
+                    'updated_at' => now()->subMinutes(30)->toISOString(),
+                    'user' => ['id' => 4, 'name' => 'Alice Johnson', 'email' => 'alice.johnson@example.com'],
+                    'answers' => [],
+                ],
+                [
+                    'id' => 5,
+                    'exam_session_id' => 1,
+                    'user_id' => 5,
+                    'status' => 'graded',
+                    'started_at' => now()->subHours(5)->toISOString(),
+                    'completed_at' => now()->subHours(4)->toISOString(),
+                    'submitted_at' => now()->subHours(4)->toISOString(),
+                    'attempt_number' => 1,
+                    'score' => 45.0,
+                    'total_points' => 100,
+                    'percentage' => 45.0,
+                    'time_spent_seconds' => 3600,
+                    'created_at' => now()->subHours(5)->toISOString(),
+                    'updated_at' => now()->subHours(4)->toISOString(),
+                    'user' => ['id' => 5, 'name' => 'Charlie Brown', 'email' => 'charlie.brown@example.com'],
+                    'answers' => array_map(fn ($i) => ['id' => $i + 60, 'is_correct' => $i <= 9, 'points_earned' => $i <= 9 ? 5 : 0, 'question' => ['id' => $i, 'question_text' => "Question $i", 'points' => 5]], range(1, 20)),
+                ],
+            ],
+            'current_page' => 1,
+            'last_page' => 1,
+            'per_page' => 50,
+            'total' => 5,
+            'links' => [
+                ['url' => null, 'label' => '&laquo; Previous', 'active' => false],
+                ['url' => '/exam-sessions-preview/results?page=1', 'label' => '1', 'active' => true],
+                ['url' => null, 'label' => 'Next &raquo;', 'active' => false],
+            ],
+        ],
+    ]);
+})->name('exam-sessions.results.preview')->middleware(['auth', 'verified']);
+
 // Student Portal Routes
-Route::prefix('student')->name('student.')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('student')->name('student.')->middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('dashboard', StudentDashboardController::class)
         ->name('dashboard');
 

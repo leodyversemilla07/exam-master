@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -17,13 +16,13 @@ class QueueMonitorController extends Controller
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
-        return Inertia::render('queue-monitor/index');
+        return $this->getStats();
     }
 
     /**
      * Get queue statistics.
      */
-    public function getStats(): JsonResponse
+    public function getStats(): Response
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -53,7 +52,7 @@ class QueueMonitorController extends Controller
                 $pendingJobs = DB::table('jobs')->count();
             }
 
-            return response()->json([
+            return Inertia::render('queue-monitor/index', [
                 'stats' => [
                     'failed_jobs' => $failedJobs,
                     'pending_jobs' => $pendingJobs,
@@ -62,46 +61,14 @@ class QueueMonitorController extends Controller
                 'recent_failed' => $recentFailed,
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to fetch queue stats: '.$e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Get failed jobs list.
-     */
-    public function getFailedJobs(Request $request): JsonResponse
-    {
-        abort_unless(auth()->user()->can('view users'), 403);
-
-        $validated = $request->validate([
-            'limit' => 'nullable|integer|min:10|max:100',
-        ]);
-
-        $limit = $validated['limit'] ?? 50;
-
-        try {
-            $failedJobs = DB::table('failed_jobs')
-                ->orderBy('failed_at', 'desc')
-                ->limit($limit)
-                ->get();
-
-            return response()->json([
-                'jobs' => $failedJobs,
-                'total' => DB::table('failed_jobs')->count(),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to fetch failed jobs: '.$e->getMessage(),
-            ], 500);
+            return back()->with('error', 'Failed to fetch queue stats: '.$e->getMessage());
         }
     }
 
     /**
      * Retry a failed job.
      */
-    public function retryJob(Request $request): JsonResponse
+    public function retryJob(Request $request): Response
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -114,22 +81,16 @@ class QueueMonitorController extends Controller
             // But we'll just mark it for retry by deleting it (user must restart worker)
             DB::table('failed_jobs')->where('id', $validated['id'])->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Job removed from failed queue. Restart queue worker to process.',
-            ]);
+            return back()->with('success', 'Job removed from failed queue. Restart queue worker to process.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retry job: '.$e->getMessage(),
-            ], 500);
+            return back()->with('error', 'Failed to retry job: '.$e->getMessage());
         }
     }
 
     /**
      * Delete a failed job.
      */
-    public function deleteJob(Request $request): JsonResponse
+    public function deleteJob(Request $request): Response
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -140,22 +101,16 @@ class QueueMonitorController extends Controller
         try {
             DB::table('failed_jobs')->where('id', $validated['id'])->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Failed job deleted successfully',
-            ]);
+            return back()->with('success', 'Failed job deleted successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete job: '.$e->getMessage(),
-            ], 500);
+            return back()->with('error', 'Failed to delete job: '.$e->getMessage());
         }
     }
 
     /**
      * Clear all failed jobs.
      */
-    public function clearFailedJobs(): JsonResponse
+    public function clearFailedJobs(): Response
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -163,15 +118,9 @@ class QueueMonitorController extends Controller
             $count = DB::table('failed_jobs')->count();
             DB::table('failed_jobs')->truncate();
 
-            return response()->json([
-                'success' => true,
-                'message' => "Cleared {$count} failed jobs",
-            ]);
+            return back()->with('success', "Cleared {$count} failed jobs");
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to clear jobs: '.$e->getMessage(),
-            ], 500);
+            return back()->with('error', 'Failed to clear jobs: '.$e->getMessage());
         }
     }
 }
