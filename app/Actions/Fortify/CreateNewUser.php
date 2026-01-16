@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Spatie\Permission\Models\Role;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -37,8 +38,9 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
         ]);
 
-        // Assign default role to new users
-        $user->assignRole('educator');
+        // Assign default role to new users (create role if it doesn't exist)
+        $role = Role::firstOrCreate(['name' => 'educator', 'guard_name' => 'web']);
+        $user->assignRole($role);
 
         return $user;
     }
