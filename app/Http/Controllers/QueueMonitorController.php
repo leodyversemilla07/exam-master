@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class QueueMonitorController extends Controller
 {
     /**
      * Display the queue monitor.
      */
-    public function index(): Response
+    public function index()
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
-        return $this->getStats();
+        return Inertia::render('queue-monitor/index');
     }
 
     /**
      * Get queue statistics.
      */
-    public function getStats(): Response
+    public function getStats(): \Illuminate\Http\JsonResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -52,7 +52,7 @@ class QueueMonitorController extends Controller
                 $pendingJobs = DB::table('jobs')->count();
             }
 
-            return Inertia::render('queue-monitor/index', [
+            return response()->json([
                 'stats' => [
                     'failed_jobs' => $failedJobs,
                     'pending_jobs' => $pendingJobs,
@@ -61,14 +61,14 @@ class QueueMonitorController extends Controller
                 'recent_failed' => $recentFailed,
             ]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to fetch queue stats: '.$e->getMessage());
+            return response()->json(['error' => 'Failed to fetch queue stats: '.$e->getMessage()], 500);
         }
     }
 
     /**
      * Retry a failed job.
      */
-    public function retryJob(Request $request): Response
+    public function retryJob(Request $request): RedirectResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -90,7 +90,7 @@ class QueueMonitorController extends Controller
     /**
      * Delete a failed job.
      */
-    public function deleteJob(Request $request): Response
+    public function deleteJob(Request $request): RedirectResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -110,7 +110,7 @@ class QueueMonitorController extends Controller
     /**
      * Clear all failed jobs.
      */
-    public function clearFailedJobs(): Response
+    public function clearFailedJobs(): RedirectResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 

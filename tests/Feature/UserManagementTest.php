@@ -21,7 +21,7 @@ test('can view users index', function () {
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
         ->component('users/index')
-        ->has('users.data', 6) // 5 new + 1 admin
+        ->has('users.data', 7) // 5 new + 1 admin + 1 default student from seeder
     );
 });
 

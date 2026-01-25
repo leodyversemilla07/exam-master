@@ -51,9 +51,9 @@ test('can delete a failed job', function () {
         'failed_at' => now(),
     ]);
 
-    $response = $this->deleteJson(route('queue-monitor.delete'), ['id' => $id]);
+    $response = $this->delete(route('queue-monitor.delete'), ['id' => $id]);
 
-    $response->assertSuccessful();
+    $response->assertRedirect();
     $this->assertEquals(0, DB::table('failed_jobs')->count());
 });
 
@@ -67,8 +67,8 @@ test('can clear all failed jobs', function () {
         'failed_at' => now(),
     ]);
 
-    $response = $this->postJson(route('queue-monitor.clear'));
+    $response = $this->post(route('queue-monitor.clear'));
 
-    $response->assertSuccessful();
+    $response->assertRedirect();
     $this->assertEquals(0, DB::table('failed_jobs')->count());
 });
