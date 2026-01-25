@@ -3,8 +3,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import { Edit, Trash2, CheckCircle2, XCircle, BarChart3, TrendingUp, AlertTriangle } from 'lucide-react';
 import PageHeader from '@/components/page-header';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+
+interface Performance {
+    total_attempts: number;
+    correct_answers: number;
+    success_rate: number | null;
+    suggested_difficulty: string | null;
+    current_difficulty: string;
+    needs_calibration: boolean;
+}
 
 interface Question {
     id: number;
@@ -35,9 +46,10 @@ interface Question {
 
 interface PageProps {
     question: Question;
+    performance: Performance;
 }
 
-export default function ExamShow({ question }: PageProps) {
+export default function ExamShow({ question, performance }: PageProps) {
     if (!question) {
         return (
             <AppLayout>
@@ -62,6 +74,12 @@ export default function ExamShow({ question }: PageProps) {
 
     const handleApprove = () => {
         router.post(`/question-bank/${question.id}/approve`);
+    };
+
+    const handleCalibrate = () => {
+        router.post(`/question-bank/${question.id}/calibrate`, {}, {
+            onSuccess: () => toast.success('Difficulty calibrated!'),
+        });
     };
 
     return (
@@ -100,6 +118,109 @@ export default function ExamShow({ question }: PageProps) {
                         </>
                     }
                 />
+
+                {/* Performance & Calibration */}
+                <div className="grid gap-6 md:grid-cols-3">
+                    <Card className="md:col-span-2">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                                    <CardTitle>Student Performance</CardTitle>
+                                </div>
+                                {performance.needs_calibration && (
+                                    <Badge variant="destructive" className="animate-pulse">
+                                        <AlertTriangle className="mr-1 h-3 w-3" />
+                                        Calibration Suggested
+                                    </Badge>
+                                )}
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground">Total Attempts</p>
+                                    <p className="text-2xl font-bold">{performance.total_attempts}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground">Success Rate</p>
+                                    <p className={cn(
+                                        "text-2xl font-bold",
+                                        performance.success_rate && performance.success_rate >= 70 ? "text-green-600" :
+                                        performance.success_rate && performance.success_rate >= 40 ? "text-yellow-600" : "text-red-600"
+                                    )}>
+                                        {performance.success_rate ? `${performance.success_rate}%` : 'N/A'}
+                                    </p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground">Suggested Difficulty</p>
+                                    <p className="text-2xl font-bold capitalize">
+                                        {performance.suggested_difficulty || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {performance.needs_calibration && (
+                                <div className="mt-6 p-4 border border-blue-200 bg-blue-50 rounded-lg flex items-start gap-3">
+                                    <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-blue-900">
+                                            Recalibration Recommended
+                                        </p>
+                                        <p className="text-sm text-blue-800">
+                                            Based on student data, this question is currently marked as{' '}
+                                            <span className="font-bold uppercase">{performance.current_difficulty}</span>,
+                                            but students are performing at a level consistent with{' '}
+                                            <span className="font-bold uppercase">{performance.suggested_difficulty}</span> difficulty.
+                                        </p>
+                                        <Button
+                                            size="sm"
+                                            className="mt-3 bg-blue-600 hover:bg-blue-700"
+                                            onClick={handleCalibrate}
+                                        >
+                                            Update Difficulty to {performance.suggested_difficulty?.toUpperCase()}
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {performance.total_attempts < 5 && (
+                                <p className="mt-4 text-xs text-muted-foreground italic">
+                                    * At least 5 student attempts are required for difficulty calibration suggestions.
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Question Info</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">Created By</p>
+                                <p className="text-sm">{question.creator?.name || 'Unknown'}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">Module</p>
+                                <p className="text-sm">{question.module?.name} ({question.module?.code})</p>
+                            </div>
+                            {question.tos_generate && (
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground uppercase mb-1">Source TOS</p>
+                                    <p className="text-sm">{question.tos_generate.subject} - {question.tos_generate.grade_level}</p>
+                                </div>
+                            )}
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">Metadata</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {question.is_ai_generated && <Badge variant="outline">AI Generated</Badge>}
+                                    <Badge variant="outline">{question.learning_objective_code || 'No Objective'}</Badge>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* Question Details */}
                 <Card>

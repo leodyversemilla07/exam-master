@@ -236,6 +236,72 @@ class ExamSessionController extends Controller
             ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
     }
 
+    /**
+     * View plagiarism report for essay questions in this session.
+     */
+    public function plagiarismReport(ExamSession $examSession, \App\Services\QuestionDuplicateDetector $detector): Response
+    {
+        $this->authorizeSession($examSession);
+
+        $examSession->load('exam.questions');
+
+        // Find essay questions
+        $essayQuestions = $examSession->exam->questions->where('question_type', 'essay');
+
+        $reports = [];
+
+        foreach ($essayQuestions as $question) {
+            $answers = \App\Models\StudentAnswer::where('exam_question_id', $question->id)
+                ->whereHas('examAttempt', function ($query) use ($examSession) {
+                    $query->where('exam_session_id', $examSession->id);
+                })
+                ->with('examAttempt.user')
+                ->get();
+
+            $matches = [];
+
+            for ($i = 0; $i < $answers->count(); $i++) {
+                for ($j = $i + 1; $j < $answers->count(); $j++) {
+                    $ans1 = $answers[$i];
+                    $ans2 = $answers[$j];
+
+                    if (strlen($ans1->answer ?? '') < 20 || strlen($ans2->answer ?? '') < 20) {
+                        continue;
+                    }
+
+                    $similarity = $detector->calculateSimilarity($ans1->answer, $ans2->answer);
+
+                    if ($similarity >= 0.7) {
+                        $matches[] = [
+                            'student1' => $ans1->examAttempt->user->name,
+                            'student2' => $ans2->examAttempt->user->name,
+                            'similarity' => round($similarity * 100, 2),
+                            'answer1' => $ans1->answer,
+                            'answer2' => $ans2->answer,
+                        ];
+                    }
+                }
+            }
+
+            if (! empty($matches)) {
+                $reports[] = [
+                    'question_id' => $question->id,
+                    'question_text' => $question->question,
+                    'matches' => $matches,
+                ];
+            }
+        }
+
+        return Inertia::render('exam-sessions/plagiarism-report', [
+            'session' => [
+                'id' => $examSession->id,
+                'title' => $examSession->title,
+                'access_code' => $examSession->access_code,
+            ],
+            'reports' => $reports,
+        ]);
+    }
+
     protected function authorizeSession(ExamSession $session): void
     {
         if (! auth()->user()->hasRole('super-admin') && $session->created_by !== auth()->id()) {
