@@ -20,8 +20,9 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle, Flag, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import {
     submit,
     saveAnswer as saveAnswerRoute,
@@ -57,6 +58,46 @@ export default function ExamTake({
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const [showTimeWarning, setShowTimeWarning] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set());
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+    const toggleFlag = async (questionId: number) => {
+        const isFlagged = !flaggedQuestions.has(questionId);
+
+        setFlaggedQuestions((prev) => {
+            const next = new Set(prev);
+            if (next.has(questionId)) {
+                next.delete(questionId);
+            } else {
+                next.add(questionId);
+            }
+            return next;
+        });
+
+        // Persist to server
+        setIsSaving(true);
+        try {
+            await fetch(saveAnswerRoute.url(attempt.id), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute('content') || '',
+                },
+                body: JSON.stringify({
+                    question_id: questionId,
+                    is_flagged: isFlagged,
+                }),
+            });
+            setLastSaved(new Date());
+        } catch (error) {
+            console.error('Failed to save flag status:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // Initialize answers from props
     useEffect(() => {
@@ -71,7 +112,13 @@ export default function ExamTake({
             };
         });
         setAnswers(initialAnswers);
-    }, [questions]);
+
+        // Initialize flagged questions from metadata
+        const metadata = attempt.metadata as Record<string, unknown>;
+        if (metadata?.flagged_questions && Array.isArray(metadata.flagged_questions)) {
+            setFlaggedQuestions(new Set(metadata.flagged_questions as number[]));
+        }
+    }, [questions, attempt.metadata]);
 
     // Timer
     useEffect(() => {
@@ -86,6 +133,15 @@ export default function ExamTake({
                 }
                 if (prev === 300) {
                     setShowTimeWarning(true);
+                    toast.warning('5 minutes remaining!', {
+                        description: 'Please review your answers and prepare to submit.',
+                    });
+                }
+                if (prev === 60) {
+                    toast.error('Only 1 minute remaining!', {
+                        description: 'Exam will be automatically submitted very soon!',
+                        duration: 10000,
+                    });
                 }
                 return prev - 1;
             });
@@ -143,6 +199,7 @@ export default function ExamTake({
             console.error('Failed to save answer:', error);
         } finally {
             setIsSaving(false);
+            setLastSaved(new Date());
         }
     };
 
@@ -355,23 +412,39 @@ export default function ExamTake({
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
-                            {isSaving && (
-                                <Badge variant="outline" className="animate-pulse">
+                            {isSaving ? (
+                                <Badge variant="secondary" className="animate-pulse">
                                     Saving...
                                 </Badge>
+                            ) : (
+                                lastSaved && (
+                                    <div className="hidden md:flex items-center text-xs text-muted-foreground gap-1">
+                                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                                        Saved at{' '}
+                                        {lastSaved.toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                        })}
+                                    </div>
+                                )
                             )}
                             {timeRemaining !== null && (
                                 <Badge
                                     variant={timeRemaining < 300 ? 'destructive' : 'outline'}
-                                    className="text-lg font-mono"
+                                    className={cn(
+                                        'text-lg font-mono px-3 py-1',
+                                        timeRemaining < 60 &&
+                                            'animate-pulse ring-2 ring-destructive ring-offset-2',
+                                    )}
                                 >
                                     <Clock className="h-4 w-4 mr-2" />
                                     {formatTime(timeRemaining)}
                                 </Badge>
                             )}
-                            <Button onClick={() => setShowSubmitDialog(true)}>
+                            <Button onClick={() => setShowSubmitDialog(true)} size="sm">
                                 <Send className="h-4 w-4 mr-2" />
-                                Submit Exam
+                                Submit
                             </Button>
                         </div>
                     </div>
@@ -399,6 +472,7 @@ export default function ExamTake({
                                                         answers[q.answer_id]?.answer_data || {},
                                                     ).length > 0);
                                             const isCurrent = index === currentQuestionIndex;
+                                            const isFlagged = flaggedQuestions.has(q.id);
 
                                             return (
                                                 <Button
@@ -406,19 +480,23 @@ export default function ExamTake({
                                                     variant={isCurrent ? 'default' : 'outline'}
                                                     size="sm"
                                                     className={cn(
-                                                        'w-full h-10',
+                                                        'w-full h-10 relative',
                                                         isAnswered &&
                                                             !isCurrent &&
                                                             'bg-green-100 border-green-300 hover:bg-green-200',
+                                                        isFlagged && !isCurrent && 'border-orange-400',
                                                     )}
                                                     onClick={() => setCurrentQuestionIndex(index)}
                                                 >
                                                     {index + 1}
+                                                    {isFlagged && (
+                                                        <Flag className="absolute -top-1 -right-1 h-3 w-3 fill-orange-500 text-orange-500" />
+                                                    )}
                                                 </Button>
                                             );
                                         })}
                                     </div>
-                                    <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+                                    <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                                         <div className="flex items-center gap-1">
                                             <div className="w-3 h-3 rounded bg-green-100 border border-green-300" />
                                             Answered
@@ -426,6 +504,10 @@ export default function ExamTake({
                                         <div className="flex items-center gap-1">
                                             <div className="w-3 h-3 rounded bg-primary" />
                                             Current
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Flag className="h-3 w-3 text-orange-500 fill-orange-500" />
+                                            Flagged
                                         </div>
                                     </div>
                                 </CardContent>
@@ -437,10 +519,34 @@ export default function ExamTake({
                             <Card>
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
-                                        <Badge variant="outline">
-                                            Question {currentQuestionIndex + 1} of{' '}
-                                            {questions.length}
-                                        </Badge>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => toggleFlag(currentQuestion.id)}
+                                                className={cn(
+                                                    'h-8 px-2',
+                                                    flaggedQuestions.has(currentQuestion.id)
+                                                        ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'
+                                                        : 'text-muted-foreground',
+                                                )}
+                                            >
+                                                <Flag
+                                                    className={cn(
+                                                        'h-4 w-4 mr-1',
+                                                        flaggedQuestions.has(currentQuestion.id) &&
+                                                            'fill-current',
+                                                    )}
+                                                />
+                                                {flaggedQuestions.has(currentQuestion.id)
+                                                    ? 'Flagged'
+                                                    : 'Flag'}
+                                            </Button>
+                                            <Badge variant="outline">
+                                                Question {currentQuestionIndex + 1} of{' '}
+                                                {questions.length}
+                                            </Badge>
+                                        </div>
                                         <Badge>
                                             {currentQuestion.points} point
                                             {currentQuestion.points !== 1 ? 's' : ''}

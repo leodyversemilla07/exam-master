@@ -20,7 +20,7 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import { Download, Clock, Users, CheckCircle, Search } from 'lucide-react';
+import { Download, Clock, Users, CheckCircle, Search, ShieldAlert } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
 import {
     Table,
@@ -322,10 +322,18 @@ export default function Results({ session, attempts }: PageProps) {
                     title="Exam Results"
                     description={`${session.title} • ${session.exam.title}`}
                     actions={
-                        <Button onClick={handleExport} disabled={completedAttempts.length === 0}>
-                            <Download className="mr-2 size-4" />
-                            Export CSV
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" asChild>
+                                <Link href={`/exam-sessions/${session.id}/plagiarism`}>
+                                    <ShieldAlert className="mr-2 size-4" />
+                                    Plagiarism Report
+                                </Link>
+                            </Button>
+                            <Button onClick={handleExport} disabled={completedAttempts.length === 0}>
+                                <Download className="mr-2 size-4" />
+                                Export CSV
+                            </Button>
+                        </div>
                     }
                 />
 
