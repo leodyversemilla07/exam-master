@@ -22,7 +22,7 @@ class SystemLogsController extends Controller
     /**
      * Get the latest log entries.
      */
-    public function getLogs(Request $request): Response
+    public function getLogs(Request $request): \Illuminate\Http\JsonResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -37,7 +37,7 @@ class SystemLogsController extends Controller
         $logPath = storage_path('logs/laravel.log');
 
         if (! File::exists($logPath)) {
-            return Inertia::render('system-logs/index', [
+            return response()->json([
                 'logs' => [],
                 'total' => 0,
                 'message' => 'Log file not found',
@@ -94,23 +94,23 @@ class SystemLogsController extends Controller
                 }
             }
 
-            return Inertia::render('system-logs/index', [
+            return response()->json([
                 'logs' => $parsedLogs,
                 'total' => count($parsedLogs),
             ]);
         } catch (\Exception $e) {
-            return Inertia::render('system-logs/index', [
+            return response()->json([
                 'logs' => [],
                 'total' => 0,
                 'error' => 'Failed to read log file: '.$e->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
     /**
      * Clear the log file.
      */
-    public function clearLogs(): Response
+    public function clearLogs(): \Illuminate\Http\JsonResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -119,7 +119,7 @@ class SystemLogsController extends Controller
         if (File::exists($logPath)) {
             File::put($logPath, '');
 
-            return Inertia::render('system-logs/index', [
+            return response()->json([
                 'logs' => [],
                 'total' => 0,
                 'success' => true,
@@ -127,12 +127,12 @@ class SystemLogsController extends Controller
             ]);
         }
 
-        return Inertia::render('system-logs/index', [
+        return response()->json([
             'logs' => [],
             'total' => 0,
             'success' => false,
             'message' => 'Log file not found',
-        ]);
+        ], 404);
     }
 
     /**

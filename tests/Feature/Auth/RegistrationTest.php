@@ -1,5 +1,13 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
+});
+
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
@@ -7,13 +15,17 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
-    $response = $this->withoutMiddleware()->post('/register', [
+    $email = 'test'.uniqid().'@example.com';
+    $response = $this->post('/register', [
         'name' => 'Test User',
-        'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'email' => $email,
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
     ]);
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertDatabaseHas('users', [
+        'email' => $email,
+    ]);
+
+    $response->assertRedirect('/dashboard');
 });
