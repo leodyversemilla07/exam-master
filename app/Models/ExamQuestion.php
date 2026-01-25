@@ -18,6 +18,7 @@ class ExamQuestion extends Model
             'points' => 'integer',
             'is_approved' => 'boolean',
             'is_ai_generated' => 'boolean',
+            'ai_metadata' => 'array',
         ];
     }
 
@@ -57,5 +58,39 @@ class ExamQuestion extends Model
     public function approve(): void
     {
         $this->update(['is_approved' => true]);
+    }
+
+    /**
+     * Get student performance statistics for this question.
+     */
+    public function getPerformanceStats(): array
+    {
+        $stats = StudentAnswer::where('exam_question_id', $this->id)
+            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct')
+            ->first();
+
+        $total = $stats->total ?? 0;
+        $correct = $stats->correct ?? 0;
+        $successRate = $total > 0 ? ($correct / $total) * 100 : null;
+
+        $suggestedDifficulty = null;
+        if ($total >= 5) { // Only suggest if we have enough data
+            if ($successRate >= 80) {
+                $suggestedDifficulty = 'easy';
+            } elseif ($successRate >= 40) {
+                $suggestedDifficulty = 'medium';
+            } else {
+                $suggestedDifficulty = 'hard';
+            }
+        }
+
+        return [
+            'total_attempts' => $total,
+            'correct_answers' => (int) $correct,
+            'success_rate' => $successRate ? round($successRate, 1) : null,
+            'suggested_difficulty' => $suggestedDifficulty,
+            'current_difficulty' => $this->difficulty,
+            'needs_calibration' => $suggestedDifficulty && $suggestedDifficulty !== $this->difficulty,
+        ];
     }
 }

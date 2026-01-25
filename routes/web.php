@@ -91,6 +91,14 @@ Route::post('question-bank/{exam}/approve', [ExamController::class, 'approve'])
     ->name('question-bank.approve')
     ->middleware(['auth', 'verified', 'permission:approve questions']);
 
+Route::post('question-bank/{exam}/polish', [ExamController::class, 'polish'])
+    ->name('question-bank.polish')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
+Route::post('question-bank/{exam}/calibrate', [ExamController::class, 'calibrate'])
+    ->name('question-bank.calibrate')
+    ->middleware(['auth', 'verified', 'permission:edit exams']);
+
 Route::resource('question-bank', ExamController::class)
     ->parameters(['question-bank' => 'exam'])
     ->middleware(['auth', 'verified', 'permission:view exams']);
@@ -334,6 +342,10 @@ Route::post('exam-sessions/{examSession}/regenerate-code', [ExamSessionControlle
 
 Route::get('exam-sessions/{examSession}/results', [ExamSessionController::class, 'results'])
     ->name('exam-sessions.results')
+    ->middleware(['auth', 'verified', 'permission:view student results']);
+
+Route::get('exam-sessions/{examSession}/plagiarism', [ExamSessionController::class, 'plagiarismReport'])
+    ->name('exam-sessions.plagiarism')
     ->middleware(['auth', 'verified', 'permission:view student results']);
 
 Route::get('exam-sessions/{examSession}/export-results', [ExamSessionController::class, 'exportResults'])
