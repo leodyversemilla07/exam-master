@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ExamAttempt;
 use App\Models\ExamSession;
 use App\Models\StudentAnswer;
+use App\Services\AI\FeedbackService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -193,19 +194,39 @@ class StudentExamController extends Controller
         }
 
         $request->validate([
-            'answer_id' => ['required', 'exists:student_answers,id'],
+            'answer_id' => ['nullable', 'exists:student_answers,id'],
             'answer' => ['nullable', 'string'],
             'answer_data' => ['nullable', 'array'],
+            'is_flagged' => ['nullable', 'boolean'],
+            'question_id' => ['nullable', 'exists:exam_questions,id'],
         ]);
 
-        $answer = StudentAnswer::where('id', $request->answer_id)
-            ->where('exam_attempt_id', $attempt->id)
-            ->firstOrFail();
+        if ($request->has('is_flagged') && $request->has('question_id')) {
+            $metadata = $attempt->metadata ?? [];
+            $flags = $metadata['flagged_questions'] ?? [];
 
-        $answer->update([
-            'answer' => $request->answer,
-            'answer_data' => $request->answer_data,
-        ]);
+            if ($request->is_flagged) {
+                if (! in_array($request->question_id, $flags)) {
+                    $flags[] = $request->question_id;
+                }
+            } else {
+                $flags = array_values(array_diff($flags, [$request->question_id]));
+            }
+
+            $metadata['flagged_questions'] = $flags;
+            $attempt->update(['metadata' => $metadata]);
+        }
+
+        if ($request->filled('answer_id')) {
+            $answer = StudentAnswer::where('id', $request->answer_id)
+                ->where('exam_attempt_id', $attempt->id)
+                ->firstOrFail();
+
+            $answer->update([
+                'answer' => $request->answer,
+                'answer_data' => $request->answer_data,
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }
@@ -231,7 +252,7 @@ class StudentExamController extends Controller
         return redirect()->route('student.exam.results', $attempt);
     }
 
-    public function results(ExamAttempt $attempt): Response
+    public function results(ExamAttempt $attempt, FeedbackService $feedbackService): Response
     {
         $user = auth()->user();
 
@@ -246,11 +267,23 @@ class StudentExamController extends Controller
             'answers.question',
         ]);
 
+        // Generate AI feedback if it doesn't exist yet
+        $aiFeedback = $attempt->metadata['ai_feedback'] ?? null;
+        if (! $aiFeedback && $attempt->isSubmitted() || $attempt->isGraded()) {
+            $aiFeedback = $feedbackService->generateAttemptFeedback($attempt);
+        }
+
         $showCorrectAnswers = $session->show_correct_answers
             || $session->isExpired();
 
-        $answers = $attempt->answers->map(function ($answer) use ($showCorrectAnswers) {
+        $answers = $attempt->answers->map(function ($answer) use ($showCorrectAnswers, $feedbackService) {
             $question = $answer->question;
+
+            // Generate per-answer feedback for incorrect ones if it doesn't exist
+            $feedback = $answer->feedback;
+            if (! $feedback && $answer->is_correct === false) {
+                $feedback = $feedbackService->generateAnswerFeedback($answer);
+            }
 
             return [
                 'id' => $answer->id,
@@ -263,7 +296,7 @@ class StudentExamController extends Controller
                 'is_correct' => $answer->is_correct,
                 'points_earned' => $answer->points_earned,
                 'max_points' => $answer->max_points,
-                'feedback' => $answer->feedback,
+                'feedback' => $feedback,
                 'explanation' => $showCorrectAnswers ? $question->explanation : null,
             ];
         });
@@ -273,6 +306,7 @@ class StudentExamController extends Controller
             'answers' => $answers,
             'showCorrectAnswers' => $showCorrectAnswers,
             'canReview' => $session->allow_review,
+            'aiFeedback' => $aiFeedback,
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreExamQuestionRequest;
 use App\Models\ExamQuestion;
 use App\Models\Module;
+use App\Services\AI\FeedbackService;
 use App\Services\QuestionDuplicateDetector;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -124,7 +125,26 @@ class ExamController extends Controller
 
         return Inertia::render('question-bank/show', [
             'question' => $exam,
+            'performance' => $exam->getPerformanceStats(),
         ]);
+    }
+
+    /**
+     * Calibrate question difficulty based on student performance.
+     */
+    public function calibrate(ExamQuestion $exam): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('edit exams'), 403);
+
+        $stats = $exam->getPerformanceStats();
+
+        if ($stats['suggested_difficulty']) {
+            $exam->update(['difficulty' => $stats['suggested_difficulty']]);
+
+            return back()->with('success', "Difficulty calibrated to {$stats['suggested_difficulty']} based on student performance.");
+        }
+
+        return back()->with('error', 'Not enough student data to calibrate difficulty.');
     }
 
     /**
@@ -175,6 +195,31 @@ class ExamController extends Controller
         $exam->update(['is_approved' => true]);
 
         return back()->with('success', 'Question approved successfully.');
+    }
+
+    /**
+     * Polish a question using AI.
+     */
+    public function polish(ExamQuestion $exam, FeedbackService $feedbackService): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('edit exams'), 403);
+
+        try {
+            $polished = $feedbackService->polishQuestion($exam);
+
+            $exam->update([
+                'question' => $polished['question'],
+                'explanation' => $polished['explanation'],
+                'ai_metadata' => array_merge($exam->ai_metadata ?? [], [
+                    'polished_at' => now()->toIso8601String(),
+                    'polish_rationale' => $polished['rationale'],
+                ]),
+            ]);
+
+            return back()->with('success', 'Question polished successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to polish question: '.$e->getMessage());
+        }
     }
 
     /**

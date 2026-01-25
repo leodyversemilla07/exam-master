@@ -12,9 +12,10 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
 import { Module } from '@/types/models';
-import { Plus, Search, Eye, Edit, Trash2, CheckCircle2, XCircle, Filter } from 'lucide-react';
+import { Plus, Search, Eye, Edit, Trash2, CheckCircle2, XCircle, Filter, Sparkles, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
+import { toast } from 'sonner';
 
 interface Question {
     id: number;
@@ -68,6 +69,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
     const [difficultyFilter, setDifficultyFilter] = useState(filters.difficulty || 'all');
     const [cognitiveFilter, setCognitiveFilter] = useState(filters.cognitive_level || 'all');
     const [approvalFilter, setApprovalFilter] = useState(filters.is_approved || 'all');
+    const [polishingId, setPolishingId] = useState<number | null>(null);
 
     const handleSearch = (value: string) => {
         setSearch(value);
@@ -95,6 +97,21 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
         if (confirm('Are you sure you want to delete this question?')) {
             router.delete(`/question-bank/${question.id}`);
         }
+    };
+
+    const handlePolish = (question: Question) => {
+        setPolishingId(question.id);
+        router.post(`/question-bank/${question.id}/polish`, {}, {
+            onSuccess: () => {
+                toast.success('Question polished successfully!');
+                setPolishingId(null);
+            },
+            onError: (errors) => {
+                toast.error('Failed to polish question.');
+                setPolishingId(null);
+            },
+            onFinish: () => setPolishingId(null),
+        });
     };
 
     const getDifficultyBadge = (difficulty: string) => {
@@ -378,6 +395,19 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                             </div>
 
                                             <div className="flex gap-2 ml-4">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handlePolish(question)}
+                                                    disabled={polishingId === question.id}
+                                                    title="AI Polish (Grammar & Clarity)"
+                                                >
+                                                    {polishingId === question.id ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <Sparkles className="h-4 w-4 text-blue-500" />
+                                                    )}
+                                                </Button>
                                                 <Button variant="outline" size="sm" asChild>
                                                     <Link href={`/question-bank/${question.id}`}>
                                                         <Eye className="h-4 w-4" />

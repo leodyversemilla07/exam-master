@@ -14,6 +14,7 @@ import {
     ArrowLeft,
     FileText,
     AlertCircle,
+    Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -39,6 +40,7 @@ interface ExamResultsProps extends PageProps {
     answers: Answer[];
     showCorrectAnswers: boolean;
     canReview: boolean;
+    aiFeedback?: string;
 }
 
 export default function ExamResults({
@@ -46,6 +48,7 @@ export default function ExamResults({
     answers,
     showCorrectAnswers,
     canReview,
+    aiFeedback,
 }: ExamResultsProps) {
     const percentage = attempt.percentage || 0;
     const isPassed = percentage >= 60;
@@ -157,6 +160,26 @@ export default function ExamResults({
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* AI Feedback Card */}
+                    {aiFeedback && (
+                        <Card className="border-blue-200 bg-blue-50/30 overflow-hidden">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-blue-800 flex items-center gap-2">
+                                    <Sparkles className="h-5 w-5 fill-blue-500 text-blue-500" />
+                                    AI-Powered Feedback
+                                </CardTitle>
+                                <CardDescription className="text-blue-700/80">
+                                    Generated personalized insights for your performance
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="prose prose-sm max-w-none text-blue-900 leading-relaxed italic">
+                                    &quot;{aiFeedback}&quot;
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Summary Card */}
                     <Card>
