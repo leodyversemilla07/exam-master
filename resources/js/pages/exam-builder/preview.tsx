@@ -53,8 +53,8 @@ export default function Preview({ exam, template }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Preview: ${exam.title}`} />
 
-            <div className="p-4 md:p-6 print:p-0">
-                <div className="mx-auto max-w-4xl space-y-8">
+            <div className="p-6 md:p-8 print:p-0">
+                <div className="mx-auto max-w-7xl space-y-8">
                     {/* Controls */}
                     <div className="flex justify-between items-center print:hidden">
                         <Button variant="ghost" asChild>
@@ -71,7 +71,7 @@ export default function Preview({ exam, template }: PageProps) {
 
                     {/* Paper Preview */}
                     <Card className="shadow-lg border-2 print:shadow-none print:border-none">
-                        <CardContent className="p-8 md:p-12 space-y-8 min-h-[1056px] flex flex-col">
+                        <CardContent className="p-8 md:p-12 space-y-8 min-h-264 flex flex-col">
                             {/* Custom Styles */}
                             {template?.styles && (
                                 <style dangerouslySetInnerHTML={{ __html: template.styles }} />

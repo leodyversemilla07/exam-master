@@ -8,7 +8,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.0
+- php - 8.4.16
 - inertiajs/inertia-laravel (INERTIA) - v2
 - laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v12
@@ -23,6 +23,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - tailwindcss (TAILWINDCSS) - v4
 - @inertiajs/react (INERTIA) - v2
 - @laravel/vite-plugin-wayfinder (WAYFINDER) - v0
+- prettier (PRETTIER) - v3
 - react (REACT) - v19
 
 ## Conventions
@@ -124,14 +125,6 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - You must not run any commands to make the site available via HTTP(s). It is _always_ available through Laravel Herd.
 
 
-=== tests rules ===
-
-## Test Enforcement
-
-- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
-
-
 === inertia-laravel/core rules ===
 
 ## Inertia Core
@@ -177,7 +170,7 @@ Route::get('/users', function () {
 ## Do Things the Laravel Way
 
 - Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
-- If you're creating a generic PHP class, use `php artisan make:class`.
+- If you're creating a generic PHP class, use `artisan make:class`.
 - Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
 
 ### Database
@@ -212,7 +205,7 @@ Route::get('/users', function () {
 ### Testing
 - When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
 - Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] {name}` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
+- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
 
 ### Vite Error
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
@@ -305,11 +298,12 @@ If your application uses the `<Form>` component from Inertia, you can use Wayfin
 === pest/core rules ===
 
 ## Pest
+
 ### Testing
 - If you need to verify a feature is working, write or update a Unit / Feature test.
 
 ### Pest Tests
-- All tests must be written using Pest. Use `php artisan make:test --pest {name}`.
+- All tests must be written using Pest. Use `php artisan make:test --pest <name>`.
 - You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files - these are core to the application.
 - Tests should test all of the happy paths, failure paths, and weird paths.
 - Tests live in the `tests/Feature` and `tests/Unit` directories.
@@ -519,31 +513,27 @@ export default () => (
 </code-snippet>
 
 
+=== tests rules ===
+
+## Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+
+
 === laravel/fortify rules ===
 
-## Laravel Fortify
+# Laravel Fortify
 
-Fortify is a headless authentication backend that provides authentication routes and controllers for Laravel applications.
+- Fortify is a headless authentication backend that provides authentication routes and controllers for Laravel applications.
+- IMPORTANT: Always use the `search-docs` tool for detailed Laravel Fortify patterns and documentation.
+- IMPORTANT: Activate `developing-with-fortify` skill when working with Fortify authentication features.
 
-**Before implementing any authentication features, use the `search-docs` tool to get the latest docs for that specific feature.**
 
-### Configuration & Setup
-- Check `config/fortify.php` to see what's enabled. Use `search-docs` for detailed information on specific features.
-- Enable features by adding them to the `'features' => []` array: `Features::registration()`, `Features::resetPasswords()`, etc.
-- To see the all Fortify registered routes, use the `list-routes` tool with the `only_vendor: true` and `action: "Fortify"` parameters.
-- Fortify includes view routes by default (login, register). Set `'views' => false` in the configuration file to disable them if you're handling views yourself.
+=== prism-php/prism rules ===
 
-### Customization
-- Views can be customized in `FortifyServiceProvider`'s `boot()` method using `Fortify::loginView()`, `Fortify::registerView()`, etc.
-- Customize authentication logic with `Fortify::authenticateUsing()` for custom user retrieval / validation.
-- Actions in `app/Actions/Fortify/` handle business logic (user creation, password reset, etc.). They're fully customizable, so you can modify them to change feature behavior.
+## Prism
 
-## Available Features
-- `Features::registration()` for user registration.
-- `Features::emailVerification()` to verify new user emails.
-- `Features::twoFactorAuthentication()` for 2FA with QR codes and recovery codes.
-  - Add options: `['confirmPassword' => true, 'confirm' => true]` to require password confirmation and OTP confirmation before enabling 2FA.
-- `Features::updateProfileInformation()` to let users update their profile.
-- `Features::updatePasswords()` to let users change their passwords.
-- `Features::resetPasswords()` for password reset via email.
+- Prism is a Laravel package for integrating Large Language Models (LLMs) into applications with a fluent, expressive and eloquent API.
+- IMPORTANT: Activate `developing-with-prism` skill when working with Prism features.
 </laravel-boost-guidelines>

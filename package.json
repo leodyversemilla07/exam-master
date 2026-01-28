@@ -41,6 +41,7 @@
         "@radix-ui/react-tooltip": "^1.2.8",
         "@tailwindcss/vite": "^4.1.17",
         "@tanstack/react-table": "^8.21.3",
+        "@tiptap/core": "^3.17.1",
         "@tiptap/extension-image": "^3.14.0",
         "@tiptap/extension-table": "^3.14.0",
         "@tiptap/extension-table-cell": "^3.14.0",

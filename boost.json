@@ -1,9 +1,9 @@
 {
     "agents": [
-        "phpstorm"
+        "copilot"
     ],
     "editors": [
-        "phpstorm"
+        "vscode"
     ],
     "guidelines": [
         "prism-php/prism"

@@ -91,8 +91,8 @@ export default function EditExam({ exam, modules, tosTemplates, examTemplates }:
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Exam" />
 
-            <div className="p-4 md:p-6">
-                <div className="mx-auto max-w-4xl">
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl space-y-6">
                     <div className="mb-6">
                         <Card>
                             <CardHeader>

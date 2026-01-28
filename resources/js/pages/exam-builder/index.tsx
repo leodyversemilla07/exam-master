@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link, usePage } from '@inertiajs/react';
 import { Exam } from '@/types/models';
-import { Plus, Eye, Edit, Copy, Trash2, Clock, FileText, Users } from 'lucide-react';
+import { Plus, Eye, Edit, Copy, Trash2, FileText } from 'lucide-react';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import {
@@ -24,10 +24,38 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
+    AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
 import { BreadcrumbItem, SharedData } from '@/types';
+import * as examBuilder from '@/routes/exam-builder';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Builder', href: '/exam-builder' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Builder', href: examBuilder.index.url() }];
 
 interface PageProps {
     exams: {
@@ -46,7 +74,9 @@ interface PageProps {
         })[];
         current_page: number;
         last_page: number;
+        per_page: number;
         total: number;
+        links: { url: string | null; label: string; active: boolean }[];
     };
     modules: {
         id: number;
@@ -154,13 +184,14 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Exam Builder" />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl space-y-6">
                 <PageHeader
                     title="Exam Builder"
                     description="Create complete exams by combining questions from your question bank"
                     actions={
                         <Button asChild>
-                            <Link href="/exam-builder/create">
+                            <Link href={examBuilder.create.url()}>
                                 <Plus className="mr-2 size-4" />
                                 Create Exam
                             </Link>
@@ -246,7 +277,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     setModuleFilter('all');
                                     setStatusFilter('all');
                                     setTypeFilter('all');
-                                    router.get('/exam-builder', {}, { preserveState: true });
+                                    router.get(examBuilder.index.url(), {}, { preserveState: true });
                                 }}
                             >
                                 Clear Filters
@@ -255,115 +286,235 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                     </CardContent>
                 </Card>
 
-                {/* Exams List */}
-                <div className="grid gap-6">
-                    {exams.data.map((exam) => (
-                        <Card key={exam.id}>
-                            <CardContent className="pt-6">
-                                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-                                    <div className="flex-1">
-                                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                                            <h3 className="text-lg font-semibold text-foreground">
-                                                {exam.title}
-                                            </h3>
-                                            {getStatusBadge(exam.status)}
-                                            {getTypeBadge(exam.exam_type)}
-                                        </div>
-
-                                        {exam.description && (
-                                            <p className="text-muted-foreground mb-3 line-clamp-2">
-                                                {exam.description}
-                                            </p>
-                                        )}
-
-                                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-                                            <div className="flex items-center gap-1">
-                                                <FileText className="h-4 w-4" />
-                                                {exam.module.code} - {exam.module.name}
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Users className="h-4 w-4" />
-                                                {exam.questions_count} questions
-                                            </div>
-                                            {exam.time_limit && (
-                                                <div className="flex items-center gap-1">
-                                                    <Clock className="h-4 w-4" />
-                                                    {exam.time_limit} min
-                                                </div>
-                                            )}
-                                            <div>Passing: {exam.passing_score}%</div>
-                                        </div>
-
-                                        <div className="text-sm text-muted-foreground">
-                                            Created by {exam.creator.name}
-                                            {exam.tos_generate && (
-                                                <span> • Based on {exam.tos_generate.title}</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-2 mt-4 lg:mt-0 lg:ml-4">
-                                        <Button variant="outline" size="sm" asChild>
-                                            <Link href={`/exam-builder/${exam.id}`}>
-                                                <Eye className="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                        <Button variant="outline" size="sm" asChild>
-                                            <Link href={`/exam-builder/${exam.id}/edit`}>
-                                                <Edit className="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                router.post(`/exam-builder/${exam.id}/duplicate`)
-                                            }
-                                        >
-                                            <Copy className="h-4 w-4" />
-                                        </Button>
-                                        {canDeleteExam(exam) && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleDelete(exam)}
-                                                className="text-destructive hover:text-destructive/80"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                {exams.data.length === 0 && (
+                {exams.data.length === 0 ? (
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <FileText className="size-8" />
+                            </EmptyMedia>
+                            <EmptyTitle>No Exams</EmptyTitle>
+                            <EmptyDescription>
+                                Create your first exam to start building assessments from your question bank.
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button asChild>
+                                <Link href={examBuilder.create.url()}>
+                                    <Plus className="mr-2 size-4" />
+                                    Create Exam
+                                </Link>
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                ) : (
                     <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-center py-12">
-                                <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                                <h3 className="mt-2 text-sm font-semibold text-foreground">
-                                    No exams found
-                                </h3>
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                    Get started by creating your first exam.
-                                </p>
-                                <div className="mt-6">
-                                    <Button asChild>
-                                        <Link href="/exam-builder/create">
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            Create Exam
-                                        </Link>
-                                    </Button>
+                        <CardHeader>
+                            <CardTitle>All Exams</CardTitle>
+                            <CardDescription>
+                                {exams.total} exam{exams.total !== 1 ? 's' : ''} total
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Exam</TableHead>
+                                        <TableHead>Module</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-center">Questions</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {exams.data.map((exam) => (
+                                        <TableRow key={exam.id}>
+                                            <TableCell>
+                                                <div>
+                                                    <div className="font-medium">
+                                                        {exam.title}
+                                                    </div>
+                                                    {exam.description && (
+                                                        <div className="text-sm text-muted-foreground truncate max-w-50">
+                                                            {exam.description}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="font-medium">
+                                                    {exam.module.code}
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {exam.module.name}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{getTypeBadge(exam.exam_type)}</TableCell>
+                                            <TableCell>{getStatusBadge(exam.status)}</TableCell>
+                                            <TableCell className="text-center">
+                                                <div className="flex items-center justify-center gap-1">
+                                                    <FileText className="size-4 text-muted-foreground" />
+                                                    {exam.questions_count}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex justify-end gap-2">
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="icon"
+                                                                    asChild
+                                                                >
+                                                                    <Link
+                                                                        href={examBuilder.show.url(
+                                                                            exam.id,
+                                                                        )}
+                                                                    >
+                                                                        <Eye className="size-4" />
+                                                                    </Link>
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                View Details
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="icon"
+                                                                    asChild
+                                                                >
+                                                                    <Link
+                                                                        href={examBuilder.edit.url(
+                                                                            exam.id,
+                                                                        )}
+                                                                    >
+                                                                        <Edit className="size-4" />
+                                                                    </Link>
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                Edit Exam
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="icon"
+                                                                    onClick={() =>
+                                                                        router.post(examBuilder.duplicate.url(exam.id))
+                                                                    }
+                                                                >
+                                                                    <Copy className="size-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                Duplicate Exam
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+
+                                                    {canDeleteExam(exam) && (
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button
+                                                                    variant="destructive"
+                                                                    size="icon"
+                                                                >
+                                                                    <Trash2 className="size-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>
+                                                                        Delete Exam?
+                                                                    </AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action cannot be undone.
+                                                                        This will permanently delete the
+                                                                        exam "{exam.title}".
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>
+                                                                        Cancel
+                                                                    </AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() =>
+                                                                            handleDelete(exam)
+                                                                        }
+                                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                                    >
+                                                                        Delete
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+
+                            {/* Pagination */}
+                            {exams.last_page > 1 && (
+                                <div className="flex items-center justify-between mt-6">
+                                    <p className="text-sm text-muted-foreground">
+                                        Showing {exams.data.length} of {exams.total} exams
+                                    </p>
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    href={exams.links[0].url || '#'}
+                                                    className={!exams.links[0].url ? 'pointer-events-none opacity-50' : ''}
+                                                />
+                                            </PaginationItem>
+                                            {exams.links.slice(1, -1).map((link, i) => {
+                                                if (link.label.includes('...')) {
+                                                    return (
+                                                        <PaginationItem key={i}>
+                                                            <PaginationEllipsis />
+                                                        </PaginationItem>
+                                                    );
+                                                }
+                                                return (
+                                                    <PaginationItem key={i}>
+                                                        <PaginationLink
+                                                            href={link.url || '#'}
+                                                            isActive={link.active}
+                                                        >
+                                                            {link.label}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                );
+                                            })}
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    href={exams.links[exams.links.length - 1].url || '#'}
+                                                    className={!exams.links[exams.links.length - 1].url ? 'pointer-events-none opacity-50' : ''}
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
                                 </div>
-                            </div>
+                            )}
                         </CardContent>
                     </Card>
                 )}
-
-                {/* Pagination would go here if needed */}
+                </div>
             </div>
 
             {/* Delete Confirmation Dialog */}
