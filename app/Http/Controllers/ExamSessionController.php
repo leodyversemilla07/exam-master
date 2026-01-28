@@ -19,7 +19,8 @@ class ExamSessionController extends Controller
                 $query->where('created_by', auth()->id());
             })
             ->orderByDesc('created_at')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('exam-sessions/index', [
             'sessions' => $sessions,

@@ -10,6 +10,8 @@ use App\Http\Controllers\ExamSessionController;
 use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\LearningObjectiveController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueueMonitorController;
 use App\Http\Controllers\StudentDashboardController;
@@ -37,6 +39,16 @@ Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/health', HealthCheckController::class)->name('health.check');
+
+Route::get('/plans', [PlanController::class, 'index'])->name('plans');
+
+Route::post('/payments/create-intent', [PaymentController::class, 'createPaymentIntent'])
+    ->name('payments.create-intent')
+    ->middleware(['auth', 'verified']);
+
+Route::post('/payments/webhook', [PaymentController::class, 'handleWebhook'])
+    ->name('payments.webhook')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Webhooks don't have CSRF tokens
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
