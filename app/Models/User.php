@@ -105,4 +105,50 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasRole('admin') || $this->hasRole('super-admin');
     }
+
+    /**
+     * Get the subscriptions for the user.
+     */
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the payments for the user.
+     */
+    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the user's active subscription.
+     */
+    public function activeSubscription(): ?Subscription
+    {
+        return $this->subscriptions()
+            ->active()
+            ->with('plan')
+            ->latest('starts_at')
+            ->first();
+    }
+
+    /**
+     * Determine if the user has an active subscription.
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->activeSubscription() !== null;
+    }
+
+    /**
+     * Determine if the user is subscribed to the given plan.
+     */
+    public function isSubscribedTo(Plan $plan): bool
+    {
+        $subscription = $this->activeSubscription();
+
+        return $subscription !== null && $subscription->plan_id === $plan->id;
+    }
 }

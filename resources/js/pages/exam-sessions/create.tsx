@@ -16,6 +16,7 @@ import {
 import { Save, Clock, Calendar, Settings } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
 import * as examSessions from '@/routes/exam-sessions';
+import { index as examBuilderIndex } from '@/routes/exam-builder';
 import { FormEventHandler } from 'react';
 import PageHeader from '@/components/page-header';
 
@@ -93,360 +94,387 @@ export default function Create({ exams, selectedExamId }: PageProps) {
 
             <div className="p-6 md:p-8">
                 <div className="mx-auto max-w-4xl space-y-6">
-                <PageHeader
-                    title="Create Exam Session"
-                    description="Set up an online exam session for students to take."
-                />
+                    <PageHeader
+                        title="Create Exam Session"
+                        description="Set up an online exam session for students to take."
+                    />
 
-                <div>
-                    {exams.length === 0 ? (
-                        <Card>
-                            <CardContent className="flex flex-col items-center justify-center py-12">
-                                <h3 className="text-lg font-semibold mb-2">No Published Exams</h3>
-                                <p className="text-muted-foreground text-center mb-4">
-                                    You need to create and publish an exam before creating a
-                                    session.
-                                </p>
-                                <Button asChild>
-                                    <Link href="/exam-builder">Go to Exam Builder</Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Exam Selection */}
+                    <div>
+                        {exams.length === 0 ? (
                             <Card>
-                                <CardHeader>
-                                    <CardTitle>Select Exam</CardTitle>
-                                    <CardDescription>
-                                        Choose which exam this session is for
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="exam_id">Exam *</Label>
-                                        <Select
-                                            value={data.exam_id}
-                                            onValueChange={handleExamChange}
-                                        >
-                                            <SelectTrigger id="exam_id">
-                                                <SelectValue placeholder="Select an exam..." />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {exams.map((exam) => (
-                                                    <SelectItem
-                                                        key={exam.id}
-                                                        value={exam.id.toString()}
-                                                    >
-                                                        <div className="flex flex-col">
-                                                            <span>{exam.title}</span>
-                                                            {exam.module && (
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    {exam.module.name}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        {errors.exam_id && (
-                                            <p className="text-sm text-destructive">
-                                                {errors.exam_id}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {selectedExam && (
-                                        <div className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-muted">
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Questions
-                                                </p>
-                                                <p className="font-medium">
-                                                    {selectedExam.total_items}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Total Points
-                                                </p>
-                                                <p className="font-medium">
-                                                    {selectedExam.total_points}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Time Limit
-                                                </p>
-                                                <p className="font-medium">
-                                                    {selectedExam.time_limit
-                                                        ? `${selectedExam.time_limit} min`
-                                                        : 'No limit'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
+                                <CardContent className="flex flex-col items-center justify-center py-12">
+                                    <h3 className="text-lg font-semibold mb-2">
+                                        No Published Exams
+                                    </h3>
+                                    <p className="text-muted-foreground text-center mb-4">
+                                        You need to create and publish an exam before creating a
+                                        session.
+                                    </p>
+                                    <Button asChild>
+                                        <Link href={examBuilderIndex.url()}>
+                                            Go to Exam Builder
+                                        </Link>
+                                    </Button>
                                 </CardContent>
                             </Card>
-
-                            {/* Session Details */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Settings className="size-5" />
-                                        Session Details
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="title">Session Title *</Label>
-                                        <Input
-                                            id="title"
-                                            value={data.title}
-                                            onChange={(e) => setData('title', e.target.value)}
-                                            placeholder="e.g., Midterm Exam - Section A"
-                                        />
-                                        {errors.title && (
-                                            <p className="text-sm text-destructive">
-                                                {errors.title}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description">Description (Optional)</Label>
-                                        <Textarea
-                                            id="description"
-                                            value={data.description}
-                                            onChange={(e) => setData('description', e.target.value)}
-                                            placeholder="Additional instructions or notes for students..."
-                                            rows={3}
-                                        />
-                                        {errors.description && (
-                                            <p className="text-sm text-destructive">
-                                                {errors.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Schedule */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Calendar className="size-5" />
-                                        Schedule
-                                    </CardTitle>
-                                    <CardDescription>
-                                        When should this session be available to students?
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                {/* Exam Selection */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Select Exam</CardTitle>
+                                        <CardDescription>
+                                            Choose which exam this session is for
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="start_time">Start Date & Time *</Label>
-                                            <Input
-                                                id="start_time"
-                                                type="datetime-local"
-                                                value={data.start_time}
-                                                onChange={(e) => setData('start_time', e.target.value)}
-                                            />
-                                            {errors.start_time && (
+                                            <Label htmlFor="exam_id">Exam *</Label>
+                                            <Select
+                                                value={data.exam_id}
+                                                onValueChange={handleExamChange}
+                                            >
+                                                <SelectTrigger id="exam_id">
+                                                    <SelectValue placeholder="Select an exam..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {exams.map((exam) => (
+                                                        <SelectItem
+                                                            key={exam.id}
+                                                            value={exam.id.toString()}
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <span>{exam.title}</span>
+                                                                {exam.module && (
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        {exam.module.name}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            {errors.exam_id && (
                                                 <p className="text-sm text-destructive">
-                                                    {errors.start_time}
+                                                    {errors.exam_id}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        {selectedExam && (
+                                            <div className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-muted">
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Questions
+                                                    </p>
+                                                    <p className="font-medium">
+                                                        {selectedExam.total_items}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Total Points
+                                                    </p>
+                                                    <p className="font-medium">
+                                                        {selectedExam.total_points}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Time Limit
+                                                    </p>
+                                                    <p className="font-medium">
+                                                        {selectedExam.time_limit
+                                                            ? `${selectedExam.time_limit} min`
+                                                            : 'No limit'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+
+                                {/* Session Details */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Settings className="size-5" />
+                                            Session Details
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="title">Session Title *</Label>
+                                            <Input
+                                                id="title"
+                                                value={data.title}
+                                                onChange={(e) => setData('title', e.target.value)}
+                                                placeholder="e.g., Midterm Exam - Section A"
+                                            />
+                                            {errors.title && (
+                                                <p className="text-sm text-destructive">
+                                                    {errors.title}
                                                 </p>
                                             )}
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="end_time">End Date & Time *</Label>
-                                            <Input
-                                                id="end_time"
-                                                type="datetime-local"
-                                                value={data.end_time}
-                                                onChange={(e) => setData('end_time', e.target.value)}
+                                            <Label htmlFor="description">
+                                                Description (Optional)
+                                            </Label>
+                                            <Textarea
+                                                id="description"
+                                                value={data.description}
+                                                onChange={(e) =>
+                                                    setData('description', e.target.value)
+                                                }
+                                                placeholder="Additional instructions or notes for students..."
+                                                rows={3}
                                             />
-                                            {errors.end_time && (
+                                            {errors.description && (
                                                 <p className="text-sm text-destructive">
-                                                    {errors.end_time}
+                                                    {errors.description}
                                                 </p>
                                             )}
                                         </div>
-                                    </div>
+                                    </CardContent>
+                                </Card>
 
-                                    {sessionDurationMinutes && sessionDurationMinutes > 0 && (
-                                        <div className="p-3 rounded-lg bg-muted">
-                                            <p className="text-sm">
-                                                <span className="text-muted-foreground">Exam duration: </span>
-                                                <span className="font-medium">{formatDuration(sessionDurationMinutes)}</span>
-                                            </p>
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                Students will have this amount of time to complete the exam
-                                            </p>
+                                {/* Schedule */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Calendar className="size-5" />
+                                            Schedule
+                                        </CardTitle>
+                                        <CardDescription>
+                                            When should this session be available to students?
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="start_time">
+                                                    Start Date & Time *
+                                                </Label>
+                                                <Input
+                                                    id="start_time"
+                                                    type="datetime-local"
+                                                    value={data.start_time}
+                                                    onChange={(e) =>
+                                                        setData('start_time', e.target.value)
+                                                    }
+                                                />
+                                                {errors.start_time && (
+                                                    <p className="text-sm text-destructive">
+                                                        {errors.start_time}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="end_time">End Date & Time *</Label>
+                                                <Input
+                                                    id="end_time"
+                                                    type="datetime-local"
+                                                    value={data.end_time}
+                                                    onChange={(e) =>
+                                                        setData('end_time', e.target.value)
+                                                    }
+                                                />
+                                                {errors.end_time && (
+                                                    <p className="text-sm text-destructive">
+                                                        {errors.end_time}
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </CardContent>
-                            </Card>
 
-                            {/* Attempts */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Clock className="size-5" />
-                                        Attempts
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="max_attempts">Maximum Attempts *</Label>
-                                        <Select
-                                            value={data.max_attempts}
-                                            onValueChange={(v) => setData('max_attempts', v)}
-                                        >
-                                            <SelectTrigger id="max_attempts" className="w-full md:w-48">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {[1, 2, 3, 4, 5].map((n) => (
-                                                    <SelectItem key={n} value={n.toString()}>
-                                                        {n} attempt{n > 1 ? 's' : ''}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        {errors.max_attempts && (
-                                            <p className="text-sm text-destructive">
-                                                {errors.max_attempts}
-                                            </p>
+                                        {sessionDurationMinutes && sessionDurationMinutes > 0 && (
+                                            <div className="p-3 rounded-lg bg-muted">
+                                                <p className="text-sm">
+                                                    <span className="text-muted-foreground">
+                                                        Exam duration:{' '}
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {formatDuration(sessionDurationMinutes)}
+                                                    </span>
+                                                </p>
+                                                <p className="text-xs text-muted-foreground mt-1">
+                                                    Students will have this amount of time to
+                                                    complete the exam
+                                                </p>
+                                            </div>
                                         )}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            {/* Options */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Options</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <Label
-                                                htmlFor="shuffle_questions"
-                                                className="text-base"
+                                {/* Attempts */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Clock className="size-5" />
+                                            Attempts
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="max_attempts">Maximum Attempts *</Label>
+                                            <Select
+                                                value={data.max_attempts}
+                                                onValueChange={(v) => setData('max_attempts', v)}
                                             >
-                                                Shuffle Questions
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Randomize the order of questions for each student
-                                            </p>
+                                                <SelectTrigger
+                                                    id="max_attempts"
+                                                    className="w-full md:w-48"
+                                                >
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {[1, 2, 3, 4, 5].map((n) => (
+                                                        <SelectItem key={n} value={n.toString()}>
+                                                            {n} attempt{n > 1 ? 's' : ''}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            {errors.max_attempts && (
+                                                <p className="text-sm text-destructive">
+                                                    {errors.max_attempts}
+                                                </p>
+                                            )}
                                         </div>
-                                        <Switch
-                                            id="shuffle_questions"
-                                            checked={data.shuffle_questions}
-                                            onCheckedChange={(checked) =>
-                                                setData('shuffle_questions', checked)
-                                            }
-                                        />
-                                    </div>
+                                    </CardContent>
+                                </Card>
 
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <Label htmlFor="shuffle_options" className="text-base">
-                                                Shuffle Answer Options
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Randomize the order of answer options for each
-                                                question
-                                            </p>
+                                {/* Options */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Options</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <Label
+                                                    htmlFor="shuffle_questions"
+                                                    className="text-base"
+                                                >
+                                                    Shuffle Questions
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Randomize the order of questions for each
+                                                    student
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                id="shuffle_questions"
+                                                checked={data.shuffle_questions}
+                                                onCheckedChange={(checked) =>
+                                                    setData('shuffle_questions', checked)
+                                                }
+                                            />
                                         </div>
-                                        <Switch
-                                            id="shuffle_options"
-                                            checked={data.shuffle_options}
-                                            onCheckedChange={(checked) =>
-                                                setData('shuffle_options', checked)
-                                            }
-                                        />
-                                    </div>
 
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <Label
-                                                htmlFor="show_results_immediately"
-                                                className="text-base"
-                                            >
-                                                Show Results Immediately
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Display score and percentage right after submission
-                                            </p>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <Label
+                                                    htmlFor="shuffle_options"
+                                                    className="text-base"
+                                                >
+                                                    Shuffle Answer Options
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Randomize the order of answer options for each
+                                                    question
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                id="shuffle_options"
+                                                checked={data.shuffle_options}
+                                                onCheckedChange={(checked) =>
+                                                    setData('shuffle_options', checked)
+                                                }
+                                            />
                                         </div>
-                                        <Switch
-                                            id="show_results_immediately"
-                                            checked={data.show_results_immediately}
-                                            onCheckedChange={(checked) =>
-                                                setData('show_results_immediately', checked)
-                                            }
-                                        />
-                                    </div>
 
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <Label
-                                                htmlFor="show_correct_answers"
-                                                className="text-base"
-                                            >
-                                                Show Correct Answers
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Show correct answers after exam submission
-                                            </p>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <Label
+                                                    htmlFor="show_results_immediately"
+                                                    className="text-base"
+                                                >
+                                                    Show Results Immediately
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Display score and percentage right after
+                                                    submission
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                id="show_results_immediately"
+                                                checked={data.show_results_immediately}
+                                                onCheckedChange={(checked) =>
+                                                    setData('show_results_immediately', checked)
+                                                }
+                                            />
                                         </div>
-                                        <Switch
-                                            id="show_correct_answers"
-                                            checked={data.show_correct_answers}
-                                            onCheckedChange={(checked) =>
-                                                setData('show_correct_answers', checked)
-                                            }
-                                        />
-                                    </div>
 
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <Label htmlFor="allow_review" className="text-base">
-                                                Allow Review
-                                            </Label>
-                                            <p className="text-sm text-muted-foreground">
-                                                Allow students to review their answers after
-                                                submission
-                                            </p>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <Label
+                                                    htmlFor="show_correct_answers"
+                                                    className="text-base"
+                                                >
+                                                    Show Correct Answers
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Show correct answers after exam submission
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                id="show_correct_answers"
+                                                checked={data.show_correct_answers}
+                                                onCheckedChange={(checked) =>
+                                                    setData('show_correct_answers', checked)
+                                                }
+                                            />
                                         </div>
-                                        <Switch
-                                            id="allow_review"
-                                            checked={data.allow_review}
-                                            onCheckedChange={(checked) =>
-                                                setData('allow_review', checked)
-                                            }
-                                        />
-                                    </div>
-                                </CardContent>
-                            </Card>
 
-                            {/* Submit */}
-                            <div className="flex justify-end gap-4">
-                                <Button variant="outline" asChild>
-                                    <Link href={examSessions.index.url()}>Cancel</Link>
-                                </Button>
-                                <Button type="submit" disabled={processing}>
-                                    <Save className="mr-2 size-4" />
-                                    {processing ? 'Creating...' : 'Create Session'}
-                                </Button>
-                            </div>
-                        </form>
-                    )}
-                </div>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <Label htmlFor="allow_review" className="text-base">
+                                                    Allow Review
+                                                </Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Allow students to review their answers after
+                                                    submission
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                id="allow_review"
+                                                checked={data.allow_review}
+                                                onCheckedChange={(checked) =>
+                                                    setData('allow_review', checked)
+                                                }
+                                            />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Submit */}
+                                <div className="flex justify-end gap-4">
+                                    <Button variant="outline" asChild>
+                                        <Link href={examSessions.index.url()}>Cancel</Link>
+                                    </Button>
+                                    <Button type="submit" disabled={processing}>
+                                        <Save className="mr-2 size-4" />
+                                        {processing ? 'Creating...' : 'Create Session'}
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
+                    </div>
                 </div>
             </div>
         </AppLayout>

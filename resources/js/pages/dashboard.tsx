@@ -1,6 +1,18 @@
 import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { dashboard as dashboardRoute } from '@/routes';
+import { index as questionBankIndex, create as questionBankCreate } from '@/routes/question-bank';
+import {
+    index as examBuilderIndex,
+    create as examBuilderCreate,
+    show as examBuilderShow,
+} from '@/routes/exam-builder';
+import {
+    index as modulesIndex,
+    create as modulesCreate,
+    show as modulesShow,
+} from '@/routes/modules';
 import {
     Card,
     CardContent,
@@ -91,7 +103,7 @@ interface DashboardPageProps extends PageProps {
     moduleStats: ModuleStat[];
 }
 
-const breadcrumbs = [{ title: 'Dashboard', href: '/dashboard' }];
+const breadcrumbs = [{ title: 'Dashboard', href: dashboardRoute.url() }];
 
 const cognitiveColors: Record<string, string> = {
     remembering: 'bg-secondary/10 text-secondary border-secondary/20',
@@ -138,13 +150,13 @@ export default function Dashboard({
                         actions={
                             <>
                                 <Button asChild variant="outline">
-                                    <Link href="/question-bank/create">
+                                    <Link href={questionBankCreate.url()}>
                                         <MessageSquare className="mr-2 h-4 w-4" />
                                         New Question
                                     </Link>
                                 </Button>
                                 <Button asChild>
-                                    <Link href="/exam-builder/create">
+                                    <Link href={examBuilderCreate.url()}>
                                         <ClipboardList className="mr-2 h-4 w-4" />
                                         New Exam
                                     </Link>
@@ -572,7 +584,7 @@ export default function Dashboard({
                                     </CardDescription>
                                 </div>
                                 <Button asChild variant="ghost" size="sm">
-                                    <Link href="/question-bank">
+                                    <Link href={questionBankIndex.url()}>
                                         View All
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>
@@ -626,7 +638,7 @@ export default function Dashboard({
                                     <CardDescription>Latest exams created</CardDescription>
                                 </div>
                                 <Button asChild variant="ghost" size="sm">
-                                    <Link href="/exam-builder">
+                                    <Link href={examBuilderIndex.url()}>
                                         View All
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>
@@ -641,7 +653,7 @@ export default function Dashboard({
                                         >
                                             <div className="flex-1 min-w-0">
                                                 <Link
-                                                    href={`/exam-builder/${exam.id}`}
+                                                    href={examBuilderShow.url(exam.id)}
                                                     className="text-sm font-medium hover:underline truncate block"
                                                 >
                                                     {truncateText(exam.title, 40)}
@@ -680,7 +692,7 @@ export default function Dashboard({
                                 </CardDescription>
                             </div>
                             <Button asChild variant="ghost" size="sm">
-                                <Link href="/modules">
+                                <Link href={modulesIndex.url()}>
                                     View All
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
@@ -691,7 +703,7 @@ export default function Dashboard({
                                 {moduleStats.map((module) => (
                                     <Link
                                         key={module.id}
-                                        href={`/modules/${module.id}`}
+                                        href={modulesShow.url(module.id)}
                                         className="p-4 border rounded-lg hover:bg-accent transition-colors"
                                     >
                                         <p className="font-medium text-sm truncate">
@@ -720,7 +732,7 @@ export default function Dashboard({
                                     <p className="text-sm text-muted-foreground text-center py-8 col-span-full">
                                         No modules yet.{' '}
                                         <Link
-                                            href="/modules/create"
+                                            href={modulesCreate.url()}
                                             className="text-primary hover:underline"
                                         >
                                             Create one
@@ -752,7 +764,7 @@ export default function Dashboard({
                                     Create, organize, and manage your collection of exam questions.
                                 </p>
                                 <Button asChild className="w-full">
-                                    <Link href="/question-bank">
+                                    <Link href={questionBankIndex.url()}>
                                         Go to Question Bank
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>
@@ -779,7 +791,7 @@ export default function Dashboard({
                                     Combine questions to create complete, ready-to-use exams.
                                 </p>
                                 <Button asChild className="w-full">
-                                    <Link href="/exam-builder">
+                                    <Link href={examBuilderIndex.url()}>
                                         Go to Exam Builder
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>

@@ -9,12 +9,14 @@ import SettingsLayout from '@/layouts/settings/layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { edit as profileEdit, update as profileUpdate } from '@/routes/profile';
+import { send as verificationSend } from '@/routes/verification';
 import { FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Profile settings',
-        href: '/profile',
+        href: profileEdit.url(),
     },
 ];
 
@@ -36,7 +38,7 @@ export default function Profile({
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        patch('/profile');
+        patch(profileUpdate.url());
     };
 
     return (
@@ -103,7 +105,7 @@ export default function Profile({
                                 <p className="-mt-4 text-sm text-muted-foreground">
                                     Your email address is unverified.{' '}
                                     <Link
-                                        href="/email/verification-notification"
+                                        href={verificationSend.url()}
                                         method="post"
                                         as="button"
                                         className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

@@ -53,8 +53,8 @@ export default function Preview({ exam, template }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Preview: ${exam.title}`} />
 
-            <div className="p-6 md:p-8 print:p-0">
-                <div className="mx-auto max-w-7xl space-y-8">
+            <div className="px-4 py-6 md:px-6 md:py-8 print:p-0">
+                <div className="mx-auto max-w-5xl space-y-8">
                     {/* Controls */}
                     <div className="flex justify-between items-center print:hidden">
                         <Button variant="ghost" asChild>
@@ -153,35 +153,35 @@ export default function Preview({ exam, template }: PageProps) {
                                                     {/* Options for Multiple Choice */}
                                                     {question.question_type ===
                                                         'multiple_choice' && (
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-2">
-                                                            {question.options &&
-                                                                (Array.isArray(question.options)
-                                                                    ? question.options
-                                                                    : []
-                                                                ).map(
-                                                                    (
-                                                                        option: any,
-                                                                        optIndex: number,
-                                                                    ) => (
-                                                                        <div
-                                                                            key={optIndex}
-                                                                            className="flex gap-2"
-                                                                        >
-                                                                            <span className="font-bold">
-                                                                                {String.fromCharCode(
-                                                                                    65 + optIndex,
-                                                                                )}
-                                                                                .
-                                                                            </span>
-                                                                            <span>
-                                                                                {option.text ||
-                                                                                    option}
-                                                                            </span>
-                                                                        </div>
-                                                                    ),
-                                                                )}
-                                                        </div>
-                                                    )}
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-2">
+                                                                {question.options &&
+                                                                    (Array.isArray(question.options)
+                                                                        ? question.options
+                                                                        : []
+                                                                    ).map(
+                                                                        (
+                                                                            option: any,
+                                                                            optIndex: number,
+                                                                        ) => (
+                                                                            <div
+                                                                                key={optIndex}
+                                                                                className="flex gap-2"
+                                                                            >
+                                                                                <span className="font-bold">
+                                                                                    {String.fromCharCode(
+                                                                                        65 + optIndex,
+                                                                                    )}
+                                                                                    .
+                                                                                </span>
+                                                                                <span>
+                                                                                    {option.text ||
+                                                                                        option}
+                                                                                </span>
+                                                                            </div>
+                                                                        ),
+                                                                    )}
+                                                            </div>
+                                                        )}
 
                                                     {/* Options for True/False */}
                                                     {question.question_type === 'true_false' && (
@@ -200,16 +200,16 @@ export default function Preview({ exam, template }: PageProps) {
                                                     {/* Identification / Essay Space */}
                                                     {(question.question_type === 'identification' ||
                                                         question.question_type === 'essay') && (
-                                                        <div className="pt-2">
-                                                            <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8 md:h-12"></div>
-                                                            {question.question_type === 'essay' && (
-                                                                <div className="space-y-4 pt-4">
-                                                                    <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8"></div>
-                                                                    <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8"></div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                            <div className="pt-2">
+                                                                <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8 md:h-12"></div>
+                                                                {question.question_type === 'essay' && (
+                                                                    <div className="space-y-4 pt-4">
+                                                                        <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8"></div>
+                                                                        <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8"></div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                 </div>
                                             </div>
                                             <Badge variant="outline" className="shrink-0 font-mono">

@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
+import { store as registerStore } from '@/routes/register';
+import { login as loginRoute } from '@/routes';
 
 export default function Register() {
     return (
@@ -15,7 +17,7 @@ export default function Register() {
         >
             <Head title="Register" />
             <Form
-                action="/register"
+                action={registerStore.url()}
                 method="post"
                 options={{ preserveScroll: true }}
                 className="flex flex-col gap-6"
@@ -93,7 +95,7 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href="/login" tabIndex={6}>
+                            <TextLink href={loginRoute()} tabIndex={6}>
                                 Log in
                             </TextLink>
                         </div>

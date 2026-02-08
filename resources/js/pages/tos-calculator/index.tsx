@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/empty';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
+import { index as modulesIndex } from '@/routes/modules';
 import { Module, Topic, LearningObjective, CognitiveLevel } from '@/types/models';
 import { Calculator, TrendingUp, AlertCircle, CheckCircle2, Plus, BookOpen } from 'lucide-react';
 import PageHeader from '@/components/page-header';
@@ -152,7 +153,7 @@ export default function TosCalculatorIndex({
                                         Add Topics & Objectives
                                     </Button>
                                 </Link>
-                                <Link href="/modules">
+                                <Link href={modulesIndex.url()}>
                                     <Button variant="outline">Back to Modules</Button>
                                 </Link>
                             </div>

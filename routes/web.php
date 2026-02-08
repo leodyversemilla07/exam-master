@@ -21,6 +21,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TosCalculatorController;
 use App\Http\Controllers\TosGenerateController;
 use App\Http\Controllers\UserController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -48,7 +49,11 @@ Route::post('/payments/create-intent', [PaymentController::class, 'createPayment
 
 Route::post('/payments/webhook', [PaymentController::class, 'handleWebhook'])
     ->name('payments.webhook')
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Webhooks don't have CSRF tokens
+    ->withoutMiddleware([VerifyCsrfToken::class]); // Webhooks don't have CSRF tokens
+
+Route::get('/payments/intent', [PaymentController::class, 'intent'])
+    ->name('payments.intent')
+    ->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

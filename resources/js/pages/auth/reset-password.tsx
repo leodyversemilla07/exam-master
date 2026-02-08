@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
+import { update as resetPasswordUpdate } from '@/routes/password';
 
 interface ResetPasswordProps {
     token: string;
@@ -16,7 +17,11 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
         <AuthLayout title="Reset password" description="Please enter your new password below">
             <Head title="Reset password" />
 
-            <Form action="/reset-password" method="post" options={{ preserveScroll: true }}>
+            <Form
+                action={resetPasswordUpdate.url()}
+                method="post"
+                options={{ preserveScroll: true }}
+            >
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <input type="hidden" name="token" value={token} />

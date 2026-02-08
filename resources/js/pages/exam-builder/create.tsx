@@ -70,8 +70,8 @@ export default function CreateExam({ modules, tosTemplates, examTemplates }: Pag
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Exam" />
 
-            <div className="p-6 md:p-8">
-                <div className="mx-auto max-w-7xl space-y-6">
+            <div className="px-4 py-6 md:px-6 md:py-8">
+                <div className="mx-auto max-w-5xl space-y-6">
                     <div className="mb-6">
                         <Card>
                             <CardHeader>
