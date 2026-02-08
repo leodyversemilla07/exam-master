@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
+import { email as forgotPasswordEmail } from '@/routes/password';
+import { login as loginRoute } from '@/routes';
 import { LoaderCircle } from 'lucide-react';
 
 export default function ForgotPassword({ status }: { status?: string }) {
@@ -20,7 +22,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             )}
 
             <div className="space-y-6">
-                <Form action="/forgot-password" method="post">
+                <Form action={forgotPasswordEmail.url()} method="post">
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-2">
@@ -51,7 +53,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
                     <span>Or, return to</span>
-                    <TextLink href="/login">log in</TextLink>
+                    <TextLink href={loginRoute()}>log in</TextLink>
                 </div>
             </div>
         </AuthLayout>

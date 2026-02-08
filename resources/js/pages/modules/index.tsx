@@ -1,14 +1,23 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import PageHeader from '@/components/page-header';
 import AppLayout from '@/layouts/app-layout';
+import {
+    index,
+    create as modulesCreate,
+    edit as modulesEdit,
+    show as modulesShow,
+    destroy as modulesDestroy,
+    tosCalculator as modulesTosCalculator,
+} from '@/routes/modules';
+import { index as topicsIndex } from '@/routes/modules/topics';
 import { Head, Link, router } from '@inertiajs/react';
 import { Module } from '@/types/models';
 import { BookOpen, Plus, FileText, Calculator, FolderTree, Edit, Trash2 } from 'lucide-react';
 import { BreadcrumbItem } from '@/types';
-import PageHeader from '@/components/page-header';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Modules', href: '/modules' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Modules', href: index.url() }];
 
 interface PageProps {
     modules: {
@@ -31,7 +40,7 @@ export default function ModuleIndex({ modules }: PageProps) {
                 'Are you sure you want to delete this module? This will also delete all associated topics, questions, and exams.',
             )
         ) {
-            router.delete(`/modules/${moduleId}`, {
+            router.delete(modulesDestroy.url(moduleId), {
                 preserveScroll: true,
             });
         }
@@ -47,7 +56,7 @@ export default function ModuleIndex({ modules }: PageProps) {
                     description="Manage your course modules, topics, and learning objectives"
                     actions={
                         <Button asChild>
-                            <Link href="/modules/create">
+                            <Link href={modulesCreate.url()}>
                                 <Plus className="mr-2 size-4" />
                                 Create Module
                             </Link>
@@ -64,7 +73,7 @@ export default function ModuleIndex({ modules }: PageProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Link href="/modules/create">
+                            <Link href={modulesCreate.url()}>
                                 <Button>
                                     <Plus className="mr-2 size-4" />
                                     Create Module
@@ -147,7 +156,7 @@ export default function ModuleIndex({ modules }: PageProps) {
 
                                         {/* Quick Actions */}
                                         <div className="grid grid-cols-2 gap-2 pt-2 border-t">
-                                            <Link href={`/modules/${module.id}/topics`}>
+                                            <Link href={topicsIndex.url(module.id)}>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
@@ -157,7 +166,7 @@ export default function ModuleIndex({ modules }: PageProps) {
                                                     Topics
                                                 </Button>
                                             </Link>
-                                            <Link href={`/modules/${module.id}/tos-calculator`}>
+                                            <Link href={modulesTosCalculator.url(module.id)}>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
@@ -171,7 +180,10 @@ export default function ModuleIndex({ modules }: PageProps) {
 
                                         {/* Edit/Delete Actions */}
                                         <div className="flex items-center gap-2 pt-2 border-t">
-                                            <Link href={`/modules/${module.id}`} className="flex-1">
+                                            <Link
+                                                href={modulesShow.url(module.id)}
+                                                className="flex-1"
+                                            >
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
@@ -180,7 +192,7 @@ export default function ModuleIndex({ modules }: PageProps) {
                                                     View Details
                                                 </Button>
                                             </Link>
-                                            <Link href={`/modules/${module.id}/edit`}>
+                                            <Link href={modulesEdit.url(module.id)}>
                                                 <Button variant="ghost" size="sm">
                                                     <Edit className="size-4" />
                                                 </Button>
@@ -210,7 +222,11 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         size="sm"
                                         disabled={modules.current_page === 1}
                                         onClick={() =>
-                                            router.get(`/modules?page=${modules.current_page - 1}`)
+                                            router.get(
+                                                index.url({
+                                                    query: { page: modules.current_page - 1 },
+                                                }),
+                                            )
                                         }
                                     >
                                         Previous
@@ -223,7 +239,11 @@ export default function ModuleIndex({ modules }: PageProps) {
                                         size="sm"
                                         disabled={modules.current_page === modules.last_page}
                                         onClick={() =>
-                                            router.get(`/modules?page=${modules.current_page + 1}`)
+                                            router.get(
+                                                index.url({
+                                                    query: { page: modules.current_page + 1 },
+                                                }),
+                                            )
                                         }
                                     >
                                         Next

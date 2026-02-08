@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
+import { send as verificationSend } from '@/routes/verification';
+import { logout as logoutRoute } from '@/routes';
 
 export default function VerifyEmail({ status }: { status?: string }) {
     return (
@@ -19,11 +21,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
                 </div>
             )}
 
-            <Form
-                action="/email/verification-notification"
-                method="post"
-                className="space-y-6 text-center"
-            >
+            <Form action={verificationSend.url()} method="post" className="space-y-6 text-center">
                 {({ processing }) => (
                     <>
                         <Button disabled={processing} variant="secondary">
@@ -32,7 +30,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
                         </Button>
 
                         <TextLink
-                            href="/logout"
+                            href={logoutRoute()}
                             method="post"
                             as="button"
                             className="mx-auto block text-sm"

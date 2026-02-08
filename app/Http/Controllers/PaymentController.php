@@ -2,27 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreatePaymentIntentRequest;
+use App\Http\Requests\ShowPaymentIntentRequest;
 use App\Models\Plan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Paymongo\Exceptions\SignatureVerificationException;
 use Paymongo\PaymongoClient;
 
 class PaymentController extends Controller
 {
-    protected PaymongoClient $client;
+    public function __construct(protected PaymongoClient $client) {}
 
-    public function __construct()
+    public function createPaymentIntent(CreatePaymentIntentRequest $request): JsonResponse
     {
-        $this->client = new PaymongoClient(config('paymongo.secret_key'));
-    }
-
-    public function createPaymentIntent(Request $request): JsonResponse
-    {
-        $request->validate([
-            'plan_id' => 'required|exists:plans,id',
-        ]);
-
-        $plan = Plan::findOrFail($request->plan_id);
+        $planId = $request->validated('plan_id');
+        $plan = Plan::query()->findOrFail($planId);
 
         try {
             $paymentIntent = $this->client->paymentIntents->create([
@@ -33,7 +28,7 @@ class PaymentController extends Controller
             ]);
 
             return response()->json([
-                'client_secret' => $paymentIntent->client_secret,
+                'client_key' => $paymentIntent->client_key,
                 'payment_intent_id' => $paymentIntent->id,
             ]);
         } catch (\Exception $e) {
@@ -68,8 +63,24 @@ class PaymentController extends Controller
             }
 
             return response()->json(['status' => 'ok']);
-        } catch (\Paymongo\Exceptions\SignatureVerificationException $e) {
+        } catch (SignatureVerificationException $e) {
             return response()->json(['error' => 'Invalid signature'], 400);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function intent(ShowPaymentIntentRequest $request): JsonResponse
+    {
+        $paymentIntentId = $request->validated('payment_intent_id');
+
+        try {
+            $paymentIntent = $this->client->paymentIntents->retrieve($paymentIntentId);
+
+            return response()->json([
+                'status' => $paymentIntent->status,
+                'id' => $paymentIntent->id,
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

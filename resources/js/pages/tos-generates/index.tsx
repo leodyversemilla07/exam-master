@@ -2,6 +2,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
+import {
+    index as tosIndex,
+    create as tosCreate,
+    edit as tosEdit,
+    show as tosShow,
+} from '@/routes/tos-generates';
 import { Head, Link, router } from '@inertiajs/react';
 import { TosGenerate, Module } from '@/types/models';
 import { Plus, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
@@ -36,7 +42,7 @@ const statusIcons = {
     failed: AlertCircle,
 };
 
-const breadcrumbs = [{ title: 'Table of Specifications', href: '/tos-generates' }];
+const breadcrumbs = [{ title: 'Table of Specifications', href: tosIndex.url() }];
 
 export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
     return (
@@ -49,7 +55,7 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                     description="Generate and manage test specifications and questions"
                     actions={
                         <Button asChild>
-                            <Link href="/tos-generates/create">
+                            <Link href={tosCreate.url()}>
                                 <Plus className="mr-2 size-4" />
                                 Generate TOS
                             </Link>
@@ -66,7 +72,7 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Link href="/tos-generates/create">
+                            <Link href={tosCreate.url()}>
                                 <Button>
                                     <Plus className="mr-2 size-4" />
                                     Generate TOS
@@ -178,10 +184,7 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
 
                                             {/* Actions */}
                                             <div className="flex items-center gap-2 pt-2 border-t">
-                                                <Link
-                                                    href={`/tos-generates/${tos.id}`}
-                                                    className="flex-1"
-                                                >
+                                                <Link href={tosShow.url(tos.id)} className="flex-1">
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
@@ -191,7 +194,7 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                                     </Button>
                                                 </Link>
                                                 {tos.status === 'draft' && (
-                                                    <Link href={`/tos-generates/${tos.id}/edit`}>
+                                                    <Link href={tosEdit.url(tos.id)}>
                                                         <Button variant="ghost" size="sm">
                                                             Edit
                                                         </Button>
@@ -218,7 +221,9 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                         disabled={tosGenerates.current_page === 1}
                                         onClick={() =>
                                             router.get(
-                                                `/tos-generates?page=${tosGenerates.current_page - 1}`,
+                                                tosIndex.url({
+                                                    query: { page: tosGenerates.current_page - 1 },
+                                                }),
                                             )
                                         }
                                     >
@@ -235,7 +240,9 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                         }
                                         onClick={() =>
                                             router.get(
-                                                `/tos-generates?page=${tosGenerates.current_page + 1}`,
+                                                tosIndex.url({
+                                                    query: { page: tosGenerates.current_page + 1 },
+                                                }),
                                             )
                                         }
                                     >

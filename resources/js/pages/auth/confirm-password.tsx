@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
+import { store as confirmPasswordStore } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {
     return (
@@ -14,7 +15,11 @@ export default function ConfirmPassword() {
         >
             <Head title="Confirm password" />
 
-            <Form action="/confirm-password" method="post" options={{ preserveScroll: true }}>
+            <Form
+                action={confirmPasswordStore.url()}
+                method="post"
+                options={{ preserveScroll: true }}
+            >
                 {({ processing, errors }) => (
                     <div className="space-y-6">
                         <div className="grid gap-2">

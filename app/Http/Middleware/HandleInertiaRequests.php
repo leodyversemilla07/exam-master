@@ -38,6 +38,9 @@ class HandleInertiaRequests extends Middleware
                     'permissions' => $request->user()->getAllPermissions()->pluck('name'),
                 ] : null,
             ],
+            'paymongo' => [
+                'publicKey' => config('paymongo.public_key'),
+            ],
             'flash' => [
                 'tosExtraction' => fn () => $request->session()->get('tosExtraction'),
             ],

@@ -1,6 +1,6 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login, register, designSystem } from '@/routes';
 import { cn } from '@/lib/utils';
 import {
     Sparkles,
@@ -488,7 +488,7 @@ export default function Welcome({
                         </div>
                         <div className="flex items-center gap-8">
                             <Link
-                                href="/design-system"
+                                href={designSystem()}
                                 className="hover:text-primary transition-colors cursor-pointer"
                             >
                                 Design System

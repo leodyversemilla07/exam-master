@@ -9,8 +9,8 @@ class PlanController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Plans/Index', [
-            'plans' => Plan::all(),
+        return Inertia::render('plans/index', [
+            'plans' => Plan::query()->get(['id', 'name', 'price', 'features']),
         ]);
     }
 }

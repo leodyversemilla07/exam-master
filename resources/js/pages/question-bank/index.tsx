@@ -11,8 +11,27 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
+import {
+    index as questionIndex,
+    create as questionCreate,
+    show as questionShow,
+    edit as questionEdit,
+    destroy as questionDestroy,
+    polish as questionPolish,
+} from '@/routes/question-bank';
 import { Module } from '@/types/models';
-import { Plus, Search, Eye, Edit, Trash2, CheckCircle2, XCircle, Filter, Sparkles, Loader2 } from 'lucide-react';
+import {
+    Plus,
+    Search,
+    Eye,
+    Edit,
+    Trash2,
+    CheckCircle2,
+    XCircle,
+    Filter,
+    Sparkles,
+    Loader2,
+} from 'lucide-react';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { toast } from 'sonner';
@@ -60,7 +79,7 @@ interface PageProps {
     };
 }
 
-const breadcrumbs = [{ title: 'Question Bank', href: '/question-bank' }];
+const breadcrumbs = [{ title: 'Question Bank', href: questionIndex.url() }];
 
 export default function ExamsIndex({ questions, modules, filters }: PageProps) {
     const [search, setSearch] = useState(filters.search || '');
@@ -90,28 +109,32 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
             ...newFilters,
         };
 
-        router.get('/question-bank', currentFilters, { preserveState: true });
+        router.get(questionIndex.url({ query: currentFilters }), { preserveState: true });
     };
 
     const handleDelete = (question: Question) => {
         if (confirm('Are you sure you want to delete this question?')) {
-            router.delete(`/question-bank/${question.id}`);
+            router.delete(questionDestroy.url(question.id));
         }
     };
 
     const handlePolish = (question: Question) => {
         setPolishingId(question.id);
-        router.post(`/question-bank/${question.id}/polish`, {}, {
-            onSuccess: () => {
-                toast.success('Question polished successfully!');
-                setPolishingId(null);
+        router.post(
+            questionPolish.url(question.id),
+            {},
+            {
+                onSuccess: () => {
+                    toast.success('Question polished successfully!');
+                    setPolishingId(null);
+                },
+                onError: () => {
+                    toast.error('Failed to polish question.');
+                    setPolishingId(null);
+                },
+                onFinish: () => setPolishingId(null),
             },
-            onError: (errors) => {
-                toast.error('Failed to polish question.');
-                setPolishingId(null);
-            },
-            onFinish: () => setPolishingId(null),
-        });
+        );
     };
 
     const getDifficultyBadge = (difficulty: string) => {
@@ -143,7 +166,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                     description={`${questions.total} ${questions.total === 1 ? 'question' : 'questions'} available • Browse, search, and manage all your exam questions in one place`}
                     actions={
                         <Button asChild>
-                            <Link href="/question-bank/create">
+                            <Link href={questionCreate.url()}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Question
                             </Link>
@@ -286,7 +309,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                 setDifficultyFilter('all');
                                 setCognitiveFilter('all');
                                 setApprovalFilter('all');
-                                router.get('/question-bank', {}, { preserveState: true });
+                                router.get(questionIndex.url(), {}, { preserveState: true });
                             }}
                         >
                             Clear All Filters
@@ -311,7 +334,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     </p>
                                     <div className="mt-6">
                                         <Button asChild>
-                                            <Link href="/exams/create">
+                                            <Link href={questionCreate.url()}>
                                                 <Plus className="mr-2 h-4 w-4" />
                                                 Add Question
                                             </Link>
@@ -409,14 +432,12 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                     )}
                                                 </Button>
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/question-bank/${question.id}`}>
+                                                    <Link href={questionShow.url(question.id)}>
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <Link
-                                                        href={`/question-bank/${question.id}/edit`}
-                                                    >
+                                                    <Link href={questionEdit.url(question.id)}>
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
@@ -442,8 +463,12 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                         disabled={questions.current_page === 1}
                                         onClick={() =>
                                             router.get(
-                                                '/question-bank',
-                                                { ...filters, page: questions.current_page - 1 },
+                                                questionIndex.url({
+                                                    query: {
+                                                        ...filters,
+                                                        page: questions.current_page - 1,
+                                                    },
+                                                }),
                                                 { preserveState: true },
                                             )
                                         }
@@ -458,8 +483,12 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                         disabled={questions.current_page === questions.last_page}
                                         onClick={() =>
                                             router.get(
-                                                '/question-bank',
-                                                { ...filters, page: questions.current_page + 1 },
+                                                questionIndex.url({
+                                                    query: {
+                                                        ...filters,
+                                                        page: questions.current_page + 1,
+                                                    },
+                                                }),
                                                 { preserveState: true },
                                             )
                                         }
