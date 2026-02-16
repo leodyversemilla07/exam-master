@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Exam;
 use App\Models\ExamSession;
+use App\Services\PlagiarismDetectionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,6 +12,10 @@ use Inertia\Response;
 
 class ExamSessionController extends Controller
 {
+    public function __construct(
+        private PlagiarismDetectionService $plagiarismService
+    ) {}
+
     public function index(): Response
     {
         $sessions = ExamSession::with(['exam.module', 'creator'])
@@ -205,6 +210,16 @@ class ExamSessionController extends Controller
     {
         $this->authorizeSession($examSession);
 
+        // Log access for audit purposes
+        \Illuminate\Support\Facades\Log::info('Exam results exported', [
+            'exam_session_id' => $examSession->id,
+            'session_title' => $examSession->title,
+            'exported_by' => auth()->id(),
+            'exporter_email' => auth()->user()->email,
+            'ip_address' => request()->ip(),
+            'timestamp' => now()->toIso8601String(),
+        ]);
+
         $attempts = $examSession->attempts()
             ->with(['user'])
             ->whereIn('status', ['submitted', 'graded'])
@@ -240,58 +255,11 @@ class ExamSessionController extends Controller
     /**
      * View plagiarism report for essay questions in this session.
      */
-    public function plagiarismReport(ExamSession $examSession, \App\Services\QuestionDuplicateDetector $detector): Response
+    public function plagiarismReport(ExamSession $examSession): Response
     {
         $this->authorizeSession($examSession);
 
-        $examSession->load('exam.questions');
-
-        // Find essay questions
-        $essayQuestions = $examSession->exam->questions->where('question_type', 'essay');
-
-        $reports = [];
-
-        foreach ($essayQuestions as $question) {
-            $answers = \App\Models\StudentAnswer::where('exam_question_id', $question->id)
-                ->whereHas('examAttempt', function ($query) use ($examSession) {
-                    $query->where('exam_session_id', $examSession->id);
-                })
-                ->with('examAttempt.user')
-                ->get();
-
-            $matches = [];
-
-            for ($i = 0; $i < $answers->count(); $i++) {
-                for ($j = $i + 1; $j < $answers->count(); $j++) {
-                    $ans1 = $answers[$i];
-                    $ans2 = $answers[$j];
-
-                    if (strlen($ans1->answer ?? '') < 20 || strlen($ans2->answer ?? '') < 20) {
-                        continue;
-                    }
-
-                    $similarity = $detector->calculateSimilarity($ans1->answer, $ans2->answer);
-
-                    if ($similarity >= 0.7) {
-                        $matches[] = [
-                            'student1' => $ans1->examAttempt->user->name,
-                            'student2' => $ans2->examAttempt->user->name,
-                            'similarity' => round($similarity * 100, 2),
-                            'answer1' => $ans1->answer,
-                            'answer2' => $ans2->answer,
-                        ];
-                    }
-                }
-            }
-
-            if (! empty($matches)) {
-                $reports[] = [
-                    'question_id' => $question->id,
-                    'question_text' => $question->question,
-                    'matches' => $matches,
-                ];
-            }
-        }
+        $reports = $this->plagiarismService->generateReport($examSession);
 
         return Inertia::render('exam-sessions/plagiarism-report', [
             'session' => [

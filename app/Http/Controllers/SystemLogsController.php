@@ -142,11 +142,30 @@ class SystemLogsController extends Controller
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
+        // Rate limiting: max 5 downloads per hour per user
+        $rateLimitKey = 'log-download:'.auth()->id();
+        $downloadCount = cache()->get($rateLimitKey, 0);
+
+        if ($downloadCount >= 5) {
+            abort(429, 'Too many download attempts. Please try again later.');
+        }
+
         $logPath = storage_path('logs/laravel.log');
 
         if (! File::exists($logPath)) {
             abort(404, 'Log file not found');
         }
+
+        // Increment download counter with 1-hour expiration
+        cache()->put($rateLimitKey, $downloadCount + 1, now()->addHour());
+
+        // Log the download for audit purposes
+        \Illuminate\Support\Facades\Log::info('Log file downloaded', [
+            'user_id' => auth()->id(),
+            'user_email' => auth()->user()->email,
+            'ip_address' => request()->ip(),
+            'file_size' => File::size($logPath),
+        ]);
 
         return response()->download($logPath, 'laravel-'.date('Y-m-d-His').'.log');
     }

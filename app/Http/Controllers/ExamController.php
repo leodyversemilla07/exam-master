@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreExamQuestionRequest;
 use App\Models\ExamQuestion;
 use App\Models\Module;
+use App\Models\User;
 use App\Services\AI\FeedbackService;
 use App\Services\QuestionDuplicateDetector;
 use Illuminate\Http\JsonResponse;
@@ -58,9 +59,10 @@ class ExamController extends Controller
             $query->where('is_approved', $request->boolean('is_approved'));
         }
 
-        // Search
+        // Search with sanitized input to prevent LIKE wildcard injection
         if ($request->filled('search')) {
-            $query->where('question', 'like', '%'.$request->search.'%');
+            $search = preg_replace('/[%_]/', '\\\\$0', $request->search);
+            $query->where('question', 'like', '%'.$search.'%');
         }
 
         // Get paginated questions
@@ -121,6 +123,8 @@ class ExamController extends Controller
      */
     public function show(ExamQuestion $exam): Response
     {
+        abort_unless(auth()->user()->can('view exams'), 403);
+
         $exam->load(['module', 'creator', 'tosGenerate']);
 
         return Inertia::render('question-bank/show', [

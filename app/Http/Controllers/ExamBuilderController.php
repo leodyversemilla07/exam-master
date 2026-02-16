@@ -44,9 +44,10 @@ class ExamBuilderController extends Controller
             $query->where('exam_type', $request->exam_type);
         }
 
-        // Search
+        // Search with sanitized input to prevent LIKE wildcard injection
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%'.$request->search.'%');
+            $search = preg_replace('/[%_]/', '\\\\$0', $request->search);
+            $query->where('title', 'like', '%'.$search.'%');
         }
 
         $exams = $query->paginate(15)->withQueryString();
