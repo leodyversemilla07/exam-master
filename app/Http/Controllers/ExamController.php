@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreExamQuestionRequest;
 use App\Models\ExamQuestion;
 use App\Models\Module;
-use App\Models\User;
 use App\Services\AI\FeedbackService;
+use App\Services\Analytics\AnalyticsCacheService;
 use App\Services\QuestionDuplicateDetector;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -112,6 +112,9 @@ class ExamController extends Controller
             'created_by' => auth()->id(),
             'is_ai_generated' => false,
         ]);
+
+        // Clear analytics cache when new question is added
+        AnalyticsCacheService::clearUsageCache();
 
         return redirect()
             ->route('question-bank.show', $question)
