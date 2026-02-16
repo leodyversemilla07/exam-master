@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\ExamQuestion;
 use App\Models\ExamTemplate;
 use App\Models\Module;
+use App\Services\Analytics\AnalyticsCacheService;
 use App\Services\ExamPdfExporter;
 use App\Services\ExamWordExporter;
 use Illuminate\Http\RedirectResponse;
@@ -83,6 +84,10 @@ class ExamBuilderController extends Controller
             'created_by' => auth()->id(),
             'status' => 'draft',
         ]);
+
+        // Clear analytics cache when new exam is created
+        AnalyticsCacheService::clearExamsCache();
+        AnalyticsCacheService::clearEducatorCache();
 
         return redirect()
             ->route('exam-builder.show', $exam)

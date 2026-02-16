@@ -14,6 +14,7 @@ use App\Services\Analytics\PeriodQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -61,18 +62,22 @@ class AnalyticsController extends Controller
         $startDate = $startDate ?? Carbon::now()->subMonth();
         $endDate = $endDate ?? Carbon::now();
 
-        $query = Exam::query()
-            ->whereBetween('created_at', [$startDate, $endDate]);
+        $cacheKey = "analytics:exams_created:{$period}:{$startDate}:{$endDate}";
 
-        $this->periodQueryBuilder->groupByPeriod($query, $period);
+        return Cache::remember($cacheKey, 300, function () use ($period, $startDate, $endDate) {
+            $query = Exam::query()
+                ->whereBetween('created_at', [$startDate, $endDate]);
 
-        $data = $query->get();
+            $this->periodQueryBuilder->groupByPeriod($query, $period);
 
-        return [
-            'period' => $period,
-            'data' => $data,
-            'total' => $data->sum('count'),
-        ];
+            $data = $query->get();
+
+            return [
+                'period' => $period,
+                'data' => $data,
+                'total' => $data->sum('count'),
+            ];
+        });
     }
 
     /**
@@ -80,10 +85,14 @@ class AnalyticsController extends Controller
      */
     private function getUsageData(int $limit = 10): array
     {
-        return [
-            'modules' => $this->getMostUsedModules($limit),
-            'topics' => $this->getMostUsedTopics($limit),
-        ];
+        $cacheKey = "analytics:usage_data:{$limit}";
+
+        return Cache::remember($cacheKey, 600, function () use ($limit) {
+            return [
+                'modules' => $this->getMostUsedModules($limit),
+                'topics' => $this->getMostUsedTopics($limit),
+            ];
+        });
     }
 
     /**
@@ -122,25 +131,29 @@ class AnalyticsController extends Controller
         $startDate = $startDate ?? Carbon::now()->subMonth();
         $endDate = $endDate ?? Carbon::now();
 
-        $educators = User::query()
-            ->role('educator')
-            ->withCount([
-                'tosGenerates as tos_created' => function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('created_at', [$startDate, $endDate]);
-                },
-                'exams as exams_created' => function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('created_at', [$startDate, $endDate]);
-                },
-            ])
-            ->get(['id', 'name', 'email', 'tos_created', 'exams_created']);
+        $cacheKey = "analytics:educator_activity:{$startDate}:{$endDate}";
 
-        return [
-            'educators' => $educators,
-            'period' => [
-                'start' => $startDate,
-                'end' => $endDate,
-            ],
-        ];
+        return Cache::remember($cacheKey, 300, function () use ($startDate, $endDate) {
+            $educators = User::query()
+                ->role('educator')
+                ->withCount([
+                    'tosGenerates as tos_created' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('created_at', [$startDate, $endDate]);
+                    },
+                    'exams as exams_created' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('created_at', [$startDate, $endDate]);
+                    },
+                ])
+                ->get(['id', 'name', 'email', 'tos_created', 'exams_created']);
+
+            return [
+                'educators' => $educators,
+                'period' => [
+                    'start' => $startDate,
+                    'end' => $endDate,
+                ],
+            ];
+        });
     }
 
     /**
