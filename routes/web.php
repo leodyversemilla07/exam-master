@@ -93,6 +93,7 @@ Route::post('modules/{module}/toggle', [ModuleController::class, 'toggleStatus']
     ->middleware(['auth', 'verified', 'permission:edit modules']);
 
 Route::resource('tos-generates', TosGenerateController::class)
+    ->only(['index', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified', 'permission:view tos']);
 
 // AI Question Generation Route
@@ -154,6 +155,7 @@ Route::post('exam-builder/{exam}/unarchive', [ExamBuilderController::class, 'una
     ->middleware(['auth', 'verified', 'permission:edit exams']);
 
 Route::resource('exam-builder', ExamBuilderController::class)
+    ->only(['index', 'store', 'update', 'destroy'])
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
 // Exam Collaborator Routes
@@ -351,6 +353,7 @@ Route::post('queue-monitor/clear', [QueueMonitorController::class, 'clearFailedJ
 
 // Exam Sessions Routes (for educators)
 Route::resource('exam-sessions', ExamSessionController::class)
+    ->except(['create'])
     ->middleware(['auth', 'verified', 'permission:view exam sessions']);
 
 Route::post('exam-sessions/{examSession}/regenerate-code', [ExamSessionController::class, 'regenerateCode'])

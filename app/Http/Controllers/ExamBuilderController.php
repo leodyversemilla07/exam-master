@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreExamRequest;
 use App\Models\Exam;
 use App\Models\ExamQuestion;
-use App\Models\ExamTemplate;
 use App\Models\Module;
 use App\Services\Analytics\AnalyticsCacheService;
 use App\Services\ExamPdfExporter;
@@ -61,18 +60,6 @@ class ExamBuilderController extends Controller
     }
 
     /**
-     * Show the form for creating a new exam.
-     */
-    public function create(): Response
-    {
-        return Inertia::render('exam-builder/create', [
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
-            'tosTemplates' => \App\Models\TosGenerate::with('module:id,code,name')->get(['id', 'module_id', 'subject']),
-            'examTemplates' => ExamTemplate::where('user_id', auth()->id())->get(['id', 'name']),
-        ]);
-    }
-
-    /**
      * Store a newly created exam.
      */
     public function store(StoreExamRequest $request): RedirectResponse
@@ -90,27 +77,25 @@ class ExamBuilderController extends Controller
         AnalyticsCacheService::clearEducatorCache();
 
         return redirect()
-            ->route('exam-builder.show', $exam)
+            ->route('modules.show', $exam->module_id)
             ->with('success', 'Exam created successfully. Add questions to continue.');
     }
 
     /**
-     * Display the specified exam.
+     * Update the specified exam.
      */
-    public function show(Exam $examBuilder): Response
+    public function update(StoreExamRequest $request, Exam $examBuilder): RedirectResponse
     {
-        abort_unless($this->canAccessExam($examBuilder), 403);
+        abort_unless(
+            auth()->user()->can('edit exams') || $this->canEditExam($examBuilder),
+            403
+        );
 
-        $examBuilder->load(['module', 'creator', 'tosGenerate', 'questions.module']);
+        $examBuilder->update($request->validated());
 
-        return Inertia::render('exam-builder/show', [
-            'exam' => $examBuilder,
-            'availableQuestions' => ExamQuestion::where('module_id', $examBuilder->module_id)
-                ->where('is_approved', true)
-                ->whereNotIn('id', $examBuilder->questions->pluck('id'))
-                ->with('module')
-                ->get(),
-        ]);
+        return redirect()
+            ->route('modules.show', $examBuilder->module_id)
+            ->with('success', 'Exam updated successfully.');
     }
 
     /**
@@ -146,40 +131,6 @@ class ExamBuilderController extends Controller
             ->where('user_id', $userId)
             ->where('exam_collaborators.role', 'editor')
             ->exists();
-    }
-
-    /**
-     * Show the form for editing the specified exam.
-     */
-    public function edit(Exam $examBuilder): Response
-    {
-        abort_unless($this->canEditExam($examBuilder), 403);
-
-        $examBuilder->load(['module', 'collaborators']);
-
-        return Inertia::render('exam-builder/edit', [
-            'exam' => $examBuilder,
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
-            'tosTemplates' => \App\Models\TosGenerate::with('module:id,code,name')->get(['id', 'module_id', 'subject']),
-            'examTemplates' => ExamTemplate::where('user_id', auth()->id())->get(['id', 'name']),
-        ]);
-    }
-
-    /**
-     * Update the specified exam.
-     */
-    public function update(StoreExamRequest $request, Exam $examBuilder): RedirectResponse
-    {
-        abort_unless(
-            auth()->user()->can('edit exams') || $this->canEditExam($examBuilder),
-            403
-        );
-
-        $examBuilder->update($request->validated());
-
-        return redirect()
-            ->route('exam-builder.show', $examBuilder)
-            ->with('success', 'Exam updated successfully.');
     }
 
     /**
@@ -360,7 +311,7 @@ class ExamBuilderController extends Controller
         $newExam->calculateTotals();
 
         return redirect()
-            ->route('exam-builder.show', $newExam)
+            ->route('modules.show', $newExam->module_id)
             ->with('success', 'Exam duplicated successfully.');
     }
 

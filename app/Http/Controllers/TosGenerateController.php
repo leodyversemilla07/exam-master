@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTosGenerateRequest;
 use App\Jobs\GenerateQuestionsJob;
-use App\Models\Module;
 use App\Models\TosGenerate;
 use App\Services\AI\QuestionGeneratorService;
 use App\Services\TosCalculator;
@@ -39,21 +38,6 @@ class TosGenerateController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): Response
-    {
-        $modules = Module::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['id', 'code', 'name', 'subject_area', 'grade_level', 'pdf_file']);
-
-        return Inertia::render('tos-generates/create', [
-            'modules' => $modules,
-        ]);
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreTosGenerateRequest $request): RedirectResponse
@@ -72,38 +56,8 @@ class TosGenerateController extends Controller
         });
 
         return redirect()
-            ->route('tos-generates.show', $tos)
+            ->route('modules.show', $tos->module_id)
             ->with('success', 'TOS created successfully. Ready to generate questions.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(TosGenerate $tosGenerate): Response
-    {
-        $tosGenerate->load(['module', 'creator', 'questions' => function ($query) {
-            $query->latest();
-        }]);
-
-        return Inertia::render('tos-generates/show', [
-            'tosGenerate' => $tosGenerate,
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TosGenerate $tosGenerate): Response
-    {
-        $modules = Module::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['id', 'code', 'name', 'subject_area', 'grade_level']);
-
-        return Inertia::render('tos-generates/edit', [
-            'tosGenerate' => $tosGenerate->load('module'),
-            'modules' => $modules,
-        ]);
     }
 
     /**
@@ -115,7 +69,7 @@ class TosGenerateController extends Controller
         $tosGenerate->update($request->validated());
 
         return redirect()
-            ->route('tos-generates.show', $tosGenerate)
+            ->route('modules.show', $tosGenerate->module_id)
             ->with('success', 'TOS updated successfully.');
     }
 
@@ -151,7 +105,7 @@ class TosGenerateController extends Controller
             GenerateQuestionsJob::dispatch($tosGenerate, auth()->id());
 
             return redirect()
-                ->route('tos-generates.show', $tosGenerate)
+                ->route('modules.show', $tosGenerate->module_id)
                 ->with('success', 'Question generation started! This may take a few minutes. Refresh the page to see progress.');
         } catch (\Exception $e) {
             $tosGenerate->markAsFailed($e->getMessage());
@@ -240,7 +194,7 @@ class TosGenerateController extends Controller
         });
 
         return redirect()
-            ->route('tos-generates.show', $duplicate)
+            ->route('modules.show', $duplicate->module_id)
             ->with('success', 'TOS duplicated successfully.');
     }
 }
