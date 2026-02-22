@@ -2,12 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import {
-    index as tosIndex,
-    create as tosCreate,
-    edit as tosEdit,
-    show as tosShow,
-} from '@/routes/tos-generates';
+import { index as tosIndex } from '@/routes/tos-generates';
+import { show as moduleShow, index as modulesIndex } from '@/routes/modules';
 import { Head, Link, router } from '@inertiajs/react';
 import { TosGenerate, Module } from '@/types/models';
 import { Plus, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
@@ -55,7 +51,7 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                     description="Generate and manage test specifications and questions"
                     actions={
                         <Button asChild>
-                            <Link href={tosCreate.url()}>
+                            <Link href={modulesIndex.url()}>
                                 <Plus className="mr-2 size-4" />
                                 Generate TOS
                             </Link>
@@ -72,7 +68,7 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Link href={tosCreate.url()}>
+                            <Link href={modulesIndex.url()}>
                                 <Button>
                                     <Plus className="mr-2 size-4" />
                                     Generate TOS
@@ -184,22 +180,18 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
 
                                             {/* Actions */}
                                             <div className="flex items-center gap-2 pt-2 border-t">
-                                                <Link href={tosShow.url(tos.id)} className="flex-1">
+                                                <Link
+                                                    href={moduleShow.url(tos.module_id)}
+                                                    className="flex-1"
+                                                >
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
                                                         className="w-full"
                                                     >
-                                                        View Details
+                                                        View in Module
                                                     </Button>
                                                 </Link>
-                                                {tos.status === 'draft' && (
-                                                    <Link href={tosEdit.url(tos.id)}>
-                                                        <Button variant="ghost" size="sm">
-                                                            Edit
-                                                        </Button>
-                                                    </Link>
-                                                )}
                                             </div>
                                         </CardContent>
                                     </Card>

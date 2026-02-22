@@ -11,6 +11,8 @@ class ExamQuestion extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = ['status'];
+
     protected function casts(): array
     {
         return [
@@ -20,6 +22,14 @@ class ExamQuestion extends Model
             'is_ai_generated' => 'boolean',
             'ai_metadata' => 'array',
         ];
+    }
+
+    /**
+     * Derive a string status from the boolean is_approved flag.
+     */
+    public function getStatusAttribute(): string
+    {
+        return $this->is_approved ? 'approved' : 'pending';
     }
 
     protected $fillable = [

@@ -3,6 +3,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Exam } from '@/types/models';
 import { BreadcrumbItem, SharedData } from '@/types';
 import * as examBuilder from '@/routes/exam-builder';
+import { index as modulesIndex, show as moduleShow } from '@/routes/modules';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,7 +52,6 @@ import {
     Plus,
     MoreVertical,
     Eye,
-    Edit,
     Copy,
     Trash2,
     FileText,
@@ -67,7 +67,7 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Builder', href: examBuilde
 interface PageProps {
     exams: {
         data: (Exam & {
-            module: { code: string; name: string };
+            module: { id: number; code: string; name: string };
             creator: { name: string };
             tos_generate?: { title: string };
             questions_count: number;
@@ -191,7 +191,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             </p>
                         </div>
                         <Button asChild>
-                            <Link href={examBuilder.create.url()}>
+                            <Link href={modulesIndex.url()}>
                                 <Plus className="mr-2 size-4" />
                                 Create Exam
                             </Link>
@@ -286,7 +286,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                 <EmptyTitle>No exams found</EmptyTitle>
                                 <EmptyDescription>
                                     {hasActiveFilters
-                                        ? 'Try adjusting your filters to find what you\'re looking for.'
+                                        ? "Try adjusting your filters to find what you're looking for."
                                         : 'Create your first exam to start building assessments from your question bank.'}
                                 </EmptyDescription>
                             </EmptyHeader>
@@ -297,7 +297,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     </Button>
                                 ) : (
                                     <Button asChild>
-                                        <Link href={examBuilder.create.url()}>
+                                        <Link href={modulesIndex.url()}>
                                             <Plus className="mr-2 size-4" />
                                             Create Exam
                                         </Link>
@@ -321,7 +321,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                 {exams.data.map((exam) => (
                                     <Link
                                         key={exam.id}
-                                        href={examBuilder.show.url(exam.id)}
+                                        href={moduleShow.url(exam.module.id)}
                                         className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors group"
                                     >
                                         {/* Title with icon */}
@@ -330,9 +330,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                 {getExamTypeIcon(exam.exam_type)}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="font-medium truncate">
-                                                    {exam.title}
-                                                </p>
+                                                <p className="font-medium truncate">{exam.title}</p>
                                                 <p className="text-xs text-muted-foreground truncate">
                                                     {exam.module?.name}
                                                 </p>
@@ -370,19 +368,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link
-                                                            href={examBuilder.show.url(exam.id)}
-                                                        >
+                                                        <Link href={moduleShow.url(exam.module.id)}>
                                                             <Eye className="mr-2 size-4" />
-                                                            View
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link
-                                                            href={examBuilder.edit.url(exam.id)}
-                                                        >
-                                                            <Edit className="mr-2 size-4" />
-                                                            Edit
+                                                            View in Module
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem

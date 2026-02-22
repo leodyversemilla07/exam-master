@@ -14,6 +14,7 @@ beforeEach(function () {
     Role::create(['name' => 'educator']);
     Permission::create(['name' => 'manage collaborators']);
     Permission::create(['name' => 'view exams']);
+    Permission::create(['name' => 'edit exams']);
     $role = Role::findByName('educator');
     $role->givePermissionTo('view exams');
 });
@@ -229,8 +230,13 @@ test('editor collaborator can edit exam', function () {
     $exam->collaborators()->attach($editor->id, ['role' => 'editor']);
 
     $this->actingAs($editor)
-        ->get(route('exam-builder.edit', $exam))
-        ->assertStatus(200);
+        ->patch(route('exam-builder.update', $exam), [
+            'module_id' => $exam->module_id,
+            'title' => $exam->title,
+            'exam_type' => $exam->exam_type,
+            'passing_score' => $exam->passing_score,
+        ])
+        ->assertStatus(302);
 });
 
 test('viewer collaborator cannot edit exam', function () {
@@ -242,6 +248,11 @@ test('viewer collaborator cannot edit exam', function () {
     $exam->collaborators()->attach($viewer->id, ['role' => 'viewer']);
 
     $this->actingAs($viewer)
-        ->get(route('exam-builder.edit', $exam))
+        ->patch(route('exam-builder.update', $exam), [
+            'module_id' => $exam->module_id,
+            'title' => $exam->title,
+            'exam_type' => $exam->exam_type,
+            'passing_score' => $exam->passing_score,
+        ])
         ->assertStatus(403);
 });

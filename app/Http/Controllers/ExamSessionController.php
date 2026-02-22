@@ -32,21 +32,9 @@ class ExamSessionController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function create(): RedirectResponse
     {
-        $exams = Exam::with('module')
-            ->where('status', 'published')
-            ->when(! auth()->user()->hasRole('super-admin'), function ($query) {
-                $query->where('created_by', auth()->id());
-            })
-            ->get(['id', 'title', 'module_id', 'total_items', 'total_points', 'time_limit']);
-
-        $selectedExamId = $request->query('exam_id');
-
-        return Inertia::render('exam-sessions/create', [
-            'exams' => $exams,
-            'selectedExamId' => $selectedExamId,
-        ]);
+        return redirect()->route('modules.index');
     }
 
     public function store(Request $request): RedirectResponse

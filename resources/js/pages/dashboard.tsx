@@ -2,12 +2,8 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { dashboard as dashboardRoute } from '@/routes';
-import {
-    create as examBuilderCreate,
-    show as examBuilderShow,
-    edit as examBuilderEdit,
-    duplicate as examBuilderDuplicate,
-} from '@/routes/exam-builder';
+import { duplicate as examBuilderDuplicate } from '@/routes/exam-builder';
+import { index as modulesIndex, show as moduleShow } from '@/routes/modules';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,7 +27,6 @@ import {
     Plus,
     MoreVertical,
     Eye,
-    Edit,
     Copy,
     Trash2,
     FileText,
@@ -118,7 +113,7 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
 
     const confirmDelete = () => {
         if (deletingExam) {
-            router.delete(`/ exam - builder / ${deletingExam.id} `, {
+            router.delete(`/exam-builder/${deletingExam.id}`, {
                 onSuccess: () => setDeletingExam(null),
             });
         }
@@ -133,15 +128,13 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                     {/* Header */}
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-semibold tracking-tight">
-                                Recent exams
-                            </h1>
+                            <h1 className="text-2xl font-semibold tracking-tight">Recent exams</h1>
                             <p className="text-sm text-muted-foreground mt-1">
                                 Welcome back, {auth.user.name}
                             </p>
                         </div>
                         <Button asChild>
-                            <Link href={examBuilderCreate.url()}>
+                            <Link href={modulesIndex.url()}>
                                 <Plus className="mr-2 size-4" />
                                 Create Exam
                             </Link>
@@ -180,10 +173,11 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                             </div>
                             <h2 className="text-lg font-medium mb-2">No exams yet</h2>
                             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                                Create your first exam to start building assessments from your question bank.
+                                Create your first exam to start building assessments from your
+                                question bank.
                             </p>
                             <Button asChild>
-                                <Link href={examBuilderCreate.url()}>
+                                <Link href={modulesIndex.url()}>
                                     <Plus className="mr-2 size-4" />
                                     Create Exam
                                 </Link>
@@ -204,7 +198,7 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                             {recentExams.map((exam) => (
                                 <Link
                                     key={exam.id}
-                                    href={examBuilderShow.url(exam.id)}
+                                    href={moduleShow.url(exam.module.id)}
                                     className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors group"
                                 >
                                     {/* Title with icon */}
@@ -213,9 +207,7 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                             {getExamTypeIcon(exam.exam_type)}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="font-medium truncate">
-                                                {exam.title}
-                                            </p>
+                                            <p className="font-medium truncate">{exam.title}</p>
                                             <p className="text-xs text-muted-foreground truncate">
                                                 {exam.module?.name}
                                             </p>
@@ -224,7 +216,8 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
 
                                     {/* Questions count */}
                                     <span className="text-sm text-muted-foreground">
-                                        {exam.questions_count} {exam.questions_count === 1 ? 'Question' : 'Questions'}
+                                        {exam.questions_count}{' '}
+                                        {exam.questions_count === 1 ? 'Question' : 'Questions'}
                                     </span>
 
                                     {/* Created date */}
@@ -252,15 +245,9 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem asChild>
-                                                    <Link href={examBuilderShow.url(exam.id)}>
+                                                    <Link href={moduleShow.url(exam.module.id)}>
                                                         <Eye className="mr-2 size-4" />
-                                                        View
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={examBuilderEdit.url(exam.id)}>
-                                                        <Edit className="mr-2 size-4" />
-                                                        Edit
+                                                        View in Module
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
