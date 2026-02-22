@@ -91,14 +91,34 @@ class ModuleController extends Controller
     }
 
     /**
-     * Display the specified module.
+     * Display the module workspace.
      */
     public function show(Module $module): Response
     {
-        $module->load(['creator', 'tosGenerates.questions']);
+        $module->load(['creator', 'tosGenerates']);
+        $module->loadCount(['questions', 'exams']);
+
+        $questions = $module->questions()
+            ->with('module')
+            ->latest()
+            ->paginate(15);
+
+        $exams = $module->exams()
+            ->with('creator')
+            ->withCount('questions')
+            ->latest()
+            ->get();
+
+        $topics = $module->rootTopics()
+            ->with(['children' => fn ($q) => $q->withCount('learningObjectives')])
+            ->withCount('learningObjectives')
+            ->get();
 
         return Inertia::render('modules/show', [
             'module' => $module,
+            'questions' => $questions,
+            'exams' => $exams,
+            'topics' => $topics,
         ]);
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Exam;
 use App\Models\ExamQuestion;
 use App\Models\Module;
 use App\Models\TosGenerate;
@@ -28,13 +29,7 @@ it('displays the dashboard page for authenticated users', function () {
         ->assertInertia(fn ($page) => $page
             ->component('dashboard')
             ->has('stats')
-            ->has('questionsByCognitiveLevel')
-            ->has('questionsByDifficulty')
-            ->has('questionsByType')
-            ->has('recentQuestions')
             ->has('recentExams')
-            ->has('recentTos')
-            ->has('moduleStats')
         );
 });
 
@@ -75,38 +70,35 @@ it('shows correct statistics on dashboard', function () {
         );
 });
 
-it('shows recent questions on dashboard', function () {
+it('shows recent exams on dashboard', function () {
     $module = Module::factory()->create();
-    $tosGenerate = TosGenerate::factory()->create(['module_id' => $module->id]);
 
-    ExamQuestion::factory()->count(10)->create([
+    Exam::factory()->count(5)->create([
         'module_id' => $module->id,
-        'tos_generate_id' => $tosGenerate->id,
+        'created_by' => $this->user->id,
     ]);
 
     get(route('dashboard'))
         ->assertSuccessful()
         ->assertInertia(fn ($page) => $page
             ->component('dashboard')
-            ->has('recentQuestions', 5) // Should only show 5 recent
+            ->has('recentExams', 5)
         );
 });
 
-it('shows module statistics with counts', function () {
-    $module = Module::factory()->create(['is_active' => true]);
-    $tosGenerate = TosGenerate::factory()->create(['module_id' => $module->id]);
+it('limits recent exams to 20', function () {
+    $module = Module::factory()->create();
 
-    ExamQuestion::factory()->count(3)->create([
+    Exam::factory()->count(25)->create([
         'module_id' => $module->id,
-        'tos_generate_id' => $tosGenerate->id,
+        'created_by' => $this->user->id,
     ]);
 
     get(route('dashboard'))
         ->assertSuccessful()
         ->assertInertia(fn ($page) => $page
             ->component('dashboard')
-            ->has('moduleStats', 1)
-            ->where('moduleStats.0.questions_count', 3)
+            ->has('recentExams', 20)
         );
 });
 

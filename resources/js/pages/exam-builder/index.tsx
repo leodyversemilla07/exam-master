@@ -1,4 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Exam } from '@/types/models';
+import { BreadcrumbItem, SharedData } from '@/types';
+import * as examBuilder from '@/routes/exam-builder';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,12 +13,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import AppLayout from '@/layouts/app-layout';
-import { Head, router, Link, usePage } from '@inertiajs/react';
-import { Exam } from '@/types/models';
-import { Plus, Eye, Edit, Copy, Trash2, FileText } from 'lucide-react';
-import { useState } from 'react';
-import PageHeader from '@/components/page-header';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,16 +29,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import {
     Pagination,
     PaginationContent,
@@ -43,7 +39,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
     Empty,
     EmptyContent,
@@ -52,24 +47,29 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import { BreadcrumbItem, SharedData } from '@/types';
-import * as examBuilder from '@/routes/exam-builder';
+import {
+    Plus,
+    MoreVertical,
+    Eye,
+    Edit,
+    Copy,
+    Trash2,
+    FileText,
+    ClipboardList,
+    Stethoscope,
+    Search,
+    X,
+} from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Builder', href: examBuilder.index.url() }];
 
 interface PageProps {
     exams: {
         data: (Exam & {
-            module: {
-                code: string;
-                name: string;
-            };
-            creator: {
-                name: string;
-            };
-            tos_generate?: {
-                title: string;
-            };
+            module: { code: string; name: string };
+            creator: { name: string };
+            tos_generate?: { title: string };
             questions_count: number;
         })[];
         current_page: number;
@@ -78,17 +78,48 @@ interface PageProps {
         total: number;
         links: { url: string | null; label: string; active: boolean }[];
     };
-    modules: {
-        id: number;
-        code: string;
-        name: string;
-    }[];
+    modules: { id: number; code: string; name: string }[];
     filters: {
         module_id?: string;
         status?: string;
         exam_type?: string;
         search?: string;
     };
+}
+
+function getExamTypeIcon(type: string) {
+    switch (type) {
+        case 'formative':
+            return <FileText className="size-5 text-blue-500" />;
+        case 'summative':
+            return <ClipboardList className="size-5 text-purple-500" />;
+        case 'diagnostic':
+            return <Stethoscope className="size-5 text-amber-500" />;
+        default:
+            return <FileText className="size-5 text-muted-foreground" />;
+    }
+}
+
+function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+}
+
+function getStatusBadge(status: string) {
+    const styles: Record<string, string> = {
+        draft: 'bg-muted text-muted-foreground',
+        published: 'bg-success/10 text-success',
+        archived: 'bg-secondary/10 text-secondary',
+    };
+
+    return (
+        <Badge variant="outline" className={styles[status] || 'bg-muted text-muted-foreground'}>
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Badge>
+    );
 }
 
 export default function ExamBuilderIndex({ exams, modules, filters }: PageProps) {
@@ -126,10 +157,6 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
         router.get('/exam-builder', currentFilters, { preserveState: true });
     };
 
-    const handleDelete = (exam: Exam) => {
-        setDeletingExam(exam);
-    };
-
     const confirmDelete = () => {
         if (deletingExam) {
             router.delete(`/exam-builder/${deletingExam.id}`, {
@@ -138,386 +165,317 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        const colors = {
-            draft: 'bg-muted text-muted-foreground border-border',
-            published:
-                'bg-success/10 text-success border-success/20 dark:bg-success/20 dark:border-success/30',
-            archived:
-                'bg-secondary/10 text-secondary border-secondary/20 dark:bg-secondary/20 dark:border-secondary/30',
-        } as const;
+    const hasActiveFilters =
+        moduleFilter !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || search !== '';
 
-        return (
-            <Badge
-                className={
-                    colors[status as keyof typeof colors] ||
-                    'bg-muted text-muted-foreground border-border'
-                }
-            >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-            </Badge>
-        );
-    };
-
-    const getTypeBadge = (type: string) => {
-        const colors = {
-            formative: 'bg-info/10 text-info border-info/20 dark:bg-info/20 dark:border-info/30',
-            summative:
-                'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:border-primary/30',
-            diagnostic:
-                'bg-warning/10 text-warning border-warning/20 dark:bg-warning/20 dark:border-warning/30',
-        } as const;
-
-        return (
-            <Badge
-                className={
-                    colors[type as keyof typeof colors] ||
-                    'bg-muted text-muted-foreground border-border'
-                }
-            >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-            </Badge>
-        );
+    const clearFilters = () => {
+        setSearch('');
+        setModuleFilter('all');
+        setStatusFilter('all');
+        setTypeFilter('all');
+        router.get(examBuilder.index.url(), {}, { preserveState: true });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Exam Builder" />
 
-            <div className="px-4 py-6 md:px-6 md:py-8">
+            <div className="px-4 py-6 md:px-8 md:py-8">
                 <div className="mx-auto max-w-5xl space-y-6">
-                    <PageHeader
-                        title="Exam Builder"
-                        description="Create complete exams by combining questions from your question bank"
-                        actions={
-                            <Button asChild>
-                                <Link href={examBuilder.create.url()}>
-                                    <Plus className="mr-2 size-4" />
-                                    Create Exam
-                                </Link>
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-2xl font-semibold tracking-tight">Exam Builder</h1>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                {exams.total} exam{exams.total !== 1 ? 's' : ''} total
+                            </p>
+                        </div>
+                        <Button asChild>
+                            <Link href={examBuilder.create.url()}>
+                                <Plus className="mr-2 size-4" />
+                                Create Exam
+                            </Link>
+                        </Button>
+                    </div>
+
+                    {/* Filters Row */}
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative flex-1 min-w-48 max-w-sm">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search exams..."
+                                value={search}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                className="pl-9"
+                            />
+                        </div>
+                        <Select
+                            value={moduleFilter}
+                            onValueChange={(value) => {
+                                setModuleFilter(value);
+                                applyFilters({
+                                    module_id: value === 'all' ? undefined : value || undefined,
+                                });
+                            }}
+                        >
+                            <SelectTrigger className="w-40">
+                                <SelectValue placeholder="All Modules" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Modules</SelectItem>
+                                {modules.map((module) => (
+                                    <SelectItem key={module.id} value={module.id.toString()}>
+                                        {module.code}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Select
+                            value={statusFilter}
+                            onValueChange={(value) => {
+                                setStatusFilter(value);
+                                applyFilters({
+                                    status: value === 'all' ? undefined : value || undefined,
+                                });
+                            }}
+                        >
+                            <SelectTrigger className="w-36">
+                                <SelectValue placeholder="All Status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Status</SelectItem>
+                                <SelectItem value="draft">Draft</SelectItem>
+                                <SelectItem value="published">Published</SelectItem>
+                                <SelectItem value="archived">Archived</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select
+                            value={typeFilter}
+                            onValueChange={(value) => {
+                                setTypeFilter(value);
+                                applyFilters({
+                                    exam_type: value === 'all' ? undefined : value || undefined,
+                                });
+                            }}
+                        >
+                            <SelectTrigger className="w-36">
+                                <SelectValue placeholder="All Types" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Types</SelectItem>
+                                <SelectItem value="formative">Formative</SelectItem>
+                                <SelectItem value="summative">Summative</SelectItem>
+                                <SelectItem value="diagnostic">Diagnostic</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {hasActiveFilters && (
+                            <Button variant="ghost" size="sm" onClick={clearFilters}>
+                                <X className="mr-1 size-3" />
+                                Clear
                             </Button>
-                        }
-                    />
+                        )}
+                    </div>
 
-                    {/* Filters */}
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                <div>
-                                    <Input
-                                        placeholder="Search exams..."
-                                        value={search}
-                                        onChange={(e) => handleSearch(e.target.value)}
-                                        className="w-full"
-                                    />
-                                </div>
-                                <Select
-                                    value={moduleFilter}
-                                    onValueChange={(value) => {
-                                        setModuleFilter(value);
-                                        applyFilters({
-                                            module_id: value === 'all' ? undefined : value || undefined,
-                                        });
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Modules" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Modules</SelectItem>
-                                        {modules.map((module) => (
-                                            <SelectItem key={module.id} value={module.id.toString()}>
-                                                {module.code}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Select
-                                    value={statusFilter}
-                                    onValueChange={(value) => {
-                                        setStatusFilter(value);
-                                        applyFilters({
-                                            status: value === 'all' ? undefined : value || undefined,
-                                        });
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="draft">Draft</SelectItem>
-                                        <SelectItem value="published">Published</SelectItem>
-                                        <SelectItem value="archived">Archived</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Select
-                                    value={typeFilter}
-                                    onValueChange={(value) => {
-                                        setTypeFilter(value);
-                                        applyFilters({
-                                            exam_type: value === 'all' ? undefined : value || undefined,
-                                        });
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Types" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Types</SelectItem>
-                                        <SelectItem value="formative">Formative</SelectItem>
-                                        <SelectItem value="summative">Summative</SelectItem>
-                                        <SelectItem value="diagnostic">Diagnostic</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setSearch('');
-                                        setModuleFilter('all');
-                                        setStatusFilter('all');
-                                        setTypeFilter('all');
-                                        router.get(examBuilder.index.url(), {}, { preserveState: true });
-                                    }}
-                                >
-                                    Clear Filters
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
+                    {/* Exam List */}
                     {exams.data.length === 0 ? (
                         <Empty>
                             <EmptyHeader>
                                 <EmptyMedia variant="icon">
                                     <FileText className="size-8" />
                                 </EmptyMedia>
-                                <EmptyTitle>No Exams</EmptyTitle>
+                                <EmptyTitle>No exams found</EmptyTitle>
                                 <EmptyDescription>
-                                    Create your first exam to start building assessments from your question bank.
+                                    {hasActiveFilters
+                                        ? 'Try adjusting your filters to find what you\'re looking for.'
+                                        : 'Create your first exam to start building assessments from your question bank.'}
                                 </EmptyDescription>
                             </EmptyHeader>
                             <EmptyContent>
-                                <Button asChild>
-                                    <Link href={examBuilder.create.url()}>
-                                        <Plus className="mr-2 size-4" />
-                                        Create Exam
-                                    </Link>
-                                </Button>
+                                {hasActiveFilters ? (
+                                    <Button variant="outline" onClick={clearFilters}>
+                                        Clear Filters
+                                    </Button>
+                                ) : (
+                                    <Button asChild>
+                                        <Link href={examBuilder.create.url()}>
+                                            <Plus className="mr-2 size-4" />
+                                            Create Exam
+                                        </Link>
+                                    </Button>
+                                )}
                             </EmptyContent>
                         </Empty>
                     ) : (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>All Exams</CardTitle>
-                                <CardDescription>
-                                    {exams.total} exam{exams.total !== 1 ? 's' : ''} total
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Exam</TableHead>
-                                            <TableHead>Module</TableHead>
-                                            <TableHead>Type</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead className="text-center">Questions</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {exams.data.map((exam) => (
-                                            <TableRow key={exam.id}>
-                                                <TableCell>
-                                                    <div>
-                                                        <div className="font-medium">
-                                                            {exam.title}
-                                                        </div>
-                                                        {exam.description && (
-                                                            <div className="text-sm text-muted-foreground truncate max-w-50">
-                                                                {exam.description}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium">
-                                                        {exam.module.code}
-                                                    </div>
-                                                    <div className="text-sm text-muted-foreground">
-                                                        {exam.module.name}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>{getTypeBadge(exam.exam_type)}</TableCell>
-                                                <TableCell>{getStatusBadge(exam.status)}</TableCell>
-                                                <TableCell className="text-center">
-                                                    <div className="flex items-center justify-center gap-1">
-                                                        <FileText className="size-4 text-muted-foreground" />
-                                                        {exam.questions_count}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex justify-end gap-2">
-                                                        <TooltipProvider>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        size="icon"
-                                                                        asChild
-                                                                    >
-                                                                        <Link
-                                                                            href={examBuilder.show.url(
-                                                                                exam.id,
-                                                                            )}
-                                                                        >
-                                                                            <Eye className="size-4" />
-                                                                        </Link>
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    View Details
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                        <>
+                            <div className="rounded-xl border">
+                                {/* Table Header */}
+                                <div className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                    <span>Title</span>
+                                    <span>Questions</span>
+                                    <span>Created</span>
+                                    <span>Status</span>
+                                    <span />
+                                </div>
 
-                                                        <TooltipProvider>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        size="icon"
-                                                                        asChild
-                                                                    >
-                                                                        <Link
-                                                                            href={examBuilder.edit.url(
-                                                                                exam.id,
-                                                                            )}
-                                                                        >
-                                                                            <Edit className="size-4" />
-                                                                        </Link>
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    Edit Exam
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                {/* Exam Rows */}
+                                {exams.data.map((exam) => (
+                                    <Link
+                                        key={exam.id}
+                                        href={examBuilder.show.url(exam.id)}
+                                        className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors group"
+                                    >
+                                        {/* Title with icon */}
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="shrink-0">
+                                                {getExamTypeIcon(exam.exam_type)}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-medium truncate">
+                                                    {exam.title}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground truncate">
+                                                    {exam.module?.name}
+                                                </p>
+                                            </div>
+                                        </div>
 
-                                                        <TooltipProvider>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        size="icon"
-                                                                        onClick={() =>
-                                                                            router.post(examBuilder.duplicate.url(exam.id))
-                                                                        }
-                                                                    >
-                                                                        <Copy className="size-4" />
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    Duplicate Exam
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                        {/* Questions count */}
+                                        <span className="text-sm text-muted-foreground">
+                                            {exam.questions_count}{' '}
+                                            {exam.questions_count === 1 ? 'Question' : 'Questions'}
+                                        </span>
 
-                                                        {canDeleteExam(exam) && (
-                                                            <AlertDialog>
-                                                                <AlertDialogTrigger asChild>
-                                                                    <Button
-                                                                        variant="destructive"
-                                                                        size="icon"
-                                                                    >
-                                                                        <Trash2 className="size-4" />
-                                                                    </Button>
-                                                                </AlertDialogTrigger>
-                                                                <AlertDialogContent>
-                                                                    <AlertDialogHeader>
-                                                                        <AlertDialogTitle>
-                                                                            Delete Exam?
-                                                                        </AlertDialogTitle>
-                                                                        <AlertDialogDescription>
-                                                                            This action cannot be undone.
-                                                                            This will permanently delete the
-                                                                            exam "{exam.title}".
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogFooter>
-                                                                        <AlertDialogCancel>
-                                                                            Cancel
-                                                                        </AlertDialogCancel>
-                                                                        <AlertDialogAction
-                                                                            onClick={() =>
-                                                                                handleDelete(exam)
-                                                                            }
-                                                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                                        >
-                                                                            Delete
-                                                                        </AlertDialogAction>
-                                                                    </AlertDialogFooter>
-                                                                </AlertDialogContent>
-                                                            </AlertDialog>
-                                                        )}
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        {/* Created date */}
+                                        <span className="text-sm text-muted-foreground">
+                                            {formatDate(exam.created_at)}
+                                        </span>
 
-                                {/* Pagination */}
-                                {exams.last_page > 1 && (
-                                    <div className="flex items-center justify-between mt-6">
-                                        <p className="text-sm text-muted-foreground">
-                                            Showing {exams.data.length} of {exams.total} exams
-                                        </p>
-                                        <Pagination>
-                                            <PaginationContent>
-                                                <PaginationItem>
-                                                    <PaginationPrevious
-                                                        href={exams.links[0].url || '#'}
-                                                        className={!exams.links[0].url ? 'pointer-events-none opacity-50' : ''}
-                                                    />
-                                                </PaginationItem>
-                                                {exams.links.slice(1, -1).map((link, i) => {
-                                                    if (link.label.includes('...')) {
-                                                        return (
-                                                            <PaginationItem key={i}>
-                                                                <PaginationEllipsis />
-                                                            </PaginationItem>
-                                                        );
+                                        {/* Status */}
+                                        {getStatusBadge(exam.status)}
+
+                                        {/* 3-dot menu */}
+                                        <div
+                                            onClick={(e) => e.preventDefault()}
+                                            className="flex justify-center"
+                                        >
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        <MoreVertical className="size-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={examBuilder.show.url(exam.id)}
+                                                        >
+                                                            <Eye className="mr-2 size-4" />
+                                                            View
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={examBuilder.edit.url(exam.id)}
+                                                        >
+                                                            <Edit className="mr-2 size-4" />
+                                                            Edit
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() =>
+                                                            router.post(
+                                                                examBuilder.duplicate.url(exam.id),
+                                                            )
+                                                        }
+                                                    >
+                                                        <Copy className="mr-2 size-4" />
+                                                        Duplicate
+                                                    </DropdownMenuItem>
+                                                    {canDeleteExam(exam) && (
+                                                        <>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem
+                                                                className="text-destructive focus:text-destructive"
+                                                                onClick={() =>
+                                                                    setDeletingExam(exam)
+                                                                }
+                                                            >
+                                                                <Trash2 className="mr-2 size-4" />
+                                                                Delete
+                                                            </DropdownMenuItem>
+                                                        </>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+
+                            {/* Pagination */}
+                            {exams.last_page > 1 && (
+                                <div className="flex items-center justify-between">
+                                    <p className="text-sm text-muted-foreground">
+                                        Showing {exams.data.length} of {exams.total} exams
+                                    </p>
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    href={exams.links[0].url || '#'}
+                                                    className={
+                                                        !exams.links[0].url
+                                                            ? 'pointer-events-none opacity-50'
+                                                            : ''
                                                     }
+                                                />
+                                            </PaginationItem>
+                                            {exams.links.slice(1, -1).map((link, i) => {
+                                                if (link.label.includes('...')) {
                                                     return (
                                                         <PaginationItem key={i}>
-                                                            <PaginationLink
-                                                                href={link.url || '#'}
-                                                                isActive={link.active}
-                                                            >
-                                                                {link.label}
-                                                            </PaginationLink>
+                                                            <PaginationEllipsis />
                                                         </PaginationItem>
                                                     );
-                                                })}
-                                                <PaginationItem>
-                                                    <PaginationNext
-                                                        href={exams.links[exams.links.length - 1].url || '#'}
-                                                        className={!exams.links[exams.links.length - 1].url ? 'pointer-events-none opacity-50' : ''}
-                                                    />
-                                                </PaginationItem>
-                                            </PaginationContent>
-                                        </Pagination>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                                                }
+                                                return (
+                                                    <PaginationItem key={i}>
+                                                        <PaginationLink
+                                                            href={link.url || '#'}
+                                                            isActive={link.active}
+                                                        >
+                                                            {link.label}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                );
+                                            })}
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    href={
+                                                        exams.links[exams.links.length - 1].url ||
+                                                        '#'
+                                                    }
+                                                    className={
+                                                        !exams.links[exams.links.length - 1].url
+                                                            ? 'pointer-events-none opacity-50'
+                                                            : ''
+                                                    }
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
 
-            {/* Delete Confirmation Dialog */}
+            {/* Delete Confirmation */}
             <AlertDialog open={!!deletingExam} onOpenChange={() => setDeletingExam(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
