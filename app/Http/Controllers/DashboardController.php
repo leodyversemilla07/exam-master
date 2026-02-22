@@ -9,14 +9,13 @@ use App\Models\ExamSession;
 use App\Models\Module;
 use App\Models\TosGenerate;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
     /**
-     * Display the dashboard with analytics.
+     * Display the educator dashboard.
      */
     public function __invoke(): Response
     {
@@ -26,7 +25,6 @@ class DashboardController extends Controller
             return $this->studentDashboard();
         }
 
-        // Get statistics
         $stats = [
             'total_modules' => Module::count(),
             'active_modules' => Module::where('is_active', true)->count(),
@@ -42,56 +40,15 @@ class DashboardController extends Controller
             'total_users' => User::count(),
         ];
 
-        // Get questions by cognitive level
-        $questionsByCognitiveLevel = ExamQuestion::select('cognitive_level', DB::raw('count(*) as count'))
-            ->groupBy('cognitive_level')
-            ->pluck('count', 'cognitive_level')
-            ->toArray();
-
-        // Get questions by difficulty
-        $questionsByDifficulty = ExamQuestion::select('difficulty', DB::raw('count(*) as count'))
-            ->groupBy('difficulty')
-            ->pluck('count', 'difficulty')
-            ->toArray();
-
-        // Get questions by type
-        $questionsByType = ExamQuestion::select('question_type', DB::raw('count(*) as count'))
-            ->groupBy('question_type')
-            ->pluck('count', 'question_type')
-            ->toArray();
-
-        // Get recent activity
-        $recentQuestions = ExamQuestion::with('module')
+        $recentExams = Exam::with(['module', 'creator'])
+            ->withCount('questions')
             ->latest()
-            ->take(5)
-            ->get(['id', 'question', 'cognitive_level', 'difficulty', 'is_approved', 'module_id', 'created_at']);
-
-        $recentExams = Exam::with('module')
-            ->latest()
-            ->take(5)
-            ->get(['id', 'title', 'status', 'total_items', 'module_id', 'created_at']);
-
-        $recentTos = TosGenerate::with('module')
-            ->latest()
-            ->take(5)
-            ->get(['id', 'subject', 'status', 'total_items', 'module_id', 'created_at']);
-
-        // Get modules with question counts
-        $moduleStats = Module::withCount(['questions', 'exams', 'tosGenerates'])
-            ->where('is_active', true)
-            ->orderBy('questions_count', 'desc')
-            ->take(5)
-            ->get(['id', 'code', 'name']);
+            ->take(20)
+            ->get();
 
         return Inertia::render('dashboard', [
             'stats' => $stats,
-            'questionsByCognitiveLevel' => $questionsByCognitiveLevel,
-            'questionsByDifficulty' => $questionsByDifficulty,
-            'questionsByType' => $questionsByType,
-            'recentQuestions' => $recentQuestions,
             'recentExams' => $recentExams,
-            'recentTos' => $recentTos,
-            'moduleStats' => $moduleStats,
         ]);
     }
 
