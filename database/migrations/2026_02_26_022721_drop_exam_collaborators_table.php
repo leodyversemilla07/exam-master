@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('exam_collaborators');
+        if (! Schema::hasTable('exam_collaborators')) {
+            Schema::create('exam_collaborators', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('exam_id')->constrained()->cascadeOnDelete();
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                $table->string('role')->default('editor');
+                $table->boolean('can_delete')->default(false);
+                $table->timestamps();
+                $table->unique(['exam_id', 'user_id']);
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::create('exam_collaborators', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('exam_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('role')->default('editor');
-            $table->boolean('can_delete')->default(false);
-            $table->timestamps();
-            $table->unique(['exam_id', 'user_id']);
-        });
+        Schema::dropIfExists('exam_collaborators');
     }
 };

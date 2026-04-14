@@ -30,7 +30,7 @@ it('shows plans with paymongo public key on plans page', function () {
     get(route('plans'))
         ->assertSuccessful()
         ->assertInertia(fn ($page) => $page
-            ->component('plans/index')
+            ->component('Plans/index')
             ->has('plans', 1)
             ->where('paymongo.publicKey', 'pk_test_123')
         );
