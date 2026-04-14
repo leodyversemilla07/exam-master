@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Laravel\Ai\Migrations\AiMigration;
 
-return new class extends AiMigration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -44,7 +44,7 @@ return new class extends AiMigration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agent_conversations');
         Schema::dropIfExists('agent_conversation_messages');
+        Schema::dropIfExists('agent_conversations');
     }
 };
