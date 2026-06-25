@@ -3,7 +3,6 @@ import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, CreditCard, Landmark, Smartphone } from 'lucide-react';
 import { Form, Head, usePage } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -20,7 +19,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import { createIntent, intent as paymentIntentRoute } from '@/routes/payments';
 import { plans as plansRoute } from '@/routes';
-import type { BreadcrumbItem, PageProps } from '@/types';
+import type { PageProps } from '@/types';
 
 interface Plan {
     id: number;
@@ -36,10 +35,6 @@ interface PlansPageProps extends PageProps {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Plans', href: plansRoute.url() },
-];
-
 const currency = new Intl.NumberFormat('en-PH', {
     style: 'currency',
     currency: 'PHP',
@@ -52,6 +47,32 @@ const paymentMethodOptions = [
     { value: 'paymaya', label: 'Maya', icon: Landmark },
 ];
 
+function getPaymentStatus(): {
+    status: 'idle' | 'success' | 'error';
+    message: string | null;
+} {
+    if (typeof window === 'undefined') {
+        return { status: 'idle', message: null };
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const statusParam = params.get('status');
+
+    if (statusParam === 'success') {
+        return { status: 'success', message: 'Payment confirmed. Thank you!' };
+    }
+
+    if (statusParam === 'processing') {
+        return { status: 'success', message: 'Payment is processing. We will update you shortly.' };
+    }
+
+    if (statusParam === 'failed' || statusParam === 'error') {
+        return { status: 'error', message: 'Payment failed. Please try again.' };
+    }
+
+    return { status: 'idle', message: null };
+}
+
 export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
     const { auth } = usePage<PlansPageProps>().props;
     const [selectedPlanId, setSelectedPlanId] = useState<number | null>(
@@ -59,8 +80,10 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
     );
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [processing, setProcessing] = useState(false);
-    const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
-    const [statusMessage, setStatusMessage] = useState<string | null>(null);
+    const [{ status, message: statusMessage }, setStatusInfo] = useState(() => getPaymentStatus());
+
+    const setStatus = (s: 'idle' | 'success' | 'error') => setStatusInfo((prev) => ({ ...prev, status: s }));
+    const setStatusMessage = (msg: string | null) => setStatusInfo((prev) => ({ ...prev, message: msg }));
     const defaultFormValues = useMemo(
         () => ({
             name: auth.user?.name ?? '',
@@ -77,10 +100,6 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
         [auth.user?.email, auth.user?.name],
     );
     const [formValues, setFormValues] = useState(defaultFormValues);
-
-    useEffect(() => {
-        setFormValues(defaultFormValues);
-    }, [defaultFormValues]);
 
     const selectedPlan = plans.find((plan) => plan.id === selectedPlanId);
 
@@ -281,80 +300,55 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
             return;
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const statusParam = params.get('status');
-        const paymentId = params.get('payment_intent_id');
+        const paymentId = new URLSearchParams(window.location.search).get(
+            'payment_intent_id',
+        );
 
-        if (!statusParam && !paymentId) {
+        if (!paymentId) {
             return;
         }
 
-        if (statusParam === 'success') {
-            setStatus('success');
-            setStatusMessage('Payment confirmed. Thank you!');
+        setStatus('success');
+        setStatusMessage('Payment submitted. We are verifying the status.');
+        void axios
+            .get(
+                paymentIntentRoute.url({
+                    query: { payment_intent_id: paymentId },
+                }),
+            )
+            .then((response) => {
+                const statusValue = response.data?.status as
+                    | string
+                    | undefined;
 
-            return;
-        }
+                if (!statusValue) {
+                    return;
+                }
 
-        if (statusParam === 'processing') {
-            setStatus('success');
-            setStatusMessage(
-                'Payment is processing. We will update you shortly.',
-            );
-
-            return;
-        }
-
-        if (statusParam === 'failed' || statusParam === 'error') {
-            setStatus('error');
-            setStatusMessage('Payment failed. Please try again.');
-
-            return;
-        }
-
-        if (paymentId) {
-            setStatus('success');
-            setStatusMessage('Payment submitted. We are verifying the status.');
-            void axios
-                .get(
-                    paymentIntentRoute.url({
-                        query: { payment_intent_id: paymentId },
-                    }),
-                )
-                .then((response) => {
-                    const statusValue = response.data?.status as
-                        | string
-                        | undefined;
-
-                    if (!statusValue) {
-                        return;
-                    }
-
-                    if (['succeeded', 'processing'].includes(statusValue)) {
-                        setStatus('success');
-                        setStatusMessage(
-                            statusValue === 'succeeded'
-                                ? 'Payment confirmed. Thank you!'
-                                : 'Payment is processing. We will update you shortly.',
-                        );
-
-                        return;
-                    }
-
-                    setStatus('error');
-                    setStatusMessage('Payment failed. Please try again.');
-                })
-                .catch(() => {
-                    setStatus('error');
+                if (['succeeded', 'processing'].includes(statusValue)) {
+                    setStatus('success');
                     setStatusMessage(
-                        'Unable to verify payment status. Please try again.',
+                        statusValue === 'succeeded'
+                            ? 'Payment confirmed. Thank you!'
+                            : 'Payment is processing. We will update you shortly.',
                     );
-                });
-        }
+
+                    return;
+                }
+
+                setStatus('error');
+                setStatusMessage('Payment failed. Please try again.');
+            })
+            .catch(() => {
+                setStatus('error');
+                setStatusMessage(
+                    'Unable to verify payment status. Please try again.',
+                );
+            });
     }, []);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Plans" />
             <div className="p-6 lg:p-10">
                 <div className="mx-auto max-w-6xl space-y-10">
@@ -723,6 +717,10 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+PlansIndex.layout = {
+    breadcrumbs: [{ title: 'Plans', href: plansRoute.url() }],
+};

@@ -18,7 +18,6 @@ import {
     YAxis,
     ResponsiveContainer,
 } from 'recharts';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import {
     Card,
@@ -52,10 +51,6 @@ import {
     ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Badge } from '@/components/ui/badge';
-
-const breadcrumbs = [
-    { title: 'Analytics & Reports', href: analytics.index.url() },
-];
 
 interface ExamsCreatedData {
     period: string;
@@ -202,7 +197,7 @@ export default function AnalyticsIndex({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Analytics & Reports" />
 
             <div className="p-6 md:p-8">
@@ -607,6 +602,12 @@ export default function AnalyticsIndex({
                     </Card>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+AnalyticsIndex.layout = {
+    breadcrumbs: [
+        { title: 'Analytics & Reports', href: analytics.index.url() },
+    ],
+};

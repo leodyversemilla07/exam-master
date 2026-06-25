@@ -1,6 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
 import { Edit, Trash2, Clock, Percent, Plus } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { Module, Topic } from '@/types/models';
 import { Button } from '@/components/ui/button';
@@ -31,15 +30,8 @@ const cognitiveLevelColors: Record<string, string> = {
 };
 
 export default function TopicShow({ module, topic }: Props) {
-    const breadcrumbs = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.name, href: `/modules/${module.id}` },
-        { title: 'Topics', href: `/modules/${module.id}/topics` },
-        { title: topic.title, href: `#` },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={topic.title} />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -56,16 +48,9 @@ export default function TopicShow({ module, topic }: Props) {
                     description={topic.description || undefined}
                     actions={
                         <>
-                            <Button asChild>
-                                <Link
-                                    href={topicsEdit.url({
-                                        module: module.id,
-                                        topic: topic.id,
-                                    })}
-                                >
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit Topic
-                                </Link>
+                            <Button render={<Link href={topicsEdit.url({ module: module.id, topic: topic.id })} />} nativeButton={false}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit Topic
                             </Button>
                             <Button variant="outline">
                                 <Trash2 className="mr-2 h-4 w-4" />
@@ -254,6 +239,18 @@ export default function TopicShow({ module, topic }: Props) {
                     </Card>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+TopicShow.layout = (props: {
+    module: { id: number; name: string };
+    topic: { id: number; title: string };
+}) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: props.module.name, href: `/modules/${props.module.id}` },
+        { title: 'Topics', href: `/modules/${props.module.id}/topics` },
+        { title: props.topic.title, href: `#` },
+    ],
+});

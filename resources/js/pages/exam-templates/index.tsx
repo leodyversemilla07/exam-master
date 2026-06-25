@@ -1,6 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -9,7 +8,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import type { BreadcrumbItem } from '@/types';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,10 +20,6 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import examTemplates from '@/routes/exam-templates';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Templates', href: examTemplates.index.url() },
-];
 
 interface ExamTemplate {
     id: number;
@@ -43,7 +37,7 @@ export default function Index({ templates }: PageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Exam Templates" />
 
             <div className="p-4 md:p-6">
@@ -58,11 +52,9 @@ export default function Index({ templates }: PageProps) {
                                 footers.
                             </p>
                         </div>
-                        <Button asChild>
-                            <Link href={examTemplates.create.url()}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create Template
-                            </Link>
+                        <Button render={<Link href={examTemplates.create.url()} />} nativeButton={false}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Create Template
                         </Button>
                     </div>
 
@@ -80,31 +72,18 @@ export default function Index({ templates }: PageProps) {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex justify-end space-x-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            asChild
-                                        >
-                                            <Link
-                                                href={examTemplates.edit.url(
-                                                    template.id,
-                                                )}
-                                            >
-                                                <Edit className="mr-1 h-4 w-4" />
-                                                Edit
-                                            </Link>
-                                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            render={<Link href={examTemplates.edit.url(template.id)} />}
+                            nativeButton={false}
+                        >
+                            <Edit className="mr-1 h-4 w-4" />
+                            Edit
+                        </Button>
 
                                         <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                >
-                                                    <Trash2 className="mr-1 h-4 w-4" />
-                                                    Delete
-                                                </Button>
-                                            </AlertDialogTrigger>
+                                            <AlertDialogTrigger render={<Button variant="destructive" size="sm"><Trash2 className="mr-1 h-4 w-4" />Delete</Button>} />
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle>
@@ -148,17 +127,19 @@ export default function Index({ templates }: PageProps) {
                                     Create your first template to customize your
                                     exam PDFs.
                                 </p>
-                                <Button asChild>
-                                    <Link href={examTemplates.create.url()}>
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Create Template
-                                    </Link>
+                                <Button render={<Link href={examTemplates.create.url()} />} nativeButton={false}>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create Template
                                 </Button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Index.layout = {
+    breadcrumbs: [{ title: 'Exam Templates', href: examTemplates.index.url() }],
+};

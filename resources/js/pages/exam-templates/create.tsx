@@ -19,7 +19,6 @@ import {
     Grid3X3,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
-import type { BreadcrumbItem } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
@@ -30,13 +29,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
 import examTemplates from '@/routes/exam-templates';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Templates', href: examTemplates.index.url() },
-    { title: 'Create Template', href: '#' },
-];
 
 const MenuBar = ({ editor }: { editor: any }) => {
     if (!editor) {
@@ -245,7 +238,7 @@ export default function Create() {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Create Exam Template" />
 
             <div className="p-4 md:p-6">
@@ -344,6 +337,13 @@ export default function Create() {
                     </form>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Create.layout = {
+    breadcrumbs: [
+        { title: 'Exam Templates', href: examTemplates.index.url() },
+        { title: 'Create Template', href: '#' },
+    ],
+};

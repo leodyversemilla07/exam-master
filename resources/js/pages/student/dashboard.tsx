@@ -12,7 +12,6 @@ import {
     History,
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { ExamAttempt, ExamSession } from '@/types/models';
 import {
@@ -91,7 +90,7 @@ export default function StudentDashboard({
     };
 
     return (
-        <AppLayout>
+        <>
             <Head title="Student Dashboard" />
 
             <div className="p-6 md:p-8">
@@ -245,15 +244,18 @@ export default function StudentDashboard({
                                                         )}
                                                     </p>
                                                 </div>
-                                                <Button asChild>
-                                                    <Link
-                                                        href={take.url(
-                                                            attempt.id,
-                                                        )}
-                                                    >
-                                                        <Play className="mr-2 h-4 w-4" />
-                                                        Continue
-                                                    </Link>
+                                                <Button
+                                                    render={
+                                                        <Link
+                                                            href={take.url(
+                                                                attempt.id,
+                                                            )}
+                                                        />
+                                                    }
+                                                    nativeButton={false}
+                                                >
+                                                    <Play className="mr-2 h-4 w-4" />
+                                                    Continue
                                                 </Button>
                                             </div>
                                         ))}
@@ -323,17 +325,18 @@ export default function StudentDashboard({
                                                         </div>
                                                     </div>
                                                     <Button
-                                                        asChild
                                                         variant="outline"
+                                                        render={
+                                                            <Link
+                                                                href={showStart.url(
+                                                                    session.id,
+                                                                )}
+                                                            />
+                                                        }
+                                                        nativeButton={false}
                                                     >
-                                                        <Link
-                                                            href={showStart.url(
-                                                                session.id,
-                                                            )}
-                                                        >
-                                                            Start
-                                                            <ArrowRight className="ml-2 h-4 w-4" />
-                                                        </Link>
+                                                        Start
+                                                        <ArrowRight className="ml-2 h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             ))}
@@ -354,11 +357,13 @@ export default function StudentDashboard({
                                         Your latest exam results
                                     </CardDescription>
                                 </div>
-                                <Button variant="ghost" asChild>
-                                    <Link href={history.url()}>
-                                        <History className="mr-2 h-4 w-4" />
-                                        View All
-                                    </Link>
+                                <Button
+                                    variant="ghost"
+                                    render={<Link href={history.url()} />}
+                                    nativeButton={false}
+                                >
+                                    <History className="mr-2 h-4 w-4" />
+                                    View All
                                 </Button>
                             </CardHeader>
                             <CardContent>
@@ -418,6 +423,8 @@ export default function StudentDashboard({
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+StudentDashboard.layout = { breadcrumbs: [] };

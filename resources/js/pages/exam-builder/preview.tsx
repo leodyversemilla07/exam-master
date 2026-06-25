@@ -3,8 +3,6 @@ import { ArrowLeft, Printer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
 
 interface Question {
     id: number;
@@ -39,29 +37,22 @@ interface PageProps {
     } | null;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Builder', href: '/exam-builder' },
-    { title: 'Exam Preview', href: '' },
-];
-
 export default function Preview({ exam, template }: PageProps) {
     const handlePrint = () => {
         window.print();
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Preview: ${exam.title}`} />
 
             <div className="px-4 py-6 md:px-6 md:py-8 print:p-0">
                 <div className="mx-auto max-w-5xl space-y-8">
                     {/* Controls */}
                     <div className="flex items-center justify-between print:hidden">
-                        <Button variant="ghost" asChild>
-                            <Link href={`/exam-builder/${exam.id}`}>
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Details
-                            </Link>
+                        <Button variant="ghost" render={<Link href={`/exam-builder/${exam.id}`} />} nativeButton={false}>
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Details
                         </Button>
                         <Button onClick={handlePrint} variant="outline">
                             <Printer className="mr-2 h-4 w-4" />
@@ -315,6 +306,13 @@ export default function Preview({ exam, template }: PageProps) {
             `,
                 }}
             />
-        </AppLayout>
+        </>
     );
 }
+
+Preview.layout = {
+    breadcrumbs: [
+        { title: 'Exam Builder', href: '/exam-builder' },
+        { title: 'Exam Preview', href: '' },
+    ],
+};

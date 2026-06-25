@@ -22,9 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import AppLayout from '@/layouts/app-layout';
 import type { Module } from '@/types/models';
-import type { BreadcrumbItem } from '@/types';
 import PageHeader from '@/components/page-header';
 import {
     store,
@@ -63,14 +61,6 @@ interface Props {
 
 export default function ModuleForm({ module }: Props) {
     const isEditing = !!module;
-
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Modules', href: '/modules' },
-        {
-            title: isEditing ? 'Edit Module' : 'Create Module',
-            href: isEditing ? edit.url(module.id) : '/modules/create',
-        },
-    ];
 
     const [fileName, setFileName] = useState<string | null>(null);
     const [isExtracting, setIsExtracting] = useState(false);
@@ -215,7 +205,7 @@ export default function ModuleForm({ module }: Props) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={isEditing ? `Edit ${module.name}` : 'Create Module'} />
 
             <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
@@ -595,6 +585,16 @@ export default function ModuleForm({ module }: Props) {
                     </div>
                 </form>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ModuleForm.layout = (page: Props) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        {
+            title: page.module ? 'Edit Module' : 'Create Module',
+            href: page.module ? edit.url(page.module.id) : '/modules/create',
+        },
+    ],
+});

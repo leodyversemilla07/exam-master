@@ -24,19 +24,13 @@ export function NavFooter({ items, className, ...props }: NavFooterProps) {
                     {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
-                                asChild
+                                render={<a href={resolveUrl(item.href)} target="_blank" rel="noopener noreferrer" />}
                                 className="text-muted-foreground hover:text-foreground"
                             >
-                                <a
-                                    href={resolveUrl(item.href)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {item.icon && (
-                                        <item.icon className="h-5 w-5" />
-                                    )}
-                                    <span>{item.title}</span>
-                                </a>
+                                {item.icon && (
+                                    <item.icon className="h-5 w-5" />
+                                )}
+                                <span>{item.title}</span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}

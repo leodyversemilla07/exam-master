@@ -13,7 +13,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
-import AppLayout from '@/layouts/app-layout';
 import PageHeader from '@/components/page-header';
 
 interface Module {
@@ -42,28 +41,7 @@ interface PageProps {
 
 export default function ExamCreate({
     modules,
-    from_group,
-    from_group_id,
-    from_group_name,
 }: PageProps) {
-    const breadcrumbs =
-        from_group && from_group_id && from_group_name
-            ? [
-                  { title: 'Question Bank', href: '/question-bank' },
-                  {
-                      title: from_group_name,
-                      href:
-                          from_group === 'tos'
-                              ? `/question-bank/tos/${from_group_id}`
-                              : `/question-bank/module/${from_group_id}`,
-                  },
-                  { title: 'Create', href: '/question-bank/create' },
-              ]
-            : [
-                  { title: 'Question Bank', href: '/question-bank' },
-                  { title: 'Create', href: '/question-bank/create' },
-              ];
-
     const { data, setData, post, processing, errors } = useForm({
         module_id: modules.length > 0 ? modules[0].id : 0,
         question_type: 'multiple_choice',
@@ -155,7 +133,7 @@ export default function ExamCreate({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Create Question" />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -179,9 +157,9 @@ export default function ExamCreate({
                                 </FieldLabel>
                                 <Select
                                     value={data.module_id.toString()}
-                                    onValueChange={(value) =>
-                                        setData('module_id', parseInt(value))
-                                    }
+                                        onValueChange={(value) =>
+                                            setData('module_id', parseInt(value ?? ''))
+                                        }
                                 >
                                     <SelectTrigger id="module_id">
                                         <SelectValue placeholder="Select module" />
@@ -228,11 +206,11 @@ export default function ExamCreate({
                                 </FieldLabel>
                                 <Select
                                     value={data.question_type}
-                                    onValueChange={(value) =>
-                                        setData('question_type', value)
-                                    }
-                                >
-                                    <SelectTrigger id="question_type">
+                                        onValueChange={(value) =>
+                                            setData('question_type', value ?? '')
+                                        }
+                                    >
+                                        <SelectTrigger id="question_type">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -409,7 +387,7 @@ export default function ExamCreate({
                                     <Select
                                         value={data.correct_answer}
                                         onValueChange={(value) =>
-                                            setData('correct_answer', value)
+                                            setData('correct_answer', value ?? '')
                                         }
                                     >
                                         <SelectTrigger id="correct_answer">
@@ -430,7 +408,7 @@ export default function ExamCreate({
                                     <Select
                                         value={data.correct_answer}
                                         onValueChange={(value) =>
-                                            setData('correct_answer', value)
+                                            setData('correct_answer', value ?? '')
                                         }
                                     >
                                         <SelectTrigger id="correct_answer">
@@ -499,9 +477,9 @@ export default function ExamCreate({
                                 </FieldLabel>
                                 <Select
                                     value={data.cognitive_level}
-                                    onValueChange={(value) =>
-                                        setData('cognitive_level', value)
-                                    }
+                                        onValueChange={(value) =>
+                                            setData('cognitive_level', value ?? '')
+                                        }
                                 >
                                     <SelectTrigger id="cognitive_level">
                                         <SelectValue />
@@ -536,9 +514,9 @@ export default function ExamCreate({
                                 </FieldLabel>
                                 <Select
                                     value={data.difficulty}
-                                    onValueChange={(value) =>
-                                        setData('difficulty', value)
-                                    }
+                                        onValueChange={(value) =>
+                                            setData('difficulty', value ?? '')
+                                        }
                                 >
                                     <SelectTrigger id="difficulty">
                                         <SelectValue />
@@ -618,6 +596,26 @@ export default function ExamCreate({
                     </Card>
                 </form>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamCreate.layout = (props: PageProps) => ({
+    breadcrumbs:
+        props.from_group && props.from_group_id && props.from_group_name
+            ? [
+                  { title: 'Question Bank', href: '/question-bank' },
+                  {
+                      title: props.from_group_name,
+                      href:
+                          props.from_group === 'tos'
+                              ? `/question-bank/tos/${props.from_group_id}`
+                              : `/question-bank/module/${props.from_group_id}`,
+                  },
+                  { title: 'Create', href: '/question-bank/create' },
+              ]
+            : [
+                  { title: 'Question Bank', href: '/question-bank' },
+                  { title: 'Create', href: '/question-bank/create' },
+              ],
+});

@@ -15,7 +15,6 @@ import {
     TrendingDown,
 } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -57,9 +56,12 @@ import {
 import * as examSessions from '@/routes/exam-sessions';
 import PageHeader from '@/components/page-header';
 
-const breadcrumbs = (session: SessionWithRelations): BreadcrumbItem[] => [
+const breadcrumbs = (props: PageProps): BreadcrumbItem[] => [
     { title: 'Exam Sessions', href: examSessions.index.url() },
-    { title: session.title, href: examSessions.show.url(session.id) },
+    {
+        title: props.session.title,
+        href: examSessions.show.url(props.session.id),
+    },
 ];
 
 interface SessionUser {
@@ -208,7 +210,7 @@ export default function Show({ session, stats }: PageProps) {
     );
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs(session)}>
+        <>
             <Head title={session.title} />
 
             <div className="p-6 md:p-8">
@@ -231,13 +233,9 @@ export default function Show({ session, stats }: PageProps) {
                                     <Download className="mr-2 size-4" />
                                     Export CSV
                                 </Button>
-                                <Button variant="outline" asChild>
-                                    <Link
-                                        href={examSessions.edit.url(session.id)}
-                                    >
-                                        <Edit className="mr-2 size-4" />
-                                        Edit
-                                    </Link>
+                                <Button variant="outline" render={<Link href={examSessions.edit.url(session.id)} />} nativeButton={false}>
+                                    <Edit className="mr-2 size-4" />
+                                    Edit
                                 </Button>
                             </div>
                         }
@@ -512,16 +510,18 @@ export default function Show({ session, stats }: PageProps) {
                                             )}
                                         </Button>
                                         <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    disabled={regenerating}
-                                                >
-                                                    <RefreshCw
-                                                        className={`size-4 ${regenerating ? 'animate-spin' : ''}`}
-                                                    />
-                                                </Button>
-                                            </AlertDialogTrigger>
+                                            <AlertDialogTrigger
+                                                render={
+                                                    <Button
+                                                        variant="outline"
+                                                        disabled={regenerating}
+                                                    >
+                                                        <RefreshCw
+                                                            className={`size-4 ${regenerating ? 'animate-spin' : ''}`}
+                                                        />
+                                                    </Button>
+                                                }
+                                            />
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle>
@@ -701,6 +701,8 @@ export default function Show({ session, stats }: PageProps) {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Show.layout = { breadcrumbs };

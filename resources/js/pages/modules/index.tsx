@@ -18,7 +18,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/page-header';
-import AppLayout from '@/layouts/app-layout';
 import {
     index,
     create as modulesCreate,
@@ -29,9 +28,6 @@ import {
 } from '@/routes/modules';
 import { index as topicsIndex } from '@/routes/modules/topics';
 import type { Module } from '@/types/models';
-import type { BreadcrumbItem } from '@/types';
-
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Modules', href: index.url() }];
 
 interface PageProps {
     modules: {
@@ -61,7 +57,7 @@ export default function ModuleIndex({ modules }: PageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Module Management" />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -69,11 +65,9 @@ export default function ModuleIndex({ modules }: PageProps) {
                     title="Module Management"
                     description="Manage your course modules, topics, and learning objectives"
                     actions={
-                        <Button asChild>
-                            <Link href={modulesCreate.url()}>
-                                <Plus className="mr-2 size-4" />
-                                Create Module
-                            </Link>
+                        <Button render={<Link href={modulesCreate.url()} />} nativeButton={false}>
+                            <Plus className="mr-2 size-4" />
+                            Create Module
                         </Button>
                     }
                 />
@@ -320,6 +314,8 @@ export default function ModuleIndex({ modules }: PageProps) {
                     </>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ModuleIndex.layout = { breadcrumbs: [{ title: 'Modules', href: index.url() }] };

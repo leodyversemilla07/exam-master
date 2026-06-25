@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
     Download,
     Clock,
@@ -16,7 +16,6 @@ import {
     getSortedRowModel,
     getFilteredRowModel,
 } from '@tanstack/react-table';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import {
     Pagination,
@@ -120,10 +119,13 @@ interface PageProps {
     attempts: PaginatedAttempts;
 }
 
-const breadcrumbs = (session: SessionWithExam): BreadcrumbItem[] => [
+const breadcrumbs = (props: PageProps): BreadcrumbItem[] => [
     { title: 'Exam Sessions', href: examSessions.index.url() },
-    { title: session.title, href: examSessions.show.url(session.id) },
-    { title: 'Results', href: examSessions.results.url(session.id) },
+    {
+        title: props.session.title,
+        href: examSessions.show.url(props.session.id),
+    },
+    { title: 'Results', href: examSessions.results.url(props.session.id) },
 ];
 
 function getAttemptStatusBadge(status: string) {
@@ -310,6 +312,7 @@ function updatePageInUrl(page: number): string {
 }
 
 export default function Results({ session, attempts }: PageProps) {
+    "use no memo";
     const [globalFilter, setGlobalFilter] = useState('');
     const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -361,7 +364,7 @@ export default function Results({ session, attempts }: PageProps) {
     }, [completedAttempts]);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs(session)}>
+        <>
             <Head title={`Results - ${session.title}`} />
 
             <div className="p-6 md:p-8">
@@ -371,13 +374,11 @@ export default function Results({ session, attempts }: PageProps) {
                         description={`${session.title} • ${session.exam.title}`}
                         actions={
                             <div className="flex items-center gap-2">
-                                <Button variant="outline" asChild>
-                                    <Link
-                                        href={`/exam-sessions/${session.id}/plagiarism`}
-                                    >
-                                        <ShieldAlert className="mr-2 size-4" />
-                                        Plagiarism Report
-                                    </Link>
+                                <Button variant="outline" render={<Link
+                                    href={`/exam-sessions/${session.id}/plagiarism`}
+                                />} nativeButton={false}>
+                                    <ShieldAlert className="mr-2 size-4" />
+                                    Plagiarism Report
                                 </Button>
                                 <Button
                                     onClick={handleExport}
@@ -713,6 +714,8 @@ export default function Results({ session, attempts }: PageProps) {
                     </Card>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Results.layout = { breadcrumbs };

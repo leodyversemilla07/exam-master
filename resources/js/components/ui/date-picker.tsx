@@ -22,8 +22,8 @@ interface DatePickerProps {
 export function DatePicker({ date, onSelect, placeholder = "Pick a date", disabled }: DatePickerProps) {
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
+      <PopoverTrigger
+        render={<Button
           variant={"outline"}
           data-empty={!date}
           className={cn(
@@ -33,14 +33,13 @@ export function DatePicker({ date, onSelect, placeholder = "Pick a date", disabl
         >
           <CalendarIcon />
           {date ? format(date, "PPP") : <span>{placeholder}</span>}
-        </Button>
-      </PopoverTrigger>
+        </Button>}
+      />
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
           selected={date}
           onSelect={onSelect}
-          initialFocus
         />
       </PopoverContent>
     </Popover>

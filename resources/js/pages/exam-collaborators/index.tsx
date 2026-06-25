@@ -37,7 +37,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import AppLayout from '@/layouts/app-layout';
 import PageHeader from '@/components/page-header';
 import type { BreadcrumbItem } from '@/types';
 
@@ -173,14 +172,8 @@ export default function ExamCollaboratorsIndex({
 
     const isOwner = exam.created_by === (currentUserId as number);
 
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Exam Builder', href: '/exam-builder' },
-        { title: exam.title, href: `/exam-builder/${exam.id}` },
-        { title: 'Collaborators', href: '' },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Collaborators - ${exam.title}`} />
 
             <div className="p-4 md:p-6">
@@ -200,12 +193,7 @@ export default function ExamCollaboratorsIndex({
                                         open={isAddDialogOpen}
                                         onOpenChange={setIsAddDialogOpen}
                                     >
-                                        <DialogTrigger asChild>
-                                            <Button size="sm">
-                                                <UserPlus className="mr-2 h-4 w-4" />
-                                                Add Collaborator
-                                            </Button>
-                                        </DialogTrigger>
+                                        <DialogTrigger render={<Button size="sm"><UserPlus className="mr-2 h-4 w-4" />Add Collaborator</Button>} />
                                         <DialogContent>
                                             <DialogHeader>
                                                 <DialogTitle>
@@ -295,9 +283,9 @@ export default function ExamCollaboratorsIndex({
                                                             </Label>
                                                             <Select
                                                                 value={role}
-                                                                onValueChange={
-                                                                    setRole
-                                                                }
+                                                                 onValueChange={(value) =>
+                                                                     setRole(value ?? '')
+                                                                 }
                                                             >
                                                                 <SelectTrigger>
                                                                     <SelectValue />
@@ -571,6 +559,14 @@ export default function ExamCollaboratorsIndex({
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Exam Builder', href: '/exam-builder' },
+    { title: 'Exam Details', href: '' },
+    { title: 'Collaborators', href: '' },
+];
+
+ExamCollaboratorsIndex.layout = { breadcrumbs };

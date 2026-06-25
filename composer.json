@@ -27,7 +27,7 @@
         "leodyversemilla07/paymongo-php": "^1.0",
         "phpoffice/phpword": "^1.4",
         "smalot/pdfparser": "^2.12",
-        "spatie/laravel-permission": "^6.24"
+        "spatie/laravel-permission": "^8.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",

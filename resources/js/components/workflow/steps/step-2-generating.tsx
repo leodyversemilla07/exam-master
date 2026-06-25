@@ -1,6 +1,6 @@
 import { AlertCircle, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { router } from '@inertiajs/react';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useEffect, useRef } from 'react';
 import type { TosGenerate } from '@/types/models';
 import { Button } from '@/components/ui/button';
 import { generateQuestions } from '@/actions/App/Http/Controllers/TosGenerateController';
@@ -12,11 +12,16 @@ interface Props {
 
 export default function Step2Generating({ tos, onAdvance }: Props) {
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const onAdvanceRef = useRef(onAdvance);
+
+    useLayoutEffect(() => {
+        onAdvanceRef.current = onAdvance;
+    });
 
     // Poll every 5s while generating; auto-advance when completed
     useEffect(() => {
         if (tos.status === 'completed') {
-            onAdvance();
+            onAdvanceRef.current();
 
             return;
         }

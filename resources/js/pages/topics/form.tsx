@@ -1,5 +1,4 @@
 import { Head, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { Module, Topic } from '@/types/models';
 import { Button } from '@/components/ui/button';
@@ -46,13 +45,6 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
         is_active: topic?.is_active ?? true,
     });
 
-    const breadcrumbs = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.name, href: `/modules/${module.id}` },
-        { title: 'Topics', href: `/modules/${module.id}/topics` },
-        { title: isEditing ? 'Edit Topic' : 'Create Topic', href: '#' },
-    ];
-
     // Filter out current topic and its descendants for parent selection
     const availableParents = topics.filter((t) => {
         if (isEditing) {
@@ -78,7 +70,7 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={isEditing ? `Edit ${topic.title}` : 'Create Topic'} />
 
             <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
@@ -126,12 +118,12 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                     </Label>
                                     <Select
                                         value={form.data.parent_id || 'none'}
-                                        onValueChange={(value) =>
-                                            form.setData(
-                                                'parent_id',
-                                                value === 'none' ? '' : value,
-                                            )
-                                        }
+                                onValueChange={(value) =>
+                                        form.setData(
+                                            'parent_id',
+                                            value === 'none' ? '' : (value ?? ''),
+                                        )
+                                    }
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="None (Root Topic)" />
@@ -287,6 +279,18 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                     </div>
                 </form>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+TopicForm.layout = (props: {
+    module: { id: number; name: string };
+    topic?: { id: number; title: string };
+}) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: props.module.name, href: `/modules/${props.module.id}` },
+        { title: 'Topics', href: `/modules/${props.module.id}/topics` },
+        { title: props.topic ? 'Edit Topic' : 'Create Topic', href: '#' },
+    ],
+});

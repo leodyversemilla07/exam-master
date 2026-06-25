@@ -68,8 +68,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
 import type { User } from '@/types/models';
 import {
     index as usersIndex,
@@ -77,8 +75,6 @@ import {
     update as usersUpdate,
     destroy as usersDestroy,
 } from '@/actions/App/Http/Controllers/UserController';
-
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Users', href: '/users' }];
 
 interface ExtendedUser extends User {
     role?: string;
@@ -197,6 +193,7 @@ const createColumns = (
 ];
 
 export default function UsersIndex({ users, roles, filters }: PageProps) {
+    "use no memo";
     const [search, setSearch] = useState(filters.search || '');
     const [showCreateDialog, setShowCreateDialog] = useState(false);
     const [editingUser, setEditingUser] = useState<ExtendedUser | null>(null);
@@ -290,7 +287,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
     });
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="User Management" />
 
             <div className="p-6 md:p-8">
@@ -651,7 +648,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                     <Select
                                         value={form.data.role}
                                         onValueChange={(value) =>
-                                            form.setData('role', value)
+                                            form.setData('role', value ?? '')
                                         }
                                     >
                                         <SelectTrigger>
@@ -725,6 +722,8 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                     </AlertDialog>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+UsersIndex.layout = { breadcrumbs: [{ title: 'Users', href: '/users' }] };

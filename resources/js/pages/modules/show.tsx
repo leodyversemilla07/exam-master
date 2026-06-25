@@ -28,7 +28,6 @@ import {
     ArrowLeft,
 } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import type {
     Module,
     TosGenerate,
@@ -37,9 +36,7 @@ import type {
     ExamSession,
     Topic,
 } from '@/types/models';
-
-import type { BreadcrumbItem } from '@/types';
-import WorkflowStepper from '@/components/workflow/WorkflowStepper';
+import WorkflowStepper from '@/components/workflow/workflow-stepper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -158,7 +155,7 @@ interface DuplicateStats {
     questions_with_duplicates: number;
 }
 
-interface SessionRow extends ExamSession {
+interface SessionRow extends Omit<ExamSession, 'exam' | 'creator' | 'attempts_count'> {
     exam: {
         id: number;
         title: string;
@@ -222,7 +219,7 @@ function getExamTypeIcon(type: string) {
     }
 }
 
-function getSessionStatusBadge(session: ExamSession) {
+function getSessionStatusBadge(session: Pick<ExamSession, 'status' | 'start_time' | 'end_time'>) {
     const now = new Date();
     const startTime = new Date(session.start_time);
     const endTime = new Date(session.end_time);
@@ -478,7 +475,7 @@ function TopicFormPanel({
                                     onValueChange={(value) =>
                                         form.setData(
                                             'parent_id',
-                                            value === 'none' ? '' : value,
+                                            value === 'none' ? '' : (value ?? ''),
                                         )
                                     }
                                 >
@@ -816,11 +813,9 @@ function SessionsTabContent({
                 <h2 className="text-lg font-semibold">
                     Exam Sessions ({sessions.length})
                 </h2>
-                <Button asChild size="sm">
-                    <Link href={`/modules/${moduleId}`}>
-                        <Plus className="mr-2 size-4" />
-                        Create Session
-                    </Link>
+                <Button size="sm" render={<Link href={`/modules/${moduleId}`} />} nativeButton={false}>
+                    <Plus className="mr-2 size-4" />
+                    Create Session
                 </Button>
             </div>
 
@@ -875,28 +870,26 @@ function SessionsTabContent({
                                         <TableCell>
                                             <TooltipProvider>
                                                 <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() =>
-                                                                copyAccessCode(
-                                                                    session.access_code,
-                                                                )
-                                                            }
-                                                            className="gap-2 font-mono"
-                                                        >
-                                                            {
-                                                                session.access_code
-                                                            }
-                                                            {copiedCode ===
-                                                            session.access_code ? (
-                                                                <CheckCircle className="size-4 text-green-600" />
-                                                            ) : (
-                                                                <Copy className="size-4" />
-                                                            )}
-                                                        </Button>
-                                                    </TooltipTrigger>
+                                                    <TooltipTrigger render={<Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            copyAccessCode(
+                                                                session.access_code,
+                                                            )
+                                                        }
+                                                        className="gap-2 font-mono"
+                                                    >
+                                                        {
+                                                            session.access_code
+                                                        }
+                                                        {copiedCode ===
+                                                        session.access_code ? (
+                                                            <CheckCircle className="size-4 text-green-600" />
+                                                        ) : (
+                                                            <Copy className="size-4" />
+                                                        )}
+                                                    </Button>} />
                                                     <TooltipContent>
                                                         {copiedCode ===
                                                         session.access_code
@@ -947,13 +940,12 @@ function SessionsTabContent({
                                                 <Button
                                                     variant="outline"
                                                     size="icon"
-                                                    asChild
-                                                >
-                                                    <Link
+                                                    render={<Link
                                                         href={`/exam-sessions/${session.id}`}
-                                                    >
-                                                        <Edit className="size-4" />
-                                                    </Link>
+                                                    />}
+                                                    nativeButton={false}
+                                                >
+                                                    <Edit className="size-4" />
                                                 </Button>
                                                 <Button
                                                     variant="destructive"
@@ -1553,11 +1545,6 @@ export default function ModuleShow({
         return 'tos';
     });
 
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.code, href: `/modules/${module.id}` },
-    ];
-
     const confirmDelete = () => {
         router.delete(`/modules/${module.id}`, {
             onSuccess: () => router.visit('/modules'),
@@ -1565,7 +1552,7 @@ export default function ModuleShow({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`${module.code} - ${module.name}`} />
 
             <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
@@ -1724,16 +1711,14 @@ export default function ModuleShow({
                                     <h2 className="text-lg font-semibold">
                                         Table of Specifications
                                     </h2>
-                                    <Button asChild size="sm">
-                                        <Link
-                                            href={`/tos-generates/create?module=${module.id}`}
-                                        >
-                                            <Plus className="mr-2 size-4" />
-                                            Generate TOS
-                                        </Link>
+                                    <Button size="sm" render={<Link
+                                        href={`/tos-generates/create?module=${module.id}`}
+                                    />} nativeButton={false}>
+                                        <Plus className="mr-2 size-4" />
+                                        Generate TOS
                                     </Button>
                                 </div>
-
+                                
                                 {module.tos_generates &&
                                 module.tos_generates.length > 0 ? (
                                     <div className="rounded-xl border">
@@ -1791,13 +1776,11 @@ export default function ModuleShow({
                                             Generate a Table of Specifications
                                             to define your assessment blueprint.
                                         </p>
-                                        <Button asChild size="sm">
-                                            <Link
-                                                href={`/tos-generates/create?module=${module.id}`}
-                                            >
-                                                <Plus className="mr-2 size-4" />
-                                                Generate TOS
-                                            </Link>
+                                        <Button size="sm" render={<Link
+                                            href={`/tos-generates/create?module=${module.id}`}
+                                        />} nativeButton={false}>
+                                            <Plus className="mr-2 size-4" />
+                                            Generate TOS
                                         </Button>
                                     </div>
                                 )}
@@ -1814,16 +1797,14 @@ export default function ModuleShow({
                                     <h2 className="text-lg font-semibold">
                                         Questions ({questions.total})
                                     </h2>
-                                    <Button asChild size="sm">
-                                        <Link
-                                            href={`/question-bank/create?module=${module.id}`}
-                                        >
-                                            <Plus className="mr-2 size-4" />
-                                            Create Question
-                                        </Link>
+                                    <Button size="sm" render={<Link
+                                        href={`/question-bank/create?module=${module.id}`}
+                                    />} nativeButton={false}>
+                                        <Plus className="mr-2 size-4" />
+                                        Create Question
                                     </Button>
                                 </div>
-
+                                
                                 {questions.data.length > 0 ? (
                                     <>
                                         <div className="rounded-xl border">
@@ -1917,13 +1898,11 @@ export default function ModuleShow({
                                             Create questions manually or use AI
                                             generation from your TOS.
                                         </p>
-                                        <Button asChild size="sm">
-                                            <Link
-                                                href={`/question-bank/create?module=${module.id}`}
-                                            >
-                                                <Plus className="mr-2 size-4" />
-                                                Create Question
-                                            </Link>
+                                        <Button size="sm" render={<Link
+                                            href={`/question-bank/create?module=${module.id}`}
+                                        />} nativeButton={false}>
+                                            <Plus className="mr-2 size-4" />
+                                            Create Question
                                         </Button>
                                     </div>
                                 )}
@@ -1940,14 +1919,12 @@ export default function ModuleShow({
                                     <h2 className="text-lg font-semibold">
                                         Exams ({exams.length})
                                     </h2>
-                                    <Button asChild size="sm">
-                                        <Link href="/exam-builder/create">
-                                            <Plus className="mr-2 size-4" />
-                                            Create Exam
-                                        </Link>
+                                    <Button size="sm" render={<Link href="/exam-builder/create" />} nativeButton={false}>
+                                        <Plus className="mr-2 size-4" />
+                                        Create Exam
                                     </Button>
                                 </div>
-
+                                
                                 {exams.length > 0 ? (
                                     <div className="rounded-xl border">
                                         <div className="grid grid-cols-[1fr_100px_120px_100px] gap-4 border-b px-6 py-3 text-xs font-medium tracking-wider text-muted-foreground uppercase">
@@ -2010,11 +1987,9 @@ export default function ModuleShow({
                                             Create an exam to assemble questions
                                             into an assessment.
                                         </p>
-                                        <Button asChild size="sm">
-                                            <Link href="/exam-builder/create">
-                                                <Plus className="mr-2 size-4" />
-                                                Create Exam
-                                            </Link>
+                                        <Button size="sm" render={<Link href="/exam-builder/create" />} nativeButton={false}>
+                                            <Plus className="mr-2 size-4" />
+                                            Create Exam
                                         </Button>
                                     </div>
                                 )}
@@ -2246,6 +2221,13 @@ export default function ModuleShow({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AppLayout>
+        </>
     );
 }
+
+ModuleShow.layout = (page: PageProps) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: page.module.code, href: `/modules/${page.module.id}` },
+    ],
+});

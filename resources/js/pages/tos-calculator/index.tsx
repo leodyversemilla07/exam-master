@@ -24,7 +24,6 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import AppLayout from '@/layouts/app-layout';
 import { index as modulesIndex } from '@/routes/modules';
 import type {
     Module,
@@ -132,14 +131,8 @@ export default function TosCalculatorIndex({
     statistics,
     balance,
 }: PageProps) {
-    const breadcrumbs = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.name, href: `/modules/${module.id}` },
-        { title: 'TOS Calculator', href: `/tos-calculator/${module.id}` },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`TOS Calculator - ${module.name}`} />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -521,6 +514,14 @@ export default function TosCalculatorIndex({
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+TosCalculatorIndex.layout = (page: PageProps) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: page.module.name, href: `/modules/${page.module.id}` },
+        { title: 'TOS Calculator', href: `/tos-calculator/${page.module.id}` },
+    ],
+});

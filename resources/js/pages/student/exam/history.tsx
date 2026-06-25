@@ -1,7 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { History, Eye, Clock, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { ExamAttempt } from '@/types/models';
 import {
@@ -84,7 +83,7 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
     };
 
     return (
-        <AppLayout>
+        <>
             <Head title="Exam History" />
 
             <div className="flex flex-col gap-6">
@@ -111,10 +110,8 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                                 <p className="text-muted-foreground">
                                     You haven't taken any exams yet.
                                 </p>
-                                <Button asChild className="mt-4">
-                                    <Link href={DashboardController.url()}>
-                                        Find Available Exams
-                                    </Link>
+                                <Button render={<Link href={DashboardController.url()} />} nativeButton={false} className="mt-4">
+                                    Find Available Exams
                                 </Button>
                             </div>
                         ) : (
@@ -197,29 +194,18 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                                             <TableCell className="text-right">
                                                 {attempt.status ===
                                                 'in_progress' ? (
-                                                    <Button size="sm" asChild>
-                                                        <Link
-                                                            href={take.url(
-                                                                attempt.id,
-                                                            )}
-                                                        >
-                                                            Continue
-                                                        </Link>
+                                                    <Button size="sm" render={<Link href={take.url(attempt.id)} />} nativeButton={false}>
+                                                        Continue
                                                     </Button>
                                                 ) : (
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        asChild
+                                                        render={<Link href={results.url(attempt.id)} />}
+                                                        nativeButton={false}
                                                     >
-                                                        <Link
-                                                            href={results.url(
-                                                                attempt.id,
-                                                            )}
-                                                        >
-                                                            <Eye className="mr-1 h-4 w-4" />
-                                                            View
-                                                        </Link>
+                                                        <Eye className="mr-1 h-4 w-4" />
+                                                        View
                                                     </Button>
                                                 )}
                                             </TableCell>
@@ -244,15 +230,10 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                                                 : 'outline'
                                         }
                                         size="sm"
-                                        asChild
+                                        render={<Link href={historyRoute.url({ query: { page } })} />}
+                                        nativeButton={false}
                                     >
-                                        <Link
-                                            href={historyRoute.url({
-                                                query: { page },
-                                            })}
-                                        >
-                                            {page}
-                                        </Link>
+                                        {page}
                                     </Button>
                                 ))}
                             </div>
@@ -260,6 +241,8 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamHistory.layout = { breadcrumbs: [] };

@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
 import { index as tosIndex } from '@/routes/tos-generates';
 import { show as moduleShow, index as modulesIndex } from '@/routes/modules';
 import type { TosGenerate, Module } from '@/types/models';
@@ -44,13 +43,9 @@ const statusIcons = {
     failed: AlertCircle,
 };
 
-const breadcrumbs = [
-    { title: 'Table of Specifications', href: tosIndex.url() },
-];
-
 export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Table of Specifications" />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -58,11 +53,9 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                     title="Table of Specifications"
                     description="Generate and manage test specifications and questions"
                     actions={
-                        <Button asChild>
-                            <Link href={modulesIndex.url()}>
-                                <Plus className="mr-2 size-4" />
-                                Generate TOS
-                            </Link>
+                        <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                            <Plus className="mr-2 size-4" />
+                            Generate TOS
                         </Button>
                     }
                 />
@@ -295,6 +288,10 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                     </>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+TosGeneratesIndex.layout = {
+    breadcrumbs: [{ title: 'Table of Specifications', href: tosIndex.url() }],
+};

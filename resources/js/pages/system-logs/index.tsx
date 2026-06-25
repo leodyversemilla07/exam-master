@@ -12,7 +12,6 @@ import {
     ChevronUp,
 } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import {
     Card,
     CardContent,
@@ -48,7 +47,6 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import PageHeader from '@/components/page-header';
-import type { BreadcrumbItem } from '@/types';
 import {
     getLogs,
     clearLogs,
@@ -92,10 +90,6 @@ const levelIcons: Record<string, React.ReactNode> = {
     INFO: <Info className="h-4 w-4" />,
     DEBUG: <Bug className="h-4 w-4" />,
 };
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'System Logs', href: '/system-logs' },
-];
 
 export default function SystemLogsIndex({
     logs = [],
@@ -154,7 +148,7 @@ export default function SystemLogsIndex({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="System Logs" />
 
             <div className="p-6 md:p-8">
@@ -197,7 +191,7 @@ export default function SystemLogsIndex({
                                         <Label htmlFor="level">Log Level</Label>
                                         <Select
                                             value={level}
-                                            onValueChange={setLevel}
+                                            onValueChange={(value) => setLevel(value ?? '')}
                                         >
                                             <SelectTrigger id="level">
                                                 <SelectValue />
@@ -239,7 +233,7 @@ export default function SystemLogsIndex({
                                         </Label>
                                         <Select
                                             value={lines}
-                                            onValueChange={setLines}
+                                            onValueChange={(value) => setLines(value ?? '')}
                                         >
                                             <SelectTrigger id="lines">
                                                 <SelectValue />
@@ -420,6 +414,10 @@ export default function SystemLogsIndex({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AppLayout>
+        </>
     );
 }
+
+SystemLogsIndex.layout = {
+    breadcrumbs: [{ title: 'System Logs', href: '/system-logs' }],
+};

@@ -197,7 +197,7 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                     <Label htmlFor="wf5-attempts">Maximum Attempts *</Label>
                     <Select
                         value={data.max_attempts}
-                        onValueChange={(v) => setData('max_attempts', v)}
+                        onValueChange={(v) => setData('max_attempts', v ?? '')}
                     >
                         <SelectTrigger id="wf5-attempts" className="w-40">
                             <SelectValue />
@@ -311,17 +311,13 @@ export function Step5Done({
                 )}
             </div>
             <div className="flex gap-3">
-                <Button asChild variant="outline">
-                    <Link href={`/exam-sessions/${session.id}`}>
-                        <ExternalLink className="mr-2 size-4" />
-                        View Session
-                    </Link>
+                <Button variant="outline" render={<Link href={`/exam-sessions/${session.id}`} />} nativeButton={false}>
+                    <ExternalLink className="mr-2 size-4" />
+                    View Session
                 </Button>
-                <Button asChild>
-                    <Link href={`/exam-builder/${exam.id}`}>
-                        <ExternalLink className="mr-2 size-4" />
-                        View Exam
-                    </Link>
+                <Button render={<Link href={`/exam-builder/${exam.id}`} />} nativeButton={false}>
+                    <ExternalLink className="mr-2 size-4" />
+                    View Exam
                 </Button>
             </div>
         </div>

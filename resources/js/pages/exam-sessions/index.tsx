@@ -12,7 +12,6 @@ import {
     AlertCircle,
 } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -30,7 +29,6 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import type { BreadcrumbItem } from '@/types';
 import type { ExamSession } from '@/types/models';
 import {
     AlertDialog,
@@ -69,10 +67,6 @@ import {
 import PageHeader from '@/components/page-header';
 import * as examSessions from '@/routes/exam-sessions';
 import { index as modulesIndex } from '@/routes/modules';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Sessions', href: examSessions.index.url() },
-];
 
 interface PaginatedSessions {
     data: (ExamSession & {
@@ -148,7 +142,7 @@ export default function Index({ sessions }: PageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Exam Sessions" />
 
             <div className="p-6 md:p-8">
@@ -157,15 +151,13 @@ export default function Index({ sessions }: PageProps) {
                         title="Exam Sessions"
                         description="Create and manage online exam sessions for students."
                         actions={
-                            <Button asChild>
-                                <Link href={modulesIndex.url()}>
-                                    <Plus className="mr-2 size-4" />
-                                    Create Session
-                                </Link>
+                            <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                                <Plus className="mr-2 size-4" />
+                                Create Session
                             </Button>
                         }
                     />
-
+                    
                     {sessions.data.length === 0 ? (
                         <Empty>
                             <EmptyHeader>
@@ -179,13 +171,11 @@ export default function Index({ sessions }: PageProps) {
                                 </EmptyDescription>
                             </EmptyHeader>
                             <EmptyContent>
-                                <Button asChild>
-                                    <Link href={modulesIndex.url()}>
-                                        <Plus className="mr-2 size-4" />
-                                        Create Session
-                                    </Link>
-                                </Button>
-                            </EmptyContent>
+                            <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                                <Plus className="mr-2 size-4" />
+                                Create Session
+                            </Button>
+                        </EmptyContent>
                         </Empty>
                     ) : (
                         <Card>
@@ -250,30 +240,26 @@ export default function Index({ sessions }: PageProps) {
                                                 <TableCell>
                                                     <TooltipProvider>
                                                         <Tooltip>
-                                                            <TooltipTrigger
-                                                                asChild
+                                                            <TooltipTrigger render={<Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    copyAccessCode(
+                                                                        session.access_code,
+                                                                    )
+                                                                }
+                                                                className="gap-2 font-mono"
                                                             >
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    onClick={() =>
-                                                                        copyAccessCode(
-                                                                            session.access_code,
-                                                                        )
-                                                                    }
-                                                                    className="gap-2 font-mono"
-                                                                >
-                                                                    {
-                                                                        session.access_code
-                                                                    }
-                                                                    {copiedCode ===
-                                                                    session.access_code ? (
-                                                                        <CheckCircle className="size-4 text-green-600" />
-                                                                    ) : (
-                                                                        <Copy className="size-4" />
-                                                                    )}
-                                                                </Button>
-                                                            </TooltipTrigger>
+                                                                {
+                                                                    session.access_code
+                                                                }
+                                                                {copiedCode ===
+                                                                session.access_code ? (
+                                                                    <CheckCircle className="size-4 text-green-600" />
+                                                                ) : (
+                                                                    <Copy className="size-4" />
+                                                                )}
+                                                            </Button>} />
                                                             <TooltipContent>
                                                                 {copiedCode ===
                                                                 session.access_code
@@ -329,23 +315,18 @@ export default function Index({ sessions }: PageProps) {
                                                     <div className="flex justify-end gap-2">
                                                         <TooltipProvider>
                                                             <Tooltip>
-                                                                <TooltipTrigger
-                                                                    asChild
+                                                                <TooltipTrigger render={<Button
+                                                                    variant="outline"
+                                                                    size="icon"
+                                                                    render={<Link
+                                                                        href={examSessions.show.url(
+                                                                            session.id,
+                                                                        )}
+                                                                    />}
+                                                                    nativeButton={false}
                                                                 >
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        size="icon"
-                                                                        asChild
-                                                                    >
-                                                                        <Link
-                                                                            href={examSessions.show.url(
-                                                                                session.id,
-                                                                            )}
-                                                                        >
-                                                                            <Eye className="size-4" />
-                                                                        </Link>
-                                                                    </Button>
-                                                                </TooltipTrigger>
+                                                                    <Eye className="size-4" />
+                                                                </Button>} />
                                                                 <TooltipContent>
                                                                     View Details
                                                                 </TooltipContent>
@@ -354,23 +335,18 @@ export default function Index({ sessions }: PageProps) {
 
                                                         <TooltipProvider>
                                                             <Tooltip>
-                                                                <TooltipTrigger
-                                                                    asChild
+                                                                <TooltipTrigger render={<Button
+                                                                    variant="outline"
+                                                                    size="icon"
+                                                                    render={<Link
+                                                                        href={examSessions.edit.url(
+                                                                            session.id,
+                                                                        )}
+                                                                    />}
+                                                                    nativeButton={false}
                                                                 >
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        size="icon"
-                                                                        asChild
-                                                                    >
-                                                                        <Link
-                                                                            href={examSessions.edit.url(
-                                                                                session.id,
-                                                                            )}
-                                                                        >
-                                                                            <Edit className="size-4" />
-                                                                        </Link>
-                                                                    </Button>
-                                                                </TooltipTrigger>
+                                                                    <Edit className="size-4" />
+                                                                </Button>} />
                                                                 <TooltipContent>
                                                                     Edit Session
                                                                 </TooltipContent>
@@ -378,20 +354,16 @@ export default function Index({ sessions }: PageProps) {
                                                         </TooltipProvider>
 
                                                         <AlertDialog>
-                                                            <AlertDialogTrigger
-                                                                asChild
+                                                            <AlertDialogTrigger render={<Button
+                                                                variant="destructive"
+                                                                size="icon"
+                                                                disabled={
+                                                                    session.attempts_count >
+                                                                    0
+                                                                }
                                                             >
-                                                                <Button
-                                                                    variant="destructive"
-                                                                    size="icon"
-                                                                    disabled={
-                                                                        session.attempts_count >
-                                                                        0
-                                                                    }
-                                                                >
-                                                                    <Trash2 className="size-4" />
-                                                                </Button>
-                                                            </AlertDialogTrigger>
+                                                                <Trash2 className="size-4" />
+                                                            </Button>} />
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
                                                                     <AlertDialogTitle>
@@ -526,6 +498,10 @@ export default function Index({ sessions }: PageProps) {
                     )}
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Index.layout = {
+    breadcrumbs: [{ title: 'Exam Sessions', href: examSessions.index.url() }],
+};

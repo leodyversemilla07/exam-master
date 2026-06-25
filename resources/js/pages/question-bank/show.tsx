@@ -12,7 +12,6 @@ import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
 import PageHeader from '@/components/page-header';
 import { cn } from '@/lib/utils';
 
@@ -60,19 +59,14 @@ interface PageProps {
 export default function ExamShow({ question, performance }: PageProps) {
     if (!question) {
         return (
-            <AppLayout>
+            <>
                 <Head title="Question Not Found" />
                 <div className="p-4 md:p-6">
                     <p>Question not found.</p>
                 </div>
-            </AppLayout>
+            </>
         );
     }
-
-    const breadcrumbs = [
-        { title: 'Question Bank', href: '/question-bank' },
-        { title: 'View Question', href: `/question-bank/${question.id}` },
-    ];
 
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this question?')) {
@@ -95,7 +89,7 @@ export default function ExamShow({ question, performance }: PageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Question Details" />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -470,6 +464,13 @@ export default function ExamShow({ question, performance }: PageProps) {
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamShow.layout = (props: { question: { id: number } }) => ({
+    breadcrumbs: [
+        { title: 'Question Bank', href: '/question-bank' },
+        { title: 'View Question', href: `/question-bank/${props.question.id}` },
+    ],
+});

@@ -164,10 +164,8 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()}>
-                                <AppLogo />
-                            </Link>
+                        <SidebarMenuButton size="lg" render={<Link href={dashboard()} />}>
+                            <AppLogo />
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

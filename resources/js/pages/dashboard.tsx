@@ -13,7 +13,6 @@ import {
     Stethoscope,
 } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import { dashboard as dashboardRoute } from '@/routes';
 import { duplicate as examBuilderDuplicate } from '@/routes/exam-builder';
@@ -71,8 +70,6 @@ interface DashboardPageProps extends PageProps {
     recentExams: RecentExam[];
 }
 
-const breadcrumbs = [{ title: 'Dashboard', href: dashboardRoute.url() }];
-
 function getExamTypeIcon(type: string) {
     switch (type) {
         case 'formative':
@@ -127,7 +124,7 @@ export default function Dashboard({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Dashboard" />
 
             <div className="px-4 py-6 md:px-8 md:py-8">
@@ -142,11 +139,9 @@ export default function Dashboard({
                                 Welcome back, {auth.user.name}
                             </p>
                         </div>
-                        <Button asChild>
-                            <Link href={modulesIndex.url()}>
-                                <Plus className="mr-2 size-4" />
-                                Create Exam
-                            </Link>
+                        <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                            <Plus className="mr-2 size-4" />
+                            Create Exam
                         </Button>
                     </div>
 
@@ -201,11 +196,9 @@ export default function Dashboard({
                                 Create your first exam to start building
                                 assessments from your question bank.
                             </p>
-                            <Button asChild>
-                                <Link href={modulesIndex.url()}>
-                                    <Plus className="mr-2 size-4" />
-                                    Create Exam
-                                </Link>
+                            <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                                <Plus className="mr-2 size-4" />
+                                Create Exam
                             </Button>
                         </div>
                     ) : (
@@ -263,25 +256,21 @@ export default function Dashboard({
                                         className="flex justify-center"
                                     >
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="size-8 opacity-0 transition-opacity group-hover:opacity-100"
-                                                >
-                                                    <MoreVertical className="size-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem asChild>
-                                                    <Link
-                                                        href={moduleShow.url(
-                                                            exam.module.id,
-                                                        )}
+                                            <DropdownMenuTrigger
+                                                render={
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="size-8 opacity-0 transition-opacity group-hover:opacity-100"
                                                     >
-                                                        <Eye className="mr-2 size-4" />
-                                                        View in Module
-                                                    </Link>
+                                                        <MoreVertical className="size-4" />
+                                                    </Button>
+                                                }
+                                            />
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem render={<Link href={moduleShow.url(exam.module.id)} />}>
+                                                    <Eye className="mr-2 size-4" />
+                                                    View in Module
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     onClick={() =>
@@ -340,6 +329,10 @@ export default function Dashboard({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AppLayout>
+        </>
     );
 }
+
+Dashboard.layout = {
+    breadcrumbs: [{ title: 'Dashboard', href: dashboardRoute.url() }],
+};

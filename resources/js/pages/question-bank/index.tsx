@@ -24,7 +24,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import AppLayout from '@/layouts/app-layout';
 import {
     index as questionIndex,
     create as questionCreate,
@@ -82,8 +81,6 @@ interface PageProps {
         search?: string;
     };
 }
-
-const breadcrumbs = [{ title: 'Question Bank', href: questionIndex.url() }];
 
 export default function ExamsIndex({ questions, modules, filters }: PageProps) {
     const [search, setSearch] = useState(filters.search || '');
@@ -186,7 +183,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Question Bank" />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -195,11 +192,9 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                     title="Question Bank"
                     description={`${questions.total} ${questions.total === 1 ? 'question' : 'questions'} available • Browse, search, and manage all your exam questions in one place`}
                     actions={
-                        <Button asChild>
-                            <Link href={questionCreate.url()}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Question
-                            </Link>
+                        <Button render={<Link href={questionCreate.url()} />} nativeButton={false}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Question
                         </Button>
                     }
                 />
@@ -227,10 +222,10 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                             <Select
                                 value={moduleFilter}
                                 onValueChange={(value) => {
-                                    setModuleFilter(value);
+                                    setModuleFilter(value ?? '');
                                     applyFilters({
                                         module_id:
-                                            value === 'all' ? undefined : value,
+                                            !value || value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -255,10 +250,10 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                             <Select
                                 value={typeFilter}
                                 onValueChange={(value) => {
-                                    setTypeFilter(value);
+                                    setTypeFilter(value ?? '');
                                     applyFilters({
                                         question_type:
-                                            value === 'all' ? undefined : value,
+                                            !value || value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -285,10 +280,10 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                             <Select
                                 value={difficultyFilter}
                                 onValueChange={(value) => {
-                                    setDifficultyFilter(value);
+                                    setDifficultyFilter(value ?? '');
                                     applyFilters({
                                         difficulty:
-                                            value === 'all' ? undefined : value,
+                                            !value || value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -312,10 +307,10 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                             <Select
                                 value={cognitiveFilter}
                                 onValueChange={(value) => {
-                                    setCognitiveFilter(value);
+                                    setCognitiveFilter(value ?? '');
                                     applyFilters({
                                         cognitive_level:
-                                            value === 'all' ? undefined : value,
+                                            !value || value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -350,10 +345,10 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                             <Select
                                 value={approvalFilter}
                                 onValueChange={(value) => {
-                                    setApprovalFilter(value);
+                                    setApprovalFilter(value ?? '');
                                     applyFilters({
                                         is_approved:
-                                            value === 'all' ? undefined : value,
+                                            !value || value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -407,11 +402,9 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                             : 'Get started by adding your first question'}
                                     </p>
                                     <div className="mt-6">
-                                        <Button asChild>
-                                            <Link href={questionCreate.url()}>
-                                                <Plus className="mr-2 h-4 w-4" />
-                                                Add Question
-                                            </Link>
+                                        <Button render={<Link href={questionCreate.url()} />} nativeButton={false}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add Question
                                         </Button>
                                     </div>
                                 </div>
@@ -539,28 +532,18 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    asChild
+                                                    render={<Link href={questionShow.url(question.id)} />}
+                                                    nativeButton={false}
                                                 >
-                                                    <Link
-                                                        href={questionShow.url(
-                                                            question.id,
-                                                        )}
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </Link>
+                                                    <Eye className="h-4 w-4" />
                                                 </Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    asChild
+                                                    render={<Link href={questionEdit.url(question.id)} />}
+                                                    nativeButton={false}
                                                 >
-                                                    <Link
-                                                        href={questionEdit.url(
-                                                            question.id,
-                                                        )}
-                                                    >
-                                                        <Edit className="h-4 w-4" />
-                                                    </Link>
+                                                    <Edit className="h-4 w-4" />
                                                 </Button>
                                                 <Button
                                                     variant="outline"
@@ -632,6 +615,10 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                     )}
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamsIndex.layout = {
+    breadcrumbs: [{ title: 'Question Bank', href: questionIndex.url() }],
+};

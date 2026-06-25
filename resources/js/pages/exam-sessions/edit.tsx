@@ -1,7 +1,6 @@
 import { Head, useForm, Link } from '@inertiajs/react';
 import { Save, Clock, Calendar, Settings, AlertCircle } from 'lucide-react';
 import type { FormEventHandler } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -43,10 +42,13 @@ interface PageProps {
     exams: Exam[];
 }
 
-const breadcrumbs = (session: ExamSession): BreadcrumbItem[] => [
+const breadcrumbs = (props: PageProps): BreadcrumbItem[] => [
     { title: 'Exam Sessions', href: examSessions.index.url() },
-    { title: session.title, href: examSessions.show.url(session.id) },
-    { title: 'Edit', href: examSessions.edit.url(session.id) },
+    {
+        title: props.session.title,
+        href: examSessions.show.url(props.session.id),
+    },
+    { title: 'Edit', href: examSessions.edit.url(props.session.id) },
 ];
 
 function formatDateTimeLocal(dateString: string): string {
@@ -111,7 +113,7 @@ export default function Edit({ session }: PageProps) {
         (session as any).attempts_count > 0;
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs(session)}>
+        <>
             <Head title={`Edit ${session.title}`} />
 
             <div className="p-6 md:p-8">
@@ -343,7 +345,7 @@ export default function Edit({ session }: PageProps) {
                                     <Select
                                         value={data.max_attempts}
                                         onValueChange={(v) =>
-                                            setData('max_attempts', v)
+                                            setData('max_attempts', v ?? '')
                                         }
                                     >
                                         <SelectTrigger
@@ -509,10 +511,8 @@ export default function Edit({ session }: PageProps) {
 
                         {/* Submit */}
                         <div className="flex justify-end gap-4">
-                            <Button variant="outline" asChild>
-                                <Link href={examSessions.show.url(session.id)}>
-                                    Cancel
-                                </Link>
+                            <Button variant="outline" render={<Link href={examSessions.show.url(session.id)} />} nativeButton={false}>
+                                Cancel
                             </Button>
                             <Button
                                 type="submit"
@@ -525,6 +525,8 @@ export default function Edit({ session }: PageProps) {
                     </form>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Edit.layout = { breadcrumbs };

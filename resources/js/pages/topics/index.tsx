@@ -1,6 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
 import { Plus, FolderTree, Edit, Trash2, Clock, Percent } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { Module, Topic } from '@/types/models';
 import { Button } from '@/components/ui/button';
@@ -26,12 +25,6 @@ interface Props extends PageProps {
 }
 
 export default function TopicsIndex({ module, topics }: Props) {
-    const breadcrumbs = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.name, href: `/modules/${module.id}` },
-        { title: 'Topics', href: topicsIndex.url(module.id) },
-    ];
-
     // Organize topics into a tree structure
     const rootTopics = topics.filter((topic) => !topic.parent_id);
 
@@ -126,7 +119,7 @@ export default function TopicsIndex({ module, topics }: Props) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Topics - ${module.name}`} />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -134,11 +127,9 @@ export default function TopicsIndex({ module, topics }: Props) {
                     title="Topics"
                     description={`Manage topics and subtopics for ${module.name}`}
                     actions={
-                        <Button asChild>
-                            <Link href={topicsCreate.url(module.id)}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Topic
-                            </Link>
+                        <Button render={<Link href={topicsCreate.url(module.id)} />} nativeButton={false}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Topic
                         </Button>
                     }
                 />
@@ -170,6 +161,14 @@ export default function TopicsIndex({ module, topics }: Props) {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+TopicsIndex.layout = (props: { module: { id: number; name: string } }) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: props.module.name, href: `/modules/${props.module.id}` },
+        { title: 'Topics', href: topicsIndex.url(props.module.id) },
+    ],
+});

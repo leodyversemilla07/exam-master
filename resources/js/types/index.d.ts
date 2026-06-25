@@ -1,5 +1,6 @@
 import type { InertiaLinkProps } from '@inertiajs/react';
 import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 export interface Auth {
     user: User;
@@ -22,6 +23,12 @@ export interface NavItem {
     isActive?: boolean;
     permission?: string;
     role?: string;
+}
+
+export interface AuthLayoutProps {
+    children: ReactNode;
+    title?: string;
+    description?: string;
 }
 
 export interface SharedData {

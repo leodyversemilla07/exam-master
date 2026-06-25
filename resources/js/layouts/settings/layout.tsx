@@ -47,7 +47,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 key={`${resolveUrl(item.href)}-${index}`}
                                 size="sm"
                                 variant="ghost"
-                                asChild
+                                render={<Link href={item.href} />}
+                                nativeButton={false}
                                 className={cn('w-full justify-start', {
                                     'bg-muted': isSameUrl(
                                         currentPath,
@@ -55,12 +56,10 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     ),
                                 })}
                             >
-                                <Link href={item.href}>
-                                    {item.icon && (
-                                        <item.icon className="h-4 w-4" />
-                                    )}
-                                    {item.title}
-                                </Link>
+                                {item.icon && (
+                                    <item.icon className="h-4 w-4" />
+                                )}
+                                {item.title}
                             </Button>
                         ))}
                     </nav>

@@ -6,15 +6,11 @@ import {
     FileText,
     ChevronRight,
 } from 'lucide-react';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
 import PageHeader from '@/components/page-header';
+
 interface Match {
     student1: string;
     student2: string;
@@ -38,24 +34,22 @@ interface PageProps {
     reports: Report[];
 }
 
-export default function PlagiarismReport({ session, reports }: PageProps) {
-    const breadcrumbs = [
-        { title: 'Exam Sessions', href: '/exam-sessions' },
-        { title: 'Results', href: `/exam-sessions/${session.id}/results` },
-        { title: 'Plagiarism Report', href: '#' },
-    ];
+const breadcrumbs = (props: PageProps) => [
+    { title: 'Exam Sessions', href: '/exam-sessions' },
+    { title: 'Results', href: `/exam-sessions/${props.session.id}/results` },
+    { title: 'Plagiarism Report', href: '#' },
+];
 
+export default function PlagiarismReport({ session, reports }: PageProps) {
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Plagiarism Report: ${session.title}`} />
 
             <div className="space-y-6 p-4 md:p-6">
                 <div className="mb-6">
-                    <Button variant="ghost" asChild>
-                        <Link href={`/exam-sessions/${session.id}/results`}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Results
-                        </Link>
+                    <Button variant="ghost" render={<Link href={`/exam-sessions/${session.id}/results`} />} nativeButton={false}>
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Results
                     </Button>
                 </div>
 
@@ -118,7 +112,7 @@ export default function PlagiarismReport({ session, reports }: PageProps) {
                                                             match.similarity >
                                                             90
                                                                 ? 'destructive'
-                                                                : 'warning'
+                                                                : 'secondary'
                                                         }
                                                         className="font-mono text-sm"
                                                     >
@@ -170,9 +164,11 @@ export default function PlagiarismReport({ session, reports }: PageProps) {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+PlagiarismReport.layout = { breadcrumbs };
 
 // Mock icon because CheckCircle2 is not imported but used in empty state
 function CheckCircle2(props: any) {

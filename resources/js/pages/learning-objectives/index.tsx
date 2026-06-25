@@ -1,7 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type {
     Module,
@@ -101,17 +100,6 @@ export default function LearningObjectivesIndex({
         is_active: true,
     });
 
-    const breadcrumbs = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.name, href: `/modules/${module.id}` },
-        { title: 'Topics', href: `/modules/${module.id}/topics` },
-        {
-            title: topic.title,
-            href: `/modules/${module.id}/topics/${topic.id}`,
-        },
-        { title: 'Learning Objectives', href: '#' },
-    ];
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -182,7 +170,7 @@ export default function LearningObjectivesIndex({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Learning Objectives - ${topic.title}`} />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -477,6 +465,19 @@ export default function LearningObjectivesIndex({
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+LearningObjectivesIndex.layout = (page: Props) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: page.module.name, href: `/modules/${page.module.id}` },
+        { title: 'Topics', href: `/modules/${page.module.id}/topics` },
+        {
+            title: page.topic.title,
+            href: `/modules/${page.module.id}/topics/${page.topic.id}`,
+        },
+        { title: 'Learning Objectives', href: '#' },
+    ],
+});

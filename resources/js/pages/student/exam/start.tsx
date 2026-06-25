@@ -9,7 +9,6 @@ import {
     RotateCcw,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { ExamAttempt, ExamSession } from '@/types/models';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -53,7 +52,7 @@ export default function ExamStart({
     const remainingAttempts = session.max_attempts - previousAttempts.length;
 
     return (
-        <AppLayout>
+        <>
             <Head title={`Start Exam: ${session.title}`} />
 
             <div className="mx-auto max-w-3xl">
@@ -217,14 +216,8 @@ export default function ExamStart({
                                             <div className="text-right">
                                                 {attempt.status ===
                                                 'in_progress' ? (
-                                                    <Button asChild size="sm">
-                                                        <Link
-                                                            href={take.url(
-                                                                attempt.id,
-                                                            )}
-                                                        >
-                                                            Continue
-                                                        </Link>
+                                                    <Button size="sm" render={<Link href={take.url(attempt.id)} />} nativeButton={false}>
+                                                        Continue
                                                     </Button>
                                                 ) : (
                                                     <>
@@ -298,10 +291,8 @@ export default function ExamStart({
                                             this exam.
                                         </AlertDescription>
                                     </Alert>
-                                    <Button variant="outline" asChild>
-                                        <Link href={DashboardController.url()}>
-                                            Return to Dashboard
-                                        </Link>
+                                    <Button variant="outline" render={<Link href={DashboardController.url()} />} nativeButton={false}>
+                                        Return to Dashboard
                                     </Button>
                                 </div>
                             )}
@@ -309,6 +300,8 @@ export default function ExamStart({
                     </Card>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamStart.layout = { breadcrumbs: [] };

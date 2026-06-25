@@ -13,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { Module, TosGenerate } from '@/types/models';
+import type { Module, TosGenerate, ExamQuestion } from '@/types/models';
 import { store } from '@/actions/App/Http/Controllers/TosGenerateController';
 import { extractTosFromModule } from '@/actions/App/Http/Controllers/ModuleController';
 
@@ -57,13 +57,11 @@ interface FlashProps {
 
 interface Props {
     module: Module;
+    existingTos?: (TosGenerate & { questions: ExamQuestion[] }) | null;
     onCreated: (tos: TosGenerate) => void;
 }
 
-export default function Step1TosForm({
-    module,
-    onCreated,
-}: Props) {
+export default function Step1TosForm({ module, onCreated }: Props) {
     const { props } = usePage<FlashProps>();
     const [objectives, setObjectives] = useState<LearningObjective[]>([
         { code: '', description: '' },
@@ -97,6 +95,7 @@ export default function Step1TosForm({
     });
 
     // Handle TOS extraction flash data
+     
     useEffect(() => {
         const tosExtraction = props.flash?.tosExtraction;
 
@@ -104,6 +103,9 @@ export default function Step1TosForm({
             return;
         }
 
+        // Resetting after flash data arrives is intentional — it synchronizes
+        // server-side extraction completion with local loading state.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsExtracting(false);
 
         if (tosExtraction.success && tosExtraction.data) {
@@ -147,7 +149,8 @@ export default function Step1TosForm({
                     tosExtraction.error || 'Could not analyze the PDF file.',
             });
         }
-    }, [props.flash?.tosExtraction]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.flash?.tosExtraction, objectives]);
 
     const handleAutoFillFromPDF = () => {
         if (!module.pdf_file) {
@@ -518,7 +521,7 @@ export default function Step1TosForm({
                     <Select
                         value={form.data.difficulty_level}
                         onValueChange={(value) =>
-                            form.setData('difficulty_level', value)
+                            form.setData('difficulty_level', value ?? '')
                         }
                     >
                         <SelectTrigger>
@@ -537,7 +540,7 @@ export default function Step1TosForm({
                     <Select
                         value={form.data.language}
                         onValueChange={(value) =>
-                            form.setData('language', value)
+                            form.setData('language', value ?? '')
                         }
                     >
                         <SelectTrigger>

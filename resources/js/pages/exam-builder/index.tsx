@@ -12,9 +12,8 @@ import {
     X,
 } from 'lucide-react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import type { Exam } from '@/types/models';
-import type { BreadcrumbItem, SharedData } from '@/types';
+import type { SharedData } from '@/types';
 import * as examBuilder from '@/routes/exam-builder';
 import { index as modulesIndex, show as moduleShow } from '@/routes/modules';
 import { Badge } from '@/components/ui/badge';
@@ -61,10 +60,6 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Builder', href: examBuilder.index.url() },
-];
 
 interface PageProps {
     exams: {
@@ -198,7 +193,7 @@ export default function ExamBuilderIndex({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Exam Builder" />
 
             <div className="px-4 py-6 md:px-8 md:py-8">
@@ -214,11 +209,9 @@ export default function ExamBuilderIndex({
                                 total
                             </p>
                         </div>
-                        <Button asChild>
-                            <Link href={modulesIndex.url()}>
-                                <Plus className="mr-2 size-4" />
-                                Create Exam
-                            </Link>
+                        <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                            <Plus className="mr-2 size-4" />
+                            Create Exam
                         </Button>
                     </div>
 
@@ -236,7 +229,7 @@ export default function ExamBuilderIndex({
                         <Select
                             value={moduleFilter}
                             onValueChange={(value) => {
-                                setModuleFilter(value);
+                                setModuleFilter(value ?? '');
                                 applyFilters({
                                     module_id:
                                         value === 'all'
@@ -263,7 +256,7 @@ export default function ExamBuilderIndex({
                         <Select
                             value={statusFilter}
                             onValueChange={(value) => {
-                                setStatusFilter(value);
+                                setStatusFilter(value ?? '');
                                 applyFilters({
                                     status:
                                         value === 'all'
@@ -289,7 +282,7 @@ export default function ExamBuilderIndex({
                         <Select
                             value={typeFilter}
                             onValueChange={(value) => {
-                                setTypeFilter(value);
+                                setTypeFilter(value ?? '');
                                 applyFilters({
                                     exam_type:
                                         value === 'all'
@@ -349,11 +342,9 @@ export default function ExamBuilderIndex({
                                         Clear Filters
                                     </Button>
                                 ) : (
-                                    <Button asChild>
-                                        <Link href={modulesIndex.url()}>
-                                            <Plus className="mr-2 size-4" />
-                                            Create Exam
-                                        </Link>
+                                    <Button render={<Link href={modulesIndex.url()} />} nativeButton={false}>
+                                        <Plus className="mr-2 size-4" />
+                                        Create Exam
                                     </Button>
                                 )}
                             </EmptyContent>
@@ -416,25 +407,11 @@ export default function ExamBuilderIndex({
                                             className="flex justify-center"
                                         >
                                             <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-8 opacity-0 transition-opacity group-hover:opacity-100"
-                                                    >
-                                                        <MoreVertical className="size-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
+                                                <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="size-8 opacity-0 transition-opacity group-hover:opacity-100"><MoreVertical className="size-4" /></Button>} />
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem asChild>
-                                                        <Link
-                                                            href={moduleShow.url(
-                                                                exam.module.id,
-                                                            )}
-                                                        >
-                                                            <Eye className="mr-2 size-4" />
-                                                            View in Module
-                                                        </Link>
+                                                    <DropdownMenuItem render={<Link href={moduleShow.url(exam.module.id)} />}>
+                                                        <Eye className="mr-2 size-4" />
+                                                        View in Module
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() =>
@@ -578,6 +555,10 @@ export default function ExamBuilderIndex({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AppLayout>
+        </>
     );
 }
+
+ExamBuilderIndex.layout = {
+    breadcrumbs: [{ title: 'Exam Builder', href: examBuilder.index.url() }],
+};

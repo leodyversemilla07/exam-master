@@ -10,7 +10,6 @@ import {
     Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import AppLayout from '@/layouts/app-layout';
 import type { PageProps } from '@/types';
 import type { ExamAttempt } from '@/types/models';
 import {
@@ -116,16 +115,14 @@ export default function ExamResults({
     const scoreInfo = getScoreLabel();
 
     return (
-        <AppLayout>
+        <>
             <Head title={`Results: ${attempt.exam_session?.exam?.title}`} />
 
             <div className="mx-auto max-w-4xl">
                 <div className="mb-6">
-                    <Button variant="ghost" asChild>
-                        <Link href={DashboardController.url()}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Dashboard
-                        </Link>
+                    <Button variant="ghost" render={<Link href={DashboardController.url()} />} nativeButton={false}>
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Dashboard
                     </Button>
                 </div>
 
@@ -439,6 +436,8 @@ export default function ExamResults({
                     )}
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamResults.layout = { breadcrumbs: [] };

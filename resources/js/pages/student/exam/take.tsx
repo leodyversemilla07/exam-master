@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     Clock,
     ChevronLeft,
@@ -154,8 +154,29 @@ export default function ExamTake({
     }, [questions, attempt.metadata]);
 
     // Timer
+    const handleAutoSubmit = useCallback(() => {
+        router.post(
+            submit.url(attempt.id),
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
+    }, [attempt.id]);
+
+    const timeRemainingRef = useRef(timeRemaining);
+    const handleAutoSubmitRef = useRef(handleAutoSubmit);
+
     useEffect(() => {
-        if (timeRemaining === null) {
+        handleAutoSubmitRef.current = handleAutoSubmit;
+    }, [handleAutoSubmit]);
+
+    useEffect(() => {
+        timeRemainingRef.current = timeRemaining;
+    }, [timeRemaining]);
+
+    useEffect(() => {
+        if (timeRemainingRef.current === null) {
             return;
         }
 
@@ -166,7 +187,7 @@ export default function ExamTake({
                 }
 
                 if (prev <= 0) {
-                    handleAutoSubmit();
+                    handleAutoSubmitRef.current();
 
                     return 0;
                 }
@@ -193,16 +214,6 @@ export default function ExamTake({
 
         return () => clearInterval(interval);
     }, []);
-
-    const handleAutoSubmit = useCallback(() => {
-        router.post(
-            submit.url(attempt.id),
-            {},
-            {
-                preserveScroll: true,
-            },
-        );
-    }, [attempt.id]);
 
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);

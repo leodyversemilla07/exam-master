@@ -10,7 +10,6 @@ import {
     XCircle,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import {
     Card,
     CardContent,
@@ -38,7 +37,6 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import PageHeader from '@/components/page-header';
-import type { BreadcrumbItem } from '@/types';
 import {
     getStats,
     retryJob,
@@ -66,16 +64,12 @@ interface QueueMonitorProps {
     recent_failed?: FailedJob[];
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Queue Monitor', href: '/queue-monitor' },
-];
-
 export default function QueueMonitorIndex({
     stats: initialStats,
     recent_failed = [],
 }: QueueMonitorProps) {
-    const [stats, setStats] = useState<QueueStats | null>(initialStats || null);
-    const [failedJobs, setFailedJobs] = useState<FailedJob[]>(recent_failed);
+    const stats = initialStats || null;
+    const [failedJobs] = useState<FailedJob[]>(() => recent_failed);
     const [loading, setLoading] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showClearDialog, setShowClearDialog] = useState(false);
@@ -132,14 +126,6 @@ export default function QueueMonitorIndex({
     };
 
     useEffect(() => {
-        if (initialStats) {
-            setStats(initialStats);
-        }
-
-        setFailedJobs(recent_failed);
-    }, [initialStats, recent_failed]);
-
-    useEffect(() => {
         // Auto-refresh every 30 seconds
         const interval = setInterval(fetchStats, 30000);
 
@@ -147,7 +133,7 @@ export default function QueueMonitorIndex({
     }, []);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Queue Monitor" />
 
             <div className="p-6 md:p-8">
@@ -474,6 +460,10 @@ export default function QueueMonitorIndex({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AppLayout>
+        </>
     );
 }
+
+QueueMonitorIndex.layout = {
+    breadcrumbs: [{ title: 'Queue Monitor', href: '/queue-monitor' }],
+};

@@ -13,7 +13,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import AppLayout from '@/layouts/app-layout';
 import PageHeader from '@/components/page-header';
 
 interface Module {
@@ -42,11 +41,6 @@ interface PageProps {
 }
 
 export default function ExamEdit({ question, modules }: PageProps) {
-    const breadcrumbs = [
-        { title: 'Question Bank', href: '/question-bank' },
-        { title: 'View Question', href: `/question-bank/${question.id}` },
-        { title: 'Edit', href: `/question-bank/${question.id}/edit` },
-    ];
     const { data, setData, put, processing, errors } = useForm({
         module_id: question.module_id,
         question_type: question.question_type,
@@ -77,7 +71,7 @@ export default function ExamEdit({ question, modules }: PageProps) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title="Edit Question" />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -99,9 +93,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Label htmlFor="module_id">Module</Label>
                                 <Select
                                     value={data.module_id.toString()}
-                                    onValueChange={(value) =>
-                                        setData('module_id', parseInt(value))
-                                    }
+                                        onValueChange={(value) =>
+                                            setData('module_id', parseInt(value ?? ''))
+                                        }
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select module" />
@@ -150,37 +144,37 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 </Label>
                                 <Select
                                     value={data.question_type}
-                                    onValueChange={(value) =>
-                                        setData('question_type', value)
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="multiple_choice">
-                                            Multiple Choice
-                                        </SelectItem>
-                                        <SelectItem value="true_false">
-                                            True/False
-                                        </SelectItem>
-                                        <SelectItem value="essay">
-                                            Essay
-                                        </SelectItem>
-                                        <SelectItem value="identification">
-                                            Identification
-                                        </SelectItem>
-                                        <SelectItem value="matching">
-                                            Matching Type
-                                        </SelectItem>
-                                        <SelectItem value="fill_in_the_blanks">
-                                            Fill in the Blanks
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                                        onValueChange={(value) =>
+                                            setData('question_type', value ?? '')
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="multiple_choice">
+                                                Multiple Choice
+                                            </SelectItem>
+                                            <SelectItem value="true_false">
+                                                True/False
+                                            </SelectItem>
+                                            <SelectItem value="essay">
+                                                Essay
+                                            </SelectItem>
+                                            <SelectItem value="identification">
+                                                Identification
+                                            </SelectItem>
+                                            <SelectItem value="matching">
+                                                Matching Type
+                                            </SelectItem>
+                                            <SelectItem value="fill_in_the_blanks">
+                                                Fill in the Blanks
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                            {/* Options (for multiple choice) */}
+                                {/* Options (for multiple choice) */}
                             {data.question_type === 'multiple_choice' && (
                                 <div className="space-y-4">
                                     <Label>Options</Label>
@@ -219,7 +213,7 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     <Select
                                         value={data.correct_answer}
                                         onValueChange={(value) =>
-                                            setData('correct_answer', value)
+                                            setData('correct_answer', value ?? '')
                                         }
                                     >
                                         <SelectTrigger>
@@ -279,9 +273,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 </Label>
                                 <Select
                                     value={data.cognitive_level}
-                                    onValueChange={(value) =>
-                                        setData('cognitive_level', value)
-                                    }
+                                        onValueChange={(value) =>
+                                            setData('cognitive_level', value ?? '')
+                                        }
                                 >
                                     <SelectTrigger>
                                         <SelectValue />
@@ -314,9 +308,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Label htmlFor="difficulty">Difficulty</Label>
                                 <Select
                                     value={data.difficulty}
-                                    onValueChange={(value) =>
-                                        setData('difficulty', value)
-                                    }
+                                        onValueChange={(value) =>
+                                            setData('difficulty', value ?? '')
+                                        }
                                 >
                                     <SelectTrigger>
                                         <SelectValue />
@@ -394,6 +388,14 @@ export default function ExamEdit({ question, modules }: PageProps) {
                     </Card>
                 </form>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExamEdit.layout = (props: { question: { id: number } }) => ({
+    breadcrumbs: [
+        { title: 'Question Bank', href: '/question-bank' },
+        { title: 'View Question', href: `/question-bank/${props.question.id}` },
+        { title: 'Edit', href: `/question-bank/${props.question.id}/edit` },
+    ],
+});

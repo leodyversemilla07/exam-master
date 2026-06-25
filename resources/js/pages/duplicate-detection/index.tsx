@@ -8,7 +8,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import AppLayout from '@/layouts/app-layout';
 import type { Module, ExamQuestion } from '@/types/models';
 import PageHeader from '@/components/page-header';
 
@@ -69,17 +68,8 @@ export default function DuplicateDetectionIndex({
     duplicates,
     statistics,
 }: PageProps) {
-    const breadcrumbs = [
-        { title: 'Modules', href: '/modules' },
-        { title: module.name, href: `/modules/${module.id}` },
-        {
-            title: 'Duplicate Detection',
-            href: `/duplicate-detection/${module.id}`,
-        },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={`Duplicate Detection - ${module.name}`} />
 
             <div className="space-y-6 p-4 md:p-6">
@@ -415,6 +405,17 @@ export default function DuplicateDetectionIndex({
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+DuplicateDetectionIndex.layout = (page: PageProps) => ({
+    breadcrumbs: [
+        { title: 'Modules', href: '/modules' },
+        { title: page.module.name, href: `/modules/${page.module.id}` },
+        {
+            title: 'Duplicate Detection',
+            href: `/duplicate-detection/${page.module.id}`,
+        },
+    ],
+});

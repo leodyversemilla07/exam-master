@@ -8,13 +8,13 @@ import type {
     Module,
     TosGenerate,
 } from '@/types/models';
-import Step1TosForm from '@/components/workflow/steps/Step1TosForm';
-import Step2Generating from '@/components/workflow/steps/Step2Generating';
-import Step3ReviewQuestions from '@/components/workflow/steps/Step3ReviewQuestions';
-import Step4BuildExam from '@/components/workflow/steps/Step4BuildExam';
+import Step1TosForm from '@/components/workflow/steps/step-1-tos-form';
+import Step2Generating from '@/components/workflow/steps/step-2-generating';
+import Step3ReviewQuestions from '@/components/workflow/steps/step-3-review-questions';
+import Step4BuildExam from '@/components/workflow/steps/step-4-build-exam';
 import Step5Schedule, {
     Step5Done,
-} from '@/components/workflow/steps/Step5Schedule';
+} from '@/components/workflow/steps/step-5-schedule';
 
 interface Props {
     module: Module;
