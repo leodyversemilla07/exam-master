@@ -21,10 +21,8 @@
         "noFallthroughCasesInSwitch": true,
 
         /* Path aliases */
-        "baseUrl": ".",
         "paths": {
-            "@/*": ["resources/js/*"],
-            "ziggy-js": ["./vendor/tightenco/ziggy"]
+            "@/*": ["./resources/js/*"]
         }
     },
     "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx"],
