@@ -2,24 +2,25 @@
 
 namespace App\Services\AI;
 
+use App\Ai\Agents\AnswerFeedback;
+use App\Ai\Agents\AttemptFeedback;
+use App\Ai\Agents\QuestionPolish;
 use App\Models\ExamAttempt;
 use App\Models\ExamQuestion;
 use App\Models\StudentAnswer;
 use Illuminate\Support\Facades\Log;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Schema\ObjectSchema;
-use Prism\Prism\Schema\StringSchema;
+use Laravel\Ai\Enums\Lab;
 
 class FeedbackService
 {
-    protected string $provider;
+    protected Lab $provider;
 
     protected string $model;
 
     public function __construct()
     {
-        $this->provider = config('app.env') === 'production' ? 'openai' : 'gemini';
-        $this->model = $this->provider === 'openai' ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
+        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
+        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
     }
 
     /**
@@ -32,12 +33,13 @@ class FeedbackService
 
             $prompt = $this->buildAttemptFeedbackPrompt($attempt);
 
-            $response = Prism::text()
-                ->using($this->provider, $this->model)
-                ->withPrompt($prompt)
-                ->generate();
+            $response = (new AttemptFeedback)->prompt(
+                $prompt,
+                provider: $this->provider,
+                model: $this->model,
+            );
 
-            $feedback = $response->text;
+            $feedback = (string) $response;
 
             $metadata = $attempt->metadata ?? [];
             $metadata['ai_feedback'] = $feedback;
@@ -64,12 +66,13 @@ class FeedbackService
 
             $prompt = $this->buildAnswerFeedbackPrompt($answer);
 
-            $response = Prism::text()
-                ->using($this->provider, $this->model)
-                ->withPrompt($prompt)
-                ->generate();
+            $response = (new AnswerFeedback)->prompt(
+                $prompt,
+                provider: $this->provider,
+                model: $this->model,
+            );
 
-            $feedback = $response->text;
+            $feedback = (string) $response;
 
             $answer->update(['feedback' => $feedback]);
 
@@ -90,33 +93,23 @@ class FeedbackService
     public function polishQuestion(ExamQuestion $question): array
     {
         try {
-            $schema = new ObjectSchema(
-                'polished_question',
-                'Polished question details',
-                [
-                    new StringSchema('question', 'The polished question text'),
-                    new StringSchema('explanation', 'A clearer explanation'),
-                    new StringSchema('rationale', 'Briefly explain the changes made'),
-                ],
-                ['question', 'explanation', 'rationale']
-            );
-
             $prompt = <<<PROMPT
-You are an expert curriculum designer. Polish the following exam question for better grammar, clarity, and educational effectiveness.
-Maintain the original meaning and correct answer.
-
 **Current Question:** {$question->question}
 **Question Type:** {$question->question_type}
 **Explanation:** {$question->explanation}
 PROMPT;
 
-            $response = Prism::structured()
-                ->using($this->provider, $this->model)
-                ->withSchema($schema)
-                ->withPrompt($prompt)
-                ->generate();
+            $response = (new QuestionPolish)->prompt(
+                $prompt,
+                provider: $this->provider,
+                model: $this->model,
+            );
 
-            return $response->structured;
+            return [
+                'question' => $response['question'],
+                'explanation' => $response['explanation'],
+                'rationale' => $response['rationale'],
+            ];
         } catch (\Exception $e) {
             Log::error('Failed to polish question', [
                 'question_id' => $question->id,
@@ -177,7 +170,12 @@ PROMPT;
 
     public function useProvider(string $provider, string $model): self
     {
-        $this->provider = $provider;
+        $this->provider = match ($provider) {
+            'openai' => Lab::OpenAI,
+            'gemini' => Lab::Gemini,
+            'anthropic' => Lab::Anthropic,
+            default => Lab::OpenAI,
+        };
         $this->model = $model;
 
         return $this;

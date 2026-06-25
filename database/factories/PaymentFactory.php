@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Payment>
+ * @extends Factory<Payment>
  */
 class PaymentFactory extends Factory
 {
@@ -22,7 +23,7 @@ class PaymentFactory extends Factory
             'user_id' => User::factory(),
             'plan_id' => Plan::factory(),
             'subscription_id' => null,
-            'paymongo_payment_intent_id' => 'pi_' . fake()->unique()->uuid(),
+            'paymongo_payment_intent_id' => 'pi_'.fake()->unique()->uuid(),
             'status' => 'succeeded',
             'payment_method' => fake()->randomElement(['card', 'gcash', 'paymaya']),
             'amount' => fake()->numberBetween(9900, 299900),

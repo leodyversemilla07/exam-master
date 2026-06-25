@@ -105,4 +105,17 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | When using the database or file cache drivers, Laravel will only
+    | unserialize objects that are explicitly listed in this array.
+    | Set to `false` to disable serialization of any objects.
+    |
+    */
+
+    'serializable_classes' => false,
+
 ];

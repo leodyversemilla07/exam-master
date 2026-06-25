@@ -2,26 +2,23 @@
 
 namespace App\Services\AI;
 
+use App\Ai\Agents\TosExtractor;
 use App\Models\Module;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Schema\ArraySchema;
-use Prism\Prism\Schema\NumberSchema;
-use Prism\Prism\Schema\ObjectSchema;
-use Prism\Prism\Schema\StringSchema;
+use Laravel\Ai\Enums\Lab;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class TosExtractorService
 {
-    protected string $provider;
+    protected Lab $provider;
 
     protected string $model;
 
     public function __construct()
     {
-        $this->provider = config('app.env') === 'production' ? 'openai' : 'gemini';
-        $this->model = $this->provider === 'openai' ? 'gpt-4o-mini' : 'gemini-2.0-flash';
+        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
+        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-2.0-flash';
     }
 
     /**
@@ -106,25 +103,17 @@ class TosExtractorService
     {
         $prompt = $this->buildExtractionPrompt($content, $module);
 
-        $response = Prism::structured()
-            ->using($this->provider, $this->model)
-            ->withPrompt($prompt)
-            ->withSchema($this->getExtractionSchema())
-            ->withMaxTokens(4000)
-            ->withClientOptions([
-                'timeout' => 60,
-                'connect_timeout' => 15,
-            ])
-            ->asStructured();
+        $response = (new TosExtractor)->prompt(
+            $prompt,
+            provider: $this->provider,
+            model: $this->model,
+        );
 
-        $structured = $response->structured;
-
-        // Validate response structure
-        if (! is_array($structured) || ! isset($structured['tos_data'])) {
+        if (! isset($response['tos_data'])) {
             throw new \RuntimeException('Invalid AI response structure');
         }
 
-        return $structured['tos_data'];
+        return $response['tos_data'];
     }
 
     /**
@@ -179,81 +168,16 @@ PROMPT;
     }
 
     /**
-     * Define the schema for structured extraction.
-     */
-    protected function getExtractionSchema(): ObjectSchema
-    {
-        return new ObjectSchema(
-            name: 'tos_extraction',
-            description: 'Extracted TOS information from module PDF',
-            properties: [
-                new ObjectSchema(
-                    name: 'tos_data',
-                    description: 'Table of Specifications data',
-                    properties: [
-                        new ArraySchema(
-                            name: 'learning_objectives',
-                            description: 'List of learning objectives to assess',
-                            items: new ObjectSchema(
-                                name: 'objective',
-                                description: 'A learning objective',
-                                properties: [
-                                    new StringSchema('code', 'Objective code (e.g., M10-A1)'),
-                                    new StringSchema('description', 'Clear, measurable objective description'),
-                                ],
-                                requiredFields: ['code', 'description']
-                            )
-                        ),
-                        new ObjectSchema(
-                            name: 'cognitive_levels',
-                            description: "Bloom's Taxonomy distribution",
-                            properties: [
-                                new NumberSchema('remembering', 'Number of remembering level items'),
-                                new NumberSchema('understanding', 'Number of understanding level items'),
-                                new NumberSchema('applying', 'Number of applying level items'),
-                                new NumberSchema('analyzing', 'Number of analyzing level items'),
-                                new NumberSchema('evaluating', 'Number of evaluating level items'),
-                                new NumberSchema('creating', 'Number of creating level items'),
-                            ],
-                            requiredFields: ['remembering', 'understanding', 'applying', 'analyzing', 'evaluating', 'creating']
-                        ),
-                        new ObjectSchema(
-                            name: 'question_types',
-                            description: 'Distribution of question types',
-                            properties: [
-                                new NumberSchema('multiple_choice', 'Number of multiple choice questions'),
-                                new NumberSchema('true_false', 'Number of true/false questions'),
-                                new NumberSchema('essay', 'Number of essay questions'),
-                                new NumberSchema('identification', 'Number of identification questions'),
-                            ],
-                            requiredFields: ['multiple_choice', 'true_false', 'essay', 'identification']
-                        ),
-                        new NumberSchema(
-                            name: 'recommended_total_items',
-                            description: 'Recommended total number of test items (20-100)'
-                        ),
-                        new StringSchema(
-                            name: 'difficulty_level',
-                            description: 'Overall difficulty level: easy, medium, hard, or mixed'
-                        ),
-                        new StringSchema(
-                            name: 'suggested_quarter',
-                            description: 'Suggested quarter/grading period if mentioned (e.g., 1st Quarter, Q2)'
-                        ),
-                    ],
-                    requiredFields: ['learning_objectives', 'cognitive_levels', 'question_types', 'recommended_total_items', 'difficulty_level']
-                ),
-            ],
-            requiredFields: ['tos_data']
-        );
-    }
-
-    /**
      * Switch to a specific provider and model.
      */
     public function useProvider(string $provider, string $model): self
     {
-        $this->provider = $provider;
+        $this->provider = match ($provider) {
+            'openai' => Lab::OpenAI,
+            'gemini' => Lab::Gemini,
+            'anthropic' => Lab::Anthropic,
+            default => Lab::OpenAI,
+        };
         $this->model = $model;
 
         return $this;

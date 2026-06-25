@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Paymongo\Entities\PaymentIntent;
 use Paymongo\PaymongoClient;
+use Paymongo\Services\BaseService;
 use Paymongo\Services\PaymentIntentService;
 
 use function Pest\Laravel\actingAs;
@@ -17,11 +18,11 @@ it('creates a payment intent and returns client key', function () {
         'price' => 19900,
     ]);
 
-    $paymentIntent = \Mockery::mock(PaymentIntent::class);
+    $paymentIntent = Mockery::mock(PaymentIntent::class);
     $paymentIntent->client_key = 'pi_client_key_test';
     $paymentIntent->id = 'pi_test_123';
 
-    $paymentIntentService = \Mockery::mock(PaymentIntentService::class);
+    $paymentIntentService = Mockery::mock(PaymentIntentService::class);
     $paymentIntentService
         ->shouldReceive('create')
         ->once()
@@ -40,7 +41,7 @@ it('creates a payment intent and returns client key', function () {
             parent::__construct('sk_test_dummy');
         }
 
-        public function __get(string $name): \Paymongo\Services\BaseService
+        public function __get(string $name): BaseService
         {
             if ($name === 'paymentIntents') {
                 return $this->paymentIntentService;

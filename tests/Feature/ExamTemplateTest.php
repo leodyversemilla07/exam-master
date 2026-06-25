@@ -6,6 +6,8 @@ use App\Models\ExamTemplate;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class ExamTemplateTest extends TestCase
@@ -25,7 +27,7 @@ class ExamTemplateTest extends TestCase
         ];
 
         foreach ($permissions as $permission) {
-            \Spatie\Permission\Models\Permission::findOrCreate($permission, 'web');
+            Permission::findOrCreate($permission, 'web');
         }
     }
 
@@ -127,11 +129,11 @@ class ExamTemplateTest extends TestCase
         ];
 
         foreach ($permissions as $permission) {
-            \Spatie\Permission\Models\Permission::findOrCreate($permission, 'web');
+            Permission::findOrCreate($permission, 'web');
         }
 
         // Reset cached roles and permissions
-        $this->app->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->app->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $user->givePermissionTo($permissions);
         $this->actingAs($user);

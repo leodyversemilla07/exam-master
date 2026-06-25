@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Exam;
+use App\Models\ExamSession;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ExamSession>
+ * @extends Factory<ExamSession>
  */
 class ExamSessionFactory extends Factory
 {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -106,7 +107,7 @@ class ExamSession extends Model
         return $attemptCount < $this->max_attempts;
     }
 
-    public function getUserAttempts(User $user): \Illuminate\Database\Eloquent\Collection
+    public function getUserAttempts(User $user): Collection
     {
         return $this->attempts()
             ->where('user_id', $user->id)

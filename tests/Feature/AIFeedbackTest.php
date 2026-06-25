@@ -1,14 +1,14 @@
 <?php
 
+use App\Ai\Agents\AnswerFeedback;
+use App\Ai\Agents\AttemptFeedback;
+use App\Ai\Agents\QuestionPolish;
 use App\Models\ExamAttempt;
 use App\Models\ExamQuestion;
 use App\Models\ExamSession;
 use App\Models\StudentAnswer;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Testing\StructuredResponseFake;
-use Prism\Prism\Testing\TextResponseFake;
 
 it('generates AI feedback when viewing results', function () {
     $this->seed(RolePermissionSeeder::class);
@@ -40,11 +40,8 @@ it('generates AI feedback when viewing results', function () {
         'points_earned' => 0.0,
     ]);
 
-    // Mock Prism
-    Prism::fake([
-        TextResponseFake::make()->withText('Encouraging AI summary feedback.'),
-        TextResponseFake::make()->withText('Specific answer feedback.'),
-    ]);
+    AttemptFeedback::fake(['Encouraging AI summary feedback.']);
+    AnswerFeedback::fake(['Specific answer feedback.']);
 
     $this->actingAs($user)
         ->get(route('student.exam.results', $attempt))
@@ -73,21 +70,14 @@ it('polishes a question using AI', function () {
         'explanation' => 'Old Explanation',
     ]);
 
-    // Mock Prism structured response
-    Prism::fake([
-        StructuredResponseFake::make()->withStructured([
-            'question' => 'Polished Question',
-            'explanation' => 'Polished Explanation',
-            'rationale' => 'Improved clarity.',
-        ]),
-    ]);
+    QuestionPolish::fake();
 
     $this->actingAs($user)
         ->post(route('question-bank.polish', $question))
         ->assertRedirect();
 
     $question->refresh();
-    expect($question->question)->toBe('Polished Question');
-    expect($question->explanation)->toBe('Polished Explanation');
-    expect($question->ai_metadata['polish_rationale'])->toBe('Improved clarity.');
+    expect($question->question)->not->toBe('Old Question');
+    expect($question->explanation)->not->toBe('Old Explanation');
+    expect($question->ai_metadata)->toHaveKey('polish_rationale');
 });

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Plan;
 use Illuminate\Database\Seeder;
 
 class PlanSeeder extends Seeder
@@ -11,7 +12,7 @@ class PlanSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Plan::create([
+        Plan::create([
             'name' => 'Basic',
             'price' => 29900, // ₱299 in cents
             'features' => [
@@ -24,7 +25,7 @@ class PlanSeeder extends Seeder
             ],
         ]);
 
-        \App\Models\Plan::create([
+        Plan::create([
             'name' => 'Pro',
             'price' => 99900, // ₱999 in cents
             'features' => [
@@ -40,7 +41,7 @@ class PlanSeeder extends Seeder
             ],
         ]);
 
-        \App\Models\Plan::create([
+        Plan::create([
             'name' => 'Enterprise',
             'price' => 299900, // ₱2,999 in cents
             'features' => [

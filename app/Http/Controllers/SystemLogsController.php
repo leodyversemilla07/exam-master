@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class SystemLogsController extends Controller
 {
@@ -22,7 +25,7 @@ class SystemLogsController extends Controller
     /**
      * Get the latest log entries.
      */
-    public function getLogs(Request $request): \Illuminate\Http\JsonResponse
+    public function getLogs(Request $request): JsonResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -110,7 +113,7 @@ class SystemLogsController extends Controller
     /**
      * Clear the log file.
      */
-    public function clearLogs(): \Illuminate\Http\JsonResponse
+    public function clearLogs(): JsonResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -138,7 +141,7 @@ class SystemLogsController extends Controller
     /**
      * Download the log file.
      */
-    public function downloadLogs(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function downloadLogs(): BinaryFileResponse
     {
         abort_unless(auth()->user()->can('view users'), 403);
 
@@ -160,7 +163,7 @@ class SystemLogsController extends Controller
         cache()->put($rateLimitKey, $downloadCount + 1, now()->addHour());
 
         // Log the download for audit purposes
-        \Illuminate\Support\Facades\Log::info('Log file downloaded', [
+        Log::info('Log file downloaded', [
             'user_id' => auth()->id(),
             'user_email' => auth()->user()->email,
             'ip_address' => request()->ip(),

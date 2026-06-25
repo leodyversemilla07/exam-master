@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Exam;
+use App\Models\Module;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Exam>
+ * @extends Factory<Exam>
  */
 class ExamFactory extends Factory
 {
@@ -15,9 +18,9 @@ class ExamFactory extends Factory
     public function definition(): array
     {
         return [
-            'module_id' => \App\Models\Module::factory(),
+            'module_id' => Module::factory(),
             'tos_generate_id' => null,
-            'created_by' => \App\Models\User::factory(),
+            'created_by' => User::factory(),
             'title' => fake()->sentence(5),
             'description' => fake()->paragraph(),
             'exam_type' => fake()->randomElement(['formative', 'summative', 'diagnostic']),

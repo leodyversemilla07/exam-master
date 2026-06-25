@@ -532,8 +532,12 @@ export default () => (
 
 === prism-php/prism rules ===
 
-## Prism
+## Laravel AI SDK
 
-- Prism is a Laravel package for integrating Large Language Models (LLMs) into applications with a fluent, expressive and eloquent API.
-- IMPORTANT: Activate `developing-with-prism` skill when working with Prism features.
+- This project uses the official Laravel AI SDK (`laravel/ai`) instead of PrismPHP.
+- Agents are defined as PHP classes in `app/Ai/Agents/`.
+- Mock agents in tests using `MyAgent::fake(['response'])` for text or `MyAgent::fake()` for structured output.
+- Use `agent()` function for quick anonymous agent usage.
+- The `config/ai.php` file contains provider configuration.
+- IMPORTANT: Activate `laravel-ai-development` skill when working with AI features.
 </laravel-boost-guidelines>

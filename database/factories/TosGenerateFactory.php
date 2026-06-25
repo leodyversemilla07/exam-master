@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Module;
+use App\Models\TosGenerate;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\TosGenerate>
+ * @extends Factory<TosGenerate>
  */
 class TosGenerateFactory extends Factory
 {

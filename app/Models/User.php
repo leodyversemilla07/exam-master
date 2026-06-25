@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable;
 
     /**
@@ -53,7 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the exam templates for the user.
      */
-    public function examTemplates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function examTemplates(): HasMany
     {
         return $this->hasMany(ExamTemplate::class);
     }
@@ -61,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the exam attempts for the user.
      */
-    public function examAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function examAttempts(): HasMany
     {
         return $this->hasMany(ExamAttempt::class);
     }
@@ -69,7 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the TOS generates created by the user.
      */
-    public function tosGenerates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tosGenerates(): HasMany
     {
         return $this->hasMany(TosGenerate::class, 'created_by');
     }
@@ -77,7 +79,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the exams created by the user.
      */
-    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function exams(): HasMany
     {
         return $this->hasMany(Exam::class, 'created_by');
     }
@@ -109,7 +111,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the subscriptions for the user.
      */
-    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
     }
@@ -117,7 +119,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the payments for the user.
      */
-    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }

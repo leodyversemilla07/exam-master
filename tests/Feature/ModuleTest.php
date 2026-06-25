@@ -2,6 +2,7 @@
 
 use App\Models\Module;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Spatie\Permission\Models\Permission;
 
 use function Pest\Laravel\actingAs;
@@ -149,7 +150,7 @@ it('rejects extraction without a PDF file', function () {
 });
 
 it('rejects extraction with non-PDF file', function () {
-    $file = \Illuminate\Http\UploadedFile::fake()->create('document.txt', 100);
+    $file = UploadedFile::fake()->create('document.txt', 100);
 
     $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
         ->assertStatus(422)
@@ -159,7 +160,7 @@ it('rejects extraction with non-PDF file', function () {
 it('requires authentication for PDF extraction', function () {
     auth()->logout();
 
-    $file = \Illuminate\Http\UploadedFile::fake()->create('module.pdf', 100);
+    $file = UploadedFile::fake()->create('module.pdf', 100);
 
     $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
         ->assertStatus(401);
@@ -169,7 +170,7 @@ it('requires create modules permission for extraction', function () {
     // Remove the create modules permission
     $this->user->revokePermissionTo('create modules');
 
-    $file = \Illuminate\Http\UploadedFile::fake()->create('module.pdf', 100);
+    $file = UploadedFile::fake()->create('module.pdf', 100);
 
     $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
         ->assertStatus(403);

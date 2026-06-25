@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -14,7 +16,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create permissions
         $permissions = [
@@ -172,7 +174,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         // Create default student user if not exists
-        $studentUser = \App\Models\User::firstOrCreate(
+        $studentUser = User::firstOrCreate(
             ['email' => 'student@example.com'],
             [
                 'name' => 'Student User',
@@ -184,7 +186,7 @@ class RolePermissionSeeder extends Seeder
         }
 
         // Assign super-admin role to first user if exists
-        $user = \App\Models\User::first();
+        $user = User::first();
         if ($user) {
             $user->assignRole('super-admin');
         }

@@ -1,9 +1,12 @@
 <?php
 
+use App\Models\Exam;
 use App\Models\ExamQuestion;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
 
@@ -11,7 +14,7 @@ beforeEach(function () {
     $this->user = User::factory()->create();
 
     // Assign permissions to user
-    $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user']);
+    $role = Role::firstOrCreate(['name' => 'user']);
     $permissions = [
         'create exams',
         'edit exams',
@@ -21,7 +24,7 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $permission) {
-        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $permission]);
+        Permission::firstOrCreate(['name' => $permission]);
     }
 
     $role->syncPermissions($permissions);
@@ -181,7 +184,7 @@ it('can update a fill in the blanks question', function () {
 });
 
 it('can export exam with matching questions to PDF', function () {
-    $exam = \App\Models\Exam::factory()->create([
+    $exam = Exam::factory()->create([
         'module_id' => $this->module->id,
         'created_by' => $this->user->id,
         'title' => 'Test Exam with Matching',
@@ -209,7 +212,7 @@ it('can export exam with matching questions to PDF', function () {
 });
 
 it('can export exam with fill in the blanks questions to PDF', function () {
-    $exam = \App\Models\Exam::factory()->create([
+    $exam = Exam::factory()->create([
         'module_id' => $this->module->id,
         'created_by' => $this->user->id,
         'title' => 'Test Exam with Fill Blanks',
@@ -233,7 +236,7 @@ it('can export exam with fill in the blanks questions to PDF', function () {
 });
 
 it('can export exam with matching questions to Word', function () {
-    $exam = \App\Models\Exam::factory()->create([
+    $exam = Exam::factory()->create([
         'module_id' => $this->module->id,
         'created_by' => $this->user->id,
         'title' => 'Test Exam with Matching',

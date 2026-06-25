@@ -4,6 +4,7 @@ use App\Models\Exam;
 use App\Models\User;
 use App\Services\Analytics\PeriodQueryBuilder;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
@@ -104,7 +105,7 @@ describe('groupByPeriod', function () {
         $result = $this->builder->groupByPeriod($query, 'invalid');
 
         // Assert
-        expect($result)->toBeInstanceOf(Illuminate\Database\Eloquent\Builder::class);
+        expect($result)->toBeInstanceOf(Builder::class);
     });
 });
 

@@ -2,24 +2,22 @@
 
 namespace App\Services\AI;
 
+use App\Ai\Agents\ModuleExtractor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Schema\ArraySchema;
-use Prism\Prism\Schema\ObjectSchema;
-use Prism\Prism\Schema\StringSchema;
+use Laravel\Ai\Enums\Lab;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class ModuleExtractorService
 {
-    protected string $provider;
+    protected Lab $provider;
 
     protected string $model;
 
     public function __construct()
     {
-        $this->provider = config('app.env') === 'production' ? 'openai' : 'gemini';
-        $this->model = $this->provider === 'openai' ? 'gpt-4o-mini' : 'gemini-2.0-flash';
+        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
+        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-2.0-flash';
     }
 
     /**
@@ -97,25 +95,18 @@ class ModuleExtractorService
     {
         $prompt = $this->buildExtractionPrompt($content);
 
-        $response = Prism::structured()
-            ->using($this->provider, $this->model)
-            ->withPrompt($prompt)
-            ->withSchema($this->getExtractionSchema())
-            ->withMaxTokens(4000)
-            ->withClientOptions([
-                'timeout' => 60,
-                'connect_timeout' => 15,
-            ])
-            ->asStructured();
-
-        $structured = $response->structured;
+        $response = (new ModuleExtractor)->prompt(
+            $prompt,
+            provider: $this->provider,
+            model: $this->model,
+        );
 
         // Validate response structure
-        if (! is_array($structured) || ! isset($structured['module_info'])) {
+        if (! isset($response['module_info'])) {
             throw new \RuntimeException('Invalid AI response structure');
         }
 
-        return $structured['module_info'];
+        return $response['module_info'];
     }
 
     /**
@@ -149,74 +140,16 @@ PROMPT;
     }
 
     /**
-     * Define the schema for structured extraction.
-     */
-    protected function getExtractionSchema(): ObjectSchema
-    {
-        return new ObjectSchema(
-            name: 'module_extraction',
-            description: 'Extracted module information from PDF',
-            properties: [
-                new ObjectSchema(
-                    name: 'module_info',
-                    description: 'Core module information',
-                    properties: [
-                        new StringSchema(
-                            name: 'name',
-                            description: 'Module or course title'
-                        ),
-                        new StringSchema(
-                            name: 'code',
-                            description: 'Module code (e.g., MATH-101, SCI-201)'
-                        ),
-                        new StringSchema(
-                            name: 'description',
-                            description: 'Brief module description (2-3 sentences)'
-                        ),
-                        new StringSchema(
-                            name: 'subject_area',
-                            description: 'Subject discipline (e.g., Mathematics, Science, English)'
-                        ),
-                        new StringSchema(
-                            name: 'grade_level',
-                            description: 'Target grade level (e.g., Grade 7, Grade 10)'
-                        ),
-                        new StringSchema(
-                            name: 'curriculum_year',
-                            description: 'Academic year (e.g., 2024, 2024-2025)'
-                        ),
-                        new ArraySchema(
-                            name: 'topics',
-                            description: 'List of chapters or major topics',
-                            items: new ObjectSchema(
-                                name: 'topic',
-                                description: 'Topic or chapter information',
-                                properties: [
-                                    new StringSchema('title', 'Topic or chapter title'),
-                                    new StringSchema('description', 'Brief topic description'),
-                                    new ArraySchema(
-                                        name: 'learning_objectives',
-                                        description: 'Learning objectives for this topic',
-                                        items: new StringSchema('objective', 'A learning objective')
-                                    ),
-                                ],
-                                requiredFields: ['title']
-                            )
-                        ),
-                    ],
-                    requiredFields: ['name', 'code', 'description', 'subject_area', 'grade_level']
-                ),
-            ],
-            requiredFields: ['module_info']
-        );
-    }
-
-    /**
      * Switch to a specific provider and model.
      */
     public function useProvider(string $provider, string $model): self
     {
-        $this->provider = $provider;
+        $this->provider = match ($provider) {
+            'openai' => Lab::OpenAI,
+            'gemini' => Lab::Gemini,
+            'anthropic' => Lab::Anthropic,
+            default => Lab::OpenAI,
+        };
         $this->model = $model;
 
         return $this;

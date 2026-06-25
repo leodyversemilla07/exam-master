@@ -2,26 +2,24 @@
 
 namespace App\Services\AI;
 
+use App\Ai\Agents\QuestionGenerator;
 use App\Models\Module;
 use App\Models\TosGenerate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Prism\Prism\Facades\Prism;
-use Prism\Prism\Schema\ArraySchema;
-use Prism\Prism\Schema\ObjectSchema;
-use Prism\Prism\Schema\StringSchema;
+use Laravel\Ai\Enums\Lab;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class QuestionGeneratorService
 {
-    protected string $provider;
+    protected Lab $provider;
 
     protected string $model;
 
     public function __construct()
     {
-        $this->provider = config('app.env') === 'production' ? 'openai' : 'gemini';
-        $this->model = $this->provider === 'openai' ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
+        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
+        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
     }
 
     /**
@@ -37,32 +35,19 @@ class QuestionGeneratorService
 
             $prompt = $this->buildPrompt($tos, $module);
 
-            $response = Prism::structured()
-                ->using($this->provider, $this->model)
-                ->withPrompt($prompt)
-                ->withSchema($this->getQuestionSchema())
-                ->withMaxTokens(30000)
-                ->withClientOptions([
-                    'timeout' => 180, // 3 minutes timeout for HTTP request
-                    'connect_timeout' => 30,
-                ])
-                ->asStructured();
+            $response = (new QuestionGenerator)->prompt(
+                $prompt,
+                provider: $this->provider,
+                model: $this->model,
+            );
 
-            $structured = $response->structured;
+            if (! isset($response['questions']) || ! is_array($response['questions'])) {
+                $shape = 'missing questions array';
 
-            if (! is_array($structured) || ! array_key_exists('questions', $structured) || ! is_array($structured['questions'])) {
-                if (! is_array($structured)) {
-                    $shape = gettype($structured).': '.json_encode($structured);
-                } elseif (empty($structured)) {
-                    $shape = 'empty array';
-                } else {
-                    $shape = 'array with keys ['.implode(', ', array_keys($structured)).']';
-                }
-
-                throw new \RuntimeException("Invalid AI response: missing 'questions' array. Received: {$shape}");
+                throw new \RuntimeException("Invalid AI response: {$shape}");
             }
 
-            return $structured;
+            return ['questions' => $response['questions']];
         } catch (\Exception $e) {
             Log::error('Question generation failed', [
                 'tos_id' => $tos->id,
@@ -206,77 +191,16 @@ PROMPT;
     }
 
     /**
-     * Define the structured output schema for questions.
-     */
-    protected function getQuestionSchema(): ObjectSchema
-    {
-        return new ObjectSchema(
-            name: 'exam_questions',
-            description: 'Generated exam questions based on TOS',
-            properties: [
-                new ArraySchema(
-                    name: 'questions',
-                    description: 'Array of generated questions',
-                    items: new ObjectSchema(
-                        name: 'question',
-                        description: 'Individual question with metadata',
-                        properties: [
-                            new StringSchema(
-                                name: 'question',
-                                description: 'The question text'
-                            ),
-                            new ArraySchema(
-                                name: 'options',
-                                description: 'Multiple choice options (if applicable)',
-                                items: new ObjectSchema(
-                                    name: 'option',
-                                    description: 'Answer option',
-                                    properties: [
-                                        new StringSchema('key', 'Option key (A, B, C, D)'),
-                                        new StringSchema('text', 'Option text'),
-                                    ],
-                                    requiredFields: ['key', 'text']
-                                )
-                            ),
-                            new StringSchema(
-                                name: 'correct_answer',
-                                description: 'Correct answer key or text'
-                            ),
-                            new StringSchema(
-                                name: 'explanation',
-                                description: 'Explanation of the correct answer'
-                            ),
-                            new StringSchema(
-                                name: 'cognitive_level',
-                                description: "Bloom's taxonomy level: remember, understand, apply, analyze, evaluate, create"
-                            ),
-                            new StringSchema(
-                                name: 'difficulty',
-                                description: 'Difficulty level: easy, medium, hard'
-                            ),
-                            new StringSchema(
-                                name: 'learning_objective_code',
-                                description: 'Learning objective code this question addresses'
-                            ),
-                            new StringSchema(
-                                name: 'question_type',
-                                description: 'Question type: multiple_choice, true_false, essay, identification, matching, or fill_in_the_blanks'
-                            ),
-                        ],
-                        requiredFields: ['question', 'correct_answer', 'cognitive_level', 'difficulty', 'learning_objective_code', 'question_type']
-                    )
-                ),
-            ],
-            requiredFields: ['questions']
-        );
-    }
-
-    /**
      * Switch to a specific provider and model.
      */
     public function useProvider(string $provider, string $model): self
     {
-        $this->provider = $provider;
+        $this->provider = match ($provider) {
+            'openai' => Lab::OpenAI,
+            'gemini' => Lab::Gemini,
+            'anthropic' => Lab::Anthropic,
+            default => Lab::OpenAI,
+        };
         $this->model = $model;
 
         return $this;

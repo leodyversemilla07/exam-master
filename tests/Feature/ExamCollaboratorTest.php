@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+use App\Models\Module;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -184,7 +185,7 @@ test('collaborator can leave exam', function () {
 test('search users endpoint returns available users', function () {
     $owner = User::factory()->create()->assignRole('educator');
     $owner->givePermissionTo('manage collaborators');
-    $module = \App\Models\Module::factory()->create(['created_by' => $owner->id]);
+    $module = Module::factory()->create(['created_by' => $owner->id]);
     $exam = Exam::factory()->create(['created_by' => $owner->id, 'module_id' => $module->id]);
 
     // Create a user who is NOT a collaborator
@@ -204,7 +205,7 @@ test('search users endpoint returns available users', function () {
 test('collaborators are excluded from search results', function () {
     $owner = User::factory()->create()->assignRole('educator');
     $owner->givePermissionTo('manage collaborators');
-    $module = \App\Models\Module::factory()->create(['created_by' => $owner->id]);
+    $module = Module::factory()->create(['created_by' => $owner->id]);
     $exam = Exam::factory()->create(['created_by' => $owner->id, 'module_id' => $module->id]);
 
     $user1 = User::factory()->create(['name' => 'Alice', 'email' => 'alice@test.com']);

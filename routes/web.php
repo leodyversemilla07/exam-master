@@ -7,6 +7,7 @@ use App\Http\Controllers\ExamBuilderController;
 use App\Http\Controllers\ExamCollaboratorController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamSessionController;
+use App\Http\Controllers\ExamTemplateController;
 use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\LearningObjectiveController;
 use App\Http\Controllers\ModuleController;
@@ -21,7 +22,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TosCalculatorController;
 use App\Http\Controllers\TosGenerateController;
 use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -49,7 +50,7 @@ Route::post('/payments/create-intent', [PaymentController::class, 'createPayment
 
 Route::post('/payments/webhook', [PaymentController::class, 'handleWebhook'])
     ->name('payments.webhook')
-    ->withoutMiddleware([VerifyCsrfToken::class]); // Webhooks don't have CSRF tokens
+    ->withoutMiddleware([PreventRequestForgery::class]); // Webhooks don't have CSRF tokens
 
 Route::get('/payments/intent', [PaymentController::class, 'intent'])
     ->name('payments.intent')
@@ -203,7 +204,7 @@ Route::get('exam-builder/{examId}/preview', [ExamBuilderController::class, 'prev
     ->name('exam-builder.preview')
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
-Route::resource('exam-templates', \App\Http\Controllers\ExamTemplateController::class)
+Route::resource('exam-templates', ExamTemplateController::class)
     ->middleware(['auth', 'verified']);
 
 // Topic Management Routes

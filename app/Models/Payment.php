@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Database\Factories\PaymentFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentFactory> */
+    /** @use HasFactory<PaymentFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -67,9 +69,9 @@ class Payment extends Model
     /**
      * Scope a query to only include successful payments.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
+     * @param  Builder<static>  $query
      */
-    public function scopeSucceeded(\Illuminate\Database\Eloquent\Builder $query): void
+    public function scopeSucceeded(Builder $query): void
     {
         $query->where('status', 'succeeded');
     }

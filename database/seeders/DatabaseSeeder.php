@@ -2,11 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Exam;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\ExamItem;
+use App\Models\ExamQuestion;
+use App\Models\LearningObjective;
+use App\Models\Module;
+use App\Models\Topic;
+use App\Models\TosGenerate;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +24,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create permissions
         $permissions = [
@@ -129,7 +137,7 @@ class DatabaseSeeder extends Seeder
         $educatorUser->assignRole('educator');
 
         // Create realistic modules for educator
-        $mathModule = \App\Models\Module::create([
+        $mathModule = Module::create([
             'code' => 'WEB-DEV-101',
             'name' => 'Web Development Fundamentals',
             'description' => 'This module covers essential web development topics including HTML, CSS, JavaScript, and responsive design principles.',
@@ -140,7 +148,7 @@ class DatabaseSeeder extends Seeder
             'created_by' => $educatorUser->id,
         ]);
 
-        $scienceModule = \App\Models\Module::create([
+        $scienceModule = Module::create([
             'code' => 'DB-MGT-201',
             'name' => 'Database Management Systems',
             'description' => 'Introduction to database concepts, SQL, relational database design, normalization, and database administration.',
@@ -151,7 +159,7 @@ class DatabaseSeeder extends Seeder
             'created_by' => $educatorUser->id,
         ]);
 
-        $englishModule = \App\Models\Module::create([
+        $englishModule = Module::create([
             'code' => 'NET-FND-101',
             'name' => 'Networking Fundamentals',
             'description' => 'Introduction to computer networks, TCP/IP, network protocols, network security, and network troubleshooting.',
@@ -163,7 +171,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create realistic TOS for Web Development Module
-        \App\Models\TosGenerate::create([
+        TosGenerate::create([
             'module_id' => $mathModule->id,
             'created_by' => $educatorUser->id,
             'grade_level' => 'Grade 11',
@@ -200,7 +208,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create realistic TOS for Database Module
-        \App\Models\TosGenerate::create([
+        TosGenerate::create([
             'module_id' => $scienceModule->id,
             'created_by' => $educatorUser->id,
             'grade_level' => 'Grade 12',
@@ -238,7 +246,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create realistic TOS for Networking Module
-        \App\Models\TosGenerate::create([
+        TosGenerate::create([
             'module_id' => $englishModule->id,
             'created_by' => $educatorUser->id,
             'grade_level' => 'Grade 11',
@@ -275,7 +283,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create Topics for Web Development Module
-        $mathTopic1 = \App\Models\Topic::create([
+        $mathTopic1 = Topic::create([
             'module_id' => $mathModule->id,
             'code' => 'WEB-DEV-T1',
             'title' => 'HTML5 and Semantic Markup',
@@ -286,7 +294,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $mathTopic2 = \App\Models\Topic::create([
+        $mathTopic2 = Topic::create([
             'module_id' => $mathModule->id,
             'code' => 'WEB-DEV-T2',
             'title' => 'CSS Styling and Layouts',
@@ -297,7 +305,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $mathTopic3 = \App\Models\Topic::create([
+        $mathTopic3 = Topic::create([
             'module_id' => $mathModule->id,
             'code' => 'WEB-DEV-T3',
             'title' => 'JavaScript Fundamentals',
@@ -309,7 +317,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create Topics for Database Module
-        $sciTopic1 = \App\Models\Topic::create([
+        $sciTopic1 = Topic::create([
             'module_id' => $scienceModule->id,
             'code' => 'DB-MGT-T1',
             'title' => 'Database Design and Normalization',
@@ -320,7 +328,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $sciTopic2 = \App\Models\Topic::create([
+        $sciTopic2 = Topic::create([
             'module_id' => $scienceModule->id,
             'code' => 'DB-MGT-T2',
             'title' => 'SQL Queries and Transactions',
@@ -332,7 +340,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create Learning Objectives for Web Development Topics
-        \App\Models\LearningObjective::create([
+        LearningObjective::create([
             'topic_id' => $mathTopic1->id,
             'code' => 'WEB-DEV-LO1',
             'objective' => 'Create well-structured HTML5 documents',
@@ -342,7 +350,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        \App\Models\LearningObjective::create([
+        LearningObjective::create([
             'topic_id' => $mathTopic1->id,
             'code' => 'WEB-DEV-LO2',
             'objective' => 'Implement accessible web forms',
@@ -352,7 +360,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        \App\Models\LearningObjective::create([
+        LearningObjective::create([
             'topic_id' => $mathTopic2->id,
             'code' => 'WEB-DEV-LO3',
             'objective' => 'Design responsive layouts using CSS',
@@ -363,7 +371,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create Learning Objectives for Database Topics
-        \App\Models\LearningObjective::create([
+        LearningObjective::create([
             'topic_id' => $sciTopic1->id,
             'code' => 'DB-MGT-LO1',
             'objective' => 'Design entity-relationship diagrams',
@@ -373,7 +381,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        \App\Models\LearningObjective::create([
+        LearningObjective::create([
             'topic_id' => $sciTopic1->id,
             'code' => 'DB-MGT-LO2',
             'objective' => 'Normalize database tables to 3NF',
@@ -383,7 +391,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        \App\Models\LearningObjective::create([
+        LearningObjective::create([
             'topic_id' => $sciTopic2->id,
             'code' => 'DB-MGT-LO3',
             'objective' => 'Write complex SQL queries with joins',
@@ -394,7 +402,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create sample exam questions
-        $question1 = \App\Models\ExamQuestion::create([
+        $question1 = ExamQuestion::create([
             'module_id' => $mathModule->id,
             'created_by' => $educatorUser->id,
             'question_type' => 'multiple_choice',
@@ -415,7 +423,7 @@ class DatabaseSeeder extends Seeder
             'is_ai_generated' => false,
         ]);
 
-        $question2 = \App\Models\ExamQuestion::create([
+        $question2 = ExamQuestion::create([
             'module_id' => $mathModule->id,
             'created_by' => $educatorUser->id,
             'question_type' => 'multiple_choice',
@@ -436,7 +444,7 @@ class DatabaseSeeder extends Seeder
             'is_ai_generated' => false,
         ]);
 
-        $question3 = \App\Models\ExamQuestion::create([
+        $question3 = ExamQuestion::create([
             'module_id' => $scienceModule->id,
             'created_by' => $educatorUser->id,
             'question_type' => 'multiple_choice',
@@ -457,7 +465,7 @@ class DatabaseSeeder extends Seeder
             'is_ai_generated' => false,
         ]);
 
-        $question4 = \App\Models\ExamQuestion::create([
+        $question4 = ExamQuestion::create([
             'module_id' => $scienceModule->id,
             'created_by' => $educatorUser->id,
             'question_type' => 'true_false',
@@ -473,7 +481,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create sample exams
-        $mathExam = \App\Models\Exam::create([
+        $mathExam = Exam::create([
             'module_id' => $mathModule->id,
             'created_by' => $educatorUser->id,
             'title' => 'Web Development Fundamentals Exam',
@@ -489,7 +497,7 @@ class DatabaseSeeder extends Seeder
             'show_answers' => false,
         ]);
 
-        $scienceExam = \App\Models\Exam::create([
+        $scienceExam = Exam::create([
             'module_id' => $scienceModule->id,
             'created_by' => $educatorUser->id,
             'title' => 'Database Concepts Quiz',
@@ -506,14 +514,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Add questions to Math Exam
-        \App\Models\ExamItem::create([
+        ExamItem::create([
             'exam_id' => $mathExam->id,
             'exam_question_id' => $question1->id,
             'order' => 1,
             'points' => 2,
         ]);
 
-        \App\Models\ExamItem::create([
+        ExamItem::create([
             'exam_id' => $mathExam->id,
             'exam_question_id' => $question2->id,
             'order' => 2,
@@ -521,14 +529,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Add questions to Science Exam
-        \App\Models\ExamItem::create([
+        ExamItem::create([
             'exam_id' => $scienceExam->id,
             'exam_question_id' => $question3->id,
             'order' => 1,
             'points' => 1,
         ]);
 
-        \App\Models\ExamItem::create([
+        ExamItem::create([
             'exam_id' => $scienceExam->id,
             'exam_question_id' => $question4->id,
             'order' => 2,

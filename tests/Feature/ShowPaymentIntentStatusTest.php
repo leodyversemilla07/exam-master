@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Paymongo\Entities\PaymentIntent;
 use Paymongo\PaymongoClient;
+use Paymongo\Services\BaseService;
 use Paymongo\Services\PaymentIntentService;
 
 use function Pest\Laravel\actingAs;
@@ -13,11 +14,11 @@ it('returns payment intent status', function () {
     /** @var Authenticatable $user */
     $user = User::factory()->createOne();
 
-    $paymentIntent = \Mockery::mock(PaymentIntent::class);
+    $paymentIntent = Mockery::mock(PaymentIntent::class);
     $paymentIntent->status = 'succeeded';
     $paymentIntent->id = 'pi_test_123';
 
-    $paymentIntentService = \Mockery::mock(PaymentIntentService::class);
+    $paymentIntentService = Mockery::mock(PaymentIntentService::class);
     $paymentIntentService
         ->shouldReceive('retrieve')
         ->once()
@@ -31,7 +32,7 @@ it('returns payment intent status', function () {
             parent::__construct('sk_test_dummy');
         }
 
-        public function __get(string $name): \Paymongo\Services\BaseService
+        public function __get(string $name): BaseService
         {
             if ($name === 'paymentIntents') {
                 return $this->paymentIntentService;

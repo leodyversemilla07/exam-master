@@ -2,8 +2,17 @@
     "agents": [
         "opencode"
     ],
+    "cloud": false,
     "guidelines": true,
-    "packages": [
-        "prism-php/prism"
+    "skills": [
+        "ai-sdk-development",
+        "fortify-development",
+        "laravel-best-practices",
+        "wayfinder-development",
+        "pest-testing",
+        "tailwindcss-development",
+        "inertia-react-development",
+        "exam-backend-development",
+        "exam-frontend-development"
     ]
 }

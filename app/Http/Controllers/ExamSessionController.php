@@ -7,6 +7,8 @@ use App\Models\ExamSession;
 use App\Services\PlagiarismDetectionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -173,7 +175,7 @@ class ExamSessionController extends Controller
         $this->authorizeSession($examSession);
 
         $examSession->update([
-            'access_code' => strtoupper(\Illuminate\Support\Str::random(8)),
+            'access_code' => strtoupper(Str::random(8)),
         ]);
 
         return back()->with('success', 'Access code regenerated successfully.');
@@ -199,7 +201,7 @@ class ExamSessionController extends Controller
         $this->authorizeSession($examSession);
 
         // Log access for audit purposes
-        \Illuminate\Support\Facades\Log::info('Exam results exported', [
+        Log::info('Exam results exported', [
             'exam_session_id' => $examSession->id,
             'session_title' => $examSession->title,
             'exported_by' => auth()->id(),
@@ -231,7 +233,7 @@ class ExamSessionController extends Controller
 
         $filename = sprintf(
             '%s-results-%s.csv',
-            \Illuminate\Support\Str::slug($examSession->title),
+            Str::slug($examSession->title),
             now()->format('Y-m-d')
         );
 

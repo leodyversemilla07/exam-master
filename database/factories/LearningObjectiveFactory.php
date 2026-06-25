@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\LearningObjective;
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\LearningObjective>
+ * @extends Factory<LearningObjective>
  */
 class LearningObjectiveFactory extends Factory
 {
@@ -19,7 +21,7 @@ class LearningObjectiveFactory extends Factory
         $cognitiveLevels = ['remembering', 'understanding', 'applying', 'analyzing', 'evaluating', 'creating'];
 
         return [
-            'topic_id' => \App\Models\Topic::factory(),
+            'topic_id' => Topic::factory(),
             'code' => strtoupper(fake()->unique()->bothify('LO-###')),
             'objective' => fake()->sentence(8),
             'cognitive_level' => fake()->randomElement($cognitiveLevels),

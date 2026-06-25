@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Module;
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Topic>
+ * @extends Factory<Topic>
  */
 class TopicFactory extends Factory
 {
@@ -17,7 +19,7 @@ class TopicFactory extends Factory
     public function definition(): array
     {
         return [
-            'module_id' => \App\Models\Module::factory(),
+            'module_id' => Module::factory(),
             'code' => strtoupper(fake()->unique()->bothify('TOP-###')),
             'title' => fake()->sentence(4),
             'description' => fake()->paragraph(),

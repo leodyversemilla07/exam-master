@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreModuleRequest;
 use App\Models\ExamQuestion;
+use App\Models\ExamSession;
 use App\Models\Module;
 use App\Services\AI\ModuleExtractorService;
+use App\Services\AI\TosExtractorService;
 use App\Services\QuestionDuplicateDetector;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +36,7 @@ class ModuleController extends Controller
     /**
      * Extract TOS data from a module's already-uploaded PDF.
      */
-    public function extractTosFromModule(Module $module, \App\Services\AI\TosExtractorService $extractor): RedirectResponse
+    public function extractTosFromModule(Module $module, TosExtractorService $extractor): RedirectResponse
     {
         abort_unless(auth()->user()->can('create tos'), 403);
 
@@ -144,7 +146,7 @@ class ModuleController extends Controller
 
         // Exam sessions scoped to this module's exams
         $examIds = $module->exams()->pluck('id');
-        $sessions = \App\Models\ExamSession::whereIn('exam_id', $examIds)
+        $sessions = ExamSession::whereIn('exam_id', $examIds)
             ->with(['exam', 'creator'])
             ->withCount('attempts')
             ->latest()

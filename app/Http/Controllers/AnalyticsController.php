@@ -14,10 +14,12 @@ use App\Services\Analytics\PeriodQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnalyticsController extends Controller
 {
@@ -110,7 +112,7 @@ class AnalyticsController extends Controller
     /**
      * Get most used topics.
      */
-    private function getMostUsedTopics(int $limit): \Illuminate\Support\Collection
+    private function getMostUsedTopics(int $limit): Collection
     {
         return Topic::query()
             ->join('learning_objectives', 'topics.id', '=', 'learning_objectives.topic_id')
@@ -232,7 +234,7 @@ class AnalyticsController extends Controller
     /**
      * Export analytics report to CSV.
      */
-    public function exportCsv(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function exportCsv(Request $request): StreamedResponse
     {
         abort_unless(auth()->user()->can('view analytics'), 403);
 
@@ -304,7 +306,7 @@ class AnalyticsController extends Controller
     /**
      * Calculate score distribution across ranges.
      */
-    private function calculateScoreDistribution(\Illuminate\Support\Collection $attempts): array
+    private function calculateScoreDistribution(Collection $attempts): array
     {
         return [
             '0-20' => $attempts->whereBetween('percentage', [0, 20])->count(),
