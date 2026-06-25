@@ -1,16 +1,4 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-    Empty,
-    EmptyContent,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from '@/components/ui/empty';
 import {
     Plus,
     Eye,
@@ -23,8 +11,27 @@ import {
     XCircle,
     AlertCircle,
 } from 'lucide-react';
-import { BreadcrumbItem } from '@/types';
-import { ExamSession } from '@/types/models';
+import { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
+import type { BreadcrumbItem } from '@/types';
+import type { ExamSession } from '@/types/models';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -53,13 +60,19 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import PageHeader from '@/components/page-header';
 import * as examSessions from '@/routes/exam-sessions';
 import { index as modulesIndex } from '@/routes/modules';
-import { useState } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Sessions', href: examSessions.index.url() }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Exam Sessions', href: examSessions.index.url() },
+];
 
 interface PaginatedSessions {
     data: (ExamSession & {
@@ -94,6 +107,7 @@ function getStatusBadge(session: ExamSession) {
             </Badge>
         );
     }
+
     if (session.status === 'draft') {
         return (
             <Badge variant="outline" className="gap-1">
@@ -101,13 +115,18 @@ function getStatusBadge(session: ExamSession) {
             </Badge>
         );
     }
+
     if (now < startTime) {
         return (
-            <Badge variant="outline" className="gap-1 text-blue-600 border-blue-600">
+            <Badge
+                variant="outline"
+                className="gap-1 border-blue-600 text-blue-600"
+            >
                 <Clock className="size-3" /> Upcoming
             </Badge>
         );
     }
+
     return (
         <Badge className="gap-1 bg-green-600">
             <CheckCircle className="size-3" /> Active
@@ -155,8 +174,8 @@ export default function Index({ sessions }: PageProps) {
                                 </EmptyMedia>
                                 <EmptyTitle>No Exam Sessions</EmptyTitle>
                                 <EmptyDescription>
-                                    Create your first exam session to allow students to take exams
-                                    online.
+                                    Create your first exam session to allow
+                                    students to take exams online.
                                 </EmptyDescription>
                             </EmptyHeader>
                             <EmptyContent>
@@ -173,7 +192,8 @@ export default function Index({ sessions }: PageProps) {
                             <CardHeader>
                                 <CardTitle>All Sessions</CardTitle>
                                 <CardDescription>
-                                    {sessions.total} session{sessions.total !== 1 ? 's' : ''} total
+                                    {sessions.total} session
+                                    {sessions.total !== 1 ? 's' : ''} total
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -185,8 +205,12 @@ export default function Index({ sessions }: PageProps) {
                                             <TableHead>Access Code</TableHead>
                                             <TableHead>Schedule</TableHead>
                                             <TableHead>Status</TableHead>
-                                            <TableHead className="text-center">Attempts</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
+                                            <TableHead className="text-center">
+                                                Attempts
+                                            </TableHead>
+                                            <TableHead className="text-right">
+                                                Actions
+                                            </TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -198,8 +222,10 @@ export default function Index({ sessions }: PageProps) {
                                                             {session.title}
                                                         </div>
                                                         {session.description && (
-                                                            <div className="text-sm text-muted-foreground truncate max-w-50">
-                                                                {session.description}
+                                                            <div className="max-w-50 truncate text-sm text-muted-foreground">
+                                                                {
+                                                                    session.description
+                                                                }
                                                             </div>
                                                         )}
                                                     </div>
@@ -209,9 +235,14 @@ export default function Index({ sessions }: PageProps) {
                                                         <div className="font-medium">
                                                             {session.exam.title}
                                                         </div>
-                                                        {session.exam.module && (
+                                                        {session.exam
+                                                            .module && (
                                                             <div className="text-sm text-muted-foreground">
-                                                                {session.exam.module.name}
+                                                                {
+                                                                    session.exam
+                                                                        .module
+                                                                        .name
+                                                                }
                                                             </div>
                                                         )}
                                                     </div>
@@ -219,7 +250,9 @@ export default function Index({ sessions }: PageProps) {
                                                 <TableCell>
                                                     <TooltipProvider>
                                                         <Tooltip>
-                                                            <TooltipTrigger asChild>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
@@ -228,9 +261,11 @@ export default function Index({ sessions }: PageProps) {
                                                                             session.access_code,
                                                                         )
                                                                     }
-                                                                    className="font-mono gap-2"
+                                                                    className="gap-2 font-mono"
                                                                 >
-                                                                    {session.access_code}
+                                                                    {
+                                                                        session.access_code
+                                                                    }
                                                                     {copiedCode ===
                                                                     session.access_code ? (
                                                                         <CheckCircle className="size-4 text-green-600" />
@@ -240,7 +275,8 @@ export default function Index({ sessions }: PageProps) {
                                                                 </Button>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
-                                                                {copiedCode === session.access_code
+                                                                {copiedCode ===
+                                                                session.access_code
                                                                     ? 'Copied!'
                                                                     : 'Click to copy'}
                                                             </TooltipContent>
@@ -255,10 +291,13 @@ export default function Index({ sessions }: PageProps) {
                                                             ).toLocaleDateString()}{' '}
                                                             {new Date(
                                                                 session.start_time,
-                                                            ).toLocaleTimeString([], {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                            })}
+                                                            ).toLocaleTimeString(
+                                                                [],
+                                                                {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                },
+                                                            )}
                                                         </div>
                                                         <div className="text-muted-foreground">
                                                             to{' '}
@@ -267,14 +306,19 @@ export default function Index({ sessions }: PageProps) {
                                                             ).toLocaleDateString()}{' '}
                                                             {new Date(
                                                                 session.end_time,
-                                                            ).toLocaleTimeString([], {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                            })}
+                                                            ).toLocaleTimeString(
+                                                                [],
+                                                                {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                },
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{getStatusBadge(session)}</TableCell>
+                                                <TableCell>
+                                                    {getStatusBadge(session)}
+                                                </TableCell>
                                                 <TableCell className="text-center">
                                                     <div className="flex items-center justify-center gap-1">
                                                         <Users className="size-4 text-muted-foreground" />
@@ -285,7 +329,9 @@ export default function Index({ sessions }: PageProps) {
                                                     <div className="flex justify-end gap-2">
                                                         <TooltipProvider>
                                                             <Tooltip>
-                                                                <TooltipTrigger asChild>
+                                                                <TooltipTrigger
+                                                                    asChild
+                                                                >
                                                                     <Button
                                                                         variant="outline"
                                                                         size="icon"
@@ -308,7 +354,9 @@ export default function Index({ sessions }: PageProps) {
 
                                                         <TooltipProvider>
                                                             <Tooltip>
-                                                                <TooltipTrigger asChild>
+                                                                <TooltipTrigger
+                                                                    asChild
+                                                                >
                                                                     <Button
                                                                         variant="outline"
                                                                         size="icon"
@@ -330,12 +378,15 @@ export default function Index({ sessions }: PageProps) {
                                                         </TooltipProvider>
 
                                                         <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
+                                                            <AlertDialogTrigger
+                                                                asChild
+                                                            >
                                                                 <Button
                                                                     variant="destructive"
                                                                     size="icon"
                                                                     disabled={
-                                                                        session.attempts_count > 0
+                                                                        session.attempts_count >
+                                                                        0
                                                                     }
                                                                 >
                                                                     <Trash2 className="size-4" />
@@ -344,13 +395,26 @@ export default function Index({ sessions }: PageProps) {
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
                                                                     <AlertDialogTitle>
-                                                                        Delete Session?
+                                                                        Delete
+                                                                        Session?
                                                                     </AlertDialogTitle>
                                                                     <AlertDialogDescription>
-                                                                        This action cannot be
-                                                                        undone. This will
-                                                                        permanently delete the
-                                                                        session "{session.title}".
+                                                                        This
+                                                                        action
+                                                                        cannot
+                                                                        be
+                                                                        undone.
+                                                                        This
+                                                                        will
+                                                                        permanently
+                                                                        delete
+                                                                        the
+                                                                        session
+                                                                        "
+                                                                        {
+                                                                            session.title
+                                                                        }
+                                                                        ".
                                                                     </AlertDialogDescription>
                                                                 </AlertDialogHeader>
                                                                 <AlertDialogFooter>
@@ -359,7 +423,9 @@ export default function Index({ sessions }: PageProps) {
                                                                     </AlertDialogCancel>
                                                                     <AlertDialogAction
                                                                         onClick={() =>
-                                                                            handleDelete(session.id)
+                                                                            handleDelete(
+                                                                                session.id,
+                                                                            )
                                                                         }
                                                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                                                     >
@@ -377,52 +443,74 @@ export default function Index({ sessions }: PageProps) {
 
                                 {/* Pagination */}
                                 {sessions.last_page > 1 && (
-                                    <div className="flex items-center justify-between mt-6">
+                                    <div className="mt-6 flex items-center justify-between">
                                         <p className="text-sm text-muted-foreground">
-                                            Showing {sessions.data.length} of {sessions.total}{' '}
-                                            sessions
+                                            Showing {sessions.data.length} of{' '}
+                                            {sessions.total} sessions
                                         </p>
                                         <Pagination>
                                             <PaginationContent>
                                                 <PaginationItem>
                                                     <PaginationPrevious
-                                                        href={sessions.links[0].url || '#'}
+                                                        href={
+                                                            sessions.links[0]
+                                                                .url || '#'
+                                                        }
                                                         className={
-                                                            !sessions.links[0].url
+                                                            !sessions.links[0]
+                                                                .url
                                                                 ? 'pointer-events-none opacity-50'
                                                                 : ''
                                                         }
                                                     />
                                                 </PaginationItem>
-                                                {sessions.links.slice(1, -1).map((link, i) => {
-                                                    if (link.label.includes('...')) {
+                                                {sessions.links
+                                                    .slice(1, -1)
+                                                    .map((link, i) => {
+                                                        if (
+                                                            link.label.includes(
+                                                                '...',
+                                                            )
+                                                        ) {
+                                                            return (
+                                                                <PaginationItem
+                                                                    key={i}
+                                                                >
+                                                                    <PaginationEllipsis />
+                                                                </PaginationItem>
+                                                            );
+                                                        }
+
                                                         return (
-                                                            <PaginationItem key={i}>
-                                                                <PaginationEllipsis />
+                                                            <PaginationItem
+                                                                key={i}
+                                                            >
+                                                                <PaginationLink
+                                                                    href={
+                                                                        link.url ||
+                                                                        '#'
+                                                                    }
+                                                                    isActive={
+                                                                        link.active
+                                                                    }
+                                                                >
+                                                                    {link.label}
+                                                                </PaginationLink>
                                                             </PaginationItem>
                                                         );
-                                                    }
-                                                    return (
-                                                        <PaginationItem key={i}>
-                                                            <PaginationLink
-                                                                href={link.url || '#'}
-                                                                isActive={link.active}
-                                                            >
-                                                                {link.label}
-                                                            </PaginationLink>
-                                                        </PaginationItem>
-                                                    );
-                                                })}
+                                                    })}
                                                 <PaginationItem>
                                                     <PaginationNext
                                                         href={
                                                             sessions.links[
-                                                                sessions.links.length - 1
+                                                                sessions.links
+                                                                    .length - 1
                                                             ].url || '#'
                                                         }
                                                         className={
                                                             !sessions.links[
-                                                                sessions.links.length - 1
+                                                                sessions.links
+                                                                    .length - 1
                                                             ].url
                                                                 ? 'pointer-events-none opacity-50'
                                                                 : ''

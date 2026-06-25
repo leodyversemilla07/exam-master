@@ -1,7 +1,4 @@
-import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { dashboard, login, register, designSystem } from '@/routes';
-import { cn } from '@/lib/utils';
 import {
     Sparkles,
     Brain,
@@ -18,6 +15,9 @@ import {
     ShieldCheck,
     Cpu,
 } from 'lucide-react';
+import type { PageProps } from '@/types';
+import { dashboard, login, register, designSystem } from '@/routes';
+import { cn } from '@/lib/utils';
 
 export default function Welcome({
     auth,
@@ -100,23 +100,23 @@ export default function Welcome({
 
             {/* Background elements */}
             <div className="fixed inset-0 -z-10 overflow-hidden">
-                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full" />
-                <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-secondary/20 blur-[120px] rounded-full" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)] opacity-20 dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)]" />
+                <div className="absolute top-0 right-0 h-[500px] w-[500px] translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-[120px]" />
+                <div className="absolute bottom-0 left-0 h-[500px] w-[500px] -translate-x-1/2 translate-y-1/2 rounded-full bg-secondary/20 blur-[120px]" />
+                <div className="absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)] [background-size:40px_40px] opacity-20 dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)]" />
             </div>
 
             {/* Navigation */}
-            <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
+            <nav className="fixed top-4 left-1/2 z-50 w-[95%] max-w-7xl -translate-x-1/2">
                 <div className="glass flex h-16 items-center justify-between rounded-2xl px-6 shadow-2xl">
                     <div className="flex items-center gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-primary/20">
+                        <div className="flex size-10 items-center justify-center overflow-hidden rounded-xl shadow-lg shadow-primary/20">
                             <img
                                 src="/images/logo.png"
                                 alt="ExamMaster Logo"
-                                className="size-full object-cover scale-150"
+                                className="size-full scale-150 object-cover"
                             />
                         </div>
-                        <span className="text-xl font-bold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-xl font-bold tracking-tight text-transparent">
                             ExamMaster
                         </span>
                     </div>
@@ -142,7 +142,7 @@ export default function Welcome({
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                    className="hidden items-center gap-2 rounded-xl bg-linear-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] sm:inline-flex"
                                 >
                                     Get Started
                                     <ArrowUpRight className="size-4" />
@@ -155,15 +155,15 @@ export default function Welcome({
 
             <main>
                 {/* Hero Section */}
-                <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden px-6">
+                <section className="relative overflow-hidden px-6 pt-32 pb-20 lg:pt-48 lg:pb-32">
                     <div className="mx-auto max-w-7xl">
-                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div className="grid items-center gap-16 lg:grid-cols-2">
                             <div className="relative z-10 text-center lg:text-left">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                <div className="mb-8 inline-flex animate-in items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary duration-700 fade-in slide-in-from-bottom-4">
                                     <Sparkles className="size-4" />
                                     <span>AI-Powered Assessments</span>
                                 </div>
-                                <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-8 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+                                <h1 className="mb-8 animate-in text-5xl leading-[1.1] font-extrabold tracking-tight text-foreground duration-1000 fade-in slide-in-from-bottom-6 lg:text-7xl">
                                     Master your <br />
                                     <span className="text-gradient leading-tight">
                                         Assessments
@@ -171,49 +171,52 @@ export default function Welcome({
                                     <br />
                                     with AI efficiency.
                                 </h1>
-                                <p className="text-lg lg:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                                    The most advanced platform for creating, managing, and analyzing
-                                    academic exams. Save hours of manual work and ensure educational
+                                <p className="mx-auto mb-10 max-w-xl animate-in text-lg text-muted-foreground duration-1000 fade-in slide-in-from-bottom-8 lg:mx-0 lg:text-xl">
+                                    The most advanced platform for creating,
+                                    managing, and analyzing academic exams. Save
+                                    hours of manual work and ensure educational
                                     excellence.
                                 </p>
-                                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                                <div className="flex animate-in flex-col items-center justify-center gap-4 duration-1000 slide-in-from-bottom-10 fade-in sm:flex-row lg:justify-start">
                                     <Link
-                                        href={auth.user ? dashboard() : register()}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-white shadow-2xl shadow-primary/30 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
+                                        href={
+                                            auth.user ? dashboard() : register()
+                                        }
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-white shadow-2xl shadow-primary/30 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95 sm:w-auto"
                                     >
                                         Start Building Free
                                         <ArrowRight className="size-5" />
                                     </Link>
-                                    <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card/50 backdrop-blur-sm px-8 py-4 text-lg font-bold text-foreground transition-all hover:bg-accent hover:border-accent">
+                                    <button className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card/50 px-8 py-4 text-lg font-bold text-foreground backdrop-blur-sm transition-all hover:border-accent hover:bg-accent sm:w-auto">
                                         <Monitor className="size-5" />
                                         Request Demo
                                     </button>
                                 </div>
 
-                                <div className="mt-12 flex items-center justify-center lg:justify-start gap-6 grayscale opacity-60">
-                                    <span className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+                                <div className="mt-12 flex items-center justify-center gap-6 opacity-60 grayscale lg:justify-start">
+                                    <span className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
                                         Trusted by over 500+ Educators
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="relative lg:h-[600px] flex items-center justify-center grayscale-0 animate-in zoom-in fade-in duration-1000 delay-300">
-                                <div className="absolute inset-0 bg-linear-to-tr from-primary/30 to-secondary/30 blur-3xl opacity-30 rounded-full scale-75" />
-                                <div className="relative group p-4 lg:p-0">
-                                    <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000" />
-                                    <div className="relative glass-card rounded-2xl p-2 lg:p-4 overflow-hidden shadow-2xl">
+                            <div className="relative flex animate-in items-center justify-center grayscale-0 delay-300 duration-1000 fade-in zoom-in lg:h-[600px]">
+                                <div className="absolute inset-0 scale-75 rounded-full bg-linear-to-tr from-primary/30 to-secondary/30 opacity-30 blur-3xl" />
+                                <div className="group relative p-4 lg:p-0">
+                                    <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-secondary opacity-25 blur transition duration-1000 group-hover:opacity-50" />
+                                    <div className="glass-card relative overflow-hidden rounded-2xl p-2 shadow-2xl lg:p-4">
                                         <img
                                             src="/images/hero.png"
                                             alt="AI-Powered Exam Generation"
-                                            className="rounded-xl object-cover w-full h-full max-w-[500px] shadow-lg"
+                                            className="h-full w-full max-w-[500px] rounded-xl object-cover shadow-lg"
                                         />
-                                        <div className="absolute top-6 left-6 glass px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border-white/20">
-                                            <div className="size-2 bg-green-500 rounded-full animate-pulse" />
+                                        <div className="glass absolute top-6 left-6 flex items-center gap-2 rounded-lg border-white/20 px-4 py-2 shadow-xl">
+                                            <div className="size-2 animate-pulse rounded-full bg-green-500" />
                                             <span className="text-xs font-bold text-foreground">
                                                 AI Generator Active
                                             </span>
                                         </div>
-                                        <div className="absolute bottom-6 right-6 glass px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border-white/20">
+                                        <div className="glass absolute right-6 bottom-6 flex items-center gap-2 rounded-lg border-white/20 px-4 py-2 shadow-xl">
                                             <ShieldCheck className="size-4 text-primary" />
                                             <span className="text-xs font-bold text-foreground">
                                                 98.5% Quality Score
@@ -227,42 +230,44 @@ export default function Welcome({
                 </section>
 
                 {/* Features Bento Grid */}
-                <section className="py-24 px-6 relative overflow-hidden">
+                <section className="relative overflow-hidden px-6 py-24">
                     <div className="mx-auto max-w-7xl">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
-                                Future-proof your <span className="text-gradient">workflow</span>
+                        <div className="mb-16 text-center">
+                            <h2 className="mb-4 text-3xl font-bold tracking-tight lg:text-5xl">
+                                Future-proof your{' '}
+                                <span className="text-gradient">workflow</span>
                             </h2>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Everything you need to manage a modern educational assessment system
-                                in one place.
+                            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                                Everything you need to manage a modern
+                                educational assessment system in one place.
                             </p>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid gap-6 md:grid-cols-3">
                             {features.map((feature, i) => (
                                 <div
                                     key={i}
                                     className={cn(
-                                        'group relative glass-card p-8 rounded-3xl transition-all duration-300 hover:border-primary/50 hover:shadow-primary/5 cursor-default overflow-hidden',
+                                        'group glass-card relative cursor-default overflow-hidden rounded-3xl p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-primary/5',
                                         feature.className,
                                     )}
                                 >
-                                    <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-48 h-48 bg-primary/5 blur-3xl rounded-full" />
+                                    <div className="absolute top-0 right-0 h-48 w-48 translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-3xl" />
 
-                                    <div className="mb-8 p-3 rounded-2xl bg-card border border-border shadow-sm w-fit group-hover:scale-110 group-hover:shadow-lg transition-all duration-500">
+                                    <div className="mb-8 w-fit rounded-2xl border border-border bg-card p-3 shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg">
                                         <feature.icon className="size-8 text-primary" />
                                     </div>
 
-                                    <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">
+                                    <h3 className="mb-4 text-2xl font-bold transition-colors group-hover:text-primary">
                                         {feature.title}
                                     </h3>
-                                    <p className="text-muted-foreground leading-relaxed text-lg">
+                                    <p className="text-lg leading-relaxed text-muted-foreground">
                                         {feature.description}
                                     </p>
 
-                                    <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity translate-x-[-10px] group-hover:translate-x-0 duration-300">
-                                        Learn more <ArrowRight className="size-4" />
+                                    <div className="mt-8 flex translate-x-[-10px] items-center gap-2 text-sm font-bold text-primary opacity-0 transition-opacity duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                                        Learn more{' '}
+                                        <ArrowRight className="size-4" />
                                     </div>
                                 </div>
                             ))}
@@ -271,23 +276,39 @@ export default function Welcome({
                 </section>
 
                 {/* Stats / Numbers Section */}
-                <section className="py-24 relative overflow-hidden border-y border-border/50 bg-secondary/5">
+                <section className="relative overflow-hidden border-y border-border/50 bg-secondary/5 py-24">
                     <div className="mx-auto max-w-7xl px-6">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                        <div className="grid grid-cols-2 gap-12 text-center md:grid-cols-4">
                             {[
-                                { label: 'Time Saved', value: '90%', icon: Clock },
-                                { label: 'Questions Generated', value: '1M+', icon: Cpu },
-                                { label: 'Quality Score', value: '98.5%', icon: Star },
-                                { label: 'Active Educators', value: '500+', icon: Users },
+                                {
+                                    label: 'Time Saved',
+                                    value: '90%',
+                                    icon: Clock,
+                                },
+                                {
+                                    label: 'Questions Generated',
+                                    value: '1M+',
+                                    icon: Cpu,
+                                },
+                                {
+                                    label: 'Quality Score',
+                                    value: '98.5%',
+                                    icon: Star,
+                                },
+                                {
+                                    label: 'Active Educators',
+                                    value: '500+',
+                                    icon: Users,
+                                },
                             ].map((stat, i) => (
                                 <div key={i} className="space-y-4">
-                                    <div className="mx-auto size-12 flex items-center justify-center rounded-2xl glass mb-6">
+                                    <div className="glass mx-auto mb-6 flex size-12 items-center justify-center rounded-2xl">
                                         <stat.icon className="size-6 text-primary" />
                                     </div>
-                                    <div className="text-4xl lg:text-5xl font-extrabold tracking-tighter text-foreground">
+                                    <div className="text-4xl font-extrabold tracking-tighter text-foreground lg:text-5xl">
                                         {stat.value}
                                     </div>
-                                    <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
+                                    <div className="text-sm font-bold tracking-widest text-muted-foreground uppercase">
                                         {stat.label}
                                     </div>
                                 </div>
@@ -297,60 +318,71 @@ export default function Welcome({
                 </section>
 
                 {/* Pricing Section */}
-                <section className="py-32 px-6 relative">
+                <section className="relative px-6 py-32">
                     <div className="mx-auto max-w-7xl">
-                        <div className="text-center mb-20">
-                            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
-                                Simple <span className="text-gradient-accent">Pricing</span> for
-                                every scale
+                        <div className="mb-20 text-center">
+                            <h2 className="mb-4 text-3xl font-bold tracking-tight lg:text-5xl">
+                                Simple{' '}
+                                <span className="text-gradient-accent">
+                                    Pricing
+                                </span>{' '}
+                                for every scale
                             </h2>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Choose the plan that best fits your institution's needs. All plans
-                                include 24/7 security.
+                            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                                Choose the plan that best fits your
+                                institution's needs. All plans include 24/7
+                                security.
                             </p>
                         </div>
 
-                        <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="grid gap-8 lg:grid-cols-3">
                             {pricing.map((tier, i) => (
                                 <div
                                     key={i}
                                     className={cn(
-                                        'relative flex flex-col p-8 rounded-3xl border border-border bg-card transition-all duration-300',
+                                        'relative flex flex-col rounded-3xl border border-border bg-card p-8 transition-all duration-300',
                                         tier.highlighted
-                                            ? 'lg:scale-105 shadow-2xl border-primary ring-1 ring-primary/50'
+                                            ? 'border-primary shadow-2xl ring-1 ring-primary/50 lg:scale-105'
                                             : 'hover:shadow-xl',
                                     )}
                                 >
                                     {tier.highlighted && (
-                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary px-4 py-1 rounded-full text-xs font-black text-white uppercase tracking-widest">
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary px-4 py-1 text-xs font-black tracking-widest text-white uppercase">
                                             Most Popular
                                         </div>
                                     )}
 
                                     <div className="mb-8">
-                                        <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
+                                        <h3 className="mb-2 text-xl font-bold">
+                                            {tier.name}
+                                        </h3>
                                         <div className="flex items-baseline gap-1">
                                             <span className="text-4xl font-extrabold">
-                                                {tier.price === 'Custom' ? '' : '$'}
+                                                {tier.price === 'Custom'
+                                                    ? ''
+                                                    : '$'}
                                             </span>
                                             <span className="text-6xl font-extrabold tracking-tight">
                                                 {tier.price}
                                             </span>
                                             {tier.price !== 'Custom' && (
-                                                <span className="text-muted-foreground font-medium">
+                                                <span className="font-medium text-muted-foreground">
                                                     /month
                                                 </span>
                                             )}
                                         </div>
                                     </div>
 
-                                    <ul className="space-y-4 mb-10 flex-grow">
+                                    <ul className="mb-10 flex-grow space-y-4">
                                         {tier.features.map((feature, j) => (
-                                            <li key={j} className="flex items-start gap-3">
-                                                <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                                            <li
+                                                key={j}
+                                                className="flex items-start gap-3"
+                                            >
+                                                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10">
                                                     <CheckCircle2 className="size-3 text-primary" />
                                                 </div>
-                                                <span className="text-muted-foreground font-medium">
+                                                <span className="font-medium text-muted-foreground">
                                                     {feature}
                                                 </span>
                                             </li>
@@ -358,9 +390,11 @@ export default function Welcome({
                                     </ul>
 
                                     <Link
-                                        href={auth.user ? dashboard() : register()}
+                                        href={
+                                            auth.user ? dashboard() : register()
+                                        }
                                         className={cn(
-                                            'w-full py-4 px-6 rounded-2xl text-center font-bold transition-all',
+                                            'w-full rounded-2xl px-6 py-4 text-center font-bold transition-all',
                                             tier.highlighted
                                                 ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105'
                                                 : 'bg-muted text-foreground hover:bg-accent',
@@ -375,30 +409,33 @@ export default function Welcome({
                 </section>
 
                 {/* Final CTA */}
-                <section className="py-24 px-6">
+                <section className="px-6 py-24">
                     <div className="mx-auto max-w-7xl">
                         <div className="relative overflow-hidden rounded-[3rem] bg-linear-to-br from-primary via-secondary to-primary/80 px-8 py-24 text-center shadow-2xl">
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.1)_0,transparent_50%)]" />
                             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)] bg-size-[40px_40px] opacity-20" />
 
                             <div className="relative z-10">
-                                <h2 className="text-4xl lg:text-6xl font-extrabold text-white tracking-tight mb-8">
+                                <h2 className="mb-8 text-4xl font-extrabold tracking-tight text-white lg:text-6xl">
                                     Ready to automate <br />
                                     your assessments?
                                 </h2>
-                                <p className="text-xl text-white/90 max-w-2xl mx-auto mb-12">
-                                    Join hundreds of forward-thinking educators today. <br />
+                                <p className="mx-auto mb-12 max-w-2xl text-xl text-white/90">
+                                    Join hundreds of forward-thinking educators
+                                    today. <br />
                                     No complex setup, no credit card required.
                                 </p>
-                                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                                <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
                                     <Link
-                                        href={auth.user ? dashboard() : register()}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-white px-10 py-5 text-xl font-black text-primary transition-all hover:scale-110 active:scale-95 shadow-2xl"
+                                        href={
+                                            auth.user ? dashboard() : register()
+                                        }
+                                        className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-10 py-5 text-xl font-black text-primary shadow-2xl transition-all hover:scale-110 active:scale-95 sm:w-auto"
                                     >
                                         Start Free Now
                                         <ArrowUpRight className="size-6" />
                                     </Link>
-                                    <button className="text-white font-bold hover:underline decoration-white/30 underline-offset-8">
+                                    <button className="font-bold text-white decoration-white/30 underline-offset-8 hover:underline">
                                         View Documentation
                                     </button>
                                 </div>
@@ -409,79 +446,81 @@ export default function Welcome({
             </main>
 
             {/* Footer */}
-            <footer className="bg-card pt-24 pb-12 px-6 border-t border-border">
+            <footer className="border-t border-border bg-card px-6 pt-24 pb-12">
                 <div className="mx-auto max-w-7xl">
-                    <div className="grid lg:grid-cols-4 gap-12 mb-16">
+                    <div className="mb-16 grid gap-12 lg:grid-cols-4">
                         <div className="col-span-2">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="flex size-10 items-center justify-center rounded-xl overflow-hidden">
+                            <div className="mb-8 flex items-center gap-3">
+                                <div className="flex size-10 items-center justify-center overflow-hidden rounded-xl">
                                     <img
                                         src="/images/logo.png"
                                         alt="ExamMaster Logo"
-                                        className="size-full object-cover scale-150"
+                                        className="size-full scale-150 object-cover"
                                     />
                                 </div>
                                 <span className="text-2xl font-bold tracking-tight text-foreground">
                                     ExamMaster
                                 </span>
                             </div>
-                            <p className="text-muted-foreground text-lg max-w-sm mb-8 leading-relaxed">
-                                Empowering educators with AI-driven tools to create, manage, and
-                                analyze high-quality academic exams with ease.
+                            <p className="mb-8 max-w-sm text-lg leading-relaxed text-muted-foreground">
+                                Empowering educators with AI-driven tools to
+                                create, manage, and analyze high-quality
+                                academic exams with ease.
                             </p>
                             <div className="flex gap-4">
                                 {[1, 2, 3, 4].map((i) => (
                                     <div
                                         key={i}
-                                        className="size-10 rounded-xl bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition-colors"
+                                        className="flex size-10 cursor-pointer items-center justify-center rounded-xl bg-muted transition-colors hover:bg-accent"
                                     >
-                                        <div className="size-5 bg-muted-foreground/30 rounded-sm" />
+                                        <div className="size-5 rounded-sm bg-muted-foreground/30" />
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-lg mb-6">Product</h4>
-                            <ul className="space-y-4 text-muted-foreground font-medium">
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                            <h4 className="mb-6 text-lg font-bold">Product</h4>
+                            <ul className="space-y-4 font-medium text-muted-foreground">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     Features
                                 </li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     AI Generation
                                 </li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     TOS Builder
                                 </li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     Pricing
                                 </li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="font-bold text-lg mb-6">Support</h4>
-                            <ul className="space-y-4 text-muted-foreground font-medium">
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                            <h4 className="mb-6 text-lg font-bold">Support</h4>
+                            <ul className="space-y-4 font-medium text-muted-foreground">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     Documentation
                                 </li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     API Reference
                                 </li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     Community
                                 </li>
-                                <li className="hover:text-primary transition-colors cursor-pointer text-lg">
+                                <li className="cursor-pointer text-lg transition-colors hover:text-primary">
                                     Privacy Policy
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-muted-foreground font-medium">
+                    <div className="flex flex-col items-center justify-between gap-6 border-t border-border pt-12 font-medium text-muted-foreground md:flex-row">
                         <div className="flex items-center gap-2">
                             <span>
-                                © {new Date().getFullYear()} ExamMaster. All rights reserved.
+                                © {new Date().getFullYear()} ExamMaster. All
+                                rights reserved.
                             </span>
                             <span className="hidden md:inline">•</span>
                             <span>Built with AI by Antigravity</span>
@@ -489,14 +528,14 @@ export default function Welcome({
                         <div className="flex items-center gap-8">
                             <Link
                                 href={designSystem()}
-                                className="hover:text-primary transition-colors cursor-pointer"
+                                className="cursor-pointer transition-colors hover:text-primary"
                             >
                                 Design System
                             </Link>
-                            <span className="hover:text-foreground transition-colors cursor-pointer">
+                            <span className="cursor-pointer transition-colors hover:text-foreground">
                                 Status
                             </span>
-                            <span className="hover:text-foreground transition-colors cursor-pointer">
+                            <span className="cursor-pointer transition-colors hover:text-foreground">
                                 Terms
                             </span>
                         </div>

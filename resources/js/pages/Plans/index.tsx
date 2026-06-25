@@ -2,9 +2,16 @@ import axios from 'axios';
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, CreditCard, Landmark, Smartphone } from 'lucide-react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +21,6 @@ import { cn } from '@/lib/utils';
 import { createIntent, intent as paymentIntentRoute } from '@/routes/payments';
 import { plans as plansRoute } from '@/routes';
 import type { BreadcrumbItem, PageProps } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/react';
 
 interface Plan {
     id: number;
@@ -30,7 +36,9 @@ interface PlansPageProps extends PageProps {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Plans', href: plansRoute.url() }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Plans', href: plansRoute.url() },
+];
 
 const currency = new Intl.NumberFormat('en-PH', {
     style: 'currency',
@@ -77,8 +85,12 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
     const selectedPlan = plans.find((plan) => plan.id === selectedPlanId);
 
     const updateField =
-        (field: keyof typeof formValues) => (event: ChangeEvent<HTMLInputElement>) => {
-            setFormValues((previous) => ({ ...previous, [field]: event.target.value }));
+        (field: keyof typeof formValues) =>
+        (event: ChangeEvent<HTMLInputElement>) => {
+            setFormValues((previous) => ({
+                ...previous,
+                [field]: event.target.value,
+            }));
         };
 
     const createPaymentMethod = async () => {
@@ -86,47 +98,60 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
             throw new Error('PayMongo public key is missing.');
         }
 
-        const response = await fetch('https://api.paymongo.com/v1/payment_methods', {
-            method: 'POST',
-            headers: {
-                Authorization: `Basic ${btoa(`${paymongo.publicKey}:`)}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                data: {
-                    attributes: {
-                        type: paymentMethod,
-                        billing: {
-                            name: formValues.name,
-                            email: formValues.email,
-                            phone: formValues.phone || undefined,
-                            address: {
-                                line1: formValues.line1 || 'N/A',
-                                city: formValues.city || 'N/A',
-                                postal_code: formValues.postalCode || '0000',
-                                country: 'PH',
-                            },
-                        },
-                        details:
-                            paymentMethod === 'card'
-                                ? {
-                                      card_number: formValues.cardNumber,
-                                      exp_month: Number(formValues.cardExpMonth),
-                                      exp_year: Number(formValues.cardExpYear),
-                                      cvc: formValues.cardCvc,
-                                  }
-                                : undefined,
-                    },
+        const response = await fetch(
+            'https://api.paymongo.com/v1/payment_methods',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Basic ${btoa(`${paymongo.publicKey}:`)}`,
+                    'Content-Type': 'application/json',
                 },
-            }),
-        });
+                body: JSON.stringify({
+                    data: {
+                        attributes: {
+                            type: paymentMethod,
+                            billing: {
+                                name: formValues.name,
+                                email: formValues.email,
+                                phone: formValues.phone || undefined,
+                                address: {
+                                    line1: formValues.line1 || 'N/A',
+                                    city: formValues.city || 'N/A',
+                                    postal_code:
+                                        formValues.postalCode || '0000',
+                                    country: 'PH',
+                                },
+                            },
+                            details:
+                                paymentMethod === 'card'
+                                    ? {
+                                          card_number: formValues.cardNumber,
+                                          exp_month: Number(
+                                              formValues.cardExpMonth,
+                                          ),
+                                          exp_year: Number(
+                                              formValues.cardExpYear,
+                                          ),
+                                          cvc: formValues.cardCvc,
+                                      }
+                                    : undefined,
+                        },
+                    },
+                }),
+            },
+        );
 
         if (!response.ok) {
             const errorBody = await response.json();
-            throw new Error(errorBody?.errors?.[0]?.detail ?? 'Failed to create payment method.');
+
+            throw new Error(
+                errorBody?.errors?.[0]?.detail ??
+                    'Failed to create payment method.',
+            );
         }
 
         const payload = await response.json();
+
         return payload.data.id as string;
     };
 
@@ -135,7 +160,8 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
         paymentMethodId: string,
         paymentIntentId?: string | null,
     ) => {
-        const resolvedPaymentIntentId = paymentIntentId ?? clientKey.split('_client')[0];
+        const resolvedPaymentIntentId =
+            paymentIntentId ?? clientKey.split('_client')[0];
 
         const response = await fetch(
             `https://api.paymongo.com/v1/payment_intents/${resolvedPaymentIntentId}/attach`,
@@ -151,7 +177,11 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                             client_key: clientKey,
                             payment_method: paymentMethodId,
                             return_url: paymentIntentId
-                                ? plansRoute.url({ query: { payment_intent_id: paymentIntentId } })
+                                ? plansRoute.url({
+                                      query: {
+                                          payment_intent_id: paymentIntentId,
+                                      },
+                                  })
                                 : plansRoute.url(),
                         },
                     },
@@ -161,7 +191,11 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
 
         if (!response.ok) {
             const errorBody = await response.json();
-            throw new Error(errorBody?.errors?.[0]?.detail ?? 'Failed to attach payment intent.');
+
+            throw new Error(
+                errorBody?.errors?.[0]?.detail ??
+                    'Failed to attach payment intent.',
+            );
         }
 
         return response.json();
@@ -171,6 +205,7 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
         if (!selectedPlan) {
             setStatus('error');
             setStatusMessage('Please select a plan before continuing.');
+
             return;
         }
 
@@ -183,8 +218,10 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                 plan_id: selectedPlan.id,
             });
 
-            const { client_key: clientKey, payment_intent_id: paymentIntentId } =
-                intentResponse.data;
+            const {
+                client_key: clientKey,
+                payment_intent_id: paymentIntentId,
+            } = intentResponse.data;
 
             if (!clientKey) {
                 throw new Error('Unable to create payment intent.');
@@ -200,28 +237,40 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
             const statusValue = attachResponse.data.attributes.status;
             const nextAction = attachResponse.data.attributes.next_action;
 
-            if (statusValue === 'awaiting_next_action' && nextAction?.redirect?.url) {
+            if (
+                statusValue === 'awaiting_next_action' &&
+                nextAction?.redirect?.url
+            ) {
                 window.location.href = nextAction.redirect.url;
+
                 return;
             }
 
             if (statusValue === 'succeeded') {
                 setStatus('success');
                 setStatusMessage('Payment confirmed. Thank you!');
+
                 return;
             }
 
             if (statusValue === 'processing') {
                 setStatus('success');
-                setStatusMessage('Payment is processing. We will update you shortly.');
+                setStatusMessage(
+                    'Payment is processing. We will update you shortly.',
+                );
+
                 return;
             }
 
             setStatus('error');
-            setStatusMessage('Payment requires a new method. Please try again.');
+            setStatusMessage(
+                'Payment requires a new method. Please try again.',
+            );
         } catch (error) {
             setStatus('error');
-            setStatusMessage(error instanceof Error ? error.message : 'Payment failed.');
+            setStatusMessage(
+                error instanceof Error ? error.message : 'Payment failed.',
+            );
         } finally {
             setProcessing(false);
         }
@@ -243,18 +292,23 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
         if (statusParam === 'success') {
             setStatus('success');
             setStatusMessage('Payment confirmed. Thank you!');
+
             return;
         }
 
         if (statusParam === 'processing') {
             setStatus('success');
-            setStatusMessage('Payment is processing. We will update you shortly.');
+            setStatusMessage(
+                'Payment is processing. We will update you shortly.',
+            );
+
             return;
         }
 
         if (statusParam === 'failed' || statusParam === 'error') {
             setStatus('error');
             setStatusMessage('Payment failed. Please try again.');
+
             return;
         }
 
@@ -262,9 +316,16 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
             setStatus('success');
             setStatusMessage('Payment submitted. We are verifying the status.');
             void axios
-                .get(paymentIntentRoute.url({ query: { payment_intent_id: paymentId } }))
+                .get(
+                    paymentIntentRoute.url({
+                        query: { payment_intent_id: paymentId },
+                    }),
+                )
                 .then((response) => {
-                    const statusValue = response.data?.status as string | undefined;
+                    const statusValue = response.data?.status as
+                        | string
+                        | undefined;
+
                     if (!statusValue) {
                         return;
                     }
@@ -276,6 +337,7 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                 ? 'Payment confirmed. Thank you!'
                                 : 'Payment is processing. We will update you shortly.',
                         );
+
                         return;
                     }
 
@@ -284,7 +346,9 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                 })
                 .catch(() => {
                     setStatus('error');
-                    setStatusMessage('Unable to verify payment status. Please try again.');
+                    setStatusMessage(
+                        'Unable to verify payment status. Please try again.',
+                    );
                 });
         }
     }, []);
@@ -295,15 +359,18 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
             <div className="p-6 lg:p-10">
                 <div className="mx-auto max-w-6xl space-y-10">
                     <div className="space-y-3">
-                        <Badge variant="outline" className="uppercase tracking-[0.2em]">
+                        <Badge
+                            variant="outline"
+                            className="tracking-[0.2em] uppercase"
+                        >
                             Plans & Billing
                         </Badge>
                         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
                             Upgrade your assessment workflow
                         </h1>
-                        <p className="text-muted-foreground text-lg max-w-3xl">
-                            Choose a plan that fits your program. Pay securely using PayMongo card
-                            or wallet methods.
+                        <p className="max-w-3xl text-lg text-muted-foreground">
+                            Choose a plan that fits your program. Pay securely
+                            using PayMongo card or wallet methods.
                         </p>
                     </div>
 
@@ -311,7 +378,9 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                         <div className="space-y-6">
                             <div className="grid gap-6 md:grid-cols-2">
                                 {plans.map((plan) => {
-                                    const isSelected = plan.id === selectedPlanId;
+                                    const isSelected =
+                                        plan.id === selectedPlanId;
+
                                     return (
                                         <Card
                                             key={plan.id}
@@ -331,25 +400,45 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                                     )}
                                                 </CardTitle>
                                                 <CardDescription>
-                                                    {currency.format(plan.price / 100)} / month
+                                                    {currency.format(
+                                                        plan.price / 100,
+                                                    )}{' '}
+                                                    / month
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent className="space-y-4">
                                                 <ul className="space-y-3 text-sm text-muted-foreground">
-                                                    {plan.features.map((feature) => (
-                                                        <li key={feature} className="flex gap-2">
-                                                            <CheckCircle2 className="mt-0.5 size-4 text-primary" />
-                                                            <span>{feature}</span>
-                                                        </li>
-                                                    ))}
+                                                    {plan.features.map(
+                                                        (feature) => (
+                                                            <li
+                                                                key={feature}
+                                                                className="flex gap-2"
+                                                            >
+                                                                <CheckCircle2 className="mt-0.5 size-4 text-primary" />
+                                                                <span>
+                                                                    {feature}
+                                                                </span>
+                                                            </li>
+                                                        ),
+                                                    )}
                                                 </ul>
                                                 <Button
                                                     type="button"
-                                                    variant={isSelected ? 'default' : 'outline'}
+                                                    variant={
+                                                        isSelected
+                                                            ? 'default'
+                                                            : 'outline'
+                                                    }
                                                     className="w-full"
-                                                    onClick={() => setSelectedPlanId(plan.id)}
+                                                    onClick={() =>
+                                                        setSelectedPlanId(
+                                                            plan.id,
+                                                        )
+                                                    }
                                                 >
-                                                    {isSelected ? 'Selected' : 'Choose Plan'}
+                                                    {isSelected
+                                                        ? 'Selected'
+                                                        : 'Choose Plan'}
                                                 </Button>
                                             </CardContent>
                                         </Card>
@@ -362,51 +451,69 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                             <CardHeader>
                                 <CardTitle>Checkout</CardTitle>
                                 <CardDescription>
-                                    Enter billing details and complete your payment.
+                                    Enter billing details and complete your
+                                    payment.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {!paymongo.publicKey && (
                                     <Alert variant="destructive">
                                         <AlertDescription>
-                                            Missing PayMongo public key. Set PAYMONGO_PUBLIC_KEY to
-                                            enable payments.
+                                            Missing PayMongo public key. Set
+                                            PAYMONGO_PUBLIC_KEY to enable
+                                            payments.
                                         </AlertDescription>
                                     </Alert>
                                 )}
 
-                                <Form action={plansRoute.url()} method="get" className="space-y-6">
+                                <Form
+                                    action={plansRoute.url()}
+                                    method="get"
+                                    className="space-y-6"
+                                >
                                     {() => (
                                         <>
                                             <div className="grid gap-4">
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="name">Full name</Label>
+                                                    <Label htmlFor="name">
+                                                        Full name
+                                                    </Label>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         value={formValues.name}
-                                                        onChange={updateField('name')}
+                                                        onChange={updateField(
+                                                            'name',
+                                                        )}
                                                         placeholder="Jane Doe"
                                                     />
                                                 </div>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="email">Email address</Label>
+                                                    <Label htmlFor="email">
+                                                        Email address
+                                                    </Label>
                                                     <Input
                                                         id="email"
                                                         name="email"
                                                         type="email"
                                                         value={formValues.email}
-                                                        onChange={updateField('email')}
+                                                        onChange={updateField(
+                                                            'email',
+                                                        )}
                                                         placeholder="jane@example.com"
                                                     />
                                                 </div>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="phone">Phone number</Label>
+                                                    <Label htmlFor="phone">
+                                                        Phone number
+                                                    </Label>
                                                     <Input
                                                         id="phone"
                                                         name="phone"
                                                         value={formValues.phone}
-                                                        onChange={updateField('phone')}
+                                                        onChange={updateField(
+                                                            'phone',
+                                                        )}
                                                         placeholder="+63 9xx xxx xxxx"
                                                     />
                                                 </div>
@@ -414,32 +521,46 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
 
                                             <div className="grid gap-4">
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="line1">Address line</Label>
+                                                    <Label htmlFor="line1">
+                                                        Address line
+                                                    </Label>
                                                     <Input
                                                         id="line1"
                                                         name="line1"
                                                         value={formValues.line1}
-                                                        onChange={updateField('line1')}
+                                                        onChange={updateField(
+                                                            'line1',
+                                                        )}
                                                         placeholder="Street, Barangay"
                                                     />
                                                 </div>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="city">City</Label>
+                                                    <Label htmlFor="city">
+                                                        City
+                                                    </Label>
                                                     <Input
                                                         id="city"
                                                         name="city"
                                                         value={formValues.city}
-                                                        onChange={updateField('city')}
+                                                        onChange={updateField(
+                                                            'city',
+                                                        )}
                                                         placeholder="Quezon City"
                                                     />
                                                 </div>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="postalCode">Postal code</Label>
+                                                    <Label htmlFor="postalCode">
+                                                        Postal code
+                                                    </Label>
                                                     <Input
                                                         id="postalCode"
                                                         name="postalCode"
-                                                        value={formValues.postalCode}
-                                                        onChange={updateField('postalCode')}
+                                                        value={
+                                                            formValues.postalCode
+                                                        }
+                                                        onChange={updateField(
+                                                            'postalCode',
+                                                        )}
                                                         placeholder="1100"
                                                     />
                                                 </div>
@@ -448,31 +569,41 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                             <div className="space-y-3">
                                                 <Label>Payment method</Label>
                                                 <div className="grid gap-3">
-                                                    {paymentMethodOptions.map((option) => (
-                                                        <button
-                                                            key={option.value}
-                                                            type="button"
-                                                            onClick={() =>
-                                                                setPaymentMethod(option.value)
-                                                            }
-                                                            className={cn(
-                                                                'flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition',
-                                                                paymentMethod === option.value
-                                                                    ? 'border-primary/60 bg-primary/5 text-foreground'
-                                                                    : 'border-border/60 text-muted-foreground',
-                                                            )}
-                                                        >
-                                                            <span className="flex items-center gap-3">
-                                                                <option.icon className="size-4" />
-                                                                {option.label}
-                                                            </span>
-                                                            {paymentMethod === option.value && (
-                                                                <Badge className="bg-primary text-white">
-                                                                    Selected
-                                                                </Badge>
-                                                            )}
-                                                        </button>
-                                                    ))}
+                                                    {paymentMethodOptions.map(
+                                                        (option) => (
+                                                            <button
+                                                                key={
+                                                                    option.value
+                                                                }
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setPaymentMethod(
+                                                                        option.value,
+                                                                    )
+                                                                }
+                                                                className={cn(
+                                                                    'flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition',
+                                                                    paymentMethod ===
+                                                                        option.value
+                                                                        ? 'border-primary/60 bg-primary/5 text-foreground'
+                                                                        : 'border-border/60 text-muted-foreground',
+                                                                )}
+                                                            >
+                                                                <span className="flex items-center gap-3">
+                                                                    <option.icon className="size-4" />
+                                                                    {
+                                                                        option.label
+                                                                    }
+                                                                </span>
+                                                                {paymentMethod ===
+                                                                    option.value && (
+                                                                    <Badge className="bg-primary text-white">
+                                                                        Selected
+                                                                    </Badge>
+                                                                )}
+                                                            </button>
+                                                        ),
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -485,8 +616,12 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                                         <Input
                                                             id="cardNumber"
                                                             name="cardNumber"
-                                                            value={formValues.cardNumber}
-                                                            onChange={updateField('cardNumber')}
+                                                            value={
+                                                                formValues.cardNumber
+                                                            }
+                                                            onChange={updateField(
+                                                                'cardNumber',
+                                                            )}
                                                             placeholder="4242 4242 4242 4242"
                                                         />
                                                     </div>
@@ -497,8 +632,12 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                                         <Input
                                                             id="cardExpMonth"
                                                             name="cardExpMonth"
-                                                            value={formValues.cardExpMonth}
-                                                            onChange={updateField('cardExpMonth')}
+                                                            value={
+                                                                formValues.cardExpMonth
+                                                            }
+                                                            onChange={updateField(
+                                                                'cardExpMonth',
+                                                            )}
                                                             placeholder="08"
                                                         />
                                                     </div>
@@ -509,18 +648,28 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                                         <Input
                                                             id="cardExpYear"
                                                             name="cardExpYear"
-                                                            value={formValues.cardExpYear}
-                                                            onChange={updateField('cardExpYear')}
+                                                            value={
+                                                                formValues.cardExpYear
+                                                            }
+                                                            onChange={updateField(
+                                                                'cardExpYear',
+                                                            )}
                                                             placeholder="2028"
                                                         />
                                                     </div>
                                                     <div className="grid gap-2">
-                                                        <Label htmlFor="cardCvc">CVC</Label>
+                                                        <Label htmlFor="cardCvc">
+                                                            CVC
+                                                        </Label>
                                                         <Input
                                                             id="cardCvc"
                                                             name="cardCvc"
-                                                            value={formValues.cardCvc}
-                                                            onChange={updateField('cardCvc')}
+                                                            value={
+                                                                formValues.cardCvc
+                                                            }
+                                                            onChange={updateField(
+                                                                'cardCvc',
+                                                            )}
                                                             placeholder="123"
                                                         />
                                                     </div>
@@ -553,16 +702,18 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                                             >
                                                 {processing ? (
                                                     <span className="inline-flex items-center gap-2">
-                                                        <Spinner className="size-4" /> Processing
+                                                        <Spinner className="size-4" />{' '}
+                                                        Processing
                                                     </span>
                                                 ) : (
                                                     'Complete payment'
                                                 )}
                                             </Button>
                                             <p className="text-xs text-muted-foreground">
-                                                You will be redirected to authenticate wallet
-                                                payments when required. Use PayMongo test keys in
-                                                staging environments.
+                                                You will be redirected to
+                                                authenticate wallet payments
+                                                when required. Use PayMongo test
+                                                keys in staging environments.
                                             </p>
                                         </>
                                     )}

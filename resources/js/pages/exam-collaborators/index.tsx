@@ -1,7 +1,23 @@
 import { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+    UserPlus,
+    Search,
+    UserMinus,
+    Shield,
+    Edit,
+    X,
+    Eye,
+    Users,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -21,10 +37,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { UserPlus, Search, UserMinus, Shield, Edit, X, Eye, Users } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import PageHeader from '@/components/page-header';
-import { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 interface Collaborator {
     id: number;
@@ -59,7 +74,10 @@ interface PageProps {
     };
 }
 
-export default function ExamCollaboratorsIndex({ exam, availableUsers }: PageProps) {
+export default function ExamCollaboratorsIndex({
+    exam,
+    availableUsers,
+}: PageProps) {
     const page = usePage();
     const currentUserId = (page.props as any).auth.user.id;
 
@@ -76,7 +94,9 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
     );
 
     const handleAddCollaborator = () => {
-        if (!selectedUser) return;
+        if (!selectedUser) {
+            return;
+        }
 
         router.post(
             `/exam-builder/${exam.id}/collaborators`,
@@ -99,7 +119,11 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
     };
 
     const handleRemoveCollaborator = (userId: number, userName: string) => {
-        if (confirm(`Are you sure you want to remove ${userName} from this exam?`)) {
+        if (
+            confirm(
+                `Are you sure you want to remove ${userName} from this exam?`,
+            )
+        ) {
             router.delete(`/exam-builder/${exam.id}/collaborators/${userId}`, {
                 onSuccess: () => {
                     // Refresh handled by Inertia
@@ -110,7 +134,11 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
     };
 
     const handleLeaveExam = () => {
-        if (confirm('Are you sure you want to leave this exam? You will lose access to edit it.')) {
+        if (
+            confirm(
+                'Are you sure you want to leave this exam? You will lose access to edit it.',
+            )
+        ) {
             router.post(
                 `/exam-builder/${exam.id}/collaborators/leave`,
                 {} as any,
@@ -123,7 +151,11 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
         }
     };
 
-    const handleUpdateCollaborator = (userId: number, newRole: string, newCanDelete: boolean) => {
+    const handleUpdateCollaborator = (
+        userId: number,
+        newRole: string,
+        newCanDelete: boolean,
+    ) => {
         router.patch(
             `/exam-builder/${exam.id}/collaborators/${userId}`,
             {
@@ -176,23 +208,30 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                         </DialogTrigger>
                                         <DialogContent>
                                             <DialogHeader>
-                                                <DialogTitle>Add Collaborator</DialogTitle>
+                                                <DialogTitle>
+                                                    Add Collaborator
+                                                </DialogTitle>
                                                 <DialogDescription>
-                                                    Invite another educator to collaborate on this
-                                                    exam.
+                                                    Invite another educator to
+                                                    collaborate on this exam.
                                                 </DialogDescription>
                                             </DialogHeader>
                                             <div className="space-y-4 py-4">
                                                 <div>
-                                                    <Label htmlFor="search">Search Users</Label>
+                                                    <Label htmlFor="search">
+                                                        Search Users
+                                                    </Label>
                                                     <div className="relative">
-                                                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                                        <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                                                         <Input
                                                             id="search"
                                                             placeholder="Search by name or email..."
                                                             value={searchQuery}
                                                             onChange={(e) =>
-                                                                setSearchQuery(e.target.value)
+                                                                setSearchQuery(
+                                                                    e.target
+                                                                        .value,
+                                                                )
                                                             }
                                                             className="pl-9"
                                                         />
@@ -200,48 +239,65 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                 </div>
 
                                                 {filteredUsers.length > 0 && (
-                                                    <div className="border rounded-md max-h-48 overflow-y-auto">
-                                                        {filteredUsers.map((user) => (
-                                                            <div
-                                                                key={user.id}
-                                                                className={`p-3 cursor-pointer hover:bg-accent flex items-center justify-between ${
-                                                                    selectedUser === user.id
-                                                                        ? 'bg-accent'
-                                                                        : ''
-                                                                }`}
-                                                                onClick={() =>
-                                                                    setSelectedUser(user.id)
-                                                                }
-                                                            >
-                                                                <div>
-                                                                    <div className="font-medium">
-                                                                        {user.name}
+                                                    <div className="max-h-48 overflow-y-auto rounded-md border">
+                                                        {filteredUsers.map(
+                                                            (user) => (
+                                                                <div
+                                                                    key={
+                                                                        user.id
+                                                                    }
+                                                                    className={`flex cursor-pointer items-center justify-between p-3 hover:bg-accent ${
+                                                                        selectedUser ===
+                                                                        user.id
+                                                                            ? 'bg-accent'
+                                                                            : ''
+                                                                    }`}
+                                                                    onClick={() =>
+                                                                        setSelectedUser(
+                                                                            user.id,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <div>
+                                                                        <div className="font-medium">
+                                                                            {
+                                                                                user.name
+                                                                            }
+                                                                        </div>
+                                                                        <div className="text-sm text-muted-foreground">
+                                                                            {
+                                                                                user.email
+                                                                            }
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="text-sm text-muted-foreground">
-                                                                        {user.email}
-                                                                    </div>
+                                                                    {selectedUser ===
+                                                                        user.id && (
+                                                                        <Shield className="h-4 w-4 text-green-500" />
+                                                                    )}
                                                                 </div>
-                                                                {selectedUser === user.id && (
-                                                                    <Shield className="h-4 w-4 text-green-500" />
-                                                                )}
-                                                            </div>
-                                                        ))}
+                                                            ),
+                                                        )}
                                                     </div>
                                                 )}
 
-                                                {filteredUsers.length === 0 && searchQuery && (
-                                                    <p className="text-sm text-muted-foreground py-2">
-                                                        No users found.
-                                                    </p>
-                                                )}
+                                                {filteredUsers.length === 0 &&
+                                                    searchQuery && (
+                                                        <p className="py-2 text-sm text-muted-foreground">
+                                                            No users found.
+                                                        </p>
+                                                    )}
 
                                                 {selectedUser && (
                                                     <>
                                                         <div>
-                                                            <Label htmlFor="role">Role</Label>
+                                                            <Label htmlFor="role">
+                                                                Role
+                                                            </Label>
                                                             <Select
                                                                 value={role}
-                                                                onValueChange={setRole}
+                                                                onValueChange={
+                                                                    setRole
+                                                                }
                                                             >
                                                                 <SelectTrigger>
                                                                     <SelectValue />
@@ -250,20 +306,32 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                                     <SelectItem value="editor">
                                                                         <div className="flex items-center gap-2">
                                                                             <Edit className="h-4 w-4" />
-                                                                            <span>Editor</span>
+                                                                            <span>
+                                                                                Editor
+                                                                            </span>
                                                                         </div>
                                                                         <p className="text-xs text-muted-foreground">
-                                                                            Can edit questions,
-                                                                            reorder, and export
+                                                                            Can
+                                                                            edit
+                                                                            questions,
+                                                                            reorder,
+                                                                            and
+                                                                            export
                                                                         </p>
                                                                     </SelectItem>
                                                                     <SelectItem value="viewer">
                                                                         <div className="flex items-center gap-2">
                                                                             <Eye className="h-4 w-4" />
-                                                                            <span>Viewer</span>
+                                                                            <span>
+                                                                                Viewer
+                                                                            </span>
                                                                         </div>
                                                                         <p className="text-xs text-muted-foreground">
-                                                                            Can only view the exam
+                                                                            Can
+                                                                            only
+                                                                            view
+                                                                            the
+                                                                            exam
                                                                         </p>
                                                                     </SelectItem>
                                                                 </SelectContent>
@@ -274,9 +342,14 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                                             <input
                                                                 type="checkbox"
                                                                 id="can_delete"
-                                                                checked={canDelete}
+                                                                checked={
+                                                                    canDelete
+                                                                }
                                                                 onChange={(e) =>
-                                                                    setCanDelete(e.target.checked)
+                                                                    setCanDelete(
+                                                                        e.target
+                                                                            .checked,
+                                                                    )
                                                                 }
                                                                 className="rounded"
                                                             />
@@ -290,12 +363,18 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                             <DialogFooter>
                                                 <Button
                                                     variant="outline"
-                                                    onClick={() => setIsAddDialogOpen(false)}
+                                                    onClick={() =>
+                                                        setIsAddDialogOpen(
+                                                            false,
+                                                        )
+                                                    }
                                                 >
                                                     Cancel
                                                 </Button>
                                                 <Button
-                                                    onClick={handleAddCollaborator}
+                                                    onClick={
+                                                        handleAddCollaborator
+                                                    }
                                                     disabled={!selectedUser}
                                                 >
                                                     Add Collaborator
@@ -308,7 +387,7 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                         }
                     />
 
-                    <div className="space-y-6 mt-6">
+                    <div className="mt-6 space-y-6">
                         {/* Exam Info Card */}
                         <Card>
                             <CardHeader>
@@ -322,7 +401,9 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                         {/* Collaborators List */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Collaborators ({exam.collaborators.length})</CardTitle>
+                                <CardTitle>
+                                    Collaborators ({exam.collaborators.length})
+                                </CardTitle>
                                 <CardDescription>
                                     {isOwner
                                         ? 'You are the owner of this exam. You can manage collaborators.'
@@ -331,22 +412,25 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                             </CardHeader>
                             <CardContent>
                                 {exam.collaborators.length === 0 ? (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <Users className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                                    <div className="py-8 text-center text-muted-foreground">
+                                        <Users className="mx-auto mb-4 h-12 w-12 opacity-50" />
                                         <p>No collaborators added yet.</p>
                                         {isOwner && (
                                             <p className="text-sm">
-                                                Click "Add Collaborator" to invite others.
+                                                Click "Add Collaborator" to
+                                                invite others.
                                             </p>
                                         )}
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
                                         {/* Owner always first */}
-                                        <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                                        <div className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="flex h-10 w-10 rounded-full bg-primary items-center justify-center text-primary-foreground font-bold">
-                                                    {exam.creator?.name?.charAt(0) || 'O'}
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground">
+                                                    {exam.creator?.name?.charAt(
+                                                        0,
+                                                    ) || 'O'}
                                                 </div>
                                                 <div>
                                                     <div className="font-medium">
@@ -366,88 +450,120 @@ export default function ExamCollaboratorsIndex({ exam, availableUsers }: PagePro
                                         </div>
 
                                         {/* Collaborators */}
-                                        {exam.collaborators.map((collaborator) => (
-                                            <div
-                                                key={collaborator.id}
-                                                className="flex items-center justify-between p-4 border rounded-lg"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex h-10 w-10 rounded-full bg-secondary items-center justify-center text-secondary-foreground font-bold">
-                                                        {collaborator.name.charAt(0)}
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-medium">
-                                                            {collaborator.name}
-                                                        </div>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            {collaborator.email}
-                                                        </div>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <Badge
-                                                                variant={
-                                                                    collaborator.pivot.role ===
-                                                                    'editor'
-                                                                        ? 'default'
-                                                                        : 'secondary'
-                                                                }
-                                                            >
-                                                                {collaborator.pivot.role}
-                                                            </Badge>
-                                                            {collaborator.pivot.can_delete && (
-                                                                <Badge
-                                                                    variant="outline"
-                                                                    className="text-xs"
-                                                                >
-                                                                    Can Delete
-                                                                </Badge>
+                                        {exam.collaborators.map(
+                                            (collaborator) => (
+                                                <div
+                                                    key={collaborator.id}
+                                                    className="flex items-center justify-between rounded-lg border p-4"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary font-bold text-secondary-foreground">
+                                                            {collaborator.name.charAt(
+                                                                0,
                                                             )}
                                                         </div>
+                                                        <div>
+                                                            <div className="font-medium">
+                                                                {
+                                                                    collaborator.name
+                                                                }
+                                                            </div>
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {
+                                                                    collaborator.email
+                                                                }
+                                                            </div>
+                                                            <div className="mt-1 flex items-center gap-2">
+                                                                <Badge
+                                                                    variant={
+                                                                        collaborator
+                                                                            .pivot
+                                                                            .role ===
+                                                                        'editor'
+                                                                            ? 'default'
+                                                                            : 'secondary'
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        collaborator
+                                                                            .pivot
+                                                                            .role
+                                                                    }
+                                                                </Badge>
+                                                                {collaborator
+                                                                    .pivot
+                                                                    .can_delete && (
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className="text-xs"
+                                                                    >
+                                                                        Can
+                                                                        Delete
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                        </div>
                                                     </div>
+
+                                                    {isOwner && (
+                                                        <div className="flex items-center gap-2">
+                                                            <select
+                                                                value={
+                                                                    collaborator
+                                                                        .pivot
+                                                                        .role
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleUpdateCollaborator(
+                                                                        collaborator.id,
+                                                                        e.target
+                                                                            .value,
+                                                                        collaborator
+                                                                            .pivot
+                                                                            .can_delete,
+                                                                    )
+                                                                }
+                                                                className="rounded border px-3 py-1.5 text-sm"
+                                                            >
+                                                                <option value="editor">
+                                                                    Editor
+                                                                </option>
+                                                                <option value="viewer">
+                                                                    Viewer
+                                                                </option>
+                                                            </select>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() =>
+                                                                    handleRemoveCollaborator(
+                                                                        collaborator.id,
+                                                                        collaborator.name,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <UserMinus className="h-4 w-4 text-destructive" />
+                                                            </Button>
+                                                        </div>
+                                                    )}
+
+                                                    {!isOwner &&
+                                                        collaborator.id ===
+                                                            currentUserId && (
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={
+                                                                    handleLeaveExam
+                                                                }
+                                                            >
+                                                                <X className="mr-2 h-4 w-4" />
+                                                                Leave Exam
+                                                            </Button>
+                                                        )}
                                                 </div>
-
-                                                {isOwner && (
-                                                    <div className="flex items-center gap-2">
-                                                        <select
-                                                            value={collaborator.pivot.role}
-                                                            onChange={(e) =>
-                                                                handleUpdateCollaborator(
-                                                                    collaborator.id,
-                                                                    e.target.value,
-                                                                    collaborator.pivot.can_delete,
-                                                                )
-                                                            }
-                                                            className="rounded border px-3 py-1.5 text-sm"
-                                                        >
-                                                            <option value="editor">Editor</option>
-                                                            <option value="viewer">Viewer</option>
-                                                        </select>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() =>
-                                                                handleRemoveCollaborator(
-                                                                    collaborator.id,
-                                                                    collaborator.name,
-                                                                )
-                                                            }
-                                                        >
-                                                            <UserMinus className="h-4 w-4 text-destructive" />
-                                                        </Button>
-                                                    </div>
-                                                )}
-
-                                                {!isOwner && collaborator.id === currentUserId && (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={handleLeaveExam}
-                                                    >
-                                                        <X className="mr-2 h-4 w-4" />
-                                                        Leave Exam
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        ))}
+                                            ),
+                                        )}
                                     </div>
                                 )}
                             </CardContent>

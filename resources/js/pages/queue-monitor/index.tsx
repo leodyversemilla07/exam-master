@@ -1,6 +1,23 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Activity,
+    RefreshCw,
+    Trash2,
+    RotateCcw,
+    AlertCircle,
+    CheckCircle,
+    Clock,
+    XCircle,
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -21,19 +38,13 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import PageHeader from '@/components/page-header';
-import { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import {
-    Activity,
-    RefreshCw,
-    Trash2,
-    RotateCcw,
-    AlertCircle,
-    CheckCircle,
-    Clock,
-    XCircle,
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { getStats, retryJob, deleteJob, clearFailedJobs } from '@/actions/App/Http/Controllers/QueueMonitorController';
+    getStats,
+    retryJob,
+    deleteJob,
+    clearFailedJobs,
+} from '@/actions/App/Http/Controllers/QueueMonitorController';
 
 interface QueueStats {
     failed_jobs: number;
@@ -55,9 +66,14 @@ interface QueueMonitorProps {
     recent_failed?: FailedJob[];
 }
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Queue Monitor', href: '/queue-monitor' }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Queue Monitor', href: '/queue-monitor' },
+];
 
-export default function QueueMonitorIndex({ stats: initialStats, recent_failed = [] }: QueueMonitorProps) {
+export default function QueueMonitorIndex({
+    stats: initialStats,
+    recent_failed = [],
+}: QueueMonitorProps) {
     const [stats, setStats] = useState<QueueStats | null>(initialStats || null);
     const [failedJobs, setFailedJobs] = useState<FailedJob[]>(recent_failed);
     const [loading, setLoading] = useState(false);
@@ -75,7 +91,7 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                 onFinish: () => {
                     setLoading(false);
                 },
-            }
+            },
         );
     };
 
@@ -85,23 +101,20 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
             { id },
             {
                 preserveScroll: true,
-            }
+            },
         );
     };
 
     const confirmDeleteJob = () => {
         if (selectedJobId) {
-            router.delete(
-                deleteJob.url(),
-                {
-                    data: { id: selectedJobId },
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setShowDeleteDialog(false);
-                        setSelectedJobId(null);
-                    },
-                }
-            );
+            router.delete(deleteJob.url(), {
+                data: { id: selectedJobId },
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowDeleteDialog(false);
+                    setSelectedJobId(null);
+                },
+            });
         }
     };
 
@@ -114,7 +127,7 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                 onSuccess: () => {
                     setShowClearDialog(false);
                 },
-            }
+            },
         );
     };
 
@@ -122,12 +135,14 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
         if (initialStats) {
             setStats(initialStats);
         }
+
         setFailedJobs(recent_failed);
     }, [initialStats, recent_failed]);
 
     useEffect(() => {
         // Auto-refresh every 30 seconds
         const interval = setInterval(fetchStats, 30000);
+
         return () => clearInterval(interval);
     }, []);
 
@@ -143,14 +158,21 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                         description="Monitor background jobs and queue status"
                         actions={
                             <>
-                                <Button variant="outline" onClick={fetchStats} disabled={loading}>
+                                <Button
+                                    variant="outline"
+                                    onClick={fetchStats}
+                                    disabled={loading}
+                                >
                                     <RefreshCw
                                         className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
                                     />
                                     Refresh
                                 </Button>
                                 {failedJobs.length > 0 && (
-                                    <Button variant="destructive" onClick={() => setShowClearDialog(true)}>
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => setShowClearDialog(true)}
+                                    >
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Clear All Failed
                                     </Button>
@@ -163,11 +185,15 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Pending Jobs</CardTitle>
+                                <CardTitle className="text-sm font-medium">
+                                    Pending Jobs
+                                </CardTitle>
                                 <Clock className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stats?.pending_jobs ?? '-'}</div>
+                                <div className="text-2xl font-bold">
+                                    {stats?.pending_jobs ?? '-'}
+                                </div>
                                 <p className="text-xs text-muted-foreground">
                                     Jobs waiting to be processed
                                 </p>
@@ -176,7 +202,9 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
 
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Failed Jobs</CardTitle>
+                                <CardTitle className="text-sm font-medium">
+                                    Failed Jobs
+                                </CardTitle>
                                 <XCircle className="h-4 w-4 text-destructive" />
                             </CardHeader>
                             <CardContent>
@@ -191,7 +219,9 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
 
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Queue Status</CardTitle>
+                                <CardTitle className="text-sm font-medium">
+                                    Queue Status
+                                </CardTitle>
                                 <Activity className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
@@ -212,7 +242,7 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                         </>
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="mt-1 text-xs text-muted-foreground">
                                     {stats?.total_jobs ?? 0} total jobs in queue
                                 </p>
                             </CardContent>
@@ -226,7 +256,9 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                 <AlertCircle className="h-5 w-5 text-destructive" />
                                 Failed Jobs
                             </CardTitle>
-                            <CardDescription>Recent failed jobs that need attention</CardDescription>
+                            <CardDescription>
+                                Recent failed jobs that need attention
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="p-6">
                             {loading ? (
@@ -236,7 +268,9 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                             <RefreshCw className="size-8 animate-spin" />
                                         </EmptyMedia>
                                         <EmptyTitle>Loading...</EmptyTitle>
-                                        <EmptyDescription>Fetching queue statistics</EmptyDescription>
+                                        <EmptyDescription>
+                                            Fetching queue statistics
+                                        </EmptyDescription>
                                     </EmptyHeader>
                                 </Empty>
                             ) : failedJobs.length === 0 ? (
@@ -245,7 +279,9 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                         <EmptyMedia variant="icon">
                                             <CheckCircle className="size-8 text-success" />
                                         </EmptyMedia>
-                                        <EmptyTitle className="text-success">No Failed Jobs!</EmptyTitle>
+                                        <EmptyTitle className="text-success">
+                                            No Failed Jobs!
+                                        </EmptyTitle>
                                         <EmptyDescription>
                                             All queue jobs are running smoothly
                                         </EmptyDescription>
@@ -256,11 +292,21 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b bg-muted/50">
-                                                <th className="p-3 text-left font-medium">ID</th>
-                                                <th className="p-3 text-left font-medium">Queue</th>
-                                                <th className="p-3 text-left font-medium">Error</th>
-                                                <th className="p-3 text-left font-medium">Failed At</th>
-                                                <th className="p-3 text-right font-medium">Actions</th>
+                                                <th className="p-3 text-left font-medium">
+                                                    ID
+                                                </th>
+                                                <th className="p-3 text-left font-medium">
+                                                    Queue
+                                                </th>
+                                                <th className="p-3 text-left font-medium">
+                                                    Error
+                                                </th>
+                                                <th className="p-3 text-left font-medium">
+                                                    Failed At
+                                                </th>
+                                                <th className="p-3 text-right font-medium">
+                                                    Actions
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -269,27 +315,39 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                                     key={job.id}
                                                     className="border-b last:border-0 hover:bg-muted/50"
                                                 >
-                                                    <td className="p-3 font-mono text-xs">{job.id}</td>
+                                                    <td className="p-3 font-mono text-xs">
+                                                        {job.id}
+                                                    </td>
                                                     <td className="p-3">
-                                                        <Badge variant="outline">{job.queue}</Badge>
+                                                        <Badge variant="outline">
+                                                            {job.queue}
+                                                        </Badge>
                                                     </td>
                                                     <td className="p-3">
                                                         <p
-                                                            className="text-xs text-muted-foreground max-w-md truncate"
-                                                            title={job.exception}
+                                                            className="max-w-md truncate text-xs text-muted-foreground"
+                                                            title={
+                                                                job.exception
+                                                            }
                                                         >
                                                             {job.exception}
                                                         </p>
                                                     </td>
                                                     <td className="p-3 text-xs text-muted-foreground">
-                                                        {new Date(job.failed_at).toLocaleString()}
+                                                        {new Date(
+                                                            job.failed_at,
+                                                        ).toLocaleString()}
                                                     </td>
                                                     <td className="p-3 text-right">
                                                         <div className="flex justify-end gap-2">
                                                             <Button
                                                                 variant="outline"
                                                                 size="sm"
-                                                                onClick={() => handleRetryJob(job.id)}
+                                                                onClick={() =>
+                                                                    handleRetryJob(
+                                                                        job.id,
+                                                                    )
+                                                                }
                                                             >
                                                                 <RotateCcw className="h-3 w-3" />
                                                             </Button>
@@ -297,8 +355,12 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                                                                 variant="destructive"
                                                                 size="sm"
                                                                 onClick={() => {
-                                                                    setSelectedJobId(job.id);
-                                                                    setShowDeleteDialog(true);
+                                                                    setSelectedJobId(
+                                                                        job.id,
+                                                                    );
+                                                                    setShowDeleteDialog(
+                                                                        true,
+                                                                    );
                                                                 }}
                                                             >
                                                                 <Trash2 className="h-3 w-3" />
@@ -325,26 +387,34 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                         <CardContent className="p-6">
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="rounded-lg border p-4">
-                                    <h4 className="font-medium mb-2">Start Queue Worker</h4>
-                                    <code className="text-xs bg-muted px-2 py-1 rounded block">
+                                    <h4 className="mb-2 font-medium">
+                                        Start Queue Worker
+                                    </h4>
+                                    <code className="block rounded bg-muted px-2 py-1 text-xs">
                                         php artisan queue:work
                                     </code>
                                 </div>
                                 <div className="rounded-lg border p-4">
-                                    <h4 className="font-medium mb-2">Retry All Failed Jobs</h4>
-                                    <code className="text-xs bg-muted px-2 py-1 rounded block">
+                                    <h4 className="mb-2 font-medium">
+                                        Retry All Failed Jobs
+                                    </h4>
+                                    <code className="block rounded bg-muted px-2 py-1 text-xs">
                                         php artisan queue:retry all
                                     </code>
                                 </div>
                                 <div className="rounded-lg border p-4">
-                                    <h4 className="font-medium mb-2">Clear Failed Jobs</h4>
-                                    <code className="text-xs bg-muted px-2 py-1 rounded block">
+                                    <h4 className="mb-2 font-medium">
+                                        Clear Failed Jobs
+                                    </h4>
+                                    <code className="block rounded bg-muted px-2 py-1 text-xs">
                                         php artisan queue:flush
                                     </code>
                                 </div>
                                 <div className="rounded-lg border p-4">
-                                    <h4 className="font-medium mb-2">Restart Workers</h4>
-                                    <code className="text-xs bg-muted px-2 py-1 rounded block">
+                                    <h4 className="mb-2 font-medium">
+                                        Restart Workers
+                                    </h4>
+                                    <code className="block rounded bg-muted px-2 py-1 text-xs">
                                         php artisan queue:restart
                                     </code>
                                 </div>
@@ -354,34 +424,51 @@ export default function QueueMonitorIndex({ stats: initialStats, recent_failed =
                 </div>
             </div>
 
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialog
+                open={showDeleteDialog}
+                onOpenChange={setShowDeleteDialog}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Failed Job</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete this failed job? This action cannot be undone.
+                            Are you sure you want to delete this failed job?
+                            This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDeleteJob} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogAction
+                            onClick={confirmDeleteJob}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
-            <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+            <AlertDialog
+                open={showClearDialog}
+                onOpenChange={setShowClearDialog}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Clear All Failed Jobs</AlertDialogTitle>
+                        <AlertDialogTitle>
+                            Clear All Failed Jobs
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to clear all failed jobs? This action cannot be undone and all failed job records will be permanently deleted.
+                            Are you sure you want to clear all failed jobs? This
+                            action cannot be undone and all failed job records
+                            will be permanently deleted.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmClearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogAction
+                            onClick={confirmClearAll}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
                             Clear All
                         </AlertDialogAction>
                     </AlertDialogFooter>

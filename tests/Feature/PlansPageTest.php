@@ -16,6 +16,7 @@ beforeEach(function () {
     Vite::shouldReceive('preloadedAssets')->andReturn([]);
     Vite::shouldReceive('reactRefresh')->andReturn('');
     Vite::shouldReceive('__invoke')->andReturn('');
+    Vite::shouldReceive('isRunningHot')->andReturn(false);
 });
 
 it('shows plans with paymongo public key on plans page', function () {

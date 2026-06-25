@@ -1,3 +1,5 @@
+import { Head, useForm, router } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,8 +14,6 @@ import {
 } from '@/components/ui/select';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import AppLayout from '@/layouts/app-layout';
-import { Head, useForm, router } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 
 interface Module {
@@ -130,14 +130,21 @@ export default function ExamCreate({
         setData('options', newOptions);
     };
 
-    const handleMatchingChange = (index: number, field: 'column_a' | 'column_b', value: string) => {
+    const handleMatchingChange = (
+        index: number,
+        field: 'column_a' | 'column_b',
+        value: string,
+    ) => {
         const newPairs = [...data.matching_pairs];
         newPairs[index] = { ...newPairs[index], [field]: value };
         setData('matching_pairs', newPairs);
     };
 
     const addMatchingPair = () => {
-        setData('matching_pairs', [...data.matching_pairs, { column_a: '', column_b: '' }]);
+        setData('matching_pairs', [
+            ...data.matching_pairs,
+            { column_a: '', column_b: '' },
+        ]);
     };
 
     const removeMatchingPair = (index: number) => {
@@ -151,7 +158,7 @@ export default function ExamCreate({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Question" />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 {/* Header */}
                 <PageHeader
                     title="Add New Question"
@@ -167,10 +174,14 @@ export default function ExamCreate({
                         <CardContent className="space-y-6">
                             {/* Module Selection */}
                             <Field>
-                                <FieldLabel htmlFor="module_id">Module *</FieldLabel>
+                                <FieldLabel htmlFor="module_id">
+                                    Module *
+                                </FieldLabel>
                                 <Select
                                     value={data.module_id.toString()}
-                                    onValueChange={(value) => setData('module_id', parseInt(value))}
+                                    onValueChange={(value) =>
+                                        setData('module_id', parseInt(value))
+                                    }
                                 >
                                     <SelectTrigger id="module_id">
                                         <SelectValue placeholder="Select module" />
@@ -186,28 +197,40 @@ export default function ExamCreate({
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {errors.module_id && <FieldError>{errors.module_id}</FieldError>}
+                                {errors.module_id && (
+                                    <FieldError>{errors.module_id}</FieldError>
+                                )}
                             </Field>
 
                             {/* Question Text */}
                             <Field>
-                                <FieldLabel htmlFor="question">Question *</FieldLabel>
+                                <FieldLabel htmlFor="question">
+                                    Question *
+                                </FieldLabel>
                                 <Textarea
                                     id="question"
                                     value={data.question}
-                                    onChange={(e) => setData('question', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('question', e.target.value)
+                                    }
                                     rows={4}
                                     placeholder="Enter the question text"
                                 />
-                                {errors.question && <FieldError>{errors.question}</FieldError>}
+                                {errors.question && (
+                                    <FieldError>{errors.question}</FieldError>
+                                )}
                             </Field>
 
                             {/* Question Type */}
                             <Field>
-                                <FieldLabel htmlFor="question_type">Question Type *</FieldLabel>
+                                <FieldLabel htmlFor="question_type">
+                                    Question Type *
+                                </FieldLabel>
                                 <Select
                                     value={data.question_type}
-                                    onValueChange={(value) => setData('question_type', value)}
+                                    onValueChange={(value) =>
+                                        setData('question_type', value)
+                                    }
                                 >
                                     <SelectTrigger id="question_type">
                                         <SelectValue />
@@ -216,12 +239,18 @@ export default function ExamCreate({
                                         <SelectItem value="multiple_choice">
                                             Multiple Choice
                                         </SelectItem>
-                                        <SelectItem value="true_false">True/False</SelectItem>
-                                        <SelectItem value="essay">Essay</SelectItem>
+                                        <SelectItem value="true_false">
+                                            True/False
+                                        </SelectItem>
+                                        <SelectItem value="essay">
+                                            Essay
+                                        </SelectItem>
                                         <SelectItem value="identification">
                                             Identification
                                         </SelectItem>
-                                        <SelectItem value="matching">Matching Type</SelectItem>
+                                        <SelectItem value="matching">
+                                            Matching Type
+                                        </SelectItem>
                                         <SelectItem value="fill_in_the_blanks">
                                             Fill in the Blanks
                                         </SelectItem>
@@ -235,7 +264,10 @@ export default function ExamCreate({
                                     <FieldLabel>Options *</FieldLabel>
                                     <div className="space-y-3">
                                         {data.options.map((option, index) => (
-                                            <div key={option.key} className="flex gap-2">
+                                            <div
+                                                key={option.key}
+                                                className="flex gap-2"
+                                            >
                                                 <Badge
                                                     variant="outline"
                                                     className="h-10 w-10 items-center justify-center"
@@ -245,7 +277,10 @@ export default function ExamCreate({
                                                 <Input
                                                     value={option.text}
                                                     onChange={(e) =>
-                                                        handleOptionChange(index, e.target.value)
+                                                        handleOptionChange(
+                                                            index,
+                                                            e.target.value,
+                                                        )
                                                     }
                                                     placeholder={`Option ${option.key}`}
                                                 />
@@ -260,52 +295,62 @@ export default function ExamCreate({
                                 <Field>
                                     <FieldLabel>Matching Pairs *</FieldLabel>
                                     <div className="space-y-3">
-                                        <div className="grid grid-cols-2 gap-2 text-sm font-medium mb-2">
+                                        <div className="mb-2 grid grid-cols-2 gap-2 text-sm font-medium">
                                             <div>Column A</div>
                                             <div>Column B</div>
                                         </div>
-                                        {data.matching_pairs.map((pair, index) => (
-                                            <div key={index} className="flex gap-2">
-                                                <Badge
-                                                    variant="outline"
-                                                    className="h-10 w-10 items-center justify-center shrink-0"
+                                        {data.matching_pairs.map(
+                                            (pair, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex gap-2"
                                                 >
-                                                    {index + 1}
-                                                </Badge>
-                                                <Input
-                                                    value={pair.column_a}
-                                                    onChange={(e) =>
-                                                        handleMatchingChange(
-                                                            index,
-                                                            'column_a',
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder={`Item ${index + 1}`}
-                                                />
-                                                <Input
-                                                    value={pair.column_b}
-                                                    onChange={(e) =>
-                                                        handleMatchingChange(
-                                                            index,
-                                                            'column_b',
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder={`Match ${index + 1}`}
-                                                />
-                                                {data.matching_pairs.length > 2 && (
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => removeMatchingPair(index)}
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="h-10 w-10 shrink-0 items-center justify-center"
                                                     >
-                                                        ×
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        ))}
+                                                        {index + 1}
+                                                    </Badge>
+                                                    <Input
+                                                        value={pair.column_a}
+                                                        onChange={(e) =>
+                                                            handleMatchingChange(
+                                                                index,
+                                                                'column_a',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder={`Item ${index + 1}`}
+                                                    />
+                                                    <Input
+                                                        value={pair.column_b}
+                                                        onChange={(e) =>
+                                                            handleMatchingChange(
+                                                                index,
+                                                                'column_b',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder={`Match ${index + 1}`}
+                                                    />
+                                                    {data.matching_pairs
+                                                        .length > 2 && (
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                removeMatchingPair(
+                                                                    index,
+                                                                )
+                                                            }
+                                                        >
+                                                            ×
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            ),
+                                        )}
                                         <Button
                                             type="button"
                                             variant="outline"
@@ -316,53 +361,66 @@ export default function ExamCreate({
                                             Add Pair
                                         </Button>
                                     </div>
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                        Create pairs that students will match. Column B will be
-                                        shuffled in the exam.
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        Create pairs that students will match.
+                                        Column B will be shuffled in the exam.
                                     </p>
                                 </Field>
                             )}
 
                             {/* Fill in the Blanks Help */}
                             {data.question_type === 'fill_in_the_blanks' && (
-                                <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-4 text-sm">
-                                    <p className="font-medium mb-2">
+                                <div className="rounded-md bg-blue-50 p-4 text-sm dark:bg-blue-950">
+                                    <p className="mb-2 font-medium">
                                         Fill in the Blanks Instructions:
                                     </p>
-                                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                                    <ul className="list-inside list-disc space-y-1 text-muted-foreground">
                                         <li>
                                             Use{' '}
-                                            <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">
+                                            <code className="rounded bg-blue-100 px-1 dark:bg-blue-900">
                                                 [blank]
                                             </code>{' '}
-                                            in your question text where you want blanks
+                                            in your question text where you want
+                                            blanks
                                         </li>
                                         <li>
-                                            Example: &quot;The capital of France is [blank].&quot;
+                                            Example: &quot;The capital of France
+                                            is [blank].&quot;
                                         </li>
                                         <li>
-                                            Enter the correct answer(s) in the &quot;Correct
-                                            Answer&quot; field below
+                                            Enter the correct answer(s) in the
+                                            &quot;Correct Answer&quot; field
+                                            below
                                         </li>
-                                        <li>For multiple blanks, separate answers with commas</li>
+                                        <li>
+                                            For multiple blanks, separate
+                                            answers with commas
+                                        </li>
                                     </ul>
                                 </div>
                             )}
 
                             {/* Correct Answer */}
                             <Field>
-                                <FieldLabel htmlFor="correct_answer">Correct Answer *</FieldLabel>
+                                <FieldLabel htmlFor="correct_answer">
+                                    Correct Answer *
+                                </FieldLabel>
                                 {data.question_type === 'multiple_choice' ? (
                                     <Select
                                         value={data.correct_answer}
-                                        onValueChange={(value) => setData('correct_answer', value)}
+                                        onValueChange={(value) =>
+                                            setData('correct_answer', value)
+                                        }
                                     >
                                         <SelectTrigger id="correct_answer">
                                             <SelectValue placeholder="Select correct answer" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {data.options.map((option) => (
-                                                <SelectItem key={option.key} value={option.key}>
+                                                <SelectItem
+                                                    key={option.key}
+                                                    value={option.key}
+                                                >
                                                     {option.key}
                                                 </SelectItem>
                                             ))}
@@ -371,35 +429,50 @@ export default function ExamCreate({
                                 ) : data.question_type === 'true_false' ? (
                                     <Select
                                         value={data.correct_answer}
-                                        onValueChange={(value) => setData('correct_answer', value)}
+                                        onValueChange={(value) =>
+                                            setData('correct_answer', value)
+                                        }
                                     >
                                         <SelectTrigger id="correct_answer">
                                             <SelectValue placeholder="Select correct answer" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="True">True</SelectItem>
-                                            <SelectItem value="False">False</SelectItem>
+                                            <SelectItem value="True">
+                                                True
+                                            </SelectItem>
+                                            <SelectItem value="False">
+                                                False
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 ) : data.question_type === 'matching' ? (
-                                    <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
-                                        Correct answers are automatically determined from your
-                                        matching pairs above.
+                                    <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
+                                        Correct answers are automatically
+                                        determined from your matching pairs
+                                        above.
                                     </div>
                                 ) : (
                                     <Input
                                         id="correct_answer"
                                         value={data.correct_answer}
-                                        onChange={(e) => setData('correct_answer', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'correct_answer',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder={
-                                            data.question_type === 'fill_in_the_blanks'
+                                            data.question_type ===
+                                            'fill_in_the_blanks'
                                                 ? 'Enter answer(s), comma-separated for multiple blanks'
                                                 : 'Enter correct answer'
                                         }
                                     />
                                 )}
                                 {errors.correct_answer && (
-                                    <FieldError>{errors.correct_answer}</FieldError>
+                                    <FieldError>
+                                        {errors.correct_answer}
+                                    </FieldError>
                                 )}
                             </Field>
 
@@ -411,7 +484,9 @@ export default function ExamCreate({
                                 <Textarea
                                     id="explanation"
                                     value={data.explanation}
-                                    onChange={(e) => setData('explanation', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('explanation', e.target.value)
+                                    }
                                     rows={3}
                                     placeholder="Explain why this is the correct answer"
                                 />
@@ -419,39 +494,65 @@ export default function ExamCreate({
 
                             {/* Cognitive Level */}
                             <Field>
-                                <FieldLabel htmlFor="cognitive_level">Cognitive Level *</FieldLabel>
+                                <FieldLabel htmlFor="cognitive_level">
+                                    Cognitive Level *
+                                </FieldLabel>
                                 <Select
                                     value={data.cognitive_level}
-                                    onValueChange={(value) => setData('cognitive_level', value)}
+                                    onValueChange={(value) =>
+                                        setData('cognitive_level', value)
+                                    }
                                 >
                                     <SelectTrigger id="cognitive_level">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="remembering">Remembering</SelectItem>
-                                        <SelectItem value="understanding">Understanding</SelectItem>
-                                        <SelectItem value="applying">Applying</SelectItem>
-                                        <SelectItem value="analyzing">Analyzing</SelectItem>
-                                        <SelectItem value="evaluating">Evaluating</SelectItem>
-                                        <SelectItem value="creating">Creating</SelectItem>
+                                        <SelectItem value="remembering">
+                                            Remembering
+                                        </SelectItem>
+                                        <SelectItem value="understanding">
+                                            Understanding
+                                        </SelectItem>
+                                        <SelectItem value="applying">
+                                            Applying
+                                        </SelectItem>
+                                        <SelectItem value="analyzing">
+                                            Analyzing
+                                        </SelectItem>
+                                        <SelectItem value="evaluating">
+                                            Evaluating
+                                        </SelectItem>
+                                        <SelectItem value="creating">
+                                            Creating
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </Field>
 
                             {/* Difficulty */}
                             <Field>
-                                <FieldLabel htmlFor="difficulty">Difficulty *</FieldLabel>
+                                <FieldLabel htmlFor="difficulty">
+                                    Difficulty *
+                                </FieldLabel>
                                 <Select
                                     value={data.difficulty}
-                                    onValueChange={(value) => setData('difficulty', value)}
+                                    onValueChange={(value) =>
+                                        setData('difficulty', value)
+                                    }
                                 >
                                     <SelectTrigger id="difficulty">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="easy">Easy</SelectItem>
-                                        <SelectItem value="moderate">Moderate</SelectItem>
-                                        <SelectItem value="difficult">Difficult</SelectItem>
+                                        <SelectItem value="easy">
+                                            Easy
+                                        </SelectItem>
+                                        <SelectItem value="moderate">
+                                            Moderate
+                                        </SelectItem>
+                                        <SelectItem value="difficult">
+                                            Difficult
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </Field>
@@ -466,7 +567,10 @@ export default function ExamCreate({
                                         id="learning_objective_code"
                                         value={data.learning_objective_code}
                                         onChange={(e) =>
-                                            setData('learning_objective_code', e.target.value)
+                                            setData(
+                                                'learning_objective_code',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="e.g., LO-001"
                                     />
@@ -474,14 +578,19 @@ export default function ExamCreate({
 
                                 {/* Points */}
                                 <Field>
-                                    <FieldLabel htmlFor="points">Points *</FieldLabel>
+                                    <FieldLabel htmlFor="points">
+                                        Points *
+                                    </FieldLabel>
                                     <Input
                                         id="points"
                                         type="number"
                                         min="1"
                                         value={data.points}
                                         onChange={(e) =>
-                                            setData('points', parseInt(e.target.value) || 1)
+                                            setData(
+                                                'points',
+                                                parseInt(e.target.value) || 1,
+                                            )
                                         }
                                     />
                                 </Field>
@@ -492,13 +601,17 @@ export default function ExamCreate({
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => router.visit('/question-bank')}
+                                    onClick={() =>
+                                        router.visit('/question-bank')
+                                    }
                                 >
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={processing}>
                                     <Plus className="mr-2 size-4" />
-                                    {processing ? 'Creating...' : 'Create Question'}
+                                    {processing
+                                        ? 'Creating...'
+                                        : 'Create Question'}
                                 </Button>
                             </div>
                         </CardContent>

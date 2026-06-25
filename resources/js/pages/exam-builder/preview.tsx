@@ -1,10 +1,10 @@
+import { Head, Link } from '@inertiajs/react';
+import { ArrowLeft, Printer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Printer } from 'lucide-react';
-import { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 
 interface Question {
     id: number;
@@ -56,7 +56,7 @@ export default function Preview({ exam, template }: PageProps) {
             <div className="px-4 py-6 md:px-6 md:py-8 print:p-0">
                 <div className="mx-auto max-w-5xl space-y-8">
                     {/* Controls */}
-                    <div className="flex justify-between items-center print:hidden">
+                    <div className="flex items-center justify-between print:hidden">
                         <Button variant="ghost" asChild>
                             <Link href={`/exam-builder/${exam.id}`}>
                                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -70,42 +70,48 @@ export default function Preview({ exam, template }: PageProps) {
                     </div>
 
                     {/* Paper Preview */}
-                    <Card className="shadow-lg border-2 print:shadow-none print:border-none">
-                        <CardContent className="p-8 md:p-12 space-y-8 min-h-264 flex flex-col">
+                    <Card className="border-2 shadow-lg print:border-none print:shadow-none">
+                        <CardContent className="flex min-h-264 flex-col space-y-8 p-8 md:p-12">
                             {/* Custom Styles */}
                             {template?.styles && (
-                                <style dangerouslySetInnerHTML={{ __html: template.styles }} />
+                                <style
+                                    dangerouslySetInnerHTML={{
+                                        __html: template.styles,
+                                    }}
+                                />
                             )}
 
                             {/* Header */}
                             {template?.header ? (
                                 <div
                                     className="custom-header mb-8"
-                                    dangerouslySetInnerHTML={{ __html: template.header }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: template.header,
+                                    }}
                                 />
                             ) : (
-                                <div className="text-center border-b-2 border-primary pb-6 space-y-2">
-                                    <h1 className="text-3xl font-bold uppercase tracking-tight">
+                                <div className="space-y-2 border-b-2 border-primary pb-6 text-center">
+                                    <h1 className="text-3xl font-bold tracking-tight uppercase">
                                         {exam.title}
                                     </h1>
-                                    <div className="text-lg text-muted-foreground uppercase font-medium">
+                                    <div className="text-lg font-medium text-muted-foreground uppercase">
                                         {exam.module.code} - {exam.module.name}
                                     </div>
 
                                     {/* Default Student Info (only if no template) */}
-                                    <div className="grid grid-cols-2 gap-8 border rounded-lg p-6 bg-muted/30 text-left mt-6">
+                                    <div className="mt-6 grid grid-cols-2 gap-8 rounded-lg border bg-muted/30 p-6 text-left">
                                         <div className="space-y-4">
                                             <div className="flex items-end gap-2">
                                                 <span className="font-bold whitespace-nowrap text-foreground">
                                                     NAME:
                                                 </span>
-                                                <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
+                                                <div className="h-6 flex-1 border-b border-dashed border-foreground"></div>
                                             </div>
                                             <div className="flex items-end gap-2">
                                                 <span className="font-bold whitespace-nowrap text-foreground">
                                                     SECTION:
                                                 </span>
-                                                <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
+                                                <div className="h-6 flex-1 border-b border-dashed border-foreground"></div>
                                             </div>
                                         </div>
                                         <div className="space-y-4">
@@ -113,13 +119,13 @@ export default function Preview({ exam, template }: PageProps) {
                                                 <span className="font-bold whitespace-nowrap text-foreground">
                                                     DATE:
                                                 </span>
-                                                <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
+                                                <div className="h-6 flex-1 border-b border-dashed border-foreground"></div>
                                             </div>
                                             <div className="flex items-end gap-2">
                                                 <span className="font-bold whitespace-nowrap text-foreground">
                                                     SCORE:
                                                 </span>
-                                                <div className="flex-1 border-b border-foreground border-dashed h-6"></div>
+                                                <div className="h-6 flex-1 border-b border-dashed border-foreground"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -128,21 +134,26 @@ export default function Preview({ exam, template }: PageProps) {
 
                             {/* Instructions */}
                             {exam.instructions && (
-                                <div className="bg-primary/5 border-l-4 border-primary p-6 space-y-2">
-                                    <h3 className="font-bold text-lg uppercase">
+                                <div className="space-y-2 border-l-4 border-primary bg-primary/5 p-6">
+                                    <h3 className="text-lg font-bold uppercase">
                                         General Instructions:
                                     </h3>
-                                    <p className="whitespace-pre-wrap">{exam.instructions}</p>
+                                    <p className="whitespace-pre-wrap">
+                                        {exam.instructions}
+                                    </p>
                                 </div>
                             )}
 
                             {/* Questions */}
                             <div className="flex-1 space-y-10 pt-4">
                                 {exam.questions.map((question, index) => (
-                                    <div key={question.id} className="space-y-4 break-inside-avoid">
+                                    <div
+                                        key={question.id}
+                                        className="break-inside-avoid space-y-4"
+                                    >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex gap-3">
-                                                <span className="font-bold text-lg">
+                                                <span className="text-lg font-bold">
                                                     {index + 1}.
                                                 </span>
                                                 <div className="space-y-4">
@@ -153,68 +164,87 @@ export default function Preview({ exam, template }: PageProps) {
                                                     {/* Options for Multiple Choice */}
                                                     {question.question_type ===
                                                         'multiple_choice' && (
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-2">
-                                                                {question.options &&
-                                                                    (Array.isArray(question.options)
-                                                                        ? question.options
-                                                                        : []
-                                                                    ).map(
-                                                                        (
-                                                                            option: any,
-                                                                            optIndex: number,
-                                                                        ) => (
-                                                                            <div
-                                                                                key={optIndex}
-                                                                                className="flex gap-2"
-                                                                            >
-                                                                                <span className="font-bold">
-                                                                                    {String.fromCharCode(
-                                                                                        65 + optIndex,
-                                                                                    )}
-                                                                                    .
-                                                                                </span>
-                                                                                <span>
-                                                                                    {option.text ||
-                                                                                        option}
-                                                                                </span>
-                                                                            </div>
-                                                                        ),
-                                                                    )}
-                                                            </div>
-                                                        )}
+                                                        <div className="ml-2 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                            {question.options &&
+                                                                (Array.isArray(
+                                                                    question.options,
+                                                                )
+                                                                    ? question.options
+                                                                    : []
+                                                                ).map(
+                                                                    (
+                                                                        option: any,
+                                                                        optIndex: number,
+                                                                    ) => (
+                                                                        <div
+                                                                            key={
+                                                                                optIndex
+                                                                            }
+                                                                            className="flex gap-2"
+                                                                        >
+                                                                            <span className="font-bold">
+                                                                                {String.fromCharCode(
+                                                                                    65 +
+                                                                                        optIndex,
+                                                                                )}
+
+                                                                                .
+                                                                            </span>
+                                                                            <span>
+                                                                                {option.text ||
+                                                                                    option}
+                                                                            </span>
+                                                                        </div>
+                                                                    ),
+                                                                )}
+                                                        </div>
+                                                    )}
 
                                                     {/* Options for True/False */}
-                                                    {question.question_type === 'true_false' && (
-                                                        <div className="flex gap-8 ml-2">
+                                                    {question.question_type ===
+                                                        'true_false' && (
+                                                        <div className="ml-2 flex gap-8">
                                                             <div className="flex gap-2 font-medium">
-                                                                <div className="w-5 h-5 rounded-full border border-foreground mt-0.5"></div>
-                                                                <span>TRUE</span>
+                                                                <div className="mt-0.5 h-5 w-5 rounded-full border border-foreground"></div>
+                                                                <span>
+                                                                    TRUE
+                                                                </span>
                                                             </div>
                                                             <div className="flex gap-2 font-medium">
-                                                                <div className="w-5 h-5 rounded-full border border-foreground mt-0.5"></div>
-                                                                <span>FALSE</span>
+                                                                <div className="mt-0.5 h-5 w-5 rounded-full border border-foreground"></div>
+                                                                <span>
+                                                                    FALSE
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     )}
 
                                                     {/* Identification / Essay Space */}
-                                                    {(question.question_type === 'identification' ||
-                                                        question.question_type === 'essay') && (
-                                                            <div className="pt-2">
-                                                                <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8 md:h-12"></div>
-                                                                {question.question_type === 'essay' && (
-                                                                    <div className="space-y-4 pt-4">
-                                                                        <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8"></div>
-                                                                        <div className="w-full border-b-2 border-dashed border-muted-foreground/30 h-8"></div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )}
+                                                    {(question.question_type ===
+                                                        'identification' ||
+                                                        question.question_type ===
+                                                            'essay') && (
+                                                        <div className="pt-2">
+                                                            <div className="h-8 w-full border-b-2 border-dashed border-muted-foreground/30 md:h-12"></div>
+                                                            {question.question_type ===
+                                                                'essay' && (
+                                                                <div className="space-y-4 pt-4">
+                                                                    <div className="h-8 w-full border-b-2 border-dashed border-muted-foreground/30"></div>
+                                                                    <div className="h-8 w-full border-b-2 border-dashed border-muted-foreground/30"></div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-                                            <Badge variant="outline" className="shrink-0 font-mono">
+                                            <Badge
+                                                variant="outline"
+                                                className="shrink-0 font-mono"
+                                            >
                                                 {question.pivot.points} pt
-                                                {question.pivot.points !== 1 ? 's' : ''}
+                                                {question.pivot.points !== 1
+                                                    ? 's'
+                                                    : ''}
                                             </Badge>
                                         </div>
                                     </div>
@@ -225,11 +255,14 @@ export default function Preview({ exam, template }: PageProps) {
                             {template?.footer ? (
                                 <div
                                     className="custom-footer mt-12 pt-8"
-                                    dangerouslySetInnerHTML={{ __html: template.footer }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: template.footer,
+                                    }}
                                 />
                             ) : (
-                                <div className="text-center text-muted-foreground text-sm mt-12 pt-8 border-t border-dashed">
-                                    End of Exam. Review your answers before submitting.
+                                <div className="mt-12 border-t border-dashed pt-8 text-center text-sm text-muted-foreground">
+                                    End of Exam. Review your answers before
+                                    submitting.
                                 </div>
                             )}
                         </CardContent>

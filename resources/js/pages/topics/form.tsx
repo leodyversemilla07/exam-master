@@ -1,9 +1,15 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { Module, Topic } from '@/types/models';
+import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
+import type { Module, Topic } from '@/types/models';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -53,6 +59,7 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
             // Can't be own parent or descendant
             return t.id !== topic.id && t.parent_id !== topic.id;
         }
+
         return true;
     });
 
@@ -74,7 +81,7 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={isEditing ? `Edit ${topic.title}` : 'Create Topic'} />
 
-            <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-6">
+            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <PageHeader
                     title={isEditing ? 'Edit Topic' : 'Create Topic'}
                     description={
@@ -89,8 +96,8 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                         <CardHeader>
                             <CardTitle>Topic Information</CardTitle>
                             <CardDescription>
-                                Enter the details for this topic. Topics can be organized
-                                hierarchically.
+                                Enter the details for this topic. Topics can be
+                                organized hierarchically.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -100,7 +107,9 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                     <Input
                                         id="code"
                                         value={form.data.code}
-                                        onChange={(e) => form.setData('code', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('code', e.target.value)
+                                        }
                                         placeholder="e.g., T1, T2.1"
                                         required
                                     />
@@ -112,20 +121,30 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="parent_id">Parent Topic</Label>
+                                    <Label htmlFor="parent_id">
+                                        Parent Topic
+                                    </Label>
                                     <Select
                                         value={form.data.parent_id || 'none'}
                                         onValueChange={(value) =>
-                                            form.setData('parent_id', value === 'none' ? '' : value)
+                                            form.setData(
+                                                'parent_id',
+                                                value === 'none' ? '' : value,
+                                            )
                                         }
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="None (Root Topic)" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="none">None (Root Topic)</SelectItem>
+                                            <SelectItem value="none">
+                                                None (Root Topic)
+                                            </SelectItem>
                                             {availableParents.map((t) => (
-                                                <SelectItem key={t.id} value={t.id.toString()}>
+                                                <SelectItem
+                                                    key={t.id}
+                                                    value={t.id.toString()}
+                                                >
                                                     {t.code} - {t.title}
                                                 </SelectItem>
                                             ))}
@@ -142,12 +161,16 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                 <Input
                                     id="title"
                                     value={form.data.title}
-                                    onChange={(e) => form.setData('title', e.target.value)}
+                                    onChange={(e) =>
+                                        form.setData('title', e.target.value)
+                                    }
                                     placeholder="e.g., Introduction to Algebra"
                                     required
                                 />
                                 {form.errors.title && (
-                                    <p className="text-sm text-destructive">{form.errors.title}</p>
+                                    <p className="text-sm text-destructive">
+                                        {form.errors.title}
+                                    </p>
                                 )}
                             </div>
 
@@ -156,7 +179,12 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                 <Textarea
                                     id="description"
                                     value={form.data.description}
-                                    onChange={(e) => form.setData('description', e.target.value)}
+                                    onChange={(e) =>
+                                        form.setData(
+                                            'description',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder="Brief description of this topic..."
                                     rows={3}
                                 />
@@ -169,7 +197,9 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="hours_allocated">Hours Allocated</Label>
+                                    <Label htmlFor="hours_allocated">
+                                        Hours Allocated
+                                    </Label>
                                     <Input
                                         id="hours_allocated"
                                         type="number"
@@ -177,7 +207,10 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                         step="0.5"
                                         value={form.data.hours_allocated}
                                         onChange={(e) =>
-                                            form.setData('hours_allocated', e.target.value)
+                                            form.setData(
+                                                'hours_allocated',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="e.g., 4"
                                     />
@@ -189,7 +222,9 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="weight_percentage">Weight (%)</Label>
+                                    <Label htmlFor="weight_percentage">
+                                        Weight (%)
+                                    </Label>
                                     <Input
                                         id="weight_percentage"
                                         type="number"
@@ -198,7 +233,10 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                                         step="0.1"
                                         value={form.data.weight_percentage}
                                         onChange={(e) =>
-                                            form.setData('weight_percentage', e.target.value)
+                                            form.setData(
+                                                'weight_percentage',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="e.g., 25"
                                     />
@@ -212,9 +250,12 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
 
                             <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="is_active">Active Status</Label>
+                                    <Label htmlFor="is_active">
+                                        Active Status
+                                    </Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Inactive topics won't appear in TOS generation
+                                        Inactive topics won't appear in TOS
+                                        generation
                                     </p>
                                 </div>
                                 <Switch
@@ -228,7 +269,7 @@ export default function TopicForm({ module, topic, topics = [] }: Props) {
                         </CardContent>
                     </Card>
 
-                    <div className="flex items-center justify-end gap-4 mt-6">
+                    <div className="mt-6 flex items-center justify-end gap-4">
                         <Button
                             type="button"
                             variant="outline"

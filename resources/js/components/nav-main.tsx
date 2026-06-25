@@ -1,3 +1,4 @@
+import { Link, usePage } from '@inertiajs/react';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -6,8 +7,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { resolveUrl } from '@/lib/utils';
-import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import type { NavItem } from '@/types';
 
 interface NavMainProps {
     items?: NavItem[];
@@ -24,7 +24,9 @@ export function NavMain({ items = [] }: NavMainProps) {
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                             asChild
-                            isActive={page.url.startsWith(resolveUrl(item.href))}
+                            isActive={page.url.startsWith(
+                                resolveUrl(item.href),
+                            )}
                             tooltip={{ children: item.title }}
                         >
                             <Link href={item.href}>

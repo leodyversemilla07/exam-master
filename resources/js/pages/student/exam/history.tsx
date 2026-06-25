@@ -1,8 +1,16 @@
-import AppLayout from '@/layouts/app-layout';
-import { PageProps } from '@/types';
-import { ExamAttempt } from '@/types/models';
 import { Head, Link } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { History, Eye, Clock, Trophy } from 'lucide-react';
+import { format } from 'date-fns';
+import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
+import type { ExamAttempt } from '@/types/models';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/page-header';
@@ -14,8 +22,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { History, Eye, Clock, Trophy } from 'lucide-react';
-import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import DashboardController from '@/actions/App/Http/Controllers/DashboardController';
 import {
@@ -38,9 +44,18 @@ interface ExamHistoryProps extends PageProps {
 
 export default function ExamHistory({ attempts }: ExamHistoryProps) {
     const getScoreColor = (percentage: number | null) => {
-        if (percentage === null) return '';
-        if (percentage >= 80) return 'text-green-600';
-        if (percentage >= 60) return 'text-yellow-600';
+        if (percentage === null) {
+            return '';
+        }
+
+        if (percentage >= 80) {
+            return 'text-green-600';
+        }
+
+        if (percentage >= 60) {
+            return 'text-yellow-600';
+        }
+
         return 'text-red-600';
     };
 
@@ -64,6 +79,7 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
         if (hours > 0) {
             return `${hours}h ${minutes}m`;
         }
+
         return `${minutes}m`;
     };
 
@@ -84,13 +100,14 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                             All Attempts
                         </CardTitle>
                         <CardDescription>
-                            {attempts.total} total attempt{attempts.total !== 1 ? 's' : ''}
+                            {attempts.total} total attempt
+                            {attempts.total !== 1 ? 's' : ''}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         {attempts.data.length === 0 ? (
-                            <div className="text-center py-12">
-                                <Trophy className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                            <div className="py-12 text-center">
+                                <Trophy className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                                 <p className="text-muted-foreground">
                                     You haven't taken any exams yet.
                                 </p>
@@ -111,35 +128,46 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                                         <TableHead>Duration</TableHead>
                                         <TableHead>Score</TableHead>
                                         <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
+                                        <TableHead className="text-right">
+                                            Actions
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {attempts.data.map((attempt) => (
                                         <TableRow key={attempt.id}>
                                             <TableCell className="font-medium">
-                                                {attempt.exam_session?.exam?.title ||
-                                                    'Unknown Exam'}
+                                                {attempt.exam_session?.exam
+                                                    ?.title || 'Unknown Exam'}
                                             </TableCell>
                                             <TableCell>
-                                                {attempt.exam_session?.exam?.module?.name || '-'}
+                                                {attempt.exam_session?.exam
+                                                    ?.module?.name || '-'}
                                             </TableCell>
-                                            <TableCell>#{attempt.attempt_number}</TableCell>
+                                            <TableCell>
+                                                #{attempt.attempt_number}
+                                            </TableCell>
                                             <TableCell>
                                                 {attempt.submitted_at
                                                     ? format(
-                                                          new Date(attempt.submitted_at),
+                                                          new Date(
+                                                              attempt.submitted_at,
+                                                          ),
                                                           'MMM d, yyyy',
                                                       )
                                                     : format(
-                                                          new Date(attempt.started_at),
+                                                          new Date(
+                                                              attempt.started_at,
+                                                          ),
                                                           'MMM d, yyyy',
                                                       )}
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-1">
                                                     <Clock className="h-4 w-4 text-muted-foreground" />
-                                                    {formatDuration(attempt.time_spent_seconds)}
+                                                    {formatDuration(
+                                                        attempt.time_spent_seconds,
+                                                    )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
@@ -147,27 +175,49 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
                                                     <span
                                                         className={cn(
                                                             'font-medium',
-                                                            getScoreColor(attempt.percentage),
+                                                            getScoreColor(
+                                                                attempt.percentage,
+                                                            ),
                                                         )}
                                                     >
-                                                        {attempt.percentage.toFixed(1)}%
+                                                        {attempt.percentage.toFixed(
+                                                            1,
+                                                        )}
+                                                        %
                                                     </span>
                                                 ) : (
-                                                    <span className="text-muted-foreground">-</span>
+                                                    <span className="text-muted-foreground">
+                                                        -
+                                                    </span>
                                                 )}
                                             </TableCell>
-                                            <TableCell>{getStatusBadge(attempt.status)}</TableCell>
+                                            <TableCell>
+                                                {getStatusBadge(attempt.status)}
+                                            </TableCell>
                                             <TableCell className="text-right">
-                                                {attempt.status === 'in_progress' ? (
+                                                {attempt.status ===
+                                                'in_progress' ? (
                                                     <Button size="sm" asChild>
-                                                        <Link href={take.url(attempt.id)}>
+                                                        <Link
+                                                            href={take.url(
+                                                                attempt.id,
+                                                            )}
+                                                        >
                                                             Continue
                                                         </Link>
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="outline" size="sm" asChild>
-                                                        <Link href={results.url(attempt.id)}>
-                                                            <Eye className="h-4 w-4 mr-1" />
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        asChild
+                                                    >
+                                                        <Link
+                                                            href={results.url(
+                                                                attempt.id,
+                                                            )}
+                                                        >
+                                                            <Eye className="mr-1 h-4 w-4" />
                                                             View
                                                         </Link>
                                                     </Button>
@@ -181,25 +231,30 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
 
                         {/* Pagination */}
                         {attempts.last_page > 1 && (
-                            <div className="flex justify-center gap-2 mt-6">
-                                {Array.from({ length: attempts.last_page }, (_, i) => i + 1).map(
-                                    (page) => (
-                                        <Button
-                                            key={page}
-                                            variant={
-                                                page === attempts.current_page
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            size="sm"
-                                            asChild
+                            <div className="mt-6 flex justify-center gap-2">
+                                {Array.from(
+                                    { length: attempts.last_page },
+                                    (_, i) => i + 1,
+                                ).map((page) => (
+                                    <Button
+                                        key={page}
+                                        variant={
+                                            page === attempts.current_page
+                                                ? 'default'
+                                                : 'outline'
+                                        }
+                                        size="sm"
+                                        asChild
+                                    >
+                                        <Link
+                                            href={historyRoute.url({
+                                                query: { page },
+                                            })}
                                         >
-                                            <Link href={historyRoute.url({ query: { page } })}>
-                                                {page}
-                                            </Link>
-                                        </Button>
-                                    ),
-                                )}
+                                            {page}
+                                        </Link>
+                                    </Button>
+                                ))}
                             </div>
                         )}
                     </CardContent>

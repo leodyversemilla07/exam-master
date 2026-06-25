@@ -1,3 +1,20 @@
+import { Link, usePage } from '@inertiajs/react';
+import {
+    LayoutGrid,
+    BookOpen,
+    TableProperties,
+    BookMarked,
+    Folder,
+    Users,
+    ClipboardList,
+    MessageSquare,
+    BarChart3,
+    ScrollText,
+    Activity,
+    PlayCircle,
+    GraduationCap,
+    Clock,
+} from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -22,24 +39,7 @@ import { index as systemLogs } from '@/routes/system-logs';
 import { index as queueMonitor } from '@/routes/queue-monitor';
 import { dashboard as studentDashboard } from '@/routes/student';
 import { history as examHistory } from '@/routes/student/exam';
-import { type NavItem, type SharedData } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
-import {
-    LayoutGrid,
-    BookOpen,
-    TableProperties,
-    BookMarked,
-    Folder,
-    Users,
-    ClipboardList,
-    MessageSquare,
-    BarChart3,
-    ScrollText,
-    Activity,
-    PlayCircle,
-    GraduationCap,
-    Clock,
-} from 'lucide-react';
+import type { NavItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -141,6 +141,7 @@ export function AppSidebar() {
         if (!item.permission) {
             return true;
         }
+
         return userPermissions.includes(item.permission);
     });
 
@@ -148,9 +149,11 @@ export function AppSidebar() {
         if (item.role) {
             return userRoles.includes(item.role);
         }
+
         if (item.permission) {
             return userPermissions.includes(item.permission);
         }
+
         return true;
     });
 

@@ -1,8 +1,8 @@
+import { Form, Head } from '@inertiajs/react';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
-import { Form, Head } from '@inertiajs/react';
 import { send as verificationSend } from '@/routes/verification';
 import { logout as logoutRoute } from '@/routes';
 
@@ -16,12 +16,16 @@ export default function VerifyEmail({ status }: { status?: string }) {
 
             {status === 'verification-link-sent' && (
                 <div className="mb-4 text-center text-sm font-medium text-success">
-                    A new verification link has been sent to the email address you provided during
-                    registration.
+                    A new verification link has been sent to the email address
+                    you provided during registration.
                 </div>
             )}
 
-            <Form action={verificationSend.url()} method="post" className="space-y-6 text-center">
+            <Form
+                action={verificationSend.url()}
+                method="post"
+                className="space-y-6 text-center"
+            >
                 {({ processing }) => (
                     <>
                         <Button disabled={processing} variant="secondary">

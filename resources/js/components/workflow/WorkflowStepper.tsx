@@ -1,12 +1,20 @@
 import { router } from '@inertiajs/react';
-import { Exam, ExamQuestion, ExamSession, Module, TosGenerate } from '@/types/models';
 import { useState } from 'react';
 import { Check } from 'lucide-react';
+import type {
+    Exam,
+    ExamQuestion,
+    ExamSession,
+    Module,
+    TosGenerate,
+} from '@/types/models';
 import Step1TosForm from '@/components/workflow/steps/Step1TosForm';
 import Step2Generating from '@/components/workflow/steps/Step2Generating';
 import Step3ReviewQuestions from '@/components/workflow/steps/Step3ReviewQuestions';
 import Step4BuildExam from '@/components/workflow/steps/Step4BuildExam';
-import Step5Schedule, { Step5Done } from '@/components/workflow/steps/Step5Schedule';
+import Step5Schedule, {
+    Step5Done,
+} from '@/components/workflow/steps/Step5Schedule';
 
 interface Props {
     module: Module;
@@ -25,7 +33,10 @@ const STEP_LABELS: Record<number, string> = {
     5: 'Schedule',
 };
 
-function deriveStep(latestTos: Props['latestTos'], latestExam: Props['latestExam']): Step {
+function deriveStep(
+    latestTos: Props['latestTos'],
+    latestExam: Props['latestExam'],
+): Step {
     if (latestTos === null) {
         return 1;
     }
@@ -80,7 +91,11 @@ function StepIndicator({
                           : 'bg-muted text-muted-foreground'
                 }`}
             >
-                {status === 'completed' ? <Check className="size-4" /> : stepNumber}
+                {status === 'completed' ? (
+                    <Check className="size-4" />
+                ) : (
+                    stepNumber
+                )}
             </div>
             <span
                 className={`text-xs font-medium ${
@@ -104,16 +119,22 @@ export default function WorkflowStepper({
     availableQuestions,
 }: Props) {
     const derivedStep = deriveStep(latestTos, latestExam);
-    const [createdSession, setCreatedSession] = useState<ExamSession | null>(null);
+    const [createdSession, setCreatedSession] = useState<ExamSession | null>(
+        null,
+    );
 
     const reloadWorkflow = () => {
-        router.reload({ only: ['latestTos', 'latestExam', 'availableQuestions'] });
+        router.reload({
+            only: ['latestTos', 'latestExam', 'availableQuestions'],
+        });
     };
 
     const currentStep = derivedStep;
     const numericStep = currentStep === 'done' ? 6 : (currentStep as number);
 
-    const getStepStatus = (step: number): 'completed' | 'active' | 'upcoming' => {
+    const getStepStatus = (
+        step: number,
+    ): 'completed' | 'active' | 'upcoming' => {
         if (currentStep === 'done' || numericStep > step) {
             return 'completed';
         }
@@ -140,7 +161,9 @@ export default function WorkflowStepper({
                             {idx < 4 && (
                                 <div
                                     className={`mx-1 mb-5 h-px w-10 transition-colors ${
-                                        numericStep > step ? 'bg-success' : 'bg-muted'
+                                        numericStep > step
+                                            ? 'bg-success'
+                                            : 'bg-muted'
                                     }`}
                                 />
                             )}
@@ -162,11 +185,17 @@ export default function WorkflowStepper({
                 )}
 
                 {currentStep === 2 && latestTos !== null && (
-                    <Step2Generating tos={latestTos} onAdvance={reloadWorkflow} />
+                    <Step2Generating
+                        tos={latestTos}
+                        onAdvance={reloadWorkflow}
+                    />
                 )}
 
                 {currentStep === 3 && latestTos !== null && (
-                    <Step3ReviewQuestions tos={latestTos} onAdvance={reloadWorkflow} />
+                    <Step3ReviewQuestions
+                        tos={latestTos}
+                        onAdvance={reloadWorkflow}
+                    />
                 )}
 
                 {currentStep === 4 && latestTos !== null && (
@@ -190,7 +219,10 @@ export default function WorkflowStepper({
                 )}
 
                 {currentStep === 'done' && latestExam !== null && (
-                    <Step5Done exam={latestExam} session={createdSession ?? ({} as ExamSession)} />
+                    <Step5Done
+                        exam={latestExam}
+                        session={createdSession ?? ({} as ExamSession)}
+                    />
                 )}
             </div>
         </div>

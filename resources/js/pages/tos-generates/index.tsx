@@ -1,12 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Head, Link, router } from '@inertiajs/react';
+import { Plus, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { index as tosIndex } from '@/routes/tos-generates';
 import { show as moduleShow, index as modulesIndex } from '@/routes/modules';
-import { Head, Link, router } from '@inertiajs/react';
-import { TosGenerate, Module } from '@/types/models';
-import { Plus, Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import type { TosGenerate, Module } from '@/types/models';
 import PageHeader from '@/components/page-header';
 
 interface PageProps {
@@ -38,14 +44,16 @@ const statusIcons = {
     failed: AlertCircle,
 };
 
-const breadcrumbs = [{ title: 'Table of Specifications', href: tosIndex.url() }];
+const breadcrumbs = [
+    { title: 'Table of Specifications', href: tosIndex.url() },
+];
 
 export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Table of Specifications" />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Table of Specifications"
                     description="Generate and manage test specifications and questions"
@@ -64,7 +72,8 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                         <CardHeader>
                             <CardTitle>No TOS Generated Yet</CardTitle>
                             <CardDescription>
-                                Get started by generating your first table of specifications
+                                Get started by generating your first table of
+                                specifications
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -81,19 +90,29 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {tosGenerates.data.map((tos) => {
                                 const StatusIcon = statusIcons[tos.status];
+
                                 return (
-                                    <Card key={tos.id} className="group relative">
+                                    <Card
+                                        key={tos.id}
+                                        className="group relative"
+                                    >
                                         <CardHeader>
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-2">
+                                                    <div className="mb-2 flex items-center gap-2">
                                                         <Badge
                                                             variant="outline"
                                                             className="font-mono text-xs"
                                                         >
                                                             {tos.module?.code}
                                                         </Badge>
-                                                        <Badge className={statusColors[tos.status]}>
+                                                        <Badge
+                                                            className={
+                                                                statusColors[
+                                                                    tos.status
+                                                                ]
+                                                            }
+                                                        >
                                                             <StatusIcon
                                                                 className={`mr-1 size-3 ${tos.status === 'generating' ? 'animate-spin' : ''}`}
                                                             />
@@ -101,7 +120,8 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                                         </Badge>
                                                     </div>
                                                     <CardTitle className="text-lg">
-                                                        {tos.subject} - {tos.grade_level}
+                                                        {tos.subject} -{' '}
+                                                        {tos.grade_level}
                                                     </CardTitle>
                                                     <CardDescription className="mt-1">
                                                         {tos.module?.name}
@@ -116,7 +136,9 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                                     <span className="text-muted-foreground">
                                                         Total Items:
                                                     </span>
-                                                    <p className="font-medium">{tos.total_items}</p>
+                                                    <p className="font-medium">
+                                                        {tos.total_items}
+                                                    </p>
                                                 </div>
                                                 <div>
                                                     <span className="text-muted-foreground">
@@ -127,20 +149,32 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                                     </p>
                                                 </div>
                                                 {tos.question_types &&
-                                                    Object.values(tos.question_types).some(
+                                                    Object.values(
+                                                        tos.question_types,
+                                                    ).some(
                                                         (count) => count > 0,
                                                     ) && (
                                                         <div>
                                                             <span className="text-muted-foreground">
                                                                 Types:
                                                             </span>
-                                                            <p className="font-medium text-sm">
-                                                                {Object.entries(tos.question_types)
+                                                            <p className="text-sm font-medium">
+                                                                {Object.entries(
+                                                                    tos.question_types,
+                                                                )
                                                                     .filter(
-                                                                        ([_, count]) => count > 0,
+                                                                        ([
+                                                                            _,
+                                                                            count,
+                                                                        ]) =>
+                                                                            count >
+                                                                            0,
                                                                     )
                                                                     .map(
-                                                                        ([type, count]) =>
+                                                                        ([
+                                                                            type,
+                                                                            count,
+                                                                        ]) =>
                                                                             `${count} ${type.replace('_', ' ')}`,
                                                                     )
                                                                     .join(', ')}
@@ -158,30 +192,33 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                             </div>
 
                                             {/* Cognitive Levels */}
-                                            <div className="pt-2 border-t">
-                                                <p className="text-sm text-muted-foreground mb-2">
+                                            <div className="border-t pt-2">
+                                                <p className="mb-2 text-sm text-muted-foreground">
                                                     Cognitive Levels:
                                                 </p>
                                                 <div className="flex flex-wrap gap-1">
-                                                    {Object.entries(tos.cognitive_levels).map(
-                                                        ([level, count]) =>
-                                                            count > 0 ? (
-                                                                <Badge
-                                                                    key={level}
-                                                                    variant="secondary"
-                                                                    className="text-xs"
-                                                                >
-                                                                    {level}: {count}
-                                                                </Badge>
-                                                            ) : null,
+                                                    {Object.entries(
+                                                        tos.cognitive_levels,
+                                                    ).map(([level, count]) =>
+                                                        count > 0 ? (
+                                                            <Badge
+                                                                key={level}
+                                                                variant="secondary"
+                                                                className="text-xs"
+                                                            >
+                                                                {level}: {count}
+                                                            </Badge>
+                                                        ) : null,
                                                     )}
                                                 </div>
                                             </div>
 
                                             {/* Actions */}
-                                            <div className="flex items-center gap-2 pt-2 border-t">
+                                            <div className="flex items-center gap-2 border-t pt-2">
                                                 <Link
-                                                    href={moduleShow.url(tos.module_id)}
+                                                    href={moduleShow.url(
+                                                        tos.module_id,
+                                                    )}
                                                     className="flex-1"
                                                 >
                                                     <Button
@@ -203,18 +240,24 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                         {tosGenerates.last_page > 1 && (
                             <div className="flex items-center justify-between">
                                 <p className="text-sm text-muted-foreground">
-                                    Showing {tosGenerates.data.length} of {tosGenerates.total} TOS
-                                    generations
+                                    Showing {tosGenerates.data.length} of{' '}
+                                    {tosGenerates.total} TOS generations
                                 </p>
                                 <div className="flex items-center gap-2">
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        disabled={tosGenerates.current_page === 1}
+                                        disabled={
+                                            tosGenerates.current_page === 1
+                                        }
                                         onClick={() =>
                                             router.get(
                                                 tosIndex.url({
-                                                    query: { page: tosGenerates.current_page - 1 },
+                                                    query: {
+                                                        page:
+                                                            tosGenerates.current_page -
+                                                            1,
+                                                    },
                                                 }),
                                             )
                                         }
@@ -222,18 +265,24 @@ export default function TosGeneratesIndex({ tosGenerates }: PageProps) {
                                         Previous
                                     </Button>
                                     <span className="text-sm">
-                                        Page {tosGenerates.current_page} of {tosGenerates.last_page}
+                                        Page {tosGenerates.current_page} of{' '}
+                                        {tosGenerates.last_page}
                                     </span>
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         disabled={
-                                            tosGenerates.current_page === tosGenerates.last_page
+                                            tosGenerates.current_page ===
+                                            tosGenerates.last_page
                                         }
                                         onClick={() =>
                                             router.get(
                                                 tosIndex.url({
-                                                    query: { page: tosGenerates.current_page + 1 },
+                                                    query: {
+                                                        page:
+                                                            tosGenerates.current_page +
+                                                            1,
+                                                    },
                                                 }),
                                             )
                                         }

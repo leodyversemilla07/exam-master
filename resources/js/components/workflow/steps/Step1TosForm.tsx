@@ -1,3 +1,7 @@
+import { AlertCircle, Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
+import { useForm, router, usePage } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,11 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
-import { useForm, router, usePage } from '@inertiajs/react';
-import { Module, TosGenerate } from '@/types/models';
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import type { Module, TosGenerate } from '@/types/models';
 import { store } from '@/actions/App/Http/Controllers/TosGenerateController';
 import { extractTosFromModule } from '@/actions/App/Http/Controllers/ModuleController';
 
@@ -27,7 +27,10 @@ interface FlashProps {
         tosExtraction?: {
             success: boolean;
             data?: {
-                learning_objectives?: Array<{ code: string; description: string }>;
+                learning_objectives?: Array<{
+                    code: string;
+                    description: string;
+                }>;
                 cognitive_levels?: {
                     remembering?: number;
                     understanding?: number;
@@ -54,11 +57,13 @@ interface FlashProps {
 
 interface Props {
     module: Module;
-    existingTos?: TosGenerate | null;
     onCreated: (tos: TosGenerate) => void;
 }
 
-export default function Step1TosForm({ module, existingTos, onCreated }: Props) {
+export default function Step1TosForm({
+    module,
+    onCreated,
+}: Props) {
     const { props } = usePage<FlashProps>();
     const [objectives, setObjectives] = useState<LearningObjective[]>([
         { code: '', description: '' },
@@ -94,6 +99,7 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
     // Handle TOS extraction flash data
     useEffect(() => {
         const tosExtraction = props.flash?.tosExtraction;
+
         if (!tosExtraction) {
             return;
         }
@@ -103,7 +109,10 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
         if (tosExtraction.success && tosExtraction.data) {
             const data = tosExtraction.data;
 
-            if (data.learning_objectives && data.learning_objectives.length > 0) {
+            if (
+                data.learning_objectives &&
+                data.learning_objectives.length > 0
+            ) {
                 setObjectives(data.learning_objectives);
             }
 
@@ -134,7 +143,8 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
             });
         } else if (tosExtraction.error) {
             toast.error('Failed to extract TOS data', {
-                description: tosExtraction.error || 'Could not analyze the PDF file.',
+                description:
+                    tosExtraction.error || 'Could not analyze the PDF file.',
             });
         }
     }, [props.flash?.tosExtraction]);
@@ -155,7 +165,8 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                 onError: () => {
                     setIsExtracting(false);
                     toast.error('Extraction failed', {
-                        description: 'An error occurred while analyzing the PDF.',
+                        description:
+                            'An error occurred while analyzing the PDF.',
                     });
                 },
             },
@@ -174,7 +185,11 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
         form.setData('learning_objectives', updated);
     };
 
-    const updateObjective = (index: number, field: keyof LearningObjective, value: string) => {
+    const updateObjective = (
+        index: number,
+        field: keyof LearningObjective,
+        value: string,
+    ) => {
         const updated = [...objectives];
         updated[index][field] = value;
         setObjectives(updated);
@@ -182,18 +197,26 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
     };
 
     const updateCognitiveLevel = (level: string, value: number) => {
-        form.setData('cognitive_levels', { ...form.data.cognitive_levels, [level]: value });
+        form.setData('cognitive_levels', {
+            ...form.data.cognitive_levels,
+            [level]: value,
+        });
     };
 
     const updateQuestionType = (type: string, value: number) => {
-        form.setData('question_types', { ...form.data.question_types, [type]: value });
+        form.setData('question_types', {
+            ...form.data.question_types,
+            [type]: value,
+        });
     };
 
-    const totalCognitiveLevels = Object.values(form.data.cognitive_levels).reduce(
+    const totalCognitiveLevels = Object.values(
+        form.data.cognitive_levels,
+    ).reduce((s, v) => s + v, 0);
+    const totalQuestionTypes = Object.values(form.data.question_types).reduce(
         (s, v) => s + v,
         0,
     );
-    const totalQuestionTypes = Object.values(form.data.question_types).reduce((s, v) => s + v, 0);
     const isValid =
         totalCognitiveLevels === form.data.total_items &&
         totalQuestionTypes === form.data.total_items;
@@ -205,9 +228,9 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
             onSuccess: (page) => {
                 // The controller redirects to the TOS show page on success.
                 // We extract the created TOS from the flash or page props.
-                const tos = (page.props as Record<string, unknown>).tosGenerate as
-                    | TosGenerate
-                    | undefined;
+                const tos = (page.props as Record<string, unknown>)
+                    .tosGenerate as TosGenerate | undefined;
+
                 if (tos) {
                     onCreated(tos);
                 }
@@ -223,7 +246,8 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                     <div>
                         <p className="text-sm font-medium">PDF available</p>
                         <p className="text-xs text-muted-foreground">
-                            Auto-fill the TOS fields from your uploaded module PDF using AI.
+                            Auto-fill the TOS fields from your uploaded module
+                            PDF using AI.
                         </p>
                     </div>
                     <Button
@@ -258,11 +282,15 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                         <Input
                             id="wf-subject"
                             value={form.data.subject}
-                            onChange={(e) => form.setData('subject', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('subject', e.target.value)
+                            }
                             placeholder="e.g., Mathematics"
                         />
                         {form.errors.subject && (
-                            <p className="text-sm text-destructive">{form.errors.subject}</p>
+                            <p className="text-sm text-destructive">
+                                {form.errors.subject}
+                            </p>
                         )}
                     </div>
                     <div className="space-y-2">
@@ -270,11 +298,15 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                         <Input
                             id="wf-grade_level"
                             value={form.data.grade_level}
-                            onChange={(e) => form.setData('grade_level', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('grade_level', e.target.value)
+                            }
                             placeholder="e.g., Grade 10"
                         />
                         {form.errors.grade_level && (
-                            <p className="text-sm text-destructive">{form.errors.grade_level}</p>
+                            <p className="text-sm text-destructive">
+                                {form.errors.grade_level}
+                            </p>
                         )}
                     </div>
                     <div className="space-y-2">
@@ -282,7 +314,9 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                         <Input
                             id="wf-quarter"
                             value={form.data.quarter}
-                            onChange={(e) => form.setData('quarter', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('quarter', e.target.value)
+                            }
                             placeholder="e.g., 1st Quarter"
                         />
                     </div>
@@ -295,11 +329,16 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                             max="200"
                             value={form.data.total_items}
                             onChange={(e) =>
-                                form.setData('total_items', parseInt(e.target.value) || 0)
+                                form.setData(
+                                    'total_items',
+                                    parseInt(e.target.value) || 0,
+                                )
                             }
                         />
                         {form.errors.total_items && (
-                            <p className="text-sm text-destructive">{form.errors.total_items}</p>
+                            <p className="text-sm text-destructive">
+                                {form.errors.total_items}
+                            </p>
                         )}
                     </div>
                 </div>
@@ -308,19 +347,32 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
             {/* Learning Objectives */}
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">Learning Objectives</h3>
-                    <Button type="button" variant="outline" size="sm" onClick={addObjective}>
+                    <h3 className="text-sm font-semibold">
+                        Learning Objectives
+                    </h3>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addObjective}
+                    >
                         <Plus className="mr-1.5 size-3.5" />
                         Add
                     </Button>
                 </div>
                 {objectives.map((objective, index) => (
-                    <div key={index} className="flex gap-3 items-start">
+                    <div key={index} className="flex items-start gap-3">
                         <div className="w-28 shrink-0 space-y-1">
                             <Label className="text-xs">Code</Label>
                             <Input
                                 value={objective.code}
-                                onChange={(e) => updateObjective(index, 'code', e.target.value)}
+                                onChange={(e) =>
+                                    updateObjective(
+                                        index,
+                                        'code',
+                                        e.target.value,
+                                    )
+                                }
                                 placeholder="M10-A1"
                                 className="h-8 text-sm"
                             />
@@ -330,7 +382,11 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                             <Input
                                 value={objective.description}
                                 onChange={(e) =>
-                                    updateObjective(index, 'description', e.target.value)
+                                    updateObjective(
+                                        index,
+                                        'description',
+                                        e.target.value,
+                                    )
                                 }
                                 placeholder="Describe the learning objective"
                                 className="h-8 text-sm"
@@ -354,17 +410,22 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
             {/* Cognitive Levels */}
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">Cognitive Levels (Bloom's Taxonomy)</h3>
+                    <h3 className="text-sm font-semibold">
+                        Cognitive Levels (Bloom's Taxonomy)
+                    </h3>
                     <span
                         className={`text-xs font-medium ${totalCognitiveLevels !== form.data.total_items ? 'text-destructive' : 'text-success'}`}
                     >
                         {totalCognitiveLevels} / {form.data.total_items}
                     </span>
                 </div>
-                <div className="grid gap-3 grid-cols-3">
+                <div className="grid grid-cols-3 gap-3">
                     {Object.keys(form.data.cognitive_levels).map((level) => (
                         <div key={level} className="space-y-1">
-                            <Label htmlFor={`wf-cog-${level}`} className="text-xs capitalize">
+                            <Label
+                                htmlFor={`wf-cog-${level}`}
+                                className="text-xs capitalize"
+                            >
                                 {level}
                             </Label>
                             <Input
@@ -377,7 +438,10 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                                     ]
                                 }
                                 onChange={(e) =>
-                                    updateCognitiveLevel(level, parseInt(e.target.value) || 0)
+                                    updateCognitiveLevel(
+                                        level,
+                                        parseInt(e.target.value) || 0,
+                                    )
                                 }
                                 className="h-8 text-sm"
                             />
@@ -386,10 +450,10 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                 </div>
                 {totalCognitiveLevels !== form.data.total_items && (
                     <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3">
-                        <AlertCircle className="size-4 text-destructive mt-0.5 shrink-0" />
+                        <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
                         <p className="text-sm text-destructive">
-                            Sum ({totalCognitiveLevels}) must equal total items (
-                            {form.data.total_items})
+                            Sum ({totalCognitiveLevels}) must equal total items
+                            ({form.data.total_items})
                         </p>
                     </div>
                 )}
@@ -398,17 +462,22 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
             {/* Question Types */}
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">Question Type Distribution</h3>
+                    <h3 className="text-sm font-semibold">
+                        Question Type Distribution
+                    </h3>
                     <span
                         className={`text-xs font-medium ${totalQuestionTypes !== form.data.total_items ? 'text-destructive' : 'text-success'}`}
                     >
                         {totalQuestionTypes} / {form.data.total_items}
                     </span>
                 </div>
-                <div className="grid gap-3 grid-cols-2">
+                <div className="grid grid-cols-2 gap-3">
                     {Object.keys(form.data.question_types).map((type) => (
                         <div key={type} className="space-y-1">
-                            <Label htmlFor={`wf-qt-${type}`} className="text-xs capitalize">
+                            <Label
+                                htmlFor={`wf-qt-${type}`}
+                                className="text-xs capitalize"
+                            >
                                 {type.replace('_', ' ')}
                             </Label>
                             <Input
@@ -421,7 +490,10 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                                     ]
                                 }
                                 onChange={(e) =>
-                                    updateQuestionType(type, parseInt(e.target.value) || 0)
+                                    updateQuestionType(
+                                        type,
+                                        parseInt(e.target.value) || 0,
+                                    )
                                 }
                                 className="h-8 text-sm"
                             />
@@ -430,7 +502,7 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                 </div>
                 {totalQuestionTypes !== form.data.total_items && (
                     <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3">
-                        <AlertCircle className="size-4 text-destructive mt-0.5 shrink-0" />
+                        <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
                         <p className="text-sm text-destructive">
                             Sum ({totalQuestionTypes}) must equal total items (
                             {form.data.total_items})
@@ -445,7 +517,9 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                     <Label>Difficulty Level *</Label>
                     <Select
                         value={form.data.difficulty_level}
-                        onValueChange={(value) => form.setData('difficulty_level', value)}
+                        onValueChange={(value) =>
+                            form.setData('difficulty_level', value)
+                        }
                     >
                         <SelectTrigger>
                             <SelectValue />
@@ -462,7 +536,9 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
                     <Label>Language *</Label>
                     <Select
                         value={form.data.language}
-                        onValueChange={(value) => form.setData('language', value)}
+                        onValueChange={(value) =>
+                            form.setData('language', value)
+                        }
                     >
                         <SelectTrigger>
                             <SelectValue />
@@ -477,11 +553,15 @@ export default function Step1TosForm({ module, existingTos, onCreated }: Props) 
 
             {/* Additional Instructions */}
             <div className="space-y-2">
-                <Label htmlFor="wf-instructions">Additional Instructions (Optional)</Label>
+                <Label htmlFor="wf-instructions">
+                    Additional Instructions (Optional)
+                </Label>
                 <Textarea
                     id="wf-instructions"
                     value={form.data.additional_instructions}
-                    onChange={(e) => form.setData('additional_instructions', e.target.value)}
+                    onChange={(e) =>
+                        form.setData('additional_instructions', e.target.value)
+                    }
                     placeholder="Provide specific instructions for question generation..."
                     rows={3}
                 />

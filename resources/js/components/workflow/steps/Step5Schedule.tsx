@@ -1,3 +1,13 @@
+import { useForm } from '@inertiajs/react';
+import {
+    Save,
+    Calendar,
+    Clock,
+    Settings,
+    CheckCircle2,
+    ExternalLink,
+} from 'lucide-react';
+import { Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,11 +20,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useForm } from '@inertiajs/react';
-import { Exam, ExamSession } from '@/types/models';
-import { Save, Calendar, Clock, Settings, CheckCircle2, ExternalLink } from 'lucide-react';
+import type { Exam, ExamSession } from '@/types/models';
 import { store } from '@/routes/exam-sessions';
-import { Link } from '@inertiajs/react';
 
 interface Props {
     exam: Exam;
@@ -59,16 +66,18 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
 
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
-        return mins > 0 ? `${hours}h ${mins}m` : `${hours} hour${hours > 1 ? 's' : ''}`;
+
+        return mins > 0
+            ? `${hours}h ${mins}m`
+            : `${hours} hour${hours > 1 ? 's' : ''}`;
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(store.url(), {
             onSuccess: (page) => {
-                const session = (page.props as Record<string, unknown>).session as
-                    | ExamSession
-                    | undefined;
+                const session = (page.props as Record<string, unknown>)
+                    .session as ExamSession | undefined;
 
                 if (session) {
                     onAdvance(session);
@@ -82,7 +91,7 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
     return (
         <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-                <h3 className="font-semibold mb-1">Schedule Exam Session</h3>
+                <h3 className="mb-1 font-semibold">Schedule Exam Session</h3>
                 <p className="text-sm text-muted-foreground">
                     Create a session so students can take{' '}
                     <span className="font-medium">{exam.title}</span>.
@@ -104,7 +113,11 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                         onChange={(e) => setData('title', e.target.value)}
                         placeholder="e.g., Midterm Exam — Section A"
                     />
-                    {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+                    {errors.title && (
+                        <p className="text-sm text-destructive">
+                            {errors.title}
+                        </p>
+                    )}
                 </div>
 
                 <div className="space-y-2">
@@ -126,17 +139,21 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                     Schedule
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                         <Label htmlFor="wf5-start">Start Date & Time *</Label>
                         <Input
                             id="wf5-start"
                             type="datetime-local"
                             value={data.start_time}
-                            onChange={(e) => setData('start_time', e.target.value)}
+                            onChange={(e) =>
+                                setData('start_time', e.target.value)
+                            }
                         />
                         {errors.start_time && (
-                            <p className="text-sm text-destructive">{errors.start_time}</p>
+                            <p className="text-sm text-destructive">
+                                {errors.start_time}
+                            </p>
                         )}
                     </div>
 
@@ -146,22 +163,27 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                             id="wf5-end"
                             type="datetime-local"
                             value={data.end_time}
-                            onChange={(e) => setData('end_time', e.target.value)}
+                            onChange={(e) =>
+                                setData('end_time', e.target.value)
+                            }
                         />
                         {errors.end_time && (
-                            <p className="text-sm text-destructive">{errors.end_time}</p>
+                            <p className="text-sm text-destructive">
+                                {errors.end_time}
+                            </p>
                         )}
                     </div>
                 </div>
 
-                {sessionDurationMinutes !== null && sessionDurationMinutes > 0 && (
-                    <p className="text-sm text-muted-foreground rounded-md bg-muted px-3 py-2">
-                        Duration:{' '}
-                        <span className="font-medium text-foreground">
-                            {formatDuration(sessionDurationMinutes)}
-                        </span>
-                    </p>
-                )}
+                {sessionDurationMinutes !== null &&
+                    sessionDurationMinutes > 0 && (
+                        <p className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
+                            Duration:{' '}
+                            <span className="font-medium text-foreground">
+                                {formatDuration(sessionDurationMinutes)}
+                            </span>
+                        </p>
+                    )}
             </div>
 
             {/* Attempts */}
@@ -189,7 +211,9 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                         </SelectContent>
                     </Select>
                     {errors.max_attempts && (
-                        <p className="text-sm text-destructive">{errors.max_attempts}</p>
+                        <p className="text-sm text-destructive">
+                            {errors.max_attempts}
+                        </p>
                     )}
                 </div>
             </div>
@@ -203,7 +227,8 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                         {
                             key: 'shuffle_questions' as const,
                             label: 'Shuffle Questions',
-                            description: 'Randomize question order for each student',
+                            description:
+                                'Randomize question order for each student',
                         },
                         {
                             key: 'shuffle_options' as const,
@@ -218,19 +243,26 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                         {
                             key: 'show_correct_answers' as const,
                             label: 'Show Correct Answers',
-                            description: 'Show correct answers after submission',
+                            description:
+                                'Show correct answers after submission',
                         },
                         {
                             key: 'allow_review' as const,
                             label: 'Allow Review',
-                            description: 'Let students review answers after submission',
+                            description:
+                                'Let students review answers after submission',
                         },
                     ] as const
                 ).map(({ key, label, description }) => (
-                    <div key={key} className="flex items-center justify-between">
+                    <div
+                        key={key}
+                        className="flex items-center justify-between"
+                    >
                         <div>
                             <p className="text-sm font-medium">{label}</p>
-                            <p className="text-xs text-muted-foreground">{description}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {description}
+                            </p>
                         </div>
                         <Switch
                             checked={data[key]}
@@ -252,16 +284,25 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
 }
 
 /* ─── Done state shown by WorkflowStepper after session created ─── */
-export function Step5Done({ exam, session }: { exam: Exam; session: ExamSession }) {
+export function Step5Done({
+    exam,
+    session,
+}: {
+    exam: Exam;
+    session: ExamSession;
+}) {
     return (
         <div className="flex flex-col items-center gap-6 py-10 text-center">
             <div className="rounded-2xl bg-success/10 p-5">
                 <CheckCircle2 className="size-10 text-success" />
             </div>
             <div>
-                <h3 className="font-semibold text-lg mb-1">Workflow Complete!</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                    Your exam session has been created. Share the access code with students.
+                <h3 className="mb-1 text-lg font-semibold">
+                    Workflow Complete!
+                </h3>
+                <p className="max-w-sm text-sm text-muted-foreground">
+                    Your exam session has been created. Share the access code
+                    with students.
                 </p>
                 {session.access_code && (
                     <p className="mt-3 text-2xl font-bold tracking-widest text-primary">

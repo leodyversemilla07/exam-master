@@ -1,4 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Head, Link } from '@inertiajs/react';
+import {
+    Calculator,
+    TrendingUp,
+    AlertCircle,
+    CheckCircle2,
+    Plus,
+    BookOpen,
+} from 'lucide-react';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,10 +25,13 @@ import {
     EmptyTitle,
 } from '@/components/ui/empty';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link } from '@inertiajs/react';
 import { index as modulesIndex } from '@/routes/modules';
-import { Module, Topic, LearningObjective, CognitiveLevel } from '@/types/models';
-import { Calculator, TrendingUp, AlertCircle, CheckCircle2, Plus, BookOpen } from 'lucide-react';
+import type {
+    Module,
+    Topic,
+    LearningObjective,
+    CognitiveLevel,
+} from '@/types/models';
 import PageHeader from '@/components/page-header';
 
 interface PageProps {
@@ -78,7 +96,12 @@ const cognitiveLevelColors: Record<
         border: 'border-warning/20',
         bar: 'bg-warning',
     },
-    analyzing: { bg: 'bg-info/10', text: 'text-info', border: 'border-info/20', bar: 'bg-info' },
+    analyzing: {
+        bg: 'bg-info/10',
+        text: 'text-info',
+        border: 'border-info/20',
+        bar: 'bg-info',
+    },
     evaluating: {
         bg: 'bg-secondary/10',
         text: 'text-secondary',
@@ -119,14 +142,14 @@ export default function TosCalculatorIndex({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`TOS Calculator - ${module.name}`} />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 {/* Header */}
                 <PageHeader
                     title="TOS Calculator"
                     description={
                         <>
-                            Table of Specifications for <strong>{module.code}</strong> -{' '}
-                            {module.name}
+                            Table of Specifications for{' '}
+                            <strong>{module.code}</strong> - {module.name}
                         </>
                     }
                 />
@@ -138,10 +161,13 @@ export default function TosCalculatorIndex({
                             <EmptyMedia variant="icon">
                                 <BookOpen className="size-8" />
                             </EmptyMedia>
-                            <EmptyTitle>No Topics or Learning Objectives Yet</EmptyTitle>
+                            <EmptyTitle>
+                                No Topics or Learning Objectives Yet
+                            </EmptyTitle>
                             <EmptyDescription>
-                                To use the TOS Calculator, you need to add topics and learning
-                                objectives to this module first. These will be used to analyze the
+                                To use the TOS Calculator, you need to add
+                                topics and learning objectives to this module
+                                first. These will be used to analyze the
                                 distribution across Bloom's taxonomy levels.
                             </EmptyDescription>
                         </EmptyHeader>
@@ -154,7 +180,9 @@ export default function TosCalculatorIndex({
                                     </Button>
                                 </Link>
                                 <Link href={modulesIndex.url()}>
-                                    <Button variant="outline">Back to Modules</Button>
+                                    <Button variant="outline">
+                                        Back to Modules
+                                    </Button>
                                 </Link>
                             </div>
                         </EmptyContent>
@@ -192,9 +220,13 @@ export default function TosCalculatorIndex({
                                 <div className="text-2xl font-bold">
                                     {isNaN(statistics.average_per_topic)
                                         ? '0.0'
-                                        : statistics.average_per_topic.toFixed(1)}
+                                        : statistics.average_per_topic.toFixed(
+                                              1,
+                                          )}
                                 </div>
-                                <p className="text-xs text-muted-foreground">Learning objectives</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Learning objectives
+                                </p>
                             </CardContent>
                         </Card>
 
@@ -246,10 +278,12 @@ export default function TosCalculatorIndex({
                 {statistics.total_objectives > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Table of Specifications Matrix</CardTitle>
+                            <CardTitle>
+                                Table of Specifications Matrix
+                            </CardTitle>
                             <CardDescription>
-                                Distribution of learning objectives across topics and cognitive
-                                levels
+                                Distribution of learning objectives across
+                                topics and cognitive levels
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -257,7 +291,9 @@ export default function TosCalculatorIndex({
                                 <table className="w-full border-collapse text-sm">
                                     <thead>
                                         <tr className="border-b bg-muted/50">
-                                            <th className="p-2 text-left font-medium">Topic</th>
+                                            <th className="p-2 text-left font-medium">
+                                                Topic
+                                            </th>
                                             {cognitiveLevels.map((level) => (
                                                 <th
                                                     key={level}
@@ -266,8 +302,12 @@ export default function TosCalculatorIndex({
                                                     {level.slice(0, 3)}
                                                 </th>
                                             ))}
-                                            <th className="p-2 text-center font-medium">Total</th>
-                                            <th className="p-2 text-center font-medium">%</th>
+                                            <th className="p-2 text-center font-medium">
+                                                Total
+                                            </th>
+                                            <th className="p-2 text-center font-medium">
+                                                %
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -320,7 +360,9 @@ export default function TosCalculatorIndex({
                                                 <td className="p-2 text-center text-muted-foreground">
                                                     {isNaN(row.percentage)
                                                         ? '0.0'
-                                                        : row.percentage.toFixed(1)}
+                                                        : row.percentage.toFixed(
+                                                              1,
+                                                          )}
                                                     %
                                                 </td>
                                             </tr>
@@ -329,10 +371,16 @@ export default function TosCalculatorIndex({
                                             <td className="p-2">Total</td>
                                             {cognitiveLevels.map((level) => {
                                                 const dist = distribution.find(
-                                                    (d) => d.cognitive_level === level,
+                                                    (d) =>
+                                                        d.cognitive_level ===
+                                                        level,
                                                 );
+
                                                 return (
-                                                    <td key={level} className="p-2 text-center">
+                                                    <td
+                                                        key={level}
+                                                        className="p-2 text-center"
+                                                    >
                                                         {dist?.count || 0}
                                                     </td>
                                                 );
@@ -340,7 +388,9 @@ export default function TosCalculatorIndex({
                                             <td className="p-2 text-center">
                                                 {statistics.total_objectives}
                                             </td>
-                                            <td className="p-2 text-center">100%</td>
+                                            <td className="p-2 text-center">
+                                                100%
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -355,29 +405,43 @@ export default function TosCalculatorIndex({
                         {/* Distribution */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Cognitive Level Distribution</CardTitle>
+                                <CardTitle>
+                                    Cognitive Level Distribution
+                                </CardTitle>
                                 <CardDescription>
                                     Breakdown by Bloom's taxonomy level
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {distribution.map((item) => {
-                                    const colors = cognitiveLevelColors[item.cognitive_level];
-                                    const percentage = isNaN(item.percentage) ? 0 : item.percentage;
+                                    const colors =
+                                        cognitiveLevelColors[
+                                            item.cognitive_level
+                                        ];
+                                    const percentage = isNaN(item.percentage)
+                                        ? 0
+                                        : item.percentage;
+
                                     return (
-                                        <div key={item.cognitive_level} className="space-y-2">
+                                        <div
+                                            key={item.cognitive_level}
+                                            className="space-y-2"
+                                        >
                                             <div className="flex items-center justify-between text-sm">
                                                 <span className="font-medium capitalize">
                                                     {item.cognitive_level}
                                                 </span>
                                                 <span className="text-muted-foreground">
-                                                    {item.count} ({percentage.toFixed(1)}%)
+                                                    {item.count} (
+                                                    {percentage.toFixed(1)}%)
                                                 </span>
                                             </div>
                                             <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                                                 <div
                                                     className={`h-full ${colors.bar}`}
-                                                    style={{ width: `${percentage}%` }}
+                                                    style={{
+                                                        width: `${percentage}%`,
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -390,15 +454,21 @@ export default function TosCalculatorIndex({
                         <Card>
                             <CardHeader>
                                 <CardTitle>Balance Analysis</CardTitle>
-                                <CardDescription>Ideal range: 10-25% per level</CardDescription>
+                                <CardDescription>
+                                    Ideal range: 10-25% per level
+                                </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 {balance.map((item) => {
-                                    const colors = cognitiveLevelColors[item.level];
+                                    const colors =
+                                        cognitiveLevelColors[item.level];
                                     const percentage =
                                         statistics.total_objectives > 0
-                                            ? (item.count / statistics.total_objectives) * 100
+                                            ? (item.count /
+                                                  statistics.total_objectives) *
+                                              100
                                             : 0;
+
                                     return (
                                         <div
                                             key={item.level}
@@ -417,8 +487,9 @@ export default function TosCalculatorIndex({
                                                         {item.level}
                                                     </div>
                                                     <div className="text-xs text-muted-foreground">
-                                                        {item.count} objectives (
-                                                        {percentage.toFixed(1)}%)
+                                                        {item.count} objectives
+                                                        ({percentage.toFixed(1)}
+                                                        %)
                                                     </div>
                                                 </div>
                                             </div>
@@ -430,10 +501,10 @@ export default function TosCalculatorIndex({
                                                 }
                                                 className={
                                                     item.status === 'balanced'
-                                                        ? 'bg-success/10 text-success border-success/20'
+                                                        ? 'border-success/20 bg-success/10 text-success'
                                                         : item.status === 'over'
-                                                          ? 'bg-destructive/10 text-destructive border-destructive/20'
-                                                          : 'bg-warning/10 text-warning border-warning/20'
+                                                          ? 'border-destructive/20 bg-destructive/10 text-destructive'
+                                                          : 'border-warning/20 bg-warning/10 text-warning'
                                                 }
                                             >
                                                 {item.status === 'balanced'

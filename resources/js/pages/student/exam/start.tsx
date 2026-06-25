@@ -1,15 +1,26 @@
-import AppLayout from '@/layouts/app-layout';
-import { PageProps } from '@/types';
-import { ExamAttempt, ExamSession } from '@/types/models';
 import { Head, Link, router } from '@inertiajs/react';
+import {
+    Clock,
+    Play,
+    AlertTriangle,
+    FileText,
+    User,
+    Target,
+    RotateCcw,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
+import type { ExamAttempt, ExamSession } from '@/types/models';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import PageHeader from '@/components/page-header';
-import { Clock, Play, AlertTriangle, FileText, User, Target, RotateCcw } from 'lucide-react';
-import { format } from 'date-fns';
-import { startAttempt, take } from '@/actions/App/Http/Controllers/StudentExamController';
+import {
+    startAttempt,
+    take,
+} from '@/actions/App/Http/Controllers/StudentExamController';
 import DashboardController from '@/actions/App/Http/Controllers/DashboardController';
 
 interface ExamStartProps extends PageProps {
@@ -18,14 +29,24 @@ interface ExamStartProps extends PageProps {
     canAttempt: boolean;
 }
 
-export default function ExamStart({ session, previousAttempts, canAttempt }: ExamStartProps) {
+export default function ExamStart({
+    session,
+    previousAttempts,
+    canAttempt,
+}: ExamStartProps) {
     const handleStartExam = () => {
         router.post(startAttempt.url(session.id));
     };
 
     const getScoreColor = (percentage: number) => {
-        if (percentage >= 80) return 'text-green-600';
-        if (percentage >= 60) return 'text-yellow-600';
+        if (percentage >= 80) {
+            return 'text-green-600';
+        }
+
+        if (percentage >= 60) {
+            return 'text-yellow-600';
+        }
+
         return 'text-red-600';
     };
 
@@ -35,10 +56,12 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
         <AppLayout>
             <Head title={`Start Exam: ${session.title}`} />
 
-            <div className="max-w-3xl mx-auto">
+            <div className="mx-auto max-w-3xl">
                 <PageHeader
                     title={session.title}
-                    description={session.description || 'Ready to begin your exam'}
+                    description={
+                        session.description || 'Ready to begin your exam'
+                    }
                 />
 
                 <div className="space-y-6">
@@ -89,7 +112,8 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                                                 Time Limit:
                                             </span>
                                             <span className="font-medium">
-                                                {session.time_limit_minutes} minutes
+                                                {session.time_limit_minutes}{' '}
+                                                minutes
                                             </span>
                                         </div>
                                     )}
@@ -100,10 +124,13 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                                         </span>
                                         <Badge
                                             variant={
-                                                remainingAttempts > 0 ? 'default' : 'destructive'
+                                                remainingAttempts > 0
+                                                    ? 'default'
+                                                    : 'destructive'
                                             }
                                         >
-                                            {remainingAttempts} / {session.max_attempts}
+                                            {remainingAttempts} /{' '}
+                                            {session.max_attempts}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -111,7 +138,9 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                                         <span className="text-sm text-muted-foreground">
                                             Instructor:
                                         </span>
-                                        <span className="font-medium">{session.creator?.name}</span>
+                                        <span className="font-medium">
+                                            {session.creator?.name}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -119,16 +148,24 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                             {/* Exam Settings */}
                             <div className="mt-6 flex flex-wrap gap-2">
                                 {session.shuffle_questions && (
-                                    <Badge variant="outline">Questions shuffled</Badge>
+                                    <Badge variant="outline">
+                                        Questions shuffled
+                                    </Badge>
                                 )}
                                 {session.shuffle_options && (
-                                    <Badge variant="outline">Options shuffled</Badge>
+                                    <Badge variant="outline">
+                                        Options shuffled
+                                    </Badge>
                                 )}
                                 {session.show_results_immediately && (
-                                    <Badge variant="outline">Immediate results</Badge>
+                                    <Badge variant="outline">
+                                        Immediate results
+                                    </Badge>
                                 )}
                                 {session.allow_review && (
-                                    <Badge variant="outline">Review allowed</Badge>
+                                    <Badge variant="outline">
+                                        Review allowed
+                                    </Badge>
                                 )}
                             </div>
                         </CardContent>
@@ -159,25 +196,33 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                                     {previousAttempts.map((attempt) => (
                                         <div
                                             key={attempt.id}
-                                            className="flex items-center justify-between p-3 border rounded-lg"
+                                            className="flex items-center justify-between rounded-lg border p-3"
                                         >
                                             <div>
                                                 <p className="font-medium">
-                                                    Attempt #{attempt.attempt_number}
+                                                    Attempt #
+                                                    {attempt.attempt_number}
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {attempt.submitted_at
                                                         ? format(
-                                                              new Date(attempt.submitted_at),
+                                                              new Date(
+                                                                  attempt.submitted_at,
+                                                              ),
                                                               "MMM d, yyyy 'at' h:mm a",
                                                           )
                                                         : 'In progress'}
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                {attempt.status === 'in_progress' ? (
+                                                {attempt.status ===
+                                                'in_progress' ? (
                                                     <Button asChild size="sm">
-                                                        <Link href={take.url(attempt.id)}>
+                                                        <Link
+                                                            href={take.url(
+                                                                attempt.id,
+                                                            )}
+                                                        >
                                                             Continue
                                                         </Link>
                                                     </Button>
@@ -186,11 +231,20 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                                                         <p
                                                             className={`text-lg font-bold ${getScoreColor(attempt.percentage || 0)}`}
                                                         >
-                                                            {attempt.percentage?.toFixed(1)}%
+                                                            {attempt.percentage?.toFixed(
+                                                                1,
+                                                            )}
+                                                            %
                                                         </p>
                                                         <p className="text-sm text-muted-foreground">
-                                                            {attempt.correct_answers} /{' '}
-                                                            {attempt.total_questions} correct
+                                                            {
+                                                                attempt.correct_answers
+                                                            }{' '}
+                                                            /{' '}
+                                                            {
+                                                                attempt.total_questions
+                                                            }{' '}
+                                                            correct
                                                         </p>
                                                     </>
                                                 )}
@@ -208,9 +262,11 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                             <AlertTriangle className="h-4 w-4" />
                             <AlertTitle>Timed Exam</AlertTitle>
                             <AlertDescription>
-                                This exam has a time limit of {session.time_limit_minutes} minutes.
-                                Once you start, the timer will begin counting down. Make sure you
-                                have a stable internet connection before starting.
+                                This exam has a time limit of{' '}
+                                {session.time_limit_minutes} minutes. Once you
+                                start, the timer will begin counting down. Make
+                                sure you have a stable internet connection
+                                before starting.
                             </AlertDescription>
                         </Alert>
                     )}
@@ -219,23 +275,26 @@ export default function ExamStart({ session, previousAttempts, canAttempt }: Exa
                     <Card>
                         <CardContent className="pt-6">
                             {canAttempt ? (
-                                <div className="text-center space-y-4">
+                                <div className="space-y-4 text-center">
                                     <p className="text-muted-foreground">
-                                        When you're ready, click the button below to start your
-                                        exam.
+                                        When you're ready, click the button
+                                        below to start your exam.
                                     </p>
                                     <Button size="lg" onClick={handleStartExam}>
-                                        <Play className="h-5 w-5 mr-2" />
+                                        <Play className="mr-2 h-5 w-5" />
                                         Start Exam
                                     </Button>
                                 </div>
                             ) : (
-                                <div className="text-center space-y-4">
+                                <div className="space-y-4 text-center">
                                     <Alert variant="destructive">
                                         <AlertTriangle className="h-4 w-4" />
-                                        <AlertTitle>No Attempts Remaining</AlertTitle>
+                                        <AlertTitle>
+                                            No Attempts Remaining
+                                        </AlertTitle>
                                         <AlertDescription>
-                                            You have used all {session.max_attempts} attempts for
+                                            You have used all{' '}
+                                            {session.max_attempts} attempts for
                                             this exam.
                                         </AlertDescription>
                                     </Alert>

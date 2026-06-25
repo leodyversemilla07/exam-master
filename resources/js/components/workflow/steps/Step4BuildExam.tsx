@@ -1,3 +1,6 @@
+import { useForm, router } from '@inertiajs/react';
+import { useState } from 'react';
+import { Plus, Trash2, Save, Send, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,10 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useForm, router } from '@inertiajs/react';
-import { Exam, ExamQuestion, Module, TosGenerate } from '@/types/models';
-import { useState } from 'react';
-import { Plus, Trash2, Save, Send, FileText } from 'lucide-react';
+import type { Exam, ExamQuestion, Module, TosGenerate } from '@/types/models';
 import {
     store,
     addQuestions,
@@ -38,7 +38,9 @@ export default function Step4BuildExam({
     onAdvance,
 }: Props) {
     const [showAddDialog, setShowAddDialog] = useState(false);
-    const [selectedQuestionIds, setSelectedQuestionIds] = useState<number[]>([]);
+    const [selectedQuestionIds, setSelectedQuestionIds] = useState<number[]>(
+        [],
+    );
     const [isAdding, setIsAdding] = useState(false);
     const [isRemoving, setIsRemoving] = useState<number | null>(null);
     const [isPublishing, setIsPublishing] = useState(false);
@@ -103,11 +105,14 @@ export default function Step4BuildExam({
         }
 
         setIsRemoving(questionId);
-        router.delete(removeQuestion.url({ exam: exam.id, question: questionId }), {
-            preserveScroll: true,
-            only: ['latestExam', 'availableQuestions'],
-            onFinish: () => setIsRemoving(null),
-        });
+        router.delete(
+            removeQuestion.url({ exam: exam.id, question: questionId }),
+            {
+                preserveScroll: true,
+                only: ['latestExam', 'availableQuestions'],
+                onFinish: () => setIsRemoving(null),
+            },
+        );
     };
 
     const handlePublish = () => {
@@ -131,8 +136,13 @@ export default function Step4BuildExam({
     // Already has a draft exam — show assembly view
     if (exam) {
         const alreadyAddedIds = new Set(exam.questions.map((q) => q.id));
-        const notYetAdded = availableQuestions.filter((q) => !alreadyAddedIds.has(q.id));
-        const totalPoints = exam.questions.reduce((sum, q) => sum + (q.points ?? 0), 0);
+        const notYetAdded = availableQuestions.filter(
+            (q) => !alreadyAddedIds.has(q.id),
+        );
+        const totalPoints = exam.questions.reduce(
+            (sum, q) => sum + (q.points ?? 0),
+            0,
+        );
 
         return (
             <div className="space-y-5">
@@ -140,17 +150,21 @@ export default function Step4BuildExam({
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <h3 className="font-semibold">{exam.title}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="capitalize text-xs">
+                        <div className="mt-1 flex items-center gap-2">
+                            <Badge
+                                variant="outline"
+                                className="text-xs capitalize"
+                            >
                                 {exam.exam_type}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
-                                {exam.questions.length} questions · {totalPoints} pts · passing{' '}
-                                {exam.passing_score}%
+                                {exam.questions.length} questions ·{' '}
+                                {totalPoints} pts · passing {exam.passing_score}
+                                %
                             </span>
                         </div>
                     </div>
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex shrink-0 gap-2">
                         <Button
                             variant="outline"
                             size="sm"
@@ -163,7 +177,9 @@ export default function Step4BuildExam({
                         <Button
                             size="sm"
                             onClick={handlePublish}
-                            disabled={isPublishing || exam.questions.length === 0}
+                            disabled={
+                                isPublishing || exam.questions.length === 0
+                            }
                         >
                             <Send className="mr-1.5 size-4" />
                             {isPublishing ? 'Publishing…' : 'Publish Exam'}
@@ -173,10 +189,12 @@ export default function Step4BuildExam({
 
                 {/* Questions in exam */}
                 {exam.questions.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-center rounded-lg border border-dashed">
-                        <FileText className="size-10 text-muted-foreground mb-3" />
-                        <p className="font-medium text-sm">No questions added yet</p>
-                        <p className="text-xs text-muted-foreground mt-1 mb-3">
+                    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
+                        <FileText className="mb-3 size-10 text-muted-foreground" />
+                        <p className="text-sm font-medium">
+                            No questions added yet
+                        </p>
+                        <p className="mt-1 mb-3 text-xs text-muted-foreground">
                             Add approved questions from the bank below.
                         </p>
                         <Button
@@ -190,16 +208,24 @@ export default function Step4BuildExam({
                         </Button>
                     </div>
                 ) : (
-                    <div className="rounded-lg border divide-y">
+                    <div className="divide-y rounded-lg border">
                         {exam.questions.map((q, idx) => (
-                            <div key={q.id} className="flex items-start gap-3 px-4 py-3">
-                                <span className="text-xs text-muted-foreground font-mono w-5 shrink-0 pt-0.5">
+                            <div
+                                key={q.id}
+                                className="flex items-start gap-3 px-4 py-3"
+                            >
+                                <span className="w-5 shrink-0 pt-0.5 font-mono text-xs text-muted-foreground">
                                     {idx + 1}.
                                 </span>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm line-clamp-2">{q.question}</p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Badge variant="outline" className="text-xs capitalize">
+                                <div className="min-w-0 flex-1">
+                                    <p className="line-clamp-2 text-sm">
+                                        {q.question}
+                                    </p>
+                                    <div className="mt-1 flex items-center gap-2">
+                                        <Badge
+                                            variant="outline"
+                                            className="text-xs capitalize"
+                                        >
                                             {q.question_type.replace(/_/g, ' ')}
                                         </Badge>
                                         <span className="text-xs text-muted-foreground">
@@ -223,7 +249,7 @@ export default function Step4BuildExam({
 
                 {/* Add questions inline panel */}
                 {showAddDialog && (
-                    <div className="rounded-lg border bg-muted/20 p-4 space-y-3">
+                    <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
                         <div className="flex items-center justify-between">
                             <h4 className="text-sm font-semibold">
                                 Available Questions ({notYetAdded.length})
@@ -241,36 +267,51 @@ export default function Step4BuildExam({
                         </div>
 
                         {notYetAdded.length === 0 ? (
-                            <p className="text-sm text-muted-foreground text-center py-4">
+                            <p className="py-4 text-center text-sm text-muted-foreground">
                                 All available questions have been added.
                             </p>
                         ) : (
                             <>
-                                <div className="max-h-64 overflow-y-auto space-y-2">
+                                <div className="max-h-64 space-y-2 overflow-y-auto">
                                     {notYetAdded.map((q) => (
                                         <label
                                             key={q.id}
-                                            className="flex items-start gap-3 p-3 rounded-md border bg-card cursor-pointer hover:bg-accent/50 transition-colors"
+                                            className="flex cursor-pointer items-start gap-3 rounded-md border bg-card p-3 transition-colors hover:bg-accent/50"
                                         >
                                             <Checkbox
-                                                checked={selectedQuestionIds.includes(q.id)}
+                                                checked={selectedQuestionIds.includes(
+                                                    q.id,
+                                                )}
                                                 onCheckedChange={(checked) => {
-                                                    setSelectedQuestionIds((prev) =>
-                                                        checked
-                                                            ? [...prev, q.id]
-                                                            : prev.filter((id) => id !== q.id),
+                                                    setSelectedQuestionIds(
+                                                        (prev) =>
+                                                            checked
+                                                                ? [
+                                                                      ...prev,
+                                                                      q.id,
+                                                                  ]
+                                                                : prev.filter(
+                                                                      (id) =>
+                                                                          id !==
+                                                                          q.id,
+                                                                  ),
                                                     );
                                                 }}
                                                 className="mt-0.5 shrink-0"
                                             />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm line-clamp-2">{q.question}</p>
-                                                <div className="flex items-center gap-1.5 mt-1">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="line-clamp-2 text-sm">
+                                                    {q.question}
+                                                </p>
+                                                <div className="mt-1 flex items-center gap-1.5">
                                                     <Badge
                                                         variant="outline"
                                                         className="text-xs capitalize"
                                                     >
-                                                        {q.question_type.replace(/_/g, ' ')}
+                                                        {q.question_type.replace(
+                                                            /_/g,
+                                                            ' ',
+                                                        )}
                                                     </Badge>
                                                     <span className="text-xs text-muted-foreground capitalize">
                                                         {q.cognitive_level}
@@ -285,7 +326,10 @@ export default function Step4BuildExam({
                                     <Button
                                         size="sm"
                                         onClick={handleAddQuestions}
-                                        disabled={selectedQuestionIds.length === 0 || isAdding}
+                                        disabled={
+                                            selectedQuestionIds.length === 0 ||
+                                            isAdding
+                                        }
                                     >
                                         {isAdding
                                             ? 'Adding…'
@@ -304,9 +348,10 @@ export default function Step4BuildExam({
     return (
         <form onSubmit={handleCreateExam} className="space-y-5">
             <div>
-                <h3 className="font-semibold mb-1">Create Exam</h3>
+                <h3 className="mb-1 font-semibold">Create Exam</h3>
                 <p className="text-sm text-muted-foreground">
-                    Set up the exam metadata. You'll add questions in the next step.
+                    Set up the exam metadata. You'll add questions in the next
+                    step.
                 </p>
             </div>
 
@@ -315,11 +360,15 @@ export default function Step4BuildExam({
                 <Input
                     id="wf4-title"
                     value={createForm.data.title}
-                    onChange={(e) => createForm.setData('title', e.target.value)}
+                    onChange={(e) =>
+                        createForm.setData('title', e.target.value)
+                    }
                     placeholder="e.g., Midterm Exam"
                 />
                 {createForm.errors.title && (
-                    <p className="text-sm text-destructive">{createForm.errors.title}</p>
+                    <p className="text-sm text-destructive">
+                        {createForm.errors.title}
+                    </p>
                 )}
             </div>
 
@@ -341,11 +390,15 @@ export default function Step4BuildExam({
                         <SelectContent>
                             <SelectItem value="formative">Formative</SelectItem>
                             <SelectItem value="summative">Summative</SelectItem>
-                            <SelectItem value="diagnostic">Diagnostic</SelectItem>
+                            <SelectItem value="diagnostic">
+                                Diagnostic
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                     {createForm.errors.exam_type && (
-                        <p className="text-sm text-destructive">{createForm.errors.exam_type}</p>
+                        <p className="text-sm text-destructive">
+                            {createForm.errors.exam_type}
+                        </p>
                     )}
                 </div>
 
@@ -357,11 +410,15 @@ export default function Step4BuildExam({
                         min="1"
                         max="600"
                         value={createForm.data.time_limit}
-                        onChange={(e) => createForm.setData('time_limit', e.target.value)}
+                        onChange={(e) =>
+                            createForm.setData('time_limit', e.target.value)
+                        }
                         placeholder="60"
                     />
                     {createForm.errors.time_limit && (
-                        <p className="text-sm text-destructive">{createForm.errors.time_limit}</p>
+                        <p className="text-sm text-destructive">
+                            {createForm.errors.time_limit}
+                        </p>
                     )}
                 </div>
 
@@ -373,7 +430,9 @@ export default function Step4BuildExam({
                         min="0"
                         max="100"
                         value={createForm.data.passing_score}
-                        onChange={(e) => createForm.setData('passing_score', e.target.value)}
+                        onChange={(e) =>
+                            createForm.setData('passing_score', e.target.value)
+                        }
                         placeholder="75"
                     />
                     {createForm.errors.passing_score && (
@@ -389,7 +448,9 @@ export default function Step4BuildExam({
                 <Textarea
                     id="wf4-desc"
                     value={createForm.data.description}
-                    onChange={(e) => createForm.setData('description', e.target.value)}
+                    onChange={(e) =>
+                        createForm.setData('description', e.target.value)
+                    }
                     placeholder="Optional description for this exam"
                     rows={2}
                 />
@@ -400,7 +461,9 @@ export default function Step4BuildExam({
                 <Textarea
                     id="wf4-instr"
                     value={createForm.data.instructions}
-                    onChange={(e) => createForm.setData('instructions', e.target.value)}
+                    onChange={(e) =>
+                        createForm.setData('instructions', e.target.value)
+                    }
                     placeholder="Instructions shown to students before the exam"
                     rows={3}
                 />
@@ -412,7 +475,10 @@ export default function Step4BuildExam({
                         id="wf4-shuffle"
                         checked={createForm.data.shuffle_questions}
                         onCheckedChange={(checked) =>
-                            createForm.setData('shuffle_questions', checked as boolean)
+                            createForm.setData(
+                                'shuffle_questions',
+                                checked as boolean,
+                            )
                         }
                     />
                     <Label htmlFor="wf4-shuffle" className="cursor-pointer">
@@ -424,7 +490,10 @@ export default function Step4BuildExam({
                         id="wf4-show"
                         checked={createForm.data.show_answers}
                         onCheckedChange={(checked) =>
-                            createForm.setData('show_answers', checked as boolean)
+                            createForm.setData(
+                                'show_answers',
+                                checked as boolean,
+                            )
                         }
                     />
                     <Label htmlFor="wf4-show" className="cursor-pointer">

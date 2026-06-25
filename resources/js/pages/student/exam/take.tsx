@@ -1,7 +1,17 @@
-import { PageProps } from '@/types';
-import { ExamAttempt } from '@/types/models';
 import { Head, router } from '@inertiajs/react';
 import { useState, useEffect, useCallback } from 'react';
+import {
+    Clock,
+    ChevronLeft,
+    ChevronRight,
+    Send,
+    AlertTriangle,
+    Flag,
+    CheckCircle2,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import type { PageProps } from '@/types';
+import type { ExamAttempt } from '@/types/models';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,9 +30,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { Clock, ChevronLeft, ChevronRight, Send, AlertTriangle, Flag, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import {
     submit,
     saveAnswer as saveAnswerRoute,
@@ -32,7 +40,12 @@ interface Question {
     id: number;
     question: string;
     question_type: string;
-    options: Array<{ key: string; text: string; premise?: string; response?: string }> | null;
+    options: Array<{
+        key: string;
+        text: string;
+        premise?: string;
+        response?: string;
+    }> | null;
     points: number;
     answer_id: number;
     current_answer: string | null;
@@ -52,13 +65,21 @@ export default function ExamTake({
 }: ExamTakeProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<
-        Record<number, { answer: string | null; answer_data: Record<string, unknown> | null }>
+        Record<
+            number,
+            {
+                answer: string | null;
+                answer_data: Record<string, unknown> | null;
+            }
+        >
     >({});
     const [timeRemaining, setTimeRemaining] = useState(initialTimeRemaining);
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const [showTimeWarning, setShowTimeWarning] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set());
+    const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(
+        new Set(),
+    );
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
     const toggleFlag = async (questionId: number) => {
@@ -66,16 +87,19 @@ export default function ExamTake({
 
         setFlaggedQuestions((prev) => {
             const next = new Set(prev);
+
             if (next.has(questionId)) {
                 next.delete(questionId);
             } else {
                 next.add(questionId);
             }
+
             return next;
         });
 
         // Persist to server
         setIsSaving(true);
+
         try {
             await fetch(saveAnswerRoute.url(attempt.id), {
                 method: 'POST',
@@ -103,7 +127,10 @@ export default function ExamTake({
     useEffect(() => {
         const initialAnswers: Record<
             number,
-            { answer: string | null; answer_data: Record<string, unknown> | null }
+            {
+                answer: string | null;
+                answer_data: Record<string, unknown> | null;
+            }
         > = {};
         questions.forEach((q) => {
             initialAnswers[q.answer_id] = {
@@ -115,34 +142,51 @@ export default function ExamTake({
 
         // Initialize flagged questions from metadata
         const metadata = attempt.metadata as Record<string, unknown>;
-        if (metadata?.flagged_questions && Array.isArray(metadata.flagged_questions)) {
-            setFlaggedQuestions(new Set(metadata.flagged_questions as number[]));
+
+        if (
+            metadata?.flagged_questions &&
+            Array.isArray(metadata.flagged_questions)
+        ) {
+            setFlaggedQuestions(
+                new Set(metadata.flagged_questions as number[]),
+            );
         }
     }, [questions, attempt.metadata]);
 
     // Timer
     useEffect(() => {
-        if (timeRemaining === null) return;
+        if (timeRemaining === null) {
+            return;
+        }
 
         const interval = setInterval(() => {
             setTimeRemaining((prev) => {
-                if (prev === null) return null;
+                if (prev === null) {
+                    return null;
+                }
+
                 if (prev <= 0) {
                     handleAutoSubmit();
+
                     return 0;
                 }
+
                 if (prev === 300) {
                     setShowTimeWarning(true);
                     toast.warning('5 minutes remaining!', {
-                        description: 'Please review your answers and prepare to submit.',
+                        description:
+                            'Please review your answers and prepare to submit.',
                     });
                 }
+
                 if (prev === 60) {
                     toast.error('Only 1 minute remaining!', {
-                        description: 'Exam will be automatically submitted very soon!',
+                        description:
+                            'Exam will be automatically submitted very soon!',
                         duration: 10000,
                     });
                 }
+
                 return prev - 1;
             });
         }, 1000);
@@ -168,6 +212,7 @@ export default function ExamTake({
         if (hours > 0) {
             return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
+
         return `${minutes}:${secs.toString().padStart(2, '0')}`;
     };
 
@@ -179,6 +224,7 @@ export default function ExamTake({
         answerData: Record<string, unknown> | null,
     ) => {
         setIsSaving(true);
+
         try {
             await fetch(saveAnswerRoute.url(attempt.id), {
                 method: 'POST',
@@ -220,7 +266,9 @@ export default function ExamTake({
     };
 
     const answeredCount = Object.values(answers).filter(
-        (a) => a.answer !== null || (a.answer_data && Object.keys(a.answer_data).length > 0),
+        (a) =>
+            a.answer !== null ||
+            (a.answer_data && Object.keys(a.answer_data).length > 0),
     ).length;
 
     const progressPercentage = (answeredCount / questions.length) * 100;
@@ -241,7 +289,7 @@ export default function ExamTake({
                             {currentQuestion.options?.map((option) => (
                                 <div
                                     key={option.key}
-                                    className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                                    className="flex items-center space-x-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                                 >
                                     <RadioGroupItem
                                         value={option.key}
@@ -251,7 +299,9 @@ export default function ExamTake({
                                         htmlFor={`option-${option.key}`}
                                         className="flex-1 cursor-pointer"
                                     >
-                                        <span className="font-medium mr-2">{option.key}.</span>
+                                        <span className="mr-2 font-medium">
+                                            {option.key}.
+                                        </span>
                                         {option.text}
                                     </Label>
                                 </div>
@@ -269,7 +319,7 @@ export default function ExamTake({
                         }
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center space-x-3 rounded-lg border p-4 transition-colors hover:bg-muted/50">
                                 <RadioGroupItem value="true" id="option-true" />
                                 <Label
                                     htmlFor="option-true"
@@ -278,8 +328,11 @@ export default function ExamTake({
                                     True
                                 </Label>
                             </div>
-                            <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                                <RadioGroupItem value="false" id="option-false" />
+                            <div className="flex items-center space-x-3 rounded-lg border p-4 transition-colors hover:bg-muted/50">
+                                <RadioGroupItem
+                                    value="false"
+                                    id="option-false"
+                                />
                                 <Label
                                     htmlFor="option-false"
                                     className="flex-1 cursor-pointer font-medium"
@@ -297,7 +350,10 @@ export default function ExamTake({
                     <Input
                         value={currentAnswer?.answer || ''}
                         onChange={(e) =>
-                            handleAnswerChange(currentQuestion.answer_id, e.target.value)
+                            handleAnswerChange(
+                                currentQuestion.answer_id,
+                                e.target.value,
+                            )
                         }
                         placeholder="Type your answer here..."
                         className="text-lg"
@@ -309,27 +365,37 @@ export default function ExamTake({
                     <Textarea
                         value={currentAnswer?.answer || ''}
                         onChange={(e) =>
-                            handleAnswerChange(currentQuestion.answer_id, e.target.value)
+                            handleAnswerChange(
+                                currentQuestion.answer_id,
+                                e.target.value,
+                            )
                         }
                         placeholder="Write your answer here..."
                         className="min-h-50"
                     />
                 );
 
-            case 'fill_in_the_blanks':
-                const blanksCount = (currentQuestion.question.match(/\[blank\]/gi) || []).length;
+            case 'fill_in_the_blanks': {
+                const blanksCount = (
+                    currentQuestion.question.match(/\[blank\]/gi) || []
+                ).length;
                 const blanksAnswers =
                     (currentAnswer?.answer_data as unknown as string[]) ||
                     Array(blanksCount).fill('');
 
                 return (
                     <div className="space-y-4">
-                        <p className="text-muted-foreground text-sm">
+                        <p className="text-sm text-muted-foreground">
                             Fill in the blanks in order:
                         </p>
                         {Array.from({ length: blanksCount }).map((_, index) => (
-                            <div key={index} className="flex items-center gap-3">
-                                <span className="font-medium">Blank {index + 1}:</span>
+                            <div
+                                key={index}
+                                className="flex items-center gap-3"
+                            >
+                                <span className="font-medium">
+                                    Blank {index + 1}:
+                                </span>
                                 <Input
                                     value={blanksAnswers[index] || ''}
                                     onChange={(e) => {
@@ -338,7 +404,10 @@ export default function ExamTake({
                                         handleAnswerChange(
                                             currentQuestion.answer_id,
                                             newBlanks.join(','),
-                                            newBlanks as unknown as Record<string, unknown>,
+                                            newBlanks as unknown as Record<
+                                                string,
+                                                unknown
+                                            >,
                                         );
                                     }}
                                     placeholder={`Answer for blank ${index + 1}`}
@@ -348,27 +417,39 @@ export default function ExamTake({
                         ))}
                     </div>
                 );
+            }
 
-            case 'matching':
+            case 'matching': {
                 const matchingAnswers =
-                    (currentAnswer?.answer_data as Record<string, string>) || {};
+                    (currentAnswer?.answer_data as Record<string, string>) ||
+                    {};
 
                 return (
                     <div className="space-y-4">
-                        <p className="text-muted-foreground text-sm">
-                            Match each item on the left with its corresponding item on the right:
+                        <p className="text-sm text-muted-foreground">
+                            Match each item on the left with its corresponding
+                            item on the right:
                         </p>
                         {currentQuestion.options?.map((option, index) => (
-                            <div key={index} className="flex items-center gap-4">
-                                <div className="flex-1 p-3 bg-muted rounded-lg">
+                            <div
+                                key={index}
+                                className="flex items-center gap-4"
+                            >
+                                <div className="flex-1 rounded-lg bg-muted p-3">
                                     {option.premise}
                                 </div>
                                 <span className="text-muted-foreground">→</span>
                                 <Input
-                                    value={matchingAnswers[option.premise || ''] || ''}
+                                    value={
+                                        matchingAnswers[option.premise || ''] ||
+                                        ''
+                                    }
                                     onChange={(e) => {
-                                        const newMatching = { ...matchingAnswers };
-                                        newMatching[option.premise || ''] = e.target.value;
+                                        const newMatching = {
+                                            ...matchingAnswers,
+                                        };
+                                        newMatching[option.premise || ''] =
+                                            e.target.value;
                                         handleAnswerChange(
                                             currentQuestion.answer_id,
                                             JSON.stringify(newMatching),
@@ -382,13 +463,17 @@ export default function ExamTake({
                         ))}
                     </div>
                 );
+            }
 
             default:
                 return (
                     <Textarea
                         value={currentAnswer?.answer || ''}
                         onChange={(e) =>
-                            handleAnswerChange(currentQuestion.answer_id, e.target.value)
+                            handleAnswerChange(
+                                currentQuestion.answer_id,
+                                e.target.value,
+                            )
                         }
                         placeholder="Type your answer here..."
                         className="min-h-37.5"
@@ -406,19 +491,24 @@ export default function ExamTake({
                 <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
                     <div className="container flex h-16 items-center justify-between">
                         <div>
-                            <h1 className="font-semibold">{attempt.exam_session?.exam?.title}</h1>
+                            <h1 className="font-semibold">
+                                {attempt.exam_session?.exam?.title}
+                            </h1>
                             <p className="text-sm text-muted-foreground">
                                 {attempt.exam_session?.exam?.module?.name}
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
                             {isSaving ? (
-                                <Badge variant="secondary" className="animate-pulse">
+                                <Badge
+                                    variant="secondary"
+                                    className="animate-pulse"
+                                >
                                     Saving...
                                 </Badge>
                             ) : (
                                 lastSaved && (
-                                    <div className="hidden md:flex items-center text-xs text-muted-foreground gap-1">
+                                    <div className="hidden items-center gap-1 text-xs text-muted-foreground md:flex">
                                         <CheckCircle2 className="h-3 w-3 text-green-500" />
                                         Saved at{' '}
                                         {lastSaved.toLocaleTimeString([], {
@@ -431,19 +521,26 @@ export default function ExamTake({
                             )}
                             {timeRemaining !== null && (
                                 <Badge
-                                    variant={timeRemaining < 300 ? 'destructive' : 'outline'}
+                                    variant={
+                                        timeRemaining < 300
+                                            ? 'destructive'
+                                            : 'outline'
+                                    }
                                     className={cn(
-                                        'text-lg font-mono px-3 py-1',
+                                        'px-3 py-1 font-mono text-lg',
                                         timeRemaining < 60 &&
                                             'animate-pulse ring-2 ring-destructive ring-offset-2',
                                     )}
                                 >
-                                    <Clock className="h-4 w-4 mr-2" />
+                                    <Clock className="mr-2 h-4 w-4" />
                                     {formatTime(timeRemaining)}
                                 </Badge>
                             )}
-                            <Button onClick={() => setShowSubmitDialog(true)} size="sm">
-                                <Send className="h-4 w-4 mr-2" />
+                            <Button
+                                onClick={() => setShowSubmitDialog(true)}
+                                size="sm"
+                            >
+                                <Send className="mr-2 h-4 w-4" />
                                 Submit
                             </Button>
                         </div>
@@ -456,37 +553,58 @@ export default function ExamTake({
                         <div className="lg:col-span-1">
                             <Card className="sticky top-24">
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm">Questions</CardTitle>
-                                    <Progress value={progressPercentage} className="h-2" />
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        {answeredCount} of {questions.length} answered
+                                    <CardTitle className="text-sm">
+                                        Questions
+                                    </CardTitle>
+                                    <Progress
+                                        value={progressPercentage}
+                                        className="h-2"
+                                    />
+                                    <p className="mt-1 text-xs text-muted-foreground">
+                                        {answeredCount} of {questions.length}{' '}
+                                        answered
                                     </p>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-5 gap-2">
                                         {questions.map((q, index) => {
                                             const isAnswered =
-                                                answers[q.answer_id]?.answer !== null ||
-                                                (answers[q.answer_id]?.answer_data &&
+                                                answers[q.answer_id]?.answer !==
+                                                    null ||
+                                                (answers[q.answer_id]
+                                                    ?.answer_data &&
                                                     Object.keys(
-                                                        answers[q.answer_id]?.answer_data || {},
+                                                        answers[q.answer_id]
+                                                            ?.answer_data || {},
                                                     ).length > 0);
-                                            const isCurrent = index === currentQuestionIndex;
-                                            const isFlagged = flaggedQuestions.has(q.id);
+                                            const isCurrent =
+                                                index === currentQuestionIndex;
+                                            const isFlagged =
+                                                flaggedQuestions.has(q.id);
 
                                             return (
                                                 <Button
                                                     key={q.id}
-                                                    variant={isCurrent ? 'default' : 'outline'}
+                                                    variant={
+                                                        isCurrent
+                                                            ? 'default'
+                                                            : 'outline'
+                                                    }
                                                     size="sm"
                                                     className={cn(
-                                                        'w-full h-10 relative',
+                                                        'relative h-10 w-full',
                                                         isAnswered &&
                                                             !isCurrent &&
-                                                            'bg-green-100 border-green-300 hover:bg-green-200',
-                                                        isFlagged && !isCurrent && 'border-orange-400',
+                                                            'border-green-300 bg-green-100 hover:bg-green-200',
+                                                        isFlagged &&
+                                                            !isCurrent &&
+                                                            'border-orange-400',
                                                     )}
-                                                    onClick={() => setCurrentQuestionIndex(index)}
+                                                    onClick={() =>
+                                                        setCurrentQuestionIndex(
+                                                            index,
+                                                        )
+                                                    }
                                                 >
                                                     {index + 1}
                                                     {isFlagged && (
@@ -498,15 +616,15 @@ export default function ExamTake({
                                     </div>
                                     <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                                         <div className="flex items-center gap-1">
-                                            <div className="w-3 h-3 rounded bg-green-100 border border-green-300" />
+                                            <div className="h-3 w-3 rounded border border-green-300 bg-green-100" />
                                             Answered
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <div className="w-3 h-3 rounded bg-primary" />
+                                            <div className="h-3 w-3 rounded bg-primary" />
                                             Current
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Flag className="h-3 w-3 text-orange-500 fill-orange-500" />
+                                            <Flag className="h-3 w-3 fill-orange-500 text-orange-500" />
                                             Flagged
                                         </div>
                                     </div>
@@ -523,66 +641,93 @@ export default function ExamTake({
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => toggleFlag(currentQuestion.id)}
+                                                onClick={() =>
+                                                    toggleFlag(
+                                                        currentQuestion.id,
+                                                    )
+                                                }
                                                 className={cn(
                                                     'h-8 px-2',
-                                                    flaggedQuestions.has(currentQuestion.id)
-                                                        ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'
+                                                    flaggedQuestions.has(
+                                                        currentQuestion.id,
+                                                    )
+                                                        ? 'text-orange-600 hover:bg-orange-50 hover:text-orange-700'
                                                         : 'text-muted-foreground',
                                                 )}
                                             >
                                                 <Flag
                                                     className={cn(
-                                                        'h-4 w-4 mr-1',
-                                                        flaggedQuestions.has(currentQuestion.id) &&
-                                                            'fill-current',
+                                                        'mr-1 h-4 w-4',
+                                                        flaggedQuestions.has(
+                                                            currentQuestion.id,
+                                                        ) && 'fill-current',
                                                     )}
                                                 />
-                                                {flaggedQuestions.has(currentQuestion.id)
+                                                {flaggedQuestions.has(
+                                                    currentQuestion.id,
+                                                )
                                                     ? 'Flagged'
                                                     : 'Flag'}
                                             </Button>
                                             <Badge variant="outline">
-                                                Question {currentQuestionIndex + 1} of{' '}
+                                                Question{' '}
+                                                {currentQuestionIndex + 1} of{' '}
                                                 {questions.length}
                                             </Badge>
                                         </div>
                                         <Badge>
                                             {currentQuestion.points} point
-                                            {currentQuestion.points !== 1 ? 's' : ''}
+                                            {currentQuestion.points !== 1
+                                                ? 's'
+                                                : ''}
                                         </Badge>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="prose prose-sm max-w-none">
-                                        <p className="text-lg">{currentQuestion.question}</p>
+                                        <p className="text-lg">
+                                            {currentQuestion.question}
+                                        </p>
                                     </div>
 
-                                    <div className="pt-4 border-t">{renderQuestion()}</div>
+                                    <div className="border-t pt-4">
+                                        {renderQuestion()}
+                                    </div>
 
                                     <div className="flex justify-between pt-4">
                                         <Button
                                             variant="outline"
                                             onClick={() =>
-                                                setCurrentQuestionIndex((prev) =>
-                                                    Math.max(0, prev - 1),
+                                                setCurrentQuestionIndex(
+                                                    (prev) =>
+                                                        Math.max(0, prev - 1),
                                                 )
                                             }
-                                            disabled={currentQuestionIndex === 0}
+                                            disabled={
+                                                currentQuestionIndex === 0
+                                            }
                                         >
-                                            <ChevronLeft className="h-4 w-4 mr-2" />
+                                            <ChevronLeft className="mr-2 h-4 w-4" />
                                             Previous
                                         </Button>
                                         <Button
                                             onClick={() =>
-                                                setCurrentQuestionIndex((prev) =>
-                                                    Math.min(questions.length - 1, prev + 1),
+                                                setCurrentQuestionIndex(
+                                                    (prev) =>
+                                                        Math.min(
+                                                            questions.length -
+                                                                1,
+                                                            prev + 1,
+                                                        ),
                                                 )
                                             }
-                                            disabled={currentQuestionIndex === questions.length - 1}
+                                            disabled={
+                                                currentQuestionIndex ===
+                                                questions.length - 1
+                                            }
                                         >
                                             Next
-                                            <ChevronRight className="h-4 w-4 ml-2" />
+                                            <ChevronRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -593,49 +738,60 @@ export default function ExamTake({
             </div>
 
             {/* Submit Confirmation Dialog */}
-            <AlertDialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
+            <AlertDialog
+                open={showSubmitDialog}
+                onOpenChange={setShowSubmitDialog}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Submit Exam?</AlertDialogTitle>
                         <AlertDialogDescription className="space-y-2">
                             <p>
-                                You have answered {answeredCount} out of {questions.length}{' '}
-                                questions.
+                                You have answered {answeredCount} out of{' '}
+                                {questions.length} questions.
                             </p>
                             {answeredCount < questions.length && (
-                                <p className="text-yellow-600 flex items-center gap-2">
+                                <p className="flex items-center gap-2 text-yellow-600">
                                     <AlertTriangle className="h-4 w-4" />
-                                    You have {questions.length - answeredCount} unanswered
-                                    question(s).
+                                    You have {questions.length -
+                                        answeredCount}{' '}
+                                    unanswered question(s).
                                 </p>
                             )}
                             <p>
-                                Are you sure you want to submit your exam? This action cannot be
-                                undone.
+                                Are you sure you want to submit your exam? This
+                                action cannot be undone.
                             </p>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Continue Exam</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleSubmit}>Submit Exam</AlertDialogAction>
+                        <AlertDialogAction onClick={handleSubmit}>
+                            Submit Exam
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             {/* Time Warning Dialog */}
-            <AlertDialog open={showTimeWarning} onOpenChange={setShowTimeWarning}>
+            <AlertDialog
+                open={showTimeWarning}
+                onOpenChange={setShowTimeWarning}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle className="flex items-center gap-2 text-yellow-600">
                             <Clock className="h-5 w-5" />5 Minutes Remaining
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            You have 5 minutes left to complete your exam. Please review your
-                            answers and submit when ready.
+                            You have 5 minutes left to complete your exam.
+                            Please review your answers and submit when ready.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogAction onClick={() => setShowTimeWarning(false)}>
+                        <AlertDialogAction
+                            onClick={() => setShowTimeWarning(false)}
+                        >
                             Continue
                         </AlertDialogAction>
                     </AlertDialogFooter>

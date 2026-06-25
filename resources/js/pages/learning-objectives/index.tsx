@@ -1,9 +1,22 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { Module, Topic, LearningObjective, CognitiveLevel } from '@/types/models';
+import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
+import { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
+import type {
+    Module,
+    Topic,
+    LearningObjective,
+    CognitiveLevel,
+} from '@/types/models';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,9 +28,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
-import { store, update, destroy } from '@/actions/App/Http/Controllers/LearningObjectiveController';
-import { useState } from 'react';
+import {
+    store,
+    update,
+    destroy,
+} from '@/actions/App/Http/Controllers/LearningObjectiveController';
 import PageHeader from '@/components/page-header';
 
 interface Props extends PageProps {
@@ -70,7 +85,11 @@ const cognitiveLevels: {
     },
 ];
 
-export default function LearningObjectivesIndex({ module, topic, objectives }: Props) {
+export default function LearningObjectivesIndex({
+    module,
+    topic,
+    objectives,
+}: Props) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [showForm, setShowForm] = useState(false);
 
@@ -86,7 +105,10 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
         { title: 'Modules', href: '/modules' },
         { title: module.name, href: `/modules/${module.id}` },
         { title: 'Topics', href: `/modules/${module.id}/topics` },
-        { title: topic.title, href: `/modules/${module.id}/topics/${topic.id}` },
+        {
+            title: topic.title,
+            href: `/modules/${module.id}/topics/${topic.id}`,
+        },
         { title: 'Learning Objectives', href: '#' },
     ];
 
@@ -94,14 +116,21 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
         e.preventDefault();
 
         if (editingId) {
-            form.put(update.url({ module: module.id, topic: topic.id, objective: editingId }), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    form.reset();
-                    setEditingId(null);
-                    setShowForm(false);
+            form.put(
+                update.url({
+                    module: module.id,
+                    topic: topic.id,
+                    objective: editingId,
+                }),
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        form.reset();
+                        setEditingId(null);
+                        setShowForm(false);
+                    },
                 },
-            });
+            );
         } else {
             form.post(store.url({ module: module.id, topic: topic.id }), {
                 preserveScroll: true,
@@ -126,9 +155,15 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
     };
 
     const handleDelete = (objectiveId: number) => {
-        if (confirm('Are you sure you want to delete this learning objective?')) {
+        if (
+            confirm('Are you sure you want to delete this learning objective?')
+        ) {
             form.delete(
-                destroy.url({ module: module.id, topic: topic.id, objective: objectiveId }),
+                destroy.url({
+                    module: module.id,
+                    topic: topic.id,
+                    objective: objectiveId,
+                }),
                 {
                     preserveScroll: true,
                 },
@@ -150,7 +185,7 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Learning Objectives - ${topic.title}`} />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Learning Objectives"
                     description={`Manage learning outcomes for ${topic.title} using Bloom's Taxonomy`}
@@ -168,11 +203,12 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                     <Card>
                         <CardHeader>
                             <CardTitle>
-                                {editingId ? 'Edit' : 'Create'} Learning Objective
+                                {editingId ? 'Edit' : 'Create'} Learning
+                                Objective
                             </CardTitle>
                             <CardDescription>
-                                Define what students should know or be able to do after learning
-                                this topic
+                                Define what students should know or be able to
+                                do after learning this topic
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -183,7 +219,12 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                         <Input
                                             id="code"
                                             value={form.data.code}
-                                            onChange={(e) => form.setData('code', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'code',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g., LO1, LO2.1"
                                             required
                                         />
@@ -195,7 +236,9 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="cognitive_level">Cognitive Level *</Label>
+                                        <Label htmlFor="cognitive_level">
+                                            Cognitive Level *
+                                        </Label>
                                         <Select
                                             value={form.data.cognitive_level}
                                             onValueChange={(value) =>
@@ -209,32 +252,45 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {cognitiveLevels.map((level) => (
-                                                    <SelectItem
-                                                        key={level.value}
-                                                        value={level.value}
-                                                    >
-                                                        <div className="flex flex-col">
-                                                            <span className="font-medium">
-                                                                {level.label}
-                                                            </span>
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {level.description}
-                                                            </span>
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
+                                                {cognitiveLevels.map(
+                                                    (level) => (
+                                                        <SelectItem
+                                                            key={level.value}
+                                                            value={level.value}
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium">
+                                                                    {
+                                                                        level.label
+                                                                    }
+                                                                </span>
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    {
+                                                                        level.description
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </SelectItem>
+                                                    ),
+                                                )}
                                             </SelectContent>
                                         </Select>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="objective">Learning Objective *</Label>
+                                    <Label htmlFor="objective">
+                                        Learning Objective *
+                                    </Label>
                                     <Textarea
                                         id="objective"
                                         value={form.data.objective}
-                                        onChange={(e) => form.setData('objective', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'objective',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Students will be able to..."
                                         rows={3}
                                         required
@@ -247,27 +303,39 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="assessment_criteria">Assessment Criteria</Label>
+                                    <Label htmlFor="assessment_criteria">
+                                        Assessment Criteria
+                                    </Label>
                                     <Textarea
                                         id="assessment_criteria"
                                         value={form.data.assessment_criteria}
                                         onChange={(e) =>
-                                            form.setData('assessment_criteria', e.target.value)
+                                            form.setData(
+                                                'assessment_criteria',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="How will this objective be assessed?"
                                         rows={2}
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Define how students will demonstrate mastery of this
-                                        objective
+                                        Define how students will demonstrate
+                                        mastery of this objective
                                     </p>
                                 </div>
 
                                 <div className="flex items-center justify-end gap-2">
-                                    <Button type="button" variant="outline" onClick={handleCancel}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleCancel}
+                                    >
                                         Cancel
                                     </Button>
-                                    <Button type="submit" disabled={form.processing}>
+                                    <Button
+                                        type="submit"
+                                        disabled={form.processing}
+                                    >
                                         {form.processing
                                             ? 'Saving...'
                                             : editingId
@@ -285,8 +353,8 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                         <CardHeader>
                             <CardTitle>No Learning Objectives Yet</CardTitle>
                             <CardDescription>
-                                Get started by creating your first learning objective for this
-                                topic.
+                                Get started by creating your first learning
+                                objective for this topic.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -302,14 +370,17 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                             <Card key={objective.id} className="group">
                                 <CardContent className="p-4">
                                     <div className="flex items-start gap-4">
-                                        <div className="flex items-center gap-2 text-muted-foreground cursor-move">
+                                        <div className="flex cursor-move items-center gap-2 text-muted-foreground">
                                             <GripVertical className="h-4 w-4" />
                                         </div>
 
                                         <div className="flex-1 space-y-2">
                                             <div className="flex items-start justify-between gap-4">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <Badge variant="outline" className="font-mono">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-mono"
+                                                    >
                                                         {objective.code}
                                                     </Badge>
                                                     <Badge
@@ -321,25 +392,36 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                                             (l) =>
                                                                 l.value ===
                                                                 objective.cognitive_level,
-                                                        )?.label || objective.cognitive_level}
+                                                        )?.label ||
+                                                            objective.cognitive_level}
                                                     </Badge>
                                                     {!objective.is_active && (
-                                                        <Badge variant="secondary">Inactive</Badge>
+                                                        <Badge variant="secondary">
+                                                            Inactive
+                                                        </Badge>
                                                     )}
                                                 </div>
 
-                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => handleEdit(objective)}
+                                                        onClick={() =>
+                                                            handleEdit(
+                                                                objective,
+                                                            )
+                                                        }
                                                     >
                                                         <Edit2 className="h-4 w-4" />
                                                     </Button>
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => handleDelete(objective.id)}
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                objective.id,
+                                                            )
+                                                        }
                                                     >
                                                         <Trash2 className="h-4 w-4 text-destructive" />
                                                     </Button>
@@ -351,12 +433,14 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
                                             </p>
 
                                             {objective.assessment_criteria && (
-                                                <div className="pt-2 border-t">
-                                                    <p className="text-xs text-muted-foreground font-semibold mb-1">
+                                                <div className="border-t pt-2">
+                                                    <p className="mb-1 text-xs font-semibold text-muted-foreground">
                                                         Assessment Criteria:
                                                     </p>
                                                     <p className="text-xs text-muted-foreground">
-                                                        {objective.assessment_criteria}
+                                                        {
+                                                            objective.assessment_criteria
+                                                        }
                                                     </p>
                                                 </div>
                                             )}
@@ -370,13 +454,20 @@ export default function LearningObjectivesIndex({ module, topic, objectives }: P
 
                 <Card className="bg-muted/50">
                     <CardHeader>
-                        <CardTitle className="text-sm">Bloom's Taxonomy Reference</CardTitle>
+                        <CardTitle className="text-sm">
+                            Bloom's Taxonomy Reference
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                             {cognitiveLevels.map((level) => (
-                                <div key={level.value} className="flex items-start gap-2">
-                                    <Badge className={level.color}>{level.label}</Badge>
+                                <div
+                                    key={level.value}
+                                    className="flex items-start gap-2"
+                                >
+                                    <Badge className={level.color}>
+                                        {level.label}
+                                    </Badge>
                                     <p className="text-xs text-muted-foreground">
                                         {level.description}
                                     </p>

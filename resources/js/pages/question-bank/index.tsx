@@ -1,25 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import AppLayout from '@/layouts/app-layout';
 import { Head, router, Link } from '@inertiajs/react';
-import {
-    index as questionIndex,
-    create as questionCreate,
-    show as questionShow,
-    edit as questionEdit,
-    destroy as questionDestroy,
-    polish as questionPolish,
-} from '@/routes/question-bank';
-import { Module } from '@/types/models';
 import {
     Plus,
     Search,
@@ -33,13 +12,38 @@ import {
     Loader2,
 } from 'lucide-react';
 import { useState } from 'react';
-import PageHeader from '@/components/page-header';
 import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import {
+    index as questionIndex,
+    create as questionCreate,
+    show as questionShow,
+    edit as questionEdit,
+    destroy as questionDestroy,
+    polish as questionPolish,
+} from '@/routes/question-bank';
+import type { Module } from '@/types/models';
+import PageHeader from '@/components/page-header';
 
 interface Question {
     id: number;
     question_text: string;
-    question_type: 'multiple_choice' | 'true_false' | 'essay' | 'identification';
+    question_type:
+        | 'multiple_choice'
+        | 'true_false'
+        | 'essay'
+        | 'identification';
     cognitive_level:
         | 'remembering'
         | 'understanding'
@@ -83,11 +87,21 @@ const breadcrumbs = [{ title: 'Question Bank', href: questionIndex.url() }];
 
 export default function ExamsIndex({ questions, modules, filters }: PageProps) {
     const [search, setSearch] = useState(filters.search || '');
-    const [moduleFilter, setModuleFilter] = useState(filters.module_id || 'all');
-    const [typeFilter, setTypeFilter] = useState(filters.question_type || 'all');
-    const [difficultyFilter, setDifficultyFilter] = useState(filters.difficulty || 'all');
-    const [cognitiveFilter, setCognitiveFilter] = useState(filters.cognitive_level || 'all');
-    const [approvalFilter, setApprovalFilter] = useState(filters.is_approved || 'all');
+    const [moduleFilter, setModuleFilter] = useState(
+        filters.module_id || 'all',
+    );
+    const [typeFilter, setTypeFilter] = useState(
+        filters.question_type || 'all',
+    );
+    const [difficultyFilter, setDifficultyFilter] = useState(
+        filters.difficulty || 'all',
+    );
+    const [cognitiveFilter, setCognitiveFilter] = useState(
+        filters.cognitive_level || 'all',
+    );
+    const [approvalFilter, setApprovalFilter] = useState(
+        filters.is_approved || 'all',
+    );
     const [polishingId, setPolishingId] = useState<number | null>(null);
 
     const handleSearch = (value: string) => {
@@ -95,21 +109,35 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
         const timer = setTimeout(() => {
             applyFilters({ search: value || undefined });
         }, 300);
+
         return () => clearTimeout(timer);
     };
 
     const applyFilters = (newFilters: Partial<typeof filters> = {}) => {
         const currentFilters = {
-            module_id: moduleFilter === 'all' ? undefined : moduleFilter || undefined,
-            question_type: typeFilter === 'all' ? undefined : typeFilter || undefined,
-            difficulty: difficultyFilter === 'all' ? undefined : difficultyFilter || undefined,
-            cognitive_level: cognitiveFilter === 'all' ? undefined : cognitiveFilter || undefined,
-            is_approved: approvalFilter === 'all' ? undefined : approvalFilter || undefined,
+            module_id:
+                moduleFilter === 'all' ? undefined : moduleFilter || undefined,
+            question_type:
+                typeFilter === 'all' ? undefined : typeFilter || undefined,
+            difficulty:
+                difficultyFilter === 'all'
+                    ? undefined
+                    : difficultyFilter || undefined,
+            cognitive_level:
+                cognitiveFilter === 'all'
+                    ? undefined
+                    : cognitiveFilter || undefined,
+            is_approved:
+                approvalFilter === 'all'
+                    ? undefined
+                    : approvalFilter || undefined,
             search: search || undefined,
             ...newFilters,
         };
 
-        router.get(questionIndex.url({ query: currentFilters }), { preserveState: true });
+        router.get(questionIndex.url({ query: currentFilters }), {
+            preserveState: true,
+        });
     };
 
     const handleDelete = (question: Question) => {
@@ -141,13 +169,15 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
         const colors = {
             easy: 'bg-success/10 text-success border-success/20',
             moderate: 'bg-warning/10 text-warning border-warning/20',
-            difficult: 'bg-destructive/10 text-destructive border-destructive/20',
+            difficult:
+                'bg-destructive/10 text-destructive border-destructive/20',
         } as const;
 
         return (
             <Badge
                 className={
-                    colors[difficulty as keyof typeof colors] || 'bg-muted text-muted-foreground'
+                    colors[difficulty as keyof typeof colors] ||
+                    'bg-muted text-muted-foreground'
                 }
             >
                 {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
@@ -159,7 +189,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Question Bank" />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 {/* Header */}
                 <PageHeader
                     title="Question Bank"
@@ -184,7 +214,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search questions..."
                                 value={search}
@@ -193,13 +223,14 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
                             <Select
                                 value={moduleFilter}
                                 onValueChange={(value) => {
                                     setModuleFilter(value);
                                     applyFilters({
-                                        module_id: value === 'all' ? undefined : value,
+                                        module_id:
+                                            value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -207,9 +238,14 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     <SelectValue placeholder="All Modules" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Modules</SelectItem>
+                                    <SelectItem value="all">
+                                        All Modules
+                                    </SelectItem>
                                     {modules.map((module) => (
-                                        <SelectItem key={module.id} value={module.id.toString()}>
+                                        <SelectItem
+                                            key={module.id}
+                                            value={module.id.toString()}
+                                        >
                                             {module.code}
                                         </SelectItem>
                                     ))}
@@ -221,7 +257,8 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                 onValueChange={(value) => {
                                     setTypeFilter(value);
                                     applyFilters({
-                                        question_type: value === 'all' ? undefined : value,
+                                        question_type:
+                                            value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -229,11 +266,19 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     <SelectValue placeholder="All Types" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Types</SelectItem>
-                                    <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
-                                    <SelectItem value="true_false">True/False</SelectItem>
+                                    <SelectItem value="all">
+                                        All Types
+                                    </SelectItem>
+                                    <SelectItem value="multiple_choice">
+                                        Multiple Choice
+                                    </SelectItem>
+                                    <SelectItem value="true_false">
+                                        True/False
+                                    </SelectItem>
                                     <SelectItem value="essay">Essay</SelectItem>
-                                    <SelectItem value="identification">Identification</SelectItem>
+                                    <SelectItem value="identification">
+                                        Identification
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
 
@@ -242,7 +287,8 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                 onValueChange={(value) => {
                                     setDifficultyFilter(value);
                                     applyFilters({
-                                        difficulty: value === 'all' ? undefined : value,
+                                        difficulty:
+                                            value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -250,10 +296,16 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     <SelectValue placeholder="All Difficulty" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Difficulty</SelectItem>
+                                    <SelectItem value="all">
+                                        All Difficulty
+                                    </SelectItem>
                                     <SelectItem value="easy">Easy</SelectItem>
-                                    <SelectItem value="moderate">Moderate</SelectItem>
-                                    <SelectItem value="difficult">Difficult</SelectItem>
+                                    <SelectItem value="moderate">
+                                        Moderate
+                                    </SelectItem>
+                                    <SelectItem value="difficult">
+                                        Difficult
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
 
@@ -262,7 +314,8 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                 onValueChange={(value) => {
                                     setCognitiveFilter(value);
                                     applyFilters({
-                                        cognitive_level: value === 'all' ? undefined : value,
+                                        cognitive_level:
+                                            value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -270,13 +323,27 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     <SelectValue placeholder="All Cognitive Levels" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Levels</SelectItem>
-                                    <SelectItem value="remembering">Remembering</SelectItem>
-                                    <SelectItem value="understanding">Understanding</SelectItem>
-                                    <SelectItem value="applying">Applying</SelectItem>
-                                    <SelectItem value="analyzing">Analyzing</SelectItem>
-                                    <SelectItem value="evaluating">Evaluating</SelectItem>
-                                    <SelectItem value="creating">Creating</SelectItem>
+                                    <SelectItem value="all">
+                                        All Levels
+                                    </SelectItem>
+                                    <SelectItem value="remembering">
+                                        Remembering
+                                    </SelectItem>
+                                    <SelectItem value="understanding">
+                                        Understanding
+                                    </SelectItem>
+                                    <SelectItem value="applying">
+                                        Applying
+                                    </SelectItem>
+                                    <SelectItem value="analyzing">
+                                        Analyzing
+                                    </SelectItem>
+                                    <SelectItem value="evaluating">
+                                        Evaluating
+                                    </SelectItem>
+                                    <SelectItem value="creating">
+                                        Creating
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
 
@@ -285,7 +352,8 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                 onValueChange={(value) => {
                                     setApprovalFilter(value);
                                     applyFilters({
-                                        is_approved: value === 'all' ? undefined : value,
+                                        is_approved:
+                                            value === 'all' ? undefined : value,
                                     });
                                 }}
                             >
@@ -293,7 +361,9 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     <SelectValue placeholder="All Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="all">
+                                        All Status
+                                    </SelectItem>
                                     <SelectItem value="1">Approved</SelectItem>
                                     <SelectItem value="0">Pending</SelectItem>
                                 </SelectContent>
@@ -309,7 +379,11 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                 setDifficultyFilter('all');
                                 setCognitiveFilter('all');
                                 setApprovalFilter('all');
-                                router.get(questionIndex.url(), {}, { preserveState: true });
+                                router.get(
+                                    questionIndex.url(),
+                                    {},
+                                    { preserveState: true },
+                                );
                             }}
                         >
                             Clear All Filters
@@ -322,7 +396,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                     {questions.data.length === 0 ? (
                         <Card>
                             <CardContent className="pt-6">
-                                <div className="text-center py-12">
+                                <div className="py-12 text-center">
                                     <Search className="mx-auto h-12 w-12 text-muted-foreground" />
                                     <h3 className="mt-2 text-sm font-semibold text-foreground">
                                         No questions found
@@ -350,28 +424,41 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                     <CardContent className="pt-6">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
-                                                <div className="flex items-start gap-4 mb-3">
+                                                <div className="mb-3 flex items-start gap-4">
                                                     <div className="flex-1">
-                                                        <h3 className="text-base font-medium text-foreground line-clamp-2">
-                                                            {question.question_text}
+                                                        <h3 className="line-clamp-2 text-base font-medium text-foreground">
+                                                            {
+                                                                question.question_text
+                                                            }
                                                         </h3>
-                                                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                                        <div className="mt-2 flex flex-wrap items-center gap-2">
                                                             <Badge
                                                                 variant="outline"
                                                                 className="font-mono"
                                                             >
-                                                                {question.module.code}
+                                                                {
+                                                                    question
+                                                                        .module
+                                                                        .code
+                                                                }
                                                             </Badge>
                                                             <Badge variant="secondary">
                                                                 {question.question_type
-                                                                    .replace('_', ' ')
+                                                                    .replace(
+                                                                        '_',
+                                                                        ' ',
+                                                                    )
                                                                     .split(' ')
                                                                     .map(
                                                                         (w) =>
                                                                             w
-                                                                                .charAt(0)
+                                                                                .charAt(
+                                                                                    0,
+                                                                                )
                                                                                 .toUpperCase() +
-                                                                            w.slice(1),
+                                                                            w.slice(
+                                                                                1,
+                                                                            ),
                                                                     )
                                                                     .join(' ')}
                                                             </Badge>
@@ -387,29 +474,41 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                                     )}
                                                             </Badge>
                                                             <Badge variant="outline">
-                                                                {question.points}{' '}
-                                                                {question.points === 1
+                                                                {
+                                                                    question.points
+                                                                }{' '}
+                                                                {question.points ===
+                                                                1
                                                                     ? 'point'
                                                                     : 'points'}
                                                             </Badge>
                                                             {question.is_approved ? (
-                                                                <Badge className="bg-success/10 text-success border-success/20">
+                                                                <Badge className="border-success/20 bg-success/10 text-success">
                                                                     <CheckCircle2 className="mr-1 h-3 w-3" />
                                                                     Approved
                                                                 </Badge>
                                                             ) : (
-                                                                <Badge className="bg-warning/10 text-warning border-warning/20">
+                                                                <Badge className="border-warning/20 bg-warning/10 text-warning">
                                                                     <XCircle className="mr-1 h-3 w-3" />
                                                                     Pending
                                                                 </Badge>
                                                             )}
                                                         </div>
                                                         <div className="mt-2 text-sm text-muted-foreground">
-                                                            Created by {question.creator.name}
+                                                            Created by{' '}
+                                                            {
+                                                                question.creator
+                                                                    .name
+                                                            }
                                                             {question.tosGenerate && (
                                                                 <span>
                                                                     {' '}
-                                                                    • {question.tosGenerate.title}
+                                                                    •{' '}
+                                                                    {
+                                                                        question
+                                                                            .tosGenerate
+                                                                            .title
+                                                                    }
                                                                 </span>
                                                             )}
                                                         </div>
@@ -417,34 +516,58 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                 </div>
                                             </div>
 
-                                            <div className="flex gap-2 ml-4">
+                                            <div className="ml-4 flex gap-2">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handlePolish(question)}
-                                                    disabled={polishingId === question.id}
+                                                    onClick={() =>
+                                                        handlePolish(question)
+                                                    }
+                                                    disabled={
+                                                        polishingId ===
+                                                        question.id
+                                                    }
                                                     title="AI Polish (Grammar & Clarity)"
                                                 >
-                                                    {polishingId === question.id ? (
+                                                    {polishingId ===
+                                                    question.id ? (
                                                         <Loader2 className="h-4 w-4 animate-spin" />
                                                     ) : (
                                                         <Sparkles className="h-4 w-4 text-blue-500" />
                                                     )}
                                                 </Button>
-                                                <Button variant="outline" size="sm" asChild>
-                                                    <Link href={questionShow.url(question.id)}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    asChild
+                                                >
+                                                    <Link
+                                                        href={questionShow.url(
+                                                            question.id,
+                                                        )}
+                                                    >
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
-                                                <Button variant="outline" size="sm" asChild>
-                                                    <Link href={questionEdit.url(question.id)}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    asChild
+                                                >
+                                                    <Link
+                                                        href={questionEdit.url(
+                                                            question.id,
+                                                        )}
+                                                    >
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleDelete(question)}
+                                                    onClick={() =>
+                                                        handleDelete(question)
+                                                    }
                                                     className="text-destructive hover:text-destructive/80"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -457,7 +580,7 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
 
                             {/* Pagination */}
                             {questions.last_page > 1 && (
-                                <div className="flex items-center justify-center gap-2 mt-6">
+                                <div className="mt-6 flex items-center justify-center gap-2">
                                     <Button
                                         variant="outline"
                                         disabled={questions.current_page === 1}
@@ -466,7 +589,9 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                                 questionIndex.url({
                                                     query: {
                                                         ...filters,
-                                                        page: questions.current_page - 1,
+                                                        page:
+                                                            questions.current_page -
+                                                            1,
                                                     },
                                                 }),
                                                 { preserveState: true },
@@ -476,17 +601,23 @@ export default function ExamsIndex({ questions, modules, filters }: PageProps) {
                                         Previous
                                     </Button>
                                     <span className="text-sm text-muted-foreground">
-                                        Page {questions.current_page} of {questions.last_page}
+                                        Page {questions.current_page} of{' '}
+                                        {questions.last_page}
                                     </span>
                                     <Button
                                         variant="outline"
-                                        disabled={questions.current_page === questions.last_page}
+                                        disabled={
+                                            questions.current_page ===
+                                            questions.last_page
+                                        }
                                         onClick={() =>
                                             router.get(
                                                 questionIndex.url({
                                                     query: {
                                                         ...filters,
-                                                        page: questions.current_page + 1,
+                                                        page:
+                                                            questions.current_page +
+                                                            1,
                                                     },
                                                 }),
                                                 { preserveState: true },

@@ -1,7 +1,20 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Exam } from '@/types/models';
-import { BreadcrumbItem, SharedData } from '@/types';
+import {
+    Plus,
+    MoreVertical,
+    Eye,
+    Copy,
+    Trash2,
+    FileText,
+    ClipboardList,
+    Stethoscope,
+    Search,
+    X,
+} from 'lucide-react';
+import { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import type { Exam } from '@/types/models';
+import type { BreadcrumbItem, SharedData } from '@/types';
 import * as examBuilder from '@/routes/exam-builder';
 import { index as modulesIndex, show as moduleShow } from '@/routes/modules';
 import { Badge } from '@/components/ui/badge';
@@ -48,21 +61,10 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import {
-    Plus,
-    MoreVertical,
-    Eye,
-    Copy,
-    Trash2,
-    FileText,
-    ClipboardList,
-    Stethoscope,
-    Search,
-    X,
-} from 'lucide-react';
-import { useState } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Exam Builder', href: examBuilder.index.url() }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Exam Builder', href: examBuilder.index.url() },
+];
 
 interface PageProps {
     exams: {
@@ -116,25 +118,37 @@ function getStatusBadge(status: string) {
     };
 
     return (
-        <Badge variant="outline" className={styles[status] || 'bg-muted text-muted-foreground'}>
+        <Badge
+            variant="outline"
+            className={styles[status] || 'bg-muted text-muted-foreground'}
+        >
             {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
     );
 }
 
-export default function ExamBuilderIndex({ exams, modules, filters }: PageProps) {
+export default function ExamBuilderIndex({
+    exams,
+    modules,
+    filters,
+}: PageProps) {
     const { auth } = usePage<SharedData>().props;
     const userPermissions = auth.user?.permissions || [];
     const currentUserId = auth.user?.id;
 
     const [search, setSearch] = useState(filters.search || '');
-    const [moduleFilter, setModuleFilter] = useState(filters.module_id || 'all');
+    const [moduleFilter, setModuleFilter] = useState(
+        filters.module_id || 'all',
+    );
     const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [typeFilter, setTypeFilter] = useState(filters.exam_type || 'all');
     const [deletingExam, setDeletingExam] = useState<Exam | null>(null);
 
     const canDeleteExam = (exam: Exam) => {
-        return userPermissions.includes('delete exams') || exam.created_by === currentUserId;
+        return (
+            userPermissions.includes('delete exams') ||
+            exam.created_by === currentUserId
+        );
     };
 
     const handleSearch = (value: string) => {
@@ -142,14 +156,18 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
         const timer = setTimeout(() => {
             applyFilters({ search: value || undefined });
         }, 300);
+
         return () => clearTimeout(timer);
     };
 
     const applyFilters = (newFilters: Partial<typeof filters> = {}) => {
         const currentFilters = {
-            module_id: moduleFilter === 'all' ? undefined : moduleFilter || undefined,
-            status: statusFilter === 'all' ? undefined : statusFilter || undefined,
-            exam_type: typeFilter === 'all' ? undefined : typeFilter || undefined,
+            module_id:
+                moduleFilter === 'all' ? undefined : moduleFilter || undefined,
+            status:
+                statusFilter === 'all' ? undefined : statusFilter || undefined,
+            exam_type:
+                typeFilter === 'all' ? undefined : typeFilter || undefined,
             search: search || undefined,
             ...newFilters,
         };
@@ -166,7 +184,10 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
     };
 
     const hasActiveFilters =
-        moduleFilter !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || search !== '';
+        moduleFilter !== 'all' ||
+        statusFilter !== 'all' ||
+        typeFilter !== 'all' ||
+        search !== '';
 
     const clearFilters = () => {
         setSearch('');
@@ -185,9 +206,12 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                     {/* Header */}
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-semibold tracking-tight">Exam Builder</h1>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {exams.total} exam{exams.total !== 1 ? 's' : ''} total
+                            <h1 className="text-2xl font-semibold tracking-tight">
+                                Exam Builder
+                            </h1>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                {exams.total} exam{exams.total !== 1 ? 's' : ''}{' '}
+                                total
                             </p>
                         </div>
                         <Button asChild>
@@ -200,8 +224,8 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
 
                     {/* Filters Row */}
                     <div className="flex flex-wrap items-center gap-3">
-                        <div className="relative flex-1 min-w-48 max-w-sm">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <div className="relative max-w-sm min-w-48 flex-1">
+                            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 placeholder="Search exams..."
                                 value={search}
@@ -214,7 +238,10 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             onValueChange={(value) => {
                                 setModuleFilter(value);
                                 applyFilters({
-                                    module_id: value === 'all' ? undefined : value || undefined,
+                                    module_id:
+                                        value === 'all'
+                                            ? undefined
+                                            : value || undefined,
                                 });
                             }}
                         >
@@ -224,7 +251,10 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             <SelectContent>
                                 <SelectItem value="all">All Modules</SelectItem>
                                 {modules.map((module) => (
-                                    <SelectItem key={module.id} value={module.id.toString()}>
+                                    <SelectItem
+                                        key={module.id}
+                                        value={module.id.toString()}
+                                    >
                                         {module.code}
                                     </SelectItem>
                                 ))}
@@ -235,7 +265,10 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             onValueChange={(value) => {
                                 setStatusFilter(value);
                                 applyFilters({
-                                    status: value === 'all' ? undefined : value || undefined,
+                                    status:
+                                        value === 'all'
+                                            ? undefined
+                                            : value || undefined,
                                 });
                             }}
                         >
@@ -245,8 +278,12 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
                                 <SelectItem value="draft">Draft</SelectItem>
-                                <SelectItem value="published">Published</SelectItem>
-                                <SelectItem value="archived">Archived</SelectItem>
+                                <SelectItem value="published">
+                                    Published
+                                </SelectItem>
+                                <SelectItem value="archived">
+                                    Archived
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                         <Select
@@ -254,7 +291,10 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             onValueChange={(value) => {
                                 setTypeFilter(value);
                                 applyFilters({
-                                    exam_type: value === 'all' ? undefined : value || undefined,
+                                    exam_type:
+                                        value === 'all'
+                                            ? undefined
+                                            : value || undefined,
                                 });
                             }}
                         >
@@ -263,13 +303,23 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Types</SelectItem>
-                                <SelectItem value="formative">Formative</SelectItem>
-                                <SelectItem value="summative">Summative</SelectItem>
-                                <SelectItem value="diagnostic">Diagnostic</SelectItem>
+                                <SelectItem value="formative">
+                                    Formative
+                                </SelectItem>
+                                <SelectItem value="summative">
+                                    Summative
+                                </SelectItem>
+                                <SelectItem value="diagnostic">
+                                    Diagnostic
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                         {hasActiveFilters && (
-                            <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={clearFilters}
+                            >
                                 <X className="mr-1 size-3" />
                                 Clear
                             </Button>
@@ -292,7 +342,10 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             </EmptyHeader>
                             <EmptyContent>
                                 {hasActiveFilters ? (
-                                    <Button variant="outline" onClick={clearFilters}>
+                                    <Button
+                                        variant="outline"
+                                        onClick={clearFilters}
+                                    >
                                         Clear Filters
                                     </Button>
                                 ) : (
@@ -309,7 +362,7 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                         <>
                             <div className="rounded-xl border">
                                 {/* Table Header */}
-                                <div className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                <div className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 border-b px-6 py-3 text-xs font-medium tracking-wider text-muted-foreground uppercase">
                                     <span>Title</span>
                                     <span>Questions</span>
                                     <span>Created</span>
@@ -322,16 +375,20 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                     <Link
                                         key={exam.id}
                                         href={moduleShow.url(exam.module.id)}
-                                        className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors group"
+                                        className="group grid grid-cols-[1fr_120px_140px_100px_48px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                     >
                                         {/* Title with icon */}
-                                        <div className="flex items-center gap-3 min-w-0">
+                                        <div className="flex min-w-0 items-center gap-3">
                                             <div className="shrink-0">
-                                                {getExamTypeIcon(exam.exam_type)}
+                                                {getExamTypeIcon(
+                                                    exam.exam_type,
+                                                )}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="font-medium truncate">{exam.title}</p>
-                                                <p className="text-xs text-muted-foreground truncate">
+                                                <p className="truncate font-medium">
+                                                    {exam.title}
+                                                </p>
+                                                <p className="truncate text-xs text-muted-foreground">
                                                     {exam.module?.name}
                                                 </p>
                                             </div>
@@ -340,7 +397,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                         {/* Questions count */}
                                         <span className="text-sm text-muted-foreground">
                                             {exam.questions_count}{' '}
-                                            {exam.questions_count === 1 ? 'Question' : 'Questions'}
+                                            {exam.questions_count === 1
+                                                ? 'Question'
+                                                : 'Questions'}
                                         </span>
 
                                         {/* Created date */}
@@ -361,14 +420,18 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        className="size-8 opacity-0 transition-opacity group-hover:opacity-100"
                                                     >
                                                         <MoreVertical className="size-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={moduleShow.url(exam.module.id)}>
+                                                        <Link
+                                                            href={moduleShow.url(
+                                                                exam.module.id,
+                                                            )}
+                                                        >
                                                             <Eye className="mr-2 size-4" />
                                                             View in Module
                                                         </Link>
@@ -376,7 +439,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                     <DropdownMenuItem
                                                         onClick={() =>
                                                             router.post(
-                                                                examBuilder.duplicate.url(exam.id),
+                                                                examBuilder.duplicate.url(
+                                                                    exam.id,
+                                                                ),
                                                             )
                                                         }
                                                     >
@@ -389,7 +454,9 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                             <DropdownMenuItem
                                                                 className="text-destructive focus:text-destructive"
                                                                 onClick={() =>
-                                                                    setDeletingExam(exam)
+                                                                    setDeletingExam(
+                                                                        exam,
+                                                                    )
                                                                 }
                                                             >
                                                                 <Trash2 className="mr-2 size-4" />
@@ -408,13 +475,17 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                             {exams.last_page > 1 && (
                                 <div className="flex items-center justify-between">
                                     <p className="text-sm text-muted-foreground">
-                                        Showing {exams.data.length} of {exams.total} exams
+                                        Showing {exams.data.length} of{' '}
+                                        {exams.total} exams
                                     </p>
                                     <Pagination>
                                         <PaginationContent>
                                             <PaginationItem>
                                                 <PaginationPrevious
-                                                    href={exams.links[0].url || '#'}
+                                                    href={
+                                                        exams.links[0].url ||
+                                                        '#'
+                                                    }
                                                     className={
                                                         !exams.links[0].url
                                                             ? 'pointer-events-none opacity-50'
@@ -422,33 +493,52 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
                                                     }
                                                 />
                                             </PaginationItem>
-                                            {exams.links.slice(1, -1).map((link, i) => {
-                                                if (link.label.includes('...')) {
+                                            {exams.links
+                                                .slice(1, -1)
+                                                .map((link, i) => {
+                                                    if (
+                                                        link.label.includes(
+                                                            '...',
+                                                        )
+                                                    ) {
+                                                        return (
+                                                            <PaginationItem
+                                                                key={i}
+                                                            >
+                                                                <PaginationEllipsis />
+                                                            </PaginationItem>
+                                                        );
+                                                    }
+
                                                     return (
                                                         <PaginationItem key={i}>
-                                                            <PaginationEllipsis />
+                                                            <PaginationLink
+                                                                href={
+                                                                    link.url ||
+                                                                    '#'
+                                                                }
+                                                                isActive={
+                                                                    link.active
+                                                                }
+                                                            >
+                                                                {link.label}
+                                                            </PaginationLink>
                                                         </PaginationItem>
                                                     );
-                                                }
-                                                return (
-                                                    <PaginationItem key={i}>
-                                                        <PaginationLink
-                                                            href={link.url || '#'}
-                                                            isActive={link.active}
-                                                        >
-                                                            {link.label}
-                                                        </PaginationLink>
-                                                    </PaginationItem>
-                                                );
-                                            })}
+                                                })}
                                             <PaginationItem>
                                                 <PaginationNext
                                                     href={
-                                                        exams.links[exams.links.length - 1].url ||
-                                                        '#'
+                                                        exams.links[
+                                                            exams.links.length -
+                                                                1
+                                                        ].url || '#'
                                                     }
                                                     className={
-                                                        !exams.links[exams.links.length - 1].url
+                                                        !exams.links[
+                                                            exams.links.length -
+                                                                1
+                                                        ].url
                                                             ? 'pointer-events-none opacity-50'
                                                             : ''
                                                     }
@@ -464,13 +554,17 @@ export default function ExamBuilderIndex({ exams, modules, filters }: PageProps)
             </div>
 
             {/* Delete Confirmation */}
-            <AlertDialog open={!!deletingExam} onOpenChange={() => setDeletingExam(null)}>
+            <AlertDialog
+                open={!!deletingExam}
+                onOpenChange={() => setDeletingExam(null)}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Exam</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete "{deletingExam?.title}"? This action
-                            cannot be undone.
+                            Are you sure you want to delete "
+                            {deletingExam?.title}"? This action cannot be
+                            undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

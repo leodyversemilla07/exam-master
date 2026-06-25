@@ -1,11 +1,5 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, useForm } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Save } from 'lucide-react';
-import { BreadcrumbItem } from '@/types';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -15,8 +9,28 @@ import { Table } from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
+import {
+    Bold,
+    Italic,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    ImageIcon,
+    Grid3X3,
+} from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
-import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, ImageIcon, Grid3X3 } from 'lucide-react';
+import type { BreadcrumbItem } from '@/types';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/app-layout';
 import examTemplates from '@/routes/exam-templates';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -31,45 +45,56 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
     const addImage = () => {
         const url = window.prompt('URL');
+
         if (url) {
             editor.chain().focus().setImage({ src: url }).run();
         }
     };
 
     return (
-        <div className="flex flex-wrap gap-2 p-2 border-b bg-muted/20">
+        <div className="flex flex-wrap gap-2 border-b bg-muted/20 p-2">
             <Toggle
                 size="sm"
                 pressed={editor.isActive('bold')}
-                onPressedChange={() => editor.chain().focus().toggleBold().run()}
+                onPressedChange={() =>
+                    editor.chain().focus().toggleBold().run()
+                }
             >
                 <Bold className="h-4 w-4" />
             </Toggle>
             <Toggle
                 size="sm"
                 pressed={editor.isActive('italic')}
-                onPressedChange={() => editor.chain().focus().toggleItalic().run()}
+                onPressedChange={() =>
+                    editor.chain().focus().toggleItalic().run()
+                }
             >
                 <Italic className="h-4 w-4" />
             </Toggle>
             <Toggle
                 size="sm"
                 pressed={editor.isActive({ textAlign: 'left' })}
-                onPressedChange={() => editor.chain().focus().setTextAlign('left').run()}
+                onPressedChange={() =>
+                    editor.chain().focus().setTextAlign('left').run()
+                }
             >
                 <AlignLeft className="h-4 w-4" />
             </Toggle>
             <Toggle
                 size="sm"
                 pressed={editor.isActive({ textAlign: 'center' })}
-                onPressedChange={() => editor.chain().focus().setTextAlign('center').run()}
+                onPressedChange={() =>
+                    editor.chain().focus().setTextAlign('center').run()
+                }
             >
                 <AlignCenter className="h-4 w-4" />
             </Toggle>
             <Toggle
                 size="sm"
                 pressed={editor.isActive({ textAlign: 'right' })}
-                onPressedChange={() => editor.chain().focus().setTextAlign('right').run()}
+                onPressedChange={() =>
+                    editor.chain().focus().setTextAlign('right').run()
+                }
             >
                 <AlignRight className="h-4 w-4" />
             </Toggle>
@@ -90,12 +115,18 @@ const MenuBar = ({ editor }: { editor: any }) => {
             >
                 <Grid3X3 className="h-4 w-4" />
             </Button>
-            <div className="w-[1px] h-6 bg-border mx-1" />
+            <div className="mx-1 h-6 w-[1px] bg-border" />
 
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => editor.chain().focus().insertContent('{{school_name}}').run()}
+                onClick={() =>
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent('{{school_name}}')
+                        .run()
+                }
                 type="button"
                 className="text-xs"
             >
@@ -104,7 +135,9 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => editor.chain().focus().insertContent('{{exam_title}}').run()}
+                onClick={() =>
+                    editor.chain().focus().insertContent('{{exam_title}}').run()
+                }
                 type="button"
                 className="text-xs"
             >
@@ -113,7 +146,13 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => editor.chain().focus().insertContent('{{student_name}}').run()}
+                onClick={() =>
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent('{{student_name}}')
+                        .run()
+                }
                 type="button"
                 className="text-xs"
             >
@@ -122,7 +161,9 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => editor.chain().focus().insertContent('{{date}}').run()}
+                onClick={() =>
+                    editor.chain().focus().insertContent('{{date}}').run()
+                }
                 type="button"
                 className="text-xs"
             >
@@ -131,7 +172,9 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => editor.chain().focus().insertContent('{{score}}').run()}
+                onClick={() =>
+                    editor.chain().focus().insertContent('{{score}}').run()
+                }
                 type="button"
                 className="text-xs"
             >
@@ -220,15 +263,21 @@ export default function Edit({ template }: PageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Edit Template</CardTitle>
-                                <CardDescription>Update your exam layout.</CardDescription>
+                                <CardDescription>
+                                    Update your exam layout.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Template Name *</Label>
+                                    <Label htmlFor="name">
+                                        Template Name *
+                                    </Label>
                                     <Input
                                         id="name"
                                         value={form.data.name}
-                                        onChange={(e) => form.setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('name', e.target.value)
+                                        }
                                         placeholder="e.g., Midterm Exam Layout"
                                         required
                                     />
@@ -249,13 +298,16 @@ export default function Edit({ template }: PageProps) {
                                         Design the top section of every page.
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="flex-1 flex flex-col">
-                                    <div className="border rounded-md shadow-sm overflow-hidden bg-background flex-1 flex flex-col">
+                                <CardContent className="flex flex-1 flex-col">
+                                    <div className="flex flex-1 flex-col overflow-hidden rounded-md border bg-background shadow-sm">
                                         <MenuBar editor={headerEditor} />
-                                        <EditorContent editor={headerEditor} className="flex-1" />
+                                        <EditorContent
+                                            editor={headerEditor}
+                                            className="flex-1"
+                                        />
                                     </div>
                                     {form.errors.header_content && (
-                                        <p className="text-sm text-destructive mt-2">
+                                        <p className="mt-2 text-sm text-destructive">
                                             {form.errors.header_content}
                                         </p>
                                     )}
@@ -269,13 +321,16 @@ export default function Edit({ template }: PageProps) {
                                         Design the bottom section of every page.
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="flex-1 flex flex-col">
-                                    <div className="border rounded-md shadow-sm overflow-hidden bg-background flex-1 flex flex-col">
+                                <CardContent className="flex flex-1 flex-col">
+                                    <div className="flex flex-1 flex-col overflow-hidden rounded-md border bg-background shadow-sm">
                                         <MenuBar editor={footerEditor} />
-                                        <EditorContent editor={footerEditor} className="flex-1" />
+                                        <EditorContent
+                                            editor={footerEditor}
+                                            className="flex-1"
+                                        />
                                     </div>
                                     {form.errors.footer_content && (
-                                        <p className="text-sm text-destructive mt-2">
+                                        <p className="mt-2 text-sm text-destructive">
                                             {form.errors.footer_content}
                                         </p>
                                     )}
@@ -284,9 +339,15 @@ export default function Edit({ template }: PageProps) {
                         </div>
 
                         <div className="flex justify-end">
-                            <Button type="submit" disabled={form.processing} size="lg">
+                            <Button
+                                type="submit"
+                                disabled={form.processing}
+                                size="lg"
+                            >
                                 <Save className="mr-2 h-4 w-4" />
-                                {form.processing ? 'Saving...' : 'Update Template'}
+                                {form.processing
+                                    ? 'Saving...'
+                                    : 'Update Template'}
                             </Button>
                         </div>
                     </form>

@@ -1,9 +1,15 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Head } from '@inertiajs/react';
+import { AlertTriangle, FileQuestion } from 'lucide-react';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-import { Module, ExamQuestion } from '@/types/models';
-import { AlertTriangle, FileQuestion } from 'lucide-react';
+import type { Module, ExamQuestion } from '@/types/models';
 import PageHeader from '@/components/page-header';
 
 interface DuplicateMatch {
@@ -27,38 +33,63 @@ interface PageProps {
 }
 
 const getSimilarityColor = (score: number): string => {
-    if (score >= 90) return 'bg-destructive/10 text-destructive border-destructive/20';
-    if (score >= 75) return 'bg-warning/10 text-warning border-warning/20';
-    if (score >= 60) return 'bg-info/10 text-info border-info/20';
+    if (score >= 90) {
+        return 'bg-destructive/10 text-destructive border-destructive/20';
+    }
+
+    if (score >= 75) {
+        return 'bg-warning/10 text-warning border-warning/20';
+    }
+
+    if (score >= 60) {
+        return 'bg-info/10 text-info border-info/20';
+    }
+
     return 'bg-success/10 text-success border-success/20';
 };
 
 const getSimilarityLabel = (score: number): string => {
-    if (score >= 90) return 'Very High';
-    if (score >= 75) return 'High';
-    if (score >= 60) return 'Moderate';
+    if (score >= 90) {
+        return 'Very High';
+    }
+
+    if (score >= 75) {
+        return 'High';
+    }
+
+    if (score >= 60) {
+        return 'Moderate';
+    }
+
     return 'Low';
 };
 
-export default function DuplicateDetectionIndex({ module, duplicates, statistics }: PageProps) {
+export default function DuplicateDetectionIndex({
+    module,
+    duplicates,
+    statistics,
+}: PageProps) {
     const breadcrumbs = [
         { title: 'Modules', href: '/modules' },
         { title: module.name, href: `/modules/${module.id}` },
-        { title: 'Duplicate Detection', href: `/duplicate-detection/${module.id}` },
+        {
+            title: 'Duplicate Detection',
+            href: `/duplicate-detection/${module.id}`,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Duplicate Detection - ${module.name}`} />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 {/* Header */}
                 <PageHeader
                     title="Duplicate Detection"
                     description={
                         <>
-                            Question similarity analysis for <strong>{module.code}</strong> -{' '}
-                            {module.name}
+                            Question similarity analysis for{' '}
+                            <strong>{module.code}</strong> - {module.name}
                         </>
                     }
                 />
@@ -67,23 +98,35 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
+                            <CardTitle className="text-sm font-medium">
+                                Total Questions
+                            </CardTitle>
                             <FileQuestion className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{statistics.total_questions}</div>
-                            <p className="text-xs text-muted-foreground">In question bank</p>
+                            <div className="text-2xl font-bold">
+                                {statistics.total_questions}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                In question bank
+                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Duplicate Groups</CardTitle>
+                            <CardTitle className="text-sm font-medium">
+                                Duplicate Groups
+                            </CardTitle>
                             <AlertTriangle className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{statistics.duplicate_groups}</div>
-                            <p className="text-xs text-muted-foreground">Questions with matches</p>
+                            <div className="text-2xl font-bold">
+                                {statistics.duplicate_groups}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Questions with matches
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -98,20 +141,26 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                             <div className="text-2xl font-bold">
                                 {statistics.highest_similarity.toFixed(1)}%
                             </div>
-                            <p className="text-xs text-muted-foreground">Maximum detected</p>
+                            <p className="text-xs text-muted-foreground">
+                                Maximum detected
+                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Questions Flagged</CardTitle>
+                            <CardTitle className="text-sm font-medium">
+                                Questions Flagged
+                            </CardTitle>
                             <AlertTriangle className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
                                 {statistics.questions_with_duplicates}
                             </div>
-                            <p className="text-xs text-muted-foreground">Need review</p>
+                            <p className="text-xs text-muted-foreground">
+                                Need review
+                            </p>
                         </CardContent>
                     </Card>
                 </div>
@@ -121,9 +170,12 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                     <Card>
                         <CardContent className="flex flex-col items-center justify-center py-16">
                             <FileQuestion className="size-12 text-muted-foreground" />
-                            <h3 className="mt-4 text-lg font-medium">No Duplicates Found</h3>
+                            <h3 className="mt-4 text-lg font-medium">
+                                No Duplicates Found
+                            </h3>
                             <p className="mt-2 text-sm text-muted-foreground">
-                                All questions in this module appear to be unique.
+                                All questions in this module appear to be
+                                unique.
                             </p>
                         </CardContent>
                     </Card>
@@ -141,9 +193,14 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                 {group.question.question}
                                             </CardDescription>
                                         </div>
-                                        <Badge variant="outline" className="ml-4">
+                                        <Badge
+                                            variant="outline"
+                                            className="ml-4"
+                                        >
                                             {group.matches.length}{' '}
-                                            {group.matches.length === 1 ? 'match' : 'matches'}
+                                            {group.matches.length === 1
+                                                ? 'match'
+                                                : 'matches'}
                                         </Badge>
                                     </div>
                                 </CardHeader>
@@ -157,7 +214,8 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-sm font-medium">
-                                                            Question #{match.question.id}
+                                                            Question #
+                                                            {match.question.id}
                                                         </span>
                                                         <Badge
                                                             variant="secondary"
@@ -165,20 +223,31 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                                 match.similarity_score,
                                                             )}
                                                         >
-                                                            {match.similarity_score.toFixed(1)}% -{' '}
+                                                            {match.similarity_score.toFixed(
+                                                                1,
+                                                            )}
+                                                            % -{' '}
                                                             {getSimilarityLabel(
                                                                 match.similarity_score,
                                                             )}
                                                         </Badge>
                                                     </div>
                                                     <p className="mt-2 text-sm">
-                                                        {match.question.question}
+                                                        {
+                                                            match.question
+                                                                .question
+                                                        }
                                                     </p>
                                                     <div className="mt-3 flex flex-wrap gap-2">
                                                         {match.matching_aspects.map(
-                                                            (aspect, aspectIndex) => (
+                                                            (
+                                                                aspect,
+                                                                aspectIndex,
+                                                            ) => (
                                                                 <Badge
-                                                                    key={aspectIndex}
+                                                                    key={
+                                                                        aspectIndex
+                                                                    }
                                                                     variant="outline"
                                                                     className="text-xs"
                                                                 >
@@ -193,7 +262,7 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                             {/* Side-by-side comparison */}
                                             <div className="mt-4 grid gap-4 border-t pt-4 md:grid-cols-2">
                                                 <div>
-                                                    <h4 className="mb-2 text-xs font-medium uppercase text-muted-foreground">
+                                                    <h4 className="mb-2 text-xs font-medium text-muted-foreground uppercase">
                                                         Original Question
                                                     </h4>
                                                     <div className="space-y-1 text-sm">
@@ -201,14 +270,21 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                             <span className="font-medium">
                                                                 Type:
                                                             </span>{' '}
-                                                            {group.question.question_type}
+                                                            {
+                                                                group.question
+                                                                    .question_type
+                                                            }
                                                         </div>
                                                         <div>
                                                             <span className="font-medium">
                                                                 Difficulty:
                                                             </span>{' '}
                                                             <span className="capitalize">
-                                                                {group.question.difficulty}
+                                                                {
+                                                                    group
+                                                                        .question
+                                                                        .difficulty
+                                                                }
                                                             </span>
                                                         </div>
                                                         <div>
@@ -216,22 +292,31 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                                 Cognitive Level:
                                                             </span>{' '}
                                                             <span className="capitalize">
-                                                                {group.question.cognitive_level}
+                                                                {
+                                                                    group
+                                                                        .question
+                                                                        .cognitive_level
+                                                                }
                                                             </span>
                                                         </div>
-                                                        {group.question.correct_answer && (
+                                                        {group.question
+                                                            .correct_answer && (
                                                             <div>
                                                                 <span className="font-medium">
                                                                     Answer:
                                                                 </span>{' '}
-                                                                {group.question.correct_answer}
+                                                                {
+                                                                    group
+                                                                        .question
+                                                                        .correct_answer
+                                                                }
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
 
                                                 <div>
-                                                    <h4 className="mb-2 text-xs font-medium uppercase text-muted-foreground">
+                                                    <h4 className="mb-2 text-xs font-medium text-muted-foreground uppercase">
                                                         Similar Question
                                                     </h4>
                                                     <div className="space-y-1 text-sm">
@@ -239,14 +324,21 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                             <span className="font-medium">
                                                                 Type:
                                                             </span>{' '}
-                                                            {match.question.question_type}
+                                                            {
+                                                                match.question
+                                                                    .question_type
+                                                            }
                                                         </div>
                                                         <div>
                                                             <span className="font-medium">
                                                                 Difficulty:
                                                             </span>{' '}
                                                             <span className="capitalize">
-                                                                {match.question.difficulty}
+                                                                {
+                                                                    match
+                                                                        .question
+                                                                        .difficulty
+                                                                }
                                                             </span>
                                                         </div>
                                                         <div>
@@ -254,15 +346,24 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                                                                 Cognitive Level:
                                                             </span>{' '}
                                                             <span className="capitalize">
-                                                                {match.question.cognitive_level}
+                                                                {
+                                                                    match
+                                                                        .question
+                                                                        .cognitive_level
+                                                                }
                                                             </span>
                                                         </div>
-                                                        {match.question.correct_answer && (
+                                                        {match.question
+                                                            .correct_answer && (
                                                             <div>
                                                                 <span className="font-medium">
                                                                     Answer:
                                                                 </span>{' '}
-                                                                {match.question.correct_answer}
+                                                                {
+                                                                    match
+                                                                        .question
+                                                                        .correct_answer
+                                                                }
                                                             </div>
                                                         )}
                                                     </div>
@@ -279,19 +380,23 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                 {/* Legend */}
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">Similarity Score Legend</CardTitle>
+                        <CardTitle className="text-base">
+                            Similarity Score Legend
+                        </CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         <div className="flex items-center gap-2">
                             <div className="size-4 rounded bg-success" />
                             <span className="text-sm">
-                                <strong>Low (60-74%):</strong> Minor similarities
+                                <strong>Low (60-74%):</strong> Minor
+                                similarities
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="size-4 rounded bg-info" />
                             <span className="text-sm">
-                                <strong>Moderate (75-89%):</strong> Notable overlap
+                                <strong>Moderate (75-89%):</strong> Notable
+                                overlap
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -303,7 +408,8 @@ export default function DuplicateDetectionIndex({ module, duplicates, statistics
                         <div className="flex items-center gap-2">
                             <div className="size-4 rounded bg-destructive" />
                             <span className="text-sm">
-                                <strong>Very High (95%+):</strong> Near duplicates
+                                <strong>Very High (95%+):</strong> Near
+                                duplicates
                             </span>
                         </div>
                     </CardContent>

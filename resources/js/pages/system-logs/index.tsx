@@ -1,6 +1,25 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    FileText,
+    Download,
+    Trash2,
+    RefreshCw,
+    AlertCircle,
+    AlertTriangle,
+    Info,
+    Bug,
+    ChevronDown,
+    ChevronUp,
+} from 'lucide-react';
+import { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -29,21 +48,12 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import PageHeader from '@/components/page-header';
-import { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import {
-    FileText,
-    Download,
-    Trash2,
-    RefreshCw,
-    AlertCircle,
-    AlertTriangle,
-    Info,
-    Bug,
-    ChevronDown,
-    ChevronUp,
-} from 'lucide-react';
-import { useState } from 'react';
-import { getLogs, clearLogs, downloadLogs } from '@/actions/App/Http/Controllers/SystemLogsController';
+    getLogs,
+    clearLogs,
+    downloadLogs,
+} from '@/actions/App/Http/Controllers/SystemLogsController';
 
 interface LogEntry {
     timestamp: string;
@@ -83,9 +93,14 @@ const levelIcons: Record<string, React.ReactNode> = {
     DEBUG: <Bug className="h-4 w-4" />,
 };
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'System Logs', href: '/system-logs' }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'System Logs', href: '/system-logs' },
+];
 
-export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProps) {
+export default function SystemLogsIndex({
+    logs = [],
+    total = 0,
+}: SystemLogsProps) {
     const [loading, setLoading] = useState(false);
     const [lines, setLines] = useState('100');
     const [level, setLevel] = useState('all');
@@ -105,17 +120,21 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                 onFinish: () => {
                     setLoading(false);
                 },
-            }
+            },
         );
     };
 
     const handleClearLogs = () => {
-        router.post(clearLogs.url(), {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setShowClearDialog(false);
+        router.post(
+            clearLogs.url(),
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowClearDialog(false);
+                },
             },
-        });
+        );
     };
 
     const handleDownload = () => {
@@ -124,11 +143,13 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
 
     const toggleExpand = (index: number) => {
         const newExpanded = new Set(expandedLogs);
+
         if (newExpanded.has(index)) {
             newExpanded.delete(index);
         } else {
             newExpanded.add(index);
         }
+
         setExpandedLogs(newExpanded);
     };
 
@@ -143,11 +164,17 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                         description="View and manage application logs"
                         actions={
                             <>
-                                <Button variant="outline" onClick={handleDownload}>
+                                <Button
+                                    variant="outline"
+                                    onClick={handleDownload}
+                                >
                                     <Download className="mr-2 h-4 w-4" />
                                     Download
                                 </Button>
-                                <Button variant="destructive" onClick={() => setShowClearDialog(true)}>
+                                <Button
+                                    variant="destructive"
+                                    onClick={() => setShowClearDialog(true)}
+                                >
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Clear Logs
                                 </Button>
@@ -159,42 +186,80 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                     <Card>
                         <CardHeader>
                             <CardTitle>Filters</CardTitle>
-                            <CardDescription>Filter log entries by level and limit</CardDescription>
+                            <CardDescription>
+                                Filter log entries by level and limit
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="p-6">
                             <div className="flex flex-col gap-6">
                                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="level">Log Level</Label>
-                                        <Select value={level} onValueChange={setLevel}>
+                                        <Select
+                                            value={level}
+                                            onValueChange={setLevel}
+                                        >
                                             <SelectTrigger id="level">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="all">All Levels</SelectItem>
-                                                <SelectItem value="emergency">Emergency</SelectItem>
-                                                <SelectItem value="alert">Alert</SelectItem>
-                                                <SelectItem value="critical">Critical</SelectItem>
-                                                <SelectItem value="error">Error</SelectItem>
-                                                <SelectItem value="warning">Warning</SelectItem>
-                                                <SelectItem value="notice">Notice</SelectItem>
-                                                <SelectItem value="info">Info</SelectItem>
-                                                <SelectItem value="debug">Debug</SelectItem>
+                                                <SelectItem value="all">
+                                                    All Levels
+                                                </SelectItem>
+                                                <SelectItem value="emergency">
+                                                    Emergency
+                                                </SelectItem>
+                                                <SelectItem value="alert">
+                                                    Alert
+                                                </SelectItem>
+                                                <SelectItem value="critical">
+                                                    Critical
+                                                </SelectItem>
+                                                <SelectItem value="error">
+                                                    Error
+                                                </SelectItem>
+                                                <SelectItem value="warning">
+                                                    Warning
+                                                </SelectItem>
+                                                <SelectItem value="notice">
+                                                    Notice
+                                                </SelectItem>
+                                                <SelectItem value="info">
+                                                    Info
+                                                </SelectItem>
+                                                <SelectItem value="debug">
+                                                    Debug
+                                                </SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="lines">Lines to Load</Label>
-                                        <Select value={lines} onValueChange={setLines}>
+                                        <Label htmlFor="lines">
+                                            Lines to Load
+                                        </Label>
+                                        <Select
+                                            value={lines}
+                                            onValueChange={setLines}
+                                        >
                                             <SelectTrigger id="lines">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="50">50 lines</SelectItem>
-                                                <SelectItem value="100">100 lines</SelectItem>
-                                                <SelectItem value="200">200 lines</SelectItem>
-                                                <SelectItem value="500">500 lines</SelectItem>
-                                                <SelectItem value="1000">1000 lines</SelectItem>
+                                                <SelectItem value="50">
+                                                    50 lines
+                                                </SelectItem>
+                                                <SelectItem value="100">
+                                                    100 lines
+                                                </SelectItem>
+                                                <SelectItem value="200">
+                                                    200 lines
+                                                </SelectItem>
+                                                <SelectItem value="500">
+                                                    500 lines
+                                                </SelectItem>
+                                                <SelectItem value="1000">
+                                                    1000 lines
+                                                </SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -212,13 +277,21 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                                         </Button>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between pt-2 border-t">
+                                <div className="flex items-center justify-between border-t pt-2">
                                     <p className="text-sm text-muted-foreground">
-                                        Showing <span className="font-medium text-foreground">{logs.length}</span> of{' '}
-                                        <span className="font-medium text-foreground">{total}</span> entries
+                                        Showing{' '}
+                                        <span className="font-medium text-foreground">
+                                            {logs.length}
+                                        </span>{' '}
+                                        of{' '}
+                                        <span className="font-medium text-foreground">
+                                            {total}
+                                        </span>{' '}
+                                        entries
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                        Last refreshed: {new Date().toLocaleTimeString()}
+                                        Last refreshed:{' '}
+                                        {new Date().toLocaleTimeString()}
                                     </p>
                                 </div>
                             </div>
@@ -244,7 +317,9 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                                             <RefreshCw className="size-8 animate-spin" />
                                         </EmptyMedia>
                                         <EmptyTitle>Loading...</EmptyTitle>
-                                        <EmptyDescription>Fetching log entries</EmptyDescription>
+                                        <EmptyDescription>
+                                            Fetching log entries
+                                        </EmptyDescription>
                                     </EmptyHeader>
                                 </Empty>
                             ) : logs.length === 0 ? (
@@ -253,9 +328,12 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                                         <EmptyMedia variant="icon">
                                             <FileText className="size-8" />
                                         </EmptyMedia>
-                                        <EmptyTitle>No Log Entries Found</EmptyTitle>
+                                        <EmptyTitle>
+                                            No Log Entries Found
+                                        </EmptyTitle>
                                         <EmptyDescription>
-                                            There are no log entries matching your filters
+                                            There are no log entries matching
+                                            your filters
                                         </EmptyDescription>
                                     </EmptyHeader>
                                 </Empty>
@@ -264,29 +342,36 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                                     {logs.map((log, index) => (
                                         <div
                                             key={index}
-                                            className="border rounded-lg overflow-hidden"
+                                            className="overflow-hidden rounded-lg border"
                                         >
                                             <div
-                                                className="flex items-center gap-4 p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                                                className="flex cursor-pointer items-center gap-4 p-4 transition-colors hover:bg-muted/50"
                                                 onClick={() =>
-                                                    log.stack_trace && toggleExpand(index)
+                                                    log.stack_trace &&
+                                                    toggleExpand(index)
                                                 }
                                             >
                                                 <Badge
-                                                    className={`${levelColors[log.level] || 'bg-muted'} flex items-center gap-1 shrink-0`}
+                                                    className={`${levelColors[log.level] || 'bg-muted'} flex shrink-0 items-center gap-1`}
                                                 >
                                                     {levelIcons[log.level]}
                                                     {log.level}
                                                 </Badge>
-                                                <span className="text-xs text-muted-foreground font-mono shrink-0">
+                                                <span className="shrink-0 font-mono text-xs text-muted-foreground">
                                                     {log.timestamp}
                                                 </span>
-                                                <span className="text-sm flex-1 truncate">
+                                                <span className="flex-1 truncate text-sm">
                                                     {log.message}
                                                 </span>
                                                 {log.stack_trace && (
-                                                    <Button variant="ghost" size="sm" className="shrink-0">
-                                                        {expandedLogs.has(index) ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="shrink-0"
+                                                    >
+                                                        {expandedLogs.has(
+                                                            index,
+                                                        ) ? (
                                                             <ChevronUp className="h-4 w-4" />
                                                         ) : (
                                                             <ChevronDown className="h-4 w-4" />
@@ -294,13 +379,14 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                                                     </Button>
                                                 )}
                                             </div>
-                                            {expandedLogs.has(index) && log.stack_trace && (
-                                                <div className="bg-muted/30 p-4 border-t">
-                                                    <pre className="text-xs font-mono overflow-x-auto whitespace-pre-wrap text-muted-foreground">
-                                                        {log.stack_trace}
-                                                    </pre>
-                                                </div>
-                                            )}
+                                            {expandedLogs.has(index) &&
+                                                log.stack_trace && (
+                                                    <div className="border-t bg-muted/30 p-4">
+                                                        <pre className="overflow-x-auto font-mono text-xs whitespace-pre-wrap text-muted-foreground">
+                                                            {log.stack_trace}
+                                                        </pre>
+                                                    </div>
+                                                )}
                                         </div>
                                     ))}
                                 </div>
@@ -310,17 +396,25 @@ export default function SystemLogsIndex({ logs = [], total = 0 }: SystemLogsProp
                 </div>
             </div>
 
-            <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+            <AlertDialog
+                open={showClearDialog}
+                onOpenChange={setShowClearDialog}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Clear System Logs</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to clear all logs? This action cannot be undone and all log entries will be permanently deleted.
+                            Are you sure you want to clear all logs? This action
+                            cannot be undone and all log entries will be
+                            permanently deleted.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleClearLogs} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogAction
+                            onClick={handleClearLogs}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
                             Clear Logs
                         </AlertDialogAction>
                     </AlertDialogFooter>

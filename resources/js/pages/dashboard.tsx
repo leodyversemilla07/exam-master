@@ -1,6 +1,20 @@
-import AppLayout from '@/layouts/app-layout';
-import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import {
+    Plus,
+    MoreVertical,
+    Eye,
+    Copy,
+    Trash2,
+    FileText,
+    ClipboardList,
+    BookOpen,
+    MessageSquare,
+    CheckCircle2,
+    Stethoscope,
+} from 'lucide-react';
+import { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
 import { dashboard as dashboardRoute } from '@/routes';
 import { duplicate as examBuilderDuplicate } from '@/routes/exam-builder';
 import { index as modulesIndex, show as moduleShow } from '@/routes/modules';
@@ -23,20 +37,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-    Plus,
-    MoreVertical,
-    Eye,
-    Copy,
-    Trash2,
-    FileText,
-    ClipboardList,
-    BookOpen,
-    MessageSquare,
-    CheckCircle2,
-    Stethoscope,
-} from 'lucide-react';
-import { useState } from 'react';
 
 interface DashboardStats {
     total_modules: number;
@@ -102,13 +102,20 @@ function getStatusBadge(status: string) {
     };
 
     return (
-        <Badge variant="outline" className={styles[status] || 'bg-muted text-muted-foreground'}>
+        <Badge
+            variant="outline"
+            className={styles[status] || 'bg-muted text-muted-foreground'}
+        >
             {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
     );
 }
 
-export default function Dashboard({ auth, stats, recentExams }: DashboardPageProps) {
+export default function Dashboard({
+    auth,
+    stats,
+    recentExams,
+}: DashboardPageProps) {
     const [deletingExam, setDeletingExam] = useState<RecentExam | null>(null);
 
     const confirmDelete = () => {
@@ -128,8 +135,10 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                     {/* Header */}
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-semibold tracking-tight">Recent exams</h1>
-                            <p className="text-sm text-muted-foreground mt-1">
+                            <h1 className="text-2xl font-semibold tracking-tight">
+                                Recent exams
+                            </h1>
+                            <p className="mt-1 text-sm text-muted-foreground">
                                 Welcome back, {auth.user.name}
                             </p>
                         </div>
@@ -145,36 +154,52 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                     <div className="flex flex-wrap gap-3">
                         <div className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
                             <BookOpen className="size-4 text-primary" />
-                            <span className="font-medium">{stats.active_modules}</span>
-                            <span className="text-muted-foreground">Modules</span>
+                            <span className="font-medium">
+                                {stats.active_modules}
+                            </span>
+                            <span className="text-muted-foreground">
+                                Modules
+                            </span>
                         </div>
                         <div className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
                             <MessageSquare className="size-4 text-secondary" />
-                            <span className="font-medium">{stats.total_questions}</span>
-                            <span className="text-muted-foreground">Questions</span>
+                            <span className="font-medium">
+                                {stats.total_questions}
+                            </span>
+                            <span className="text-muted-foreground">
+                                Questions
+                            </span>
                         </div>
                         <div className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
                             <ClipboardList className="size-4 text-success" />
-                            <span className="font-medium">{stats.total_exams}</span>
+                            <span className="font-medium">
+                                {stats.total_exams}
+                            </span>
                             <span className="text-muted-foreground">Exams</span>
                         </div>
                         <div className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
                             <CheckCircle2 className="size-4 text-info" />
-                            <span className="font-medium">{stats.published_exams}</span>
-                            <span className="text-muted-foreground">Published</span>
+                            <span className="font-medium">
+                                {stats.published_exams}
+                            </span>
+                            <span className="text-muted-foreground">
+                                Published
+                            </span>
                         </div>
                     </div>
 
                     {/* Exam List */}
                     {recentExams.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-24 text-center">
-                            <div className="rounded-2xl bg-muted/50 p-6 mb-6">
+                            <div className="mb-6 rounded-2xl bg-muted/50 p-6">
                                 <ClipboardList className="size-12 text-muted-foreground" />
                             </div>
-                            <h2 className="text-lg font-medium mb-2">No exams yet</h2>
-                            <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                                Create your first exam to start building assessments from your
-                                question bank.
+                            <h2 className="mb-2 text-lg font-medium">
+                                No exams yet
+                            </h2>
+                            <p className="mb-6 max-w-sm text-sm text-muted-foreground">
+                                Create your first exam to start building
+                                assessments from your question bank.
                             </p>
                             <Button asChild>
                                 <Link href={modulesIndex.url()}>
@@ -186,7 +211,7 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                     ) : (
                         <div className="rounded-xl border">
                             {/* Table Header */}
-                            <div className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                            <div className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 border-b px-6 py-3 text-xs font-medium tracking-wider text-muted-foreground uppercase">
                                 <span>Title</span>
                                 <span>Questions</span>
                                 <span>Created</span>
@@ -199,16 +224,18 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                 <Link
                                     key={exam.id}
                                     href={moduleShow.url(exam.module.id)}
-                                    className="grid grid-cols-[1fr_120px_140px_100px_48px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors group"
+                                    className="group grid grid-cols-[1fr_120px_140px_100px_48px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                 >
                                     {/* Title with icon */}
-                                    <div className="flex items-center gap-3 min-w-0">
+                                    <div className="flex min-w-0 items-center gap-3">
                                         <div className="shrink-0">
                                             {getExamTypeIcon(exam.exam_type)}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="font-medium truncate">{exam.title}</p>
-                                            <p className="text-xs text-muted-foreground truncate">
+                                            <p className="truncate font-medium">
+                                                {exam.title}
+                                            </p>
+                                            <p className="truncate text-xs text-muted-foreground">
                                                 {exam.module?.name}
                                             </p>
                                         </div>
@@ -217,7 +244,9 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                     {/* Questions count */}
                                     <span className="text-sm text-muted-foreground">
                                         {exam.questions_count}{' '}
-                                        {exam.questions_count === 1 ? 'Question' : 'Questions'}
+                                        {exam.questions_count === 1
+                                            ? 'Question'
+                                            : 'Questions'}
                                     </span>
 
                                     {/* Created date */}
@@ -238,14 +267,18 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    className="size-8 opacity-0 transition-opacity group-hover:opacity-100"
                                                 >
                                                     <MoreVertical className="size-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem asChild>
-                                                    <Link href={moduleShow.url(exam.module.id)}>
+                                                    <Link
+                                                        href={moduleShow.url(
+                                                            exam.module.id,
+                                                        )}
+                                                    >
                                                         <Eye className="mr-2 size-4" />
                                                         View in Module
                                                     </Link>
@@ -253,7 +286,9 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                                 <DropdownMenuItem
                                                     onClick={() =>
                                                         router.post(
-                                                            examBuilderDuplicate.url(exam.id),
+                                                            examBuilderDuplicate.url(
+                                                                exam.id,
+                                                            ),
                                                         )
                                                     }
                                                 >
@@ -263,7 +298,9 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem
                                                     className="text-destructive focus:text-destructive"
-                                                    onClick={() => setDeletingExam(exam)}
+                                                    onClick={() =>
+                                                        setDeletingExam(exam)
+                                                    }
                                                 >
                                                     <Trash2 className="mr-2 size-4" />
                                                     Delete
@@ -279,13 +316,17 @@ export default function Dashboard({ auth, stats, recentExams }: DashboardPagePro
             </div>
 
             {/* Delete Confirmation */}
-            <AlertDialog open={!!deletingExam} onOpenChange={() => setDeletingExam(null)}>
+            <AlertDialog
+                open={!!deletingExam}
+                onOpenChange={() => setDeletingExam(null)}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Exam</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete "{deletingExam?.title}"? This action
-                            cannot be undone.
+                            Are you sure you want to delete "
+                            {deletingExam?.title}"? This action cannot be
+                            undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

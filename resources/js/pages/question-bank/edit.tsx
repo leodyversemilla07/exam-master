@@ -1,3 +1,5 @@
+import { Head, useForm, router } from '@inertiajs/react';
+import { Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,8 +14,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { Head, useForm, router } from '@inertiajs/react';
-import { Save } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 
 interface Module {
@@ -80,9 +80,12 @@ export default function ExamEdit({ question, modules }: PageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Question" />
 
-            <div className="p-4 md:p-6 space-y-6">
+            <div className="space-y-6 p-4 md:p-6">
                 {/* Header */}
-                <PageHeader title="Edit Question" description="Update question details" />
+                <PageHeader
+                    title="Edit Question"
+                    description="Update question details"
+                />
 
                 {/* Edit Form */}
                 <form onSubmit={handleSubmit}>
@@ -96,7 +99,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Label htmlFor="module_id">Module</Label>
                                 <Select
                                     value={data.module_id.toString()}
-                                    onValueChange={(value) => setData('module_id', parseInt(value))}
+                                    onValueChange={(value) =>
+                                        setData('module_id', parseInt(value))
+                                    }
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select module" />
@@ -113,7 +118,9 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     </SelectContent>
                                 </Select>
                                 {errors.module_id && (
-                                    <p className="text-sm text-destructive">{errors.module_id}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.module_id}
+                                    </p>
                                 )}
                             </div>
 
@@ -123,21 +130,29 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Textarea
                                     id="question"
                                     value={data.question}
-                                    onChange={(e) => setData('question', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('question', e.target.value)
+                                    }
                                     rows={4}
                                     placeholder="Enter the question text"
                                 />
                                 {errors.question && (
-                                    <p className="text-sm text-destructive">{errors.question}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.question}
+                                    </p>
                                 )}
                             </div>
 
                             {/* Question Type */}
                             <div className="space-y-2">
-                                <Label htmlFor="question_type">Question Type</Label>
+                                <Label htmlFor="question_type">
+                                    Question Type
+                                </Label>
                                 <Select
                                     value={data.question_type}
-                                    onValueChange={(value) => setData('question_type', value)}
+                                    onValueChange={(value) =>
+                                        setData('question_type', value)
+                                    }
                                 >
                                     <SelectTrigger>
                                         <SelectValue />
@@ -146,12 +161,18 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         <SelectItem value="multiple_choice">
                                             Multiple Choice
                                         </SelectItem>
-                                        <SelectItem value="true_false">True/False</SelectItem>
-                                        <SelectItem value="essay">Essay</SelectItem>
+                                        <SelectItem value="true_false">
+                                            True/False
+                                        </SelectItem>
+                                        <SelectItem value="essay">
+                                            Essay
+                                        </SelectItem>
                                         <SelectItem value="identification">
                                             Identification
                                         </SelectItem>
-                                        <SelectItem value="matching">Matching Type</SelectItem>
+                                        <SelectItem value="matching">
+                                            Matching Type
+                                        </SelectItem>
                                         <SelectItem value="fill_in_the_blanks">
                                             Fill in the Blanks
                                         </SelectItem>
@@ -164,7 +185,10 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <div className="space-y-4">
                                     <Label>Options</Label>
                                     {data.options.map((option, index) => (
-                                        <div key={option.key} className="flex gap-2">
+                                        <div
+                                            key={option.key}
+                                            className="flex gap-2"
+                                        >
                                             <Badge
                                                 variant="outline"
                                                 className="h-10 w-10 items-center justify-center"
@@ -174,7 +198,10 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                             <Input
                                                 value={option.text}
                                                 onChange={(e) =>
-                                                    handleOptionChange(index, e.target.value)
+                                                    handleOptionChange(
+                                                        index,
+                                                        e.target.value,
+                                                    )
                                                 }
                                                 placeholder={`Option ${option.key}`}
                                             />
@@ -185,18 +212,25 @@ export default function ExamEdit({ question, modules }: PageProps) {
 
                             {/* Correct Answer */}
                             <div className="space-y-2">
-                                <Label htmlFor="correct_answer">Correct Answer</Label>
+                                <Label htmlFor="correct_answer">
+                                    Correct Answer
+                                </Label>
                                 {data.question_type === 'multiple_choice' ? (
                                     <Select
                                         value={data.correct_answer}
-                                        onValueChange={(value) => setData('correct_answer', value)}
+                                        onValueChange={(value) =>
+                                            setData('correct_answer', value)
+                                        }
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {data.options.map((option) => (
-                                                <SelectItem key={option.key} value={option.key}>
+                                                <SelectItem
+                                                    key={option.key}
+                                                    value={option.key}
+                                                >
                                                     {option.key}
                                                 </SelectItem>
                                             ))}
@@ -206,7 +240,12 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                     <Input
                                         id="correct_answer"
                                         value={data.correct_answer}
-                                        onChange={(e) => setData('correct_answer', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'correct_answer',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Enter correct answer"
                                     />
                                 )}
@@ -219,11 +258,15 @@ export default function ExamEdit({ question, modules }: PageProps) {
 
                             {/* Explanation */}
                             <div className="space-y-2">
-                                <Label htmlFor="explanation">Explanation (Optional)</Label>
+                                <Label htmlFor="explanation">
+                                    Explanation (Optional)
+                                </Label>
                                 <Textarea
                                     id="explanation"
                                     value={data.explanation}
-                                    onChange={(e) => setData('explanation', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('explanation', e.target.value)
+                                    }
                                     rows={3}
                                     placeholder="Explain why this is the correct answer"
                                 />
@@ -231,21 +274,37 @@ export default function ExamEdit({ question, modules }: PageProps) {
 
                             {/* Cognitive Level */}
                             <div className="space-y-2">
-                                <Label htmlFor="cognitive_level">Cognitive Level</Label>
+                                <Label htmlFor="cognitive_level">
+                                    Cognitive Level
+                                </Label>
                                 <Select
                                     value={data.cognitive_level}
-                                    onValueChange={(value) => setData('cognitive_level', value)}
+                                    onValueChange={(value) =>
+                                        setData('cognitive_level', value)
+                                    }
                                 >
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="remembering">Remembering</SelectItem>
-                                        <SelectItem value="understanding">Understanding</SelectItem>
-                                        <SelectItem value="applying">Applying</SelectItem>
-                                        <SelectItem value="analyzing">Analyzing</SelectItem>
-                                        <SelectItem value="evaluating">Evaluating</SelectItem>
-                                        <SelectItem value="creating">Creating</SelectItem>
+                                        <SelectItem value="remembering">
+                                            Remembering
+                                        </SelectItem>
+                                        <SelectItem value="understanding">
+                                            Understanding
+                                        </SelectItem>
+                                        <SelectItem value="applying">
+                                            Applying
+                                        </SelectItem>
+                                        <SelectItem value="analyzing">
+                                            Analyzing
+                                        </SelectItem>
+                                        <SelectItem value="evaluating">
+                                            Evaluating
+                                        </SelectItem>
+                                        <SelectItem value="creating">
+                                            Creating
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -255,15 +314,23 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Label htmlFor="difficulty">Difficulty</Label>
                                 <Select
                                     value={data.difficulty}
-                                    onValueChange={(value) => setData('difficulty', value)}
+                                    onValueChange={(value) =>
+                                        setData('difficulty', value)
+                                    }
                                 >
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="easy">Easy</SelectItem>
-                                        <SelectItem value="moderate">Moderate</SelectItem>
-                                        <SelectItem value="difficult">Difficult</SelectItem>
+                                        <SelectItem value="easy">
+                                            Easy
+                                        </SelectItem>
+                                        <SelectItem value="moderate">
+                                            Moderate
+                                        </SelectItem>
+                                        <SelectItem value="difficult">
+                                            Difficult
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -278,7 +345,10 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         id="learning_objective_code"
                                         value={data.learning_objective_code}
                                         onChange={(e) =>
-                                            setData('learning_objective_code', e.target.value)
+                                            setData(
+                                                'learning_objective_code',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="e.g., LO-001"
                                     />
@@ -293,7 +363,10 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                         min="1"
                                         value={data.points}
                                         onChange={(e) =>
-                                            setData('points', parseInt(e.target.value))
+                                            setData(
+                                                'points',
+                                                parseInt(e.target.value),
+                                            )
                                         }
                                     />
                                 </div>
@@ -304,7 +377,11 @@ export default function ExamEdit({ question, modules }: PageProps) {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => router.visit(`/question-bank/${question.id}`)}
+                                    onClick={() =>
+                                        router.visit(
+                                            `/question-bank/${question.id}`,
+                                        )
+                                    }
                                 >
                                     Cancel
                                 </Button>

@@ -1,10 +1,10 @@
+import { router } from '@inertiajs/react';
+import { useState } from 'react';
+import { CheckCircle2, XCircle, CheckCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { router } from '@inertiajs/react';
-import { ExamQuestion, TosGenerate } from '@/types/models';
-import { useState } from 'react';
-import { CheckCircle2, XCircle, CheckCheck } from 'lucide-react';
+import type { ExamQuestion, TosGenerate } from '@/types/models';
 
 interface Props {
     tos: TosGenerate & { questions: ExamQuestion[] };
@@ -32,12 +32,15 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
     const [approvingId, setApprovingId] = useState<number | null>(null);
     const [bulkApproving, setBulkApproving] = useState(false);
 
-    const approvedCount = questions.filter((q) => q.status === 'approved').length;
+    const approvedCount = questions.filter(
+        (q) => q.status === 'approved',
+    ).length;
     const pendingQuestions = questions.filter(
         (q) => q.status !== 'approved' && q.status !== 'rejected',
     );
     const allSelected =
-        pendingQuestions.length > 0 && selectedIds.length === pendingQuestions.length;
+        pendingQuestions.length > 0 &&
+        selectedIds.length === pendingQuestions.length;
     const canAdvance = approvedCount > 0;
 
     const toggleSelectAll = () => {
@@ -78,6 +81,7 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
             if (ids.length === 0) {
                 setBulkApproving(false);
                 setSelectedIds([]);
+
                 return;
             }
 
@@ -100,8 +104,10 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
             {/* Header + progress */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="font-semibold">Review Generated Questions</h3>
-                    <p className="text-sm text-muted-foreground mt-0.5">
+                    <h3 className="font-semibold">
+                        Review Generated Questions
+                    </h3>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
                         Approve questions to include them in your exam bank.
                     </p>
                 </div>
@@ -113,7 +119,11 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
                             / {questions.length} approved
                         </span>
                     </span>
-                    <Button onClick={onAdvance} disabled={!canAdvance} size="sm">
+                    <Button
+                        onClick={onAdvance}
+                        disabled={!canAdvance}
+                        size="sm"
+                    >
                         Continue to Build Exam
                     </Button>
                 </div>
@@ -127,7 +137,10 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
                         onCheckedChange={toggleSelectAll}
                         id="select-all"
                     />
-                    <label htmlFor="select-all" className="text-sm cursor-pointer select-none">
+                    <label
+                        htmlFor="select-all"
+                        className="cursor-pointer text-sm select-none"
+                    >
                         Select all pending ({pendingQuestions.length})
                     </label>
                     {selectedIds.length > 0 && (
@@ -151,7 +164,8 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
             <div className="space-y-3">
                 {questions.map((question) => {
                     const isPending =
-                        question.status !== 'approved' && question.status !== 'rejected';
+                        question.status !== 'approved' &&
+                        question.status !== 'rejected';
                     const isApproved = question.status === 'approved';
                     const isSelected = selectedIds.includes(question.id);
                     const isApproving = approvingId === question.id;
@@ -166,42 +180,46 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
                                 {isPending && (
                                     <Checkbox
                                         checked={isSelected}
-                                        onCheckedChange={() => toggleSelect(question.id)}
+                                        onCheckedChange={() =>
+                                            toggleSelect(question.id)
+                                        }
                                         className="mt-0.5 shrink-0"
                                     />
                                 )}
                                 {isApproved && (
-                                    <CheckCircle2 className="size-5 text-success shrink-0 mt-0.5" />
+                                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success" />
                                 )}
                                 {question.status === 'rejected' && (
-                                    <XCircle className="size-5 text-destructive shrink-0 mt-0.5" />
+                                    <XCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
                                 )}
 
-                                <div className="flex-1 min-w-0">
+                                <div className="min-w-0 flex-1">
                                     {/* Question text */}
-                                    <p className="text-sm font-medium leading-snug">
+                                    <p className="text-sm leading-snug font-medium">
                                         {question.question}
                                     </p>
 
                                     {/* Options (multiple choice) */}
-                                    {question.options && question.options.length > 0 && (
-                                        <ul className="mt-2 space-y-1">
-                                            {question.options.map((opt) => (
-                                                <li
-                                                    key={opt.key}
-                                                    className={`text-xs flex gap-2 ${opt.key === question.correct_answer ? 'text-success font-medium' : 'text-muted-foreground'}`}
-                                                >
-                                                    <span className="font-semibold uppercase shrink-0">
-                                                        {opt.key}.
-                                                    </span>
-                                                    <span>{opt.text}</span>
-                                                    {opt.key === question.correct_answer && (
-                                                        <CheckCircle2 className="size-3 shrink-0 mt-0.5" />
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
+                                    {question.options &&
+                                        question.options.length > 0 && (
+                                            <ul className="mt-2 space-y-1">
+                                                {question.options.map((opt) => (
+                                                    <li
+                                                        key={opt.key}
+                                                        className={`flex gap-2 text-xs ${opt.key === question.correct_answer ? 'font-medium text-success' : 'text-muted-foreground'}`}
+                                                    >
+                                                        <span className="shrink-0 font-semibold uppercase">
+                                                            {opt.key}.
+                                                        </span>
+                                                        <span>{opt.text}</span>
+                                                        {opt.key ===
+                                                            question.correct_answer && (
+                                                            <CheckCircle2 className="mt-0.5 size-3 shrink-0" />
+                                                        )}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
 
                                     {/* Badges */}
                                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -217,12 +235,20 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
                                         >
                                             {question.difficulty}
                                         </Badge>
-                                        <Badge variant="outline" className="text-xs capitalize">
-                                            {question.question_type.replace(/_/g, ' ')}
+                                        <Badge
+                                            variant="outline"
+                                            className="text-xs capitalize"
+                                        >
+                                            {question.question_type.replace(
+                                                /_/g,
+                                                ' ',
+                                            )}
                                         </Badge>
                                         {question.learning_objective_code && (
                                             <span className="text-xs text-muted-foreground">
-                                                {question.learning_objective_code}
+                                                {
+                                                    question.learning_objective_code
+                                                }
                                             </span>
                                         )}
                                     </div>
@@ -234,7 +260,9 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
                                         size="sm"
                                         variant="outline"
                                         className="shrink-0 border-success/40 text-success hover:bg-success/10"
-                                        onClick={() => approveQuestion(question.id)}
+                                        onClick={() =>
+                                            approveQuestion(question.id)
+                                        }
                                         disabled={isApproving || bulkApproving}
                                     >
                                         {isApproving ? (
@@ -255,7 +283,9 @@ export default function Step3ReviewQuestions({ tos, onAdvance }: Props) {
 
             {questions.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <p className="text-muted-foreground">No questions found for this TOS.</p>
+                    <p className="text-muted-foreground">
+                        No questions found for this TOS.
+                    </p>
                 </div>
             )}
 

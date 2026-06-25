@@ -1,5 +1,5 @@
-import { InertiaLinkProps } from '@inertiajs/react';
-import { LucideIcon } from 'lucide-react';
+import type { InertiaLinkProps } from '@inertiajs/react';
+import type { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
@@ -32,7 +32,9 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
-export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
+export type PageProps<
+    T extends Record<string, unknown> = Record<string, unknown>,
+> = T & {
     auth: Auth;
     [key: string]: unknown;
 };

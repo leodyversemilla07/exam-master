@@ -1,22 +1,56 @@
-import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
+    BookOpen,
+    FileText,
+    Download,
+    ChevronRight,
+    ChevronDown,
+    Sparkles,
+    Calculator,
+    Search,
+    Edit,
+    ClipboardList,
+    Stethoscope,
+    Plus,
+    Trash2,
+    FolderTree,
+    CheckCircle2,
+    Clock,
+    Users,
+    AlertTriangle,
+    FileQuestion,
+    Copy,
+    CheckCircle,
+    XCircle,
+    AlertCircle,
+    Percent,
+    BarChart3,
+    ArrowLeft,
+} from 'lucide-react';
+import { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import type {
     Module,
     TosGenerate,
     ExamQuestion,
     Exam,
     ExamSession,
     Topic,
-    LearningObjective,
-    CognitiveLevel,
 } from '@/types/models';
-import { BreadcrumbItem } from '@/types';
+
+import type { BreadcrumbItem } from '@/types';
 import WorkflowStepper from '@/components/workflow/WorkflowStepper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -46,37 +80,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
-    BookOpen,
-    FileText,
-    Download,
-    ChevronRight,
-    ChevronDown,
-    Sparkles,
-    Calculator,
-    Search,
-    Edit,
-    ClipboardList,
-    Stethoscope,
-    Plus,
-    Trash2,
-    FolderTree,
-    CheckCircle2,
-    Clock,
-    Users,
-    AlertTriangle,
-    FileQuestion,
-    Copy,
-    CheckCircle,
-    XCircle,
-    AlertCircle,
-    Percent,
-    BarChart3,
-    X,
-    ArrowLeft,
-} from 'lucide-react';
-import { useState } from 'react';
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 /* ─── Types ─── */
 
@@ -150,7 +159,11 @@ interface DuplicateStats {
 }
 
 interface SessionRow extends ExamSession {
-    exam: { id: number; title: string; module: { id: number; name: string } | null };
+    exam: {
+        id: number;
+        title: string;
+        module: { id: number; name: string } | null;
+    };
     creator: { id: number; name: string };
     attempts_count: number;
 }
@@ -221,6 +234,7 @@ function getSessionStatusBadge(session: ExamSession) {
             </Badge>
         );
     }
+
     if (session.status === 'draft') {
         return (
             <Badge variant="outline" className="gap-1">
@@ -228,13 +242,18 @@ function getSessionStatusBadge(session: ExamSession) {
             </Badge>
         );
     }
+
     if (now < startTime) {
         return (
-            <Badge variant="outline" className="gap-1 text-blue-600 border-blue-600">
+            <Badge
+                variant="outline"
+                className="gap-1 border-blue-600 text-blue-600"
+            >
                 <Clock className="size-3" /> Upcoming
             </Badge>
         );
     }
+
     return (
         <Badge className="gap-1 bg-green-600">
             <CheckCircle className="size-3" /> Active
@@ -246,12 +265,15 @@ function getSimilarityColor(score: number): string {
     if (score >= 90) {
         return 'bg-destructive/10 text-destructive border-destructive/20';
     }
+
     if (score >= 75) {
         return 'bg-warning/10 text-warning border-warning/20';
     }
+
     if (score >= 60) {
         return 'bg-info/10 text-info border-info/20';
     }
+
     return 'bg-success/10 text-success border-success/20';
 }
 
@@ -259,23 +281,17 @@ function getSimilarityLabel(score: number): string {
     if (score >= 90) {
         return 'Very High';
     }
+
     if (score >= 75) {
         return 'High';
     }
+
     if (score >= 60) {
         return 'Moderate';
     }
+
     return 'Low';
 }
-
-const cognitiveLevelColors: Record<string, string> = {
-    remembering: 'bg-primary/10 text-primary border border-primary/20',
-    understanding: 'bg-success/10 text-success border border-success/20',
-    applying: 'bg-warning/10 text-warning border border-warning/20',
-    analyzing: 'bg-info/10 text-info border border-info/20',
-    evaluating: 'bg-secondary/10 text-secondary border border-secondary/20',
-    creating: 'bg-destructive/10 text-destructive border border-destructive/20',
-};
 
 /* ─── Sidebar Topic Tree Item ─── */
 function TopicItem({ topic }: { topic: TopicSidebar }) {
@@ -286,18 +302,18 @@ function TopicItem({ topic }: { topic: TopicSidebar }) {
         <div>
             <button
                 onClick={() => hasChildren && setExpanded(!expanded)}
-                className="flex items-center gap-2 w-full rounded-md px-2 py-1.5 text-sm hover:bg-accent/50 transition-colors text-left"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent/50"
             >
                 {hasChildren ? (
                     expanded ? (
-                        <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />
+                        <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
                     ) : (
-                        <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
+                        <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" />
                     )
                 ) : (
                     <span className="size-3.5 shrink-0" />
                 )}
-                <span className="truncate flex-1">{topic.title}</span>
+                <span className="flex-1 truncate">{topic.title}</span>
                 {topic.learning_objectives_count > 0 && (
                     <span className="text-xs text-muted-foreground">
                         {topic.learning_objectives_count}
@@ -305,16 +321,20 @@ function TopicItem({ topic }: { topic: TopicSidebar }) {
                 )}
             </button>
             {expanded && hasChildren && (
-                <div className="ml-4 border-l pl-2 space-y-0.5">
+                <div className="ml-4 space-y-0.5 border-l pl-2">
                     {topic.children.map((child) => (
                         <div
                             key={child.id}
-                            className="flex items-center gap-2 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-accent/50 transition-colors"
+                            className="flex items-center gap-2 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent/50"
                         >
                             <span className="size-3.5 shrink-0" />
-                            <span className="truncate flex-1">{child.title}</span>
+                            <span className="flex-1 truncate">
+                                {child.title}
+                            </span>
                             {child.learning_objectives_count > 0 && (
-                                <span className="text-xs">{child.learning_objectives_count}</span>
+                                <span className="text-xs">
+                                    {child.learning_objectives_count}
+                                </span>
                             )}
                         </div>
                     ))}
@@ -386,21 +406,25 @@ function TopicFormPanel({
         if (isEditing) {
             return t.id !== topic!.id && t.parent_id !== topic!.id;
         }
+
         return true;
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (isEditing) {
-            form.put(`/modules/${module.id}/topics/${topic!.id}`, { preserveScroll: true });
+            form.put(`/modules/${module.id}/topics/${topic!.id}`, {
+                preserveScroll: true,
+            });
         } else {
             form.post(`/modules/${module.id}/topics`, { preserveScroll: true });
         }
     };
 
     return (
-        <div className="p-6 max-w-2xl">
-            <div className="flex items-center gap-3 mb-6">
+        <div className="max-w-2xl p-6">
+            <div className="mb-6 flex items-center gap-3">
                 <Button variant="ghost" size="icon" onClick={onCancel}>
                     <ArrowLeft className="size-4" />
                 </Button>
@@ -421,8 +445,8 @@ function TopicFormPanel({
                     <CardHeader>
                         <CardTitle>Topic Information</CardTitle>
                         <CardDescription>
-                            Enter the details for this topic. Topics can be organized
-                            hierarchically.
+                            Enter the details for this topic. Topics can be
+                            organized hierarchically.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -432,30 +456,44 @@ function TopicFormPanel({
                                 <Input
                                     id="topic-code"
                                     value={form.data.code}
-                                    onChange={(e) => form.setData('code', e.target.value)}
+                                    onChange={(e) =>
+                                        form.setData('code', e.target.value)
+                                    }
                                     placeholder="e.g., T1, T2.1"
                                     required
                                 />
                                 {form.errors.code && (
-                                    <p className="text-sm text-destructive">{form.errors.code}</p>
+                                    <p className="text-sm text-destructive">
+                                        {form.errors.code}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="topic-parent">Parent Topic</Label>
+                                <Label htmlFor="topic-parent">
+                                    Parent Topic
+                                </Label>
                                 <Select
                                     value={form.data.parent_id || 'none'}
                                     onValueChange={(value) =>
-                                        form.setData('parent_id', value === 'none' ? '' : value)
+                                        form.setData(
+                                            'parent_id',
+                                            value === 'none' ? '' : value,
+                                        )
                                     }
                                 >
                                     <SelectTrigger id="topic-parent">
                                         <SelectValue placeholder="None (Root Topic)" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">None (Root Topic)</SelectItem>
+                                        <SelectItem value="none">
+                                            None (Root Topic)
+                                        </SelectItem>
                                         {availableParents.map((t) => (
-                                            <SelectItem key={t.id} value={t.id.toString()}>
+                                            <SelectItem
+                                                key={t.id}
+                                                value={t.id.toString()}
+                                            >
                                                 {t.code} - {t.title}
                                             </SelectItem>
                                         ))}
@@ -469,21 +507,29 @@ function TopicFormPanel({
                             <Input
                                 id="topic-title"
                                 value={form.data.title}
-                                onChange={(e) => form.setData('title', e.target.value)}
+                                onChange={(e) =>
+                                    form.setData('title', e.target.value)
+                                }
                                 placeholder="e.g., Introduction to Algebra"
                                 required
                             />
                             {form.errors.title && (
-                                <p className="text-sm text-destructive">{form.errors.title}</p>
+                                <p className="text-sm text-destructive">
+                                    {form.errors.title}
+                                </p>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="topic-description">Description</Label>
+                            <Label htmlFor="topic-description">
+                                Description
+                            </Label>
                             <Textarea
                                 id="topic-description"
                                 value={form.data.description}
-                                onChange={(e) => form.setData('description', e.target.value)}
+                                onChange={(e) =>
+                                    form.setData('description', e.target.value)
+                                }
                                 placeholder="Brief description of this topic..."
                                 rows={3}
                             />
@@ -491,7 +537,9 @@ function TopicFormPanel({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="topic-hours">Hours Allocated</Label>
+                                <Label htmlFor="topic-hours">
+                                    Hours Allocated
+                                </Label>
                                 <Input
                                     id="topic-hours"
                                     type="number"
@@ -499,7 +547,10 @@ function TopicFormPanel({
                                     step="0.5"
                                     value={form.data.hours_allocated}
                                     onChange={(e) =>
-                                        form.setData('hours_allocated', e.target.value)
+                                        form.setData(
+                                            'hours_allocated',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="e.g., 4"
                                 />
@@ -515,7 +566,10 @@ function TopicFormPanel({
                                     step="0.1"
                                     value={form.data.weight_percentage}
                                     onChange={(e) =>
-                                        form.setData('weight_percentage', e.target.value)
+                                        form.setData(
+                                            'weight_percentage',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="e.g., 25"
                                 />
@@ -524,21 +578,26 @@ function TopicFormPanel({
 
                         <div className="flex items-center justify-between rounded-lg border p-4">
                             <div className="space-y-0.5">
-                                <Label htmlFor="topic-active">Active Status</Label>
+                                <Label htmlFor="topic-active">
+                                    Active Status
+                                </Label>
                                 <p className="text-sm text-muted-foreground">
-                                    Inactive topics won't appear in TOS generation
+                                    Inactive topics won't appear in TOS
+                                    generation
                                 </p>
                             </div>
                             <Switch
                                 id="topic-active"
                                 checked={form.data.is_active}
-                                onCheckedChange={(checked) => form.setData('is_active', checked)}
+                                onCheckedChange={(checked) =>
+                                    form.setData('is_active', checked)
+                                }
                             />
                         </div>
                     </CardContent>
                 </Card>
 
-                <div className="flex items-center justify-end gap-4 mt-6">
+                <div className="mt-6 flex items-center justify-end gap-4">
                     <Button type="button" variant="outline" onClick={onCancel}>
                         Cancel
                     </Button>
@@ -556,9 +615,17 @@ function TopicFormPanel({
 }
 
 /* ─── Topics Tab Content ─── */
-function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: TopicFull[] }) {
+function TopicsTabContent({
+    module,
+    allTopics,
+}: {
+    module: Module;
+    allTopics: TopicFull[];
+}) {
     const [panel, setPanel] = useState<'list' | 'create' | 'edit'>('list');
-    const [editingTopic, setEditingTopic] = useState<TopicFull | undefined>(undefined);
+    const [editingTopic, setEditingTopic] = useState<TopicFull | undefined>(
+        undefined,
+    );
 
     if (panel === 'create') {
         return (
@@ -583,53 +650,70 @@ function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: To
 
     const rootTopics = allTopics.filter((t) => !t.parent_id);
 
-    const renderTopicRow = (topic: TopicFull, level: number = 0): React.ReactNode => {
+    const renderTopicRow = (
+        topic: TopicFull,
+        level: number = 0,
+    ): React.ReactNode => {
         const children = allTopics.filter((t) => t.parent_id === topic.id);
 
         return (
             <div key={topic.id} className="group">
                 <Card className={`mb-2 ${level > 0 ? 'ml-8' : ''}`}>
                     <CardContent className="flex items-center justify-between p-4">
-                        <div className="flex items-center gap-4 flex-1">
+                        <div className="flex flex-1 items-center gap-4">
                             {children.length > 0 && (
-                                <FolderTree className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <FolderTree className="h-4 w-4 shrink-0 text-muted-foreground" />
                             )}
                             <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className="font-mono text-xs">
+                                    <Badge
+                                        variant="outline"
+                                        className="font-mono text-xs"
+                                    >
                                         {topic.code}
                                     </Badge>
-                                    <h3 className="font-semibold">{topic.title}</h3>
+                                    <h3 className="font-semibold">
+                                        {topic.title}
+                                    </h3>
                                     {!topic.is_active && (
-                                        <Badge variant="secondary">Inactive</Badge>
+                                        <Badge variant="secondary">
+                                            Inactive
+                                        </Badge>
                                     )}
                                 </div>
                                 {topic.description && (
-                                    <p className="text-sm text-muted-foreground mt-1">
+                                    <p className="mt-1 text-sm text-muted-foreground">
                                         {topic.description}
                                     </p>
                                 )}
-                                <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
                                     {topic.hours_allocated && (
                                         <div className="flex items-center gap-1">
                                             <Clock className="h-3 w-3" />
-                                            <span>{topic.hours_allocated}h</span>
+                                            <span>
+                                                {topic.hours_allocated}h
+                                            </span>
                                         </div>
                                     )}
                                     {topic.weight_percentage && (
                                         <div className="flex items-center gap-1">
                                             <Percent className="h-3 w-3" />
-                                            <span>{topic.weight_percentage}%</span>
+                                            <span>
+                                                {topic.weight_percentage}%
+                                            </span>
                                         </div>
                                     )}
                                     {topic.learning_objectives_count > 0 && (
-                                        <span>{topic.learning_objectives_count} objectives</span>
+                                        <span>
+                                            {topic.learning_objectives_count}{' '}
+                                            objectives
+                                        </span>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -649,9 +733,12 @@ function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: To
                                             `Delete topic "${topic.title}"? This cannot be undone.`,
                                         )
                                     ) {
-                                        router.delete(`/modules/${module.id}/topics/${topic.id}`, {
-                                            preserveScroll: true,
-                                        });
+                                        router.delete(
+                                            `/modules/${module.id}/topics/${topic.id}`,
+                                            {
+                                                preserveScroll: true,
+                                            },
+                                        );
                                     }
                                 }}
                             >
@@ -663,7 +750,9 @@ function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: To
 
                 {children.length > 0 && (
                     <div className="ml-8 border-l-2 border-border pl-4">
-                        {children.map((child) => renderTopicRow(child, level + 1))}
+                        {children.map((child) =>
+                            renderTopicRow(child, level + 1),
+                        )}
                     </div>
                 )}
             </div>
@@ -672,8 +761,10 @@ function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: To
 
     return (
         <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Topics ({allTopics.length})</h2>
+            <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                    Topics ({allTopics.length})
+                </h2>
                 <Button size="sm" onClick={() => setPanel('create')}>
                     <Plus className="mr-2 size-4" />
                     Add Topic
@@ -682,11 +773,11 @@ function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: To
 
             {rootTopics.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="rounded-2xl bg-muted/50 p-5 mb-4">
+                    <div className="mb-4 rounded-2xl bg-muted/50 p-5">
                         <FolderTree className="size-10 text-muted-foreground" />
                     </div>
-                    <h3 className="font-medium mb-1">No topics yet</h3>
-                    <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+                    <h3 className="mb-1 font-medium">No topics yet</h3>
+                    <p className="mb-4 max-w-sm text-sm text-muted-foreground">
                         Organize your module by creating topics and subtopics.
                     </p>
                     <Button size="sm" onClick={() => setPanel('create')}>
@@ -695,14 +786,22 @@ function TopicsTabContent({ module, allTopics }: { module: Module; allTopics: To
                     </Button>
                 </div>
             ) : (
-                <div className="space-y-2">{rootTopics.map((t) => renderTopicRow(t))}</div>
+                <div className="space-y-2">
+                    {rootTopics.map((t) => renderTopicRow(t))}
+                </div>
             )}
         </div>
     );
 }
 
 /* ─── Sessions Tab Content ─── */
-function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; moduleId: number }) {
+function SessionsTabContent({
+    sessions,
+    moduleId,
+}: {
+    sessions: SessionRow[];
+    moduleId: number;
+}) {
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
     const copyAccessCode = (code: string) => {
@@ -713,8 +812,10 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
 
     return (
         <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Exam Sessions ({sessions.length})</h2>
+            <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                    Exam Sessions ({sessions.length})
+                </h2>
                 <Button asChild size="sm">
                     <Link href={`/modules/${moduleId}`}>
                         <Plus className="mr-2 size-4" />
@@ -725,12 +826,13 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
 
             {sessions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="rounded-2xl bg-muted/50 p-5 mb-4">
+                    <div className="mb-4 rounded-2xl bg-muted/50 p-5">
                         <Clock className="size-10 text-muted-foreground" />
                     </div>
-                    <h3 className="font-medium mb-1">No sessions yet</h3>
-                    <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                        Create an exam session to allow students to take exams online.
+                    <h3 className="mb-1 font-medium">No sessions yet</h3>
+                    <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                        Create an exam session to allow students to take exams
+                        online.
                     </p>
                 </div>
             ) : (
@@ -744,23 +846,31 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
                                     <TableHead>Access Code</TableHead>
                                     <TableHead>Schedule</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead className="text-center">Attempts</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead className="text-center">
+                                        Attempts
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Actions
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {sessions.map((session) => (
                                     <TableRow key={session.id}>
                                         <TableCell>
-                                            <div className="font-medium">{session.title}</div>
+                                            <div className="font-medium">
+                                                {session.title}
+                                            </div>
                                             {session.description && (
-                                                <div className="text-sm text-muted-foreground truncate max-w-44">
+                                                <div className="max-w-44 truncate text-sm text-muted-foreground">
                                                     {session.description}
                                                 </div>
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            <div className="font-medium">{session.exam.title}</div>
+                                            <div className="font-medium">
+                                                {session.exam.title}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             <TooltipProvider>
@@ -770,12 +880,17 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={() =>
-                                                                copyAccessCode(session.access_code)
+                                                                copyAccessCode(
+                                                                    session.access_code,
+                                                                )
                                                             }
-                                                            className="font-mono gap-2"
+                                                            className="gap-2 font-mono"
                                                         >
-                                                            {session.access_code}
-                                                            {copiedCode === session.access_code ? (
+                                                            {
+                                                                session.access_code
+                                                            }
+                                                            {copiedCode ===
+                                                            session.access_code ? (
                                                                 <CheckCircle className="size-4 text-green-600" />
                                                             ) : (
                                                                 <Copy className="size-4" />
@@ -783,7 +898,8 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
                                                         </Button>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
-                                                        {copiedCode === session.access_code
+                                                        {copiedCode ===
+                                                        session.access_code
                                                             ? 'Copied!'
                                                             : 'Click to copy'}
                                                     </TooltipContent>
@@ -808,17 +924,18 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
                                                     {new Date(
                                                         session.end_time,
                                                     ).toLocaleDateString()}{' '}
-                                                    {new Date(session.end_time).toLocaleTimeString(
-                                                        [],
-                                                        {
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                        },
-                                                    )}
+                                                    {new Date(
+                                                        session.end_time,
+                                                    ).toLocaleTimeString([], {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    })}
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{getSessionStatusBadge(session)}</TableCell>
+                                        <TableCell>
+                                            {getSessionStatusBadge(session)}
+                                        </TableCell>
                                         <TableCell className="text-center">
                                             <div className="flex items-center justify-center gap-1">
                                                 <Users className="size-4 text-muted-foreground" />
@@ -827,15 +944,24 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex justify-end gap-2">
-                                                <Button variant="outline" size="icon" asChild>
-                                                    <Link href={`/exam-sessions/${session.id}`}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    asChild
+                                                >
+                                                    <Link
+                                                        href={`/exam-sessions/${session.id}`}
+                                                    >
                                                         <Edit className="size-4" />
                                                     </Link>
                                                 </Button>
                                                 <Button
                                                     variant="destructive"
                                                     size="icon"
-                                                    disabled={session.attempts_count > 0}
+                                                    disabled={
+                                                        session.attempts_count >
+                                                        0
+                                                    }
                                                     onClick={() => {
                                                         if (
                                                             confirm(
@@ -844,7 +970,9 @@ function SessionsTabContent({ sessions, moduleId }: { sessions: SessionRow[]; mo
                                                         ) {
                                                             router.delete(
                                                                 `/exam-sessions/${session.id}`,
-                                                                { preserveScroll: true },
+                                                                {
+                                                                    preserveScroll: true,
+                                                                },
                                                             );
                                                         }
                                                     }}
@@ -889,57 +1017,76 @@ function TosCalculatorTabContent({
         if (status === 'balanced') {
             return 'text-success';
         }
+
         if (status === 'over') {
             return 'text-destructive';
         }
+
         return 'text-warning';
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="space-y-6 p-6">
             <h2 className="text-lg font-semibold">TOS Calculator</h2>
 
             {/* Stats row */}
             <div className="grid gap-4 sm:grid-cols-3">
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Total Objectives</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Total Objectives
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{statistics.total_objectives}</div>
-                        <p className="text-xs text-muted-foreground">Active learning objectives</p>
+                        <div className="text-2xl font-bold">
+                            {statistics.total_objectives}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Active learning objectives
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Topics Covered</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Topics Covered
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{statistics.total_topics}</div>
-                        <p className="text-xs text-muted-foreground">With objectives</p>
+                        <div className="text-2xl font-bold">
+                            {statistics.total_topics}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            With objectives
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Avg per Topic</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Avg per Topic
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
                             {statistics.average_per_topic.toFixed(1)}
                         </div>
-                        <p className="text-xs text-muted-foreground">Objectives per topic</p>
+                        <p className="text-xs text-muted-foreground">
+                            Objectives per topic
+                        </p>
                     </CardContent>
                 </Card>
             </div>
 
             {matrix.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="rounded-2xl bg-muted/50 p-5 mb-4">
+                    <div className="mb-4 rounded-2xl bg-muted/50 p-5">
                         <Calculator className="size-10 text-muted-foreground" />
                     </div>
-                    <h3 className="font-medium mb-1">No TOS data yet</h3>
-                    <p className="text-sm text-muted-foreground max-w-sm">
-                        Add topics with active learning objectives to see the TOS matrix.
+                    <h3 className="mb-1 font-medium">No TOS data yet</h3>
+                    <p className="max-w-sm text-sm text-muted-foreground">
+                        Add topics with active learning objectives to see the
+                        TOS matrix.
                     </p>
                 </div>
             ) : (
@@ -947,9 +1094,12 @@ function TosCalculatorTabContent({
                     {/* Matrix table */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">TOS Matrix</CardTitle>
+                            <CardTitle className="text-base">
+                                TOS Matrix
+                            </CardTitle>
                             <CardDescription>
-                                Distribution of learning objectives by topic and cognitive level
+                                Distribution of learning objectives by topic and
+                                cognitive level
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -957,21 +1107,23 @@ function TosCalculatorTabContent({
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="border-b">
-                                            <th className="text-left font-medium py-2 pr-4">
+                                            <th className="py-2 pr-4 text-left font-medium">
                                                 Topic
                                             </th>
                                             {cogLevels.map((l) => (
                                                 <th
                                                     key={l}
-                                                    className="text-center font-medium py-2 px-2 capitalize"
+                                                    className="px-2 py-2 text-center font-medium capitalize"
                                                 >
                                                     {l.slice(0, 3)}
                                                 </th>
                                             ))}
-                                            <th className="text-center font-medium py-2 px-2">
+                                            <th className="px-2 py-2 text-center font-medium">
                                                 Total
                                             </th>
-                                            <th className="text-center font-medium py-2 px-2">%</th>
+                                            <th className="px-2 py-2 text-center font-medium">
+                                                %
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -989,14 +1141,17 @@ function TosCalculatorTabContent({
                                                     </div>
                                                 </td>
                                                 {cogLevels.map((l) => (
-                                                    <td key={l} className="text-center py-2 px-2">
+                                                    <td
+                                                        key={l}
+                                                        className="px-2 py-2 text-center"
+                                                    >
                                                         {(row as any)[l] || '-'}
                                                     </td>
                                                 ))}
-                                                <td className="text-center font-medium py-2 px-2">
+                                                <td className="px-2 py-2 text-center font-medium">
                                                     {row.total}
                                                 </td>
-                                                <td className="text-center py-2 px-2 text-muted-foreground">
+                                                <td className="px-2 py-2 text-center text-muted-foreground">
                                                     {row.percentage.toFixed(1)}%
                                                 </td>
                                             </tr>
@@ -1010,7 +1165,7 @@ function TosCalculatorTabContent({
                     {/* Distribution */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-base">
                                 <BarChart3 className="size-4" />
                                 Cognitive Level Distribution
                             </CardTitle>
@@ -1018,18 +1173,21 @@ function TosCalculatorTabContent({
                         <CardContent className="space-y-3">
                             {distribution.map((item) => (
                                 <div key={item.cognitive_level}>
-                                    <div className="flex items-center justify-between text-sm mb-1">
-                                        <span className="capitalize font-medium">
+                                    <div className="mb-1 flex items-center justify-between text-sm">
+                                        <span className="font-medium capitalize">
                                             {item.cognitive_level}
                                         </span>
                                         <span className="text-muted-foreground">
-                                            {item.count} ({item.percentage.toFixed(1)}%)
+                                            {item.count} (
+                                            {item.percentage.toFixed(1)}%)
                                         </span>
                                     </div>
-                                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                    <div className="h-2 overflow-hidden rounded-full bg-muted">
                                         <div
-                                            className="h-full bg-primary rounded-full transition-all"
-                                            style={{ width: `${item.percentage}%` }}
+                                            className="h-full rounded-full bg-primary transition-all"
+                                            style={{
+                                                width: `${item.percentage}%`,
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -1040,7 +1198,9 @@ function TosCalculatorTabContent({
                     {/* Balance analysis */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Balance Analysis</CardTitle>
+                            <CardTitle className="text-base">
+                                Balance Analysis
+                            </CardTitle>
                             <CardDescription>
                                 Ideal range: 10–25% per cognitive level
                             </CardDescription>
@@ -1052,7 +1212,9 @@ function TosCalculatorTabContent({
                                     className="flex items-center justify-between rounded-lg border p-3"
                                 >
                                     <div>
-                                        <p className="font-medium capitalize">{item.level}</p>
+                                        <p className="font-medium capitalize">
+                                            {item.level}
+                                        </p>
                                         <p className="text-xs text-muted-foreground">
                                             {item.count} objectives
                                         </p>
@@ -1082,53 +1244,73 @@ function DuplicateDetectionTabContent({
     statistics: DuplicateStats;
 }) {
     return (
-        <div className="p-6 space-y-6">
+        <div className="space-y-6 p-6">
             <h2 className="text-lg font-semibold">Duplicate Detection</h2>
 
             {/* Stats */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Total Questions
+                        </CardTitle>
                         <FileQuestion className="size-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{statistics.total_questions}</div>
-                        <p className="text-xs text-muted-foreground">In question bank</p>
+                        <div className="text-2xl font-bold">
+                            {statistics.total_questions}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            In question bank
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Duplicate Groups</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Duplicate Groups
+                        </CardTitle>
                         <AlertTriangle className="size-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{statistics.duplicate_groups}</div>
-                        <p className="text-xs text-muted-foreground">Questions with matches</p>
+                        <div className="text-2xl font-bold">
+                            {statistics.duplicate_groups}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Questions with matches
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Highest Similarity</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Highest Similarity
+                        </CardTitle>
                         <AlertTriangle className="size-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
                             {statistics.highest_similarity.toFixed(1)}%
                         </div>
-                        <p className="text-xs text-muted-foreground">Maximum detected</p>
+                        <p className="text-xs text-muted-foreground">
+                            Maximum detected
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Questions Flagged</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Questions Flagged
+                        </CardTitle>
                         <AlertTriangle className="size-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
                             {statistics.questions_with_duplicates}
                         </div>
-                        <p className="text-xs text-muted-foreground">Need review</p>
+                        <p className="text-xs text-muted-foreground">
+                            Need review
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -1138,7 +1320,9 @@ function DuplicateDetectionTabContent({
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-16">
                         <FileQuestion className="size-12 text-muted-foreground" />
-                        <h3 className="mt-4 text-lg font-medium">No Duplicates Found</h3>
+                        <h3 className="mt-4 text-lg font-medium">
+                            No Duplicates Found
+                        </h3>
                         <p className="mt-2 text-sm text-muted-foreground">
                             All questions in this module appear to be unique.
                         </p>
@@ -1160,7 +1344,9 @@ function DuplicateDetectionTabContent({
                                     </div>
                                     <Badge variant="outline" className="ml-4">
                                         {group.matches.length}{' '}
-                                        {group.matches.length === 1 ? 'match' : 'matches'}
+                                        {group.matches.length === 1
+                                            ? 'match'
+                                            : 'matches'}
                                     </Badge>
                                 </div>
                             </CardHeader>
@@ -1174,7 +1360,8 @@ function DuplicateDetectionTabContent({
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-medium">
-                                                        Question #{match.question.id}
+                                                        Question #
+                                                        {match.question.id}
                                                     </span>
                                                     <Badge
                                                         variant="secondary"
@@ -1182,8 +1369,13 @@ function DuplicateDetectionTabContent({
                                                             match.similarity_score,
                                                         )}
                                                     >
-                                                        {match.similarity_score.toFixed(1)}% -{' '}
-                                                        {getSimilarityLabel(match.similarity_score)}
+                                                        {match.similarity_score.toFixed(
+                                                            1,
+                                                        )}
+                                                        % -{' '}
+                                                        {getSimilarityLabel(
+                                                            match.similarity_score,
+                                                        )}
                                                     </Badge>
                                                 </div>
                                                 <p className="mt-2 text-sm">
@@ -1191,9 +1383,14 @@ function DuplicateDetectionTabContent({
                                                 </p>
                                                 <div className="mt-3 flex flex-wrap gap-2">
                                                     {match.matching_aspects.map(
-                                                        (aspect, aspectIndex) => (
+                                                        (
+                                                            aspect,
+                                                            aspectIndex,
+                                                        ) => (
                                                             <Badge
-                                                                key={aspectIndex}
+                                                                key={
+                                                                    aspectIndex
+                                                                }
                                                                 variant="outline"
                                                                 className="text-xs"
                                                             >
@@ -1207,20 +1404,28 @@ function DuplicateDetectionTabContent({
 
                                         <div className="mt-4 grid gap-4 border-t pt-4 md:grid-cols-2">
                                             <div>
-                                                <h4 className="mb-2 text-xs font-medium uppercase text-muted-foreground">
+                                                <h4 className="mb-2 text-xs font-medium text-muted-foreground uppercase">
                                                     Original
                                                 </h4>
                                                 <div className="space-y-1 text-sm">
                                                     <div>
-                                                        <span className="font-medium">Type:</span>{' '}
-                                                        {group.question.question_type}
+                                                        <span className="font-medium">
+                                                            Type:
+                                                        </span>{' '}
+                                                        {
+                                                            group.question
+                                                                .question_type
+                                                        }
                                                     </div>
                                                     <div>
                                                         <span className="font-medium">
                                                             Difficulty:
                                                         </span>{' '}
                                                         <span className="capitalize">
-                                                            {group.question.difficulty}
+                                                            {
+                                                                group.question
+                                                                    .difficulty
+                                                            }
                                                         </span>
                                                     </div>
                                                     <div>
@@ -1228,26 +1433,37 @@ function DuplicateDetectionTabContent({
                                                             Cognitive:
                                                         </span>{' '}
                                                         <span className="capitalize">
-                                                            {group.question.cognitive_level}
+                                                            {
+                                                                group.question
+                                                                    .cognitive_level
+                                                            }
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 className="mb-2 text-xs font-medium uppercase text-muted-foreground">
+                                                <h4 className="mb-2 text-xs font-medium text-muted-foreground uppercase">
                                                     Similar
                                                 </h4>
                                                 <div className="space-y-1 text-sm">
                                                     <div>
-                                                        <span className="font-medium">Type:</span>{' '}
-                                                        {match.question.question_type}
+                                                        <span className="font-medium">
+                                                            Type:
+                                                        </span>{' '}
+                                                        {
+                                                            match.question
+                                                                .question_type
+                                                        }
                                                     </div>
                                                     <div>
                                                         <span className="font-medium">
                                                             Difficulty:
                                                         </span>{' '}
                                                         <span className="capitalize">
-                                                            {match.question.difficulty}
+                                                            {
+                                                                match.question
+                                                                    .difficulty
+                                                            }
                                                         </span>
                                                     </div>
                                                     <div>
@@ -1255,7 +1471,10 @@ function DuplicateDetectionTabContent({
                                                             Cognitive:
                                                         </span>{' '}
                                                         <span className="capitalize">
-                                                            {match.question.cognitive_level}
+                                                            {
+                                                                match.question
+                                                                    .cognitive_level
+                                                            }
                                                         </span>
                                                     </div>
                                                 </div>
@@ -1272,7 +1491,9 @@ function DuplicateDetectionTabContent({
             {/* Legend */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Similarity Score Legend</CardTitle>
+                    <CardTitle className="text-base">
+                        Similarity Score Legend
+                    </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="flex items-center gap-2">
@@ -1328,6 +1549,7 @@ export default function ModuleShow({
         if (latestTos !== null && !(latestExam?.status === 'published')) {
             return 'workflow';
         }
+
         return 'tos';
     });
 
@@ -1348,20 +1570,22 @@ export default function ModuleShow({
 
             <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
                 {/* ═══════════ LEFT PANEL — Sources ═══════════ */}
-                <aside className="w-64 shrink-0 border-r flex flex-col">
-                    <div className="p-4 border-b">
-                        <h2 className="font-semibold text-sm truncate">{module.name}</h2>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                <aside className="flex w-64 shrink-0 flex-col border-r">
+                    <div className="border-b p-4">
+                        <h2 className="truncate text-sm font-semibold">
+                            {module.name}
+                        </h2>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                             {module.code} · {module.subject_area}
                         </p>
                     </div>
 
                     <ScrollArea className="flex-1">
-                        <div className="p-3 space-y-5">
+                        <div className="space-y-5 p-3">
                             {/* Sources / PDFs */}
                             <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                         Sources
                                     </h3>
                                 </div>
@@ -1370,16 +1594,16 @@ export default function ModuleShow({
                                         href={`/storage/${module.pdf_file}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-accent/50 transition-colors"
+                                        className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent/50"
                                     >
-                                        <FileText className="size-4 text-primary shrink-0" />
-                                        <span className="truncate flex-1">
+                                        <FileText className="size-4 shrink-0 text-primary" />
+                                        <span className="flex-1 truncate">
                                             {module.pdf_file.split('/').pop()}
                                         </span>
                                         <Download className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100" />
                                     </a>
                                 ) : (
-                                    <p className="text-xs text-muted-foreground px-2 py-2">
+                                    <p className="px-2 py-2 text-xs text-muted-foreground">
                                         No PDF uploaded
                                     </p>
                                 )}
@@ -1387,8 +1611,8 @@ export default function ModuleShow({
 
                             {/* Topics Tree */}
                             <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                         Topics
                                     </h3>
                                     <Button
@@ -1403,11 +1627,14 @@ export default function ModuleShow({
                                 {topics.length > 0 ? (
                                     <div className="space-y-0.5">
                                         {topics.map((topic) => (
-                                            <TopicItem key={topic.id} topic={topic} />
+                                            <TopicItem
+                                                key={topic.id}
+                                                topic={topic}
+                                            />
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-xs text-muted-foreground px-2 py-2">
+                                    <p className="px-2 py-2 text-xs text-muted-foreground">
                                         No topics yet
                                     </p>
                                 )}
@@ -1415,28 +1642,38 @@ export default function ModuleShow({
 
                             {/* Module Stats */}
                             <div>
-                                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                                <h3 className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     Stats
                                 </h3>
                                 <div className="space-y-1.5 px-2 text-sm">
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Questions</span>
+                                        <span className="text-muted-foreground">
+                                            Questions
+                                        </span>
                                         <span className="font-medium">
                                             {module.questions_count || 0}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Exams</span>
+                                        <span className="text-muted-foreground">
+                                            Exams
+                                        </span>
                                         <span className="font-medium">
                                             {module.exams_count || 0}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Grade</span>
-                                        <span className="font-medium">{module.grade_level}</span>
+                                        <span className="text-muted-foreground">
+                                            Grade
+                                        </span>
+                                        <span className="font-medium">
+                                            {module.grade_level}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Year</span>
+                                        <span className="text-muted-foreground">
+                                            Year
+                                        </span>
                                         <span className="font-medium">
                                             {module.curriculum_year}
                                         </span>
@@ -1448,14 +1685,14 @@ export default function ModuleShow({
                 </aside>
 
                 {/* ═══════════ CENTER PANEL — Tabbed Content ═══════════ */}
-                <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
                     <Tabs
                         value={activeTab}
                         onValueChange={setActiveTab}
-                        className="flex flex-col flex-1 overflow-hidden"
+                        className="flex flex-1 flex-col overflow-hidden"
                     >
-                        <div className="border-b px-6 pt-4 overflow-x-auto">
-                            <TabsList className="bg-transparent p-0 h-auto gap-4">
+                        <div className="overflow-x-auto border-b px-6 pt-4">
+                            <TabsList className="h-auto gap-4 bg-transparent p-0">
                                 {[
                                     ['tos', 'TOS'],
                                     ['questions', 'Questions'],
@@ -1469,7 +1706,7 @@ export default function ModuleShow({
                                     <TabsTrigger
                                         key={value}
                                         value={value}
-                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none pb-3 px-1 whitespace-nowrap"
+                                        className="rounded-none border-b-2 border-transparent px-1 pb-3 whitespace-nowrap data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                                     >
                                         {label}
                                     </TabsTrigger>
@@ -1478,23 +1715,29 @@ export default function ModuleShow({
                         </div>
 
                         {/* ── TOS Tab ── */}
-                        <TabsContent value="tos" className="flex-1 overflow-auto m-0">
+                        <TabsContent
+                            value="tos"
+                            className="m-0 flex-1 overflow-auto"
+                        >
                             <div className="p-6">
-                                <div className="flex items-center justify-between mb-6">
+                                <div className="mb-6 flex items-center justify-between">
                                     <h2 className="text-lg font-semibold">
                                         Table of Specifications
                                     </h2>
                                     <Button asChild size="sm">
-                                        <Link href={`/tos-generates/create?module=${module.id}`}>
+                                        <Link
+                                            href={`/tos-generates/create?module=${module.id}`}
+                                        >
                                             <Plus className="mr-2 size-4" />
                                             Generate TOS
                                         </Link>
                                     </Button>
                                 </div>
 
-                                {module.tos_generates && module.tos_generates.length > 0 ? (
+                                {module.tos_generates &&
+                                module.tos_generates.length > 0 ? (
                                     <div className="rounded-xl border">
-                                        <div className="grid grid-cols-[1fr_80px_120px_100px_120px] gap-4 px-6 py-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        <div className="grid grid-cols-[1fr_80px_120px_100px_120px] gap-4 border-b px-6 py-3 text-xs font-medium tracking-wider text-muted-foreground uppercase">
                                             <span>Subject</span>
                                             <span>Items</span>
                                             <span>Difficulty</span>
@@ -1505,11 +1748,11 @@ export default function ModuleShow({
                                             <Link
                                                 key={tos.id}
                                                 href={`/tos-generates/${tos.id}`}
-                                                className="grid grid-cols-[1fr_80px_120px_100px_120px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors"
+                                                className="grid grid-cols-[1fr_80px_120px_100px_120px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                             >
-                                                <div className="flex items-center gap-2 min-w-0">
-                                                    <FileText className="size-4 text-muted-foreground shrink-0" />
-                                                    <span className="font-medium truncate">
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <FileText className="size-4 shrink-0 text-muted-foreground" />
+                                                    <span className="truncate font-medium">
                                                         {tos.subject}
                                                     </span>
                                                 </div>
@@ -1522,7 +1765,8 @@ export default function ModuleShow({
                                                 <Badge
                                                     variant="outline"
                                                     className={
-                                                        tos.status === 'completed'
+                                                        tos.status ===
+                                                        'completed'
                                                             ? 'bg-success/10 text-success'
                                                             : 'bg-muted text-muted-foreground'
                                                     }
@@ -1537,13 +1781,15 @@ export default function ModuleShow({
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-16 text-center">
-                                        <div className="rounded-2xl bg-muted/50 p-5 mb-4">
+                                        <div className="mb-4 rounded-2xl bg-muted/50 p-5">
                                             <FileText className="size-10 text-muted-foreground" />
                                         </div>
-                                        <h3 className="font-medium mb-1">No TOS generated yet</h3>
-                                        <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                                            Generate a Table of Specifications to define your
-                                            assessment blueprint.
+                                        <h3 className="mb-1 font-medium">
+                                            No TOS generated yet
+                                        </h3>
+                                        <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                                            Generate a Table of Specifications
+                                            to define your assessment blueprint.
                                         </p>
                                         <Button asChild size="sm">
                                             <Link
@@ -1559,14 +1805,19 @@ export default function ModuleShow({
                         </TabsContent>
 
                         {/* ── Questions Tab ── */}
-                        <TabsContent value="questions" className="flex-1 overflow-auto m-0">
+                        <TabsContent
+                            value="questions"
+                            className="m-0 flex-1 overflow-auto"
+                        >
                             <div className="p-6">
-                                <div className="flex items-center justify-between mb-6">
+                                <div className="mb-6 flex items-center justify-between">
                                     <h2 className="text-lg font-semibold">
                                         Questions ({questions.total})
                                     </h2>
                                     <Button asChild size="sm">
-                                        <Link href={`/question-bank/create?module=${module.id}`}>
+                                        <Link
+                                            href={`/question-bank/create?module=${module.id}`}
+                                        >
                                             <Plus className="mr-2 size-4" />
                                             Create Question
                                         </Link>
@@ -1576,7 +1827,7 @@ export default function ModuleShow({
                                 {questions.data.length > 0 ? (
                                     <>
                                         <div className="rounded-xl border">
-                                            <div className="grid grid-cols-[1fr_100px_100px_80px_80px] gap-4 px-6 py-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                            <div className="grid grid-cols-[1fr_100px_100px_80px_80px] gap-4 border-b px-6 py-3 text-xs font-medium tracking-wider text-muted-foreground uppercase">
                                                 <span>Question</span>
                                                 <span>Type</span>
                                                 <span>Cognitive</span>
@@ -1587,16 +1838,19 @@ export default function ModuleShow({
                                                 <Link
                                                     key={q.id}
                                                     href={`/question-bank/${q.id}`}
-                                                    className="grid grid-cols-[1fr_100px_100px_80px_80px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors"
+                                                    className="grid grid-cols-[1fr_100px_100px_80px_80px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                                 >
-                                                    <p className="text-sm font-medium truncate">
+                                                    <p className="truncate text-sm font-medium">
                                                         {q.question}
                                                     </p>
                                                     <Badge
                                                         variant="outline"
-                                                        className="text-xs w-fit capitalize"
+                                                        className="w-fit text-xs capitalize"
                                                     >
-                                                        {q.question_type?.replace('_', ' ')}
+                                                        {q.question_type?.replace(
+                                                            '_',
+                                                            ' ',
+                                                        )}
                                                     </Badge>
                                                     <span className="text-xs text-muted-foreground capitalize">
                                                         {q.cognitive_level}
@@ -1614,14 +1868,17 @@ export default function ModuleShow({
                                         </div>
 
                                         {questions.last_page > 1 && (
-                                            <div className="flex items-center justify-center gap-2 mt-4">
+                                            <div className="mt-4 flex items-center justify-center gap-2">
                                                 {Array.from(
-                                                    { length: questions.last_page },
+                                                    {
+                                                        length: questions.last_page,
+                                                    },
                                                     (_, i) => (
                                                         <Button
                                                             key={i}
                                                             variant={
-                                                                questions.current_page === i + 1
+                                                                questions.current_page ===
+                                                                i + 1
                                                                     ? 'default'
                                                                     : 'outline'
                                                             }
@@ -1630,8 +1887,14 @@ export default function ModuleShow({
                                                             onClick={() =>
                                                                 router.get(
                                                                     `/modules/${module.id}`,
-                                                                    { page: i + 1 },
-                                                                    { preserveState: true },
+                                                                    {
+                                                                        page:
+                                                                            i +
+                                                                            1,
+                                                                    },
+                                                                    {
+                                                                        preserveState: true,
+                                                                    },
                                                                 )
                                                             }
                                                         >
@@ -1644,13 +1907,15 @@ export default function ModuleShow({
                                     </>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-16 text-center">
-                                        <div className="rounded-2xl bg-muted/50 p-5 mb-4">
+                                        <div className="mb-4 rounded-2xl bg-muted/50 p-5">
                                             <BookOpen className="size-10 text-muted-foreground" />
                                         </div>
-                                        <h3 className="font-medium mb-1">No questions yet</h3>
-                                        <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                                            Create questions manually or use AI generation from your
-                                            TOS.
+                                        <h3 className="mb-1 font-medium">
+                                            No questions yet
+                                        </h3>
+                                        <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                                            Create questions manually or use AI
+                                            generation from your TOS.
                                         </p>
                                         <Button asChild size="sm">
                                             <Link
@@ -1666,9 +1931,12 @@ export default function ModuleShow({
                         </TabsContent>
 
                         {/* ── Exams Tab ── */}
-                        <TabsContent value="exams" className="flex-1 overflow-auto m-0">
+                        <TabsContent
+                            value="exams"
+                            className="m-0 flex-1 overflow-auto"
+                        >
                             <div className="p-6">
-                                <div className="flex items-center justify-between mb-6">
+                                <div className="mb-6 flex items-center justify-between">
                                     <h2 className="text-lg font-semibold">
                                         Exams ({exams.length})
                                     </h2>
@@ -1682,7 +1950,7 @@ export default function ModuleShow({
 
                                 {exams.length > 0 ? (
                                     <div className="rounded-xl border">
-                                        <div className="grid grid-cols-[1fr_100px_120px_100px] gap-4 px-6 py-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        <div className="grid grid-cols-[1fr_100px_120px_100px] gap-4 border-b px-6 py-3 text-xs font-medium tracking-wider text-muted-foreground uppercase">
                                             <span>Title</span>
                                             <span>Questions</span>
                                             <span>Created</span>
@@ -1692,11 +1960,13 @@ export default function ModuleShow({
                                             <Link
                                                 key={exam.id}
                                                 href={`/exam-builder/${exam.id}`}
-                                                className="grid grid-cols-[1fr_100px_120px_100px] gap-4 px-6 py-4 items-center border-b last:border-0 hover:bg-accent/50 transition-colors"
+                                                className="grid grid-cols-[1fr_100px_120px_100px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                             >
-                                                <div className="flex items-center gap-2 min-w-0">
-                                                    {getExamTypeIcon(exam.exam_type)}
-                                                    <span className="font-medium truncate">
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    {getExamTypeIcon(
+                                                        exam.exam_type,
+                                                    )}
+                                                    <span className="truncate font-medium">
                                                         {exam.title}
                                                     </span>
                                                 </div>
@@ -1704,19 +1974,25 @@ export default function ModuleShow({
                                                     {exam.questions_count} Q
                                                 </span>
                                                 <span className="text-sm text-muted-foreground">
-                                                    {formatDate(exam.created_at)}
+                                                    {formatDate(
+                                                        exam.created_at,
+                                                    )}
                                                 </span>
                                                 <Badge
                                                     variant="outline"
                                                     className={
-                                                        exam.status === 'published'
+                                                        exam.status ===
+                                                        'published'
                                                             ? 'bg-success/10 text-success'
-                                                            : exam.status === 'draft'
+                                                            : exam.status ===
+                                                                'draft'
                                                               ? 'bg-muted text-muted-foreground'
                                                               : 'bg-secondary/10 text-secondary'
                                                     }
                                                 >
-                                                    {exam.status.charAt(0).toUpperCase() +
+                                                    {exam.status
+                                                        .charAt(0)
+                                                        .toUpperCase() +
                                                         exam.status.slice(1)}
                                                 </Badge>
                                             </Link>
@@ -1724,12 +2000,15 @@ export default function ModuleShow({
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-16 text-center">
-                                        <div className="rounded-2xl bg-muted/50 p-5 mb-4">
+                                        <div className="mb-4 rounded-2xl bg-muted/50 p-5">
                                             <ClipboardList className="size-10 text-muted-foreground" />
                                         </div>
-                                        <h3 className="font-medium mb-1">No exams yet</h3>
-                                        <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                                            Create an exam to assemble questions into an assessment.
+                                        <h3 className="mb-1 font-medium">
+                                            No exams yet
+                                        </h3>
+                                        <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                                            Create an exam to assemble questions
+                                            into an assessment.
                                         </p>
                                         <Button asChild size="sm">
                                             <Link href="/exam-builder/create">
@@ -1743,17 +2022,32 @@ export default function ModuleShow({
                         </TabsContent>
 
                         {/* ── Topics Tab ── */}
-                        <TabsContent value="topics" className="flex-1 overflow-auto m-0">
-                            <TopicsTabContent module={module} allTopics={allTopics} />
+                        <TabsContent
+                            value="topics"
+                            className="m-0 flex-1 overflow-auto"
+                        >
+                            <TopicsTabContent
+                                module={module}
+                                allTopics={allTopics}
+                            />
                         </TabsContent>
 
                         {/* ── Sessions Tab ── */}
-                        <TabsContent value="sessions" className="flex-1 overflow-auto m-0">
-                            <SessionsTabContent sessions={sessions} moduleId={module.id} />
+                        <TabsContent
+                            value="sessions"
+                            className="m-0 flex-1 overflow-auto"
+                        >
+                            <SessionsTabContent
+                                sessions={sessions}
+                                moduleId={module.id}
+                            />
                         </TabsContent>
 
                         {/* ── TOS Calculator Tab ── */}
-                        <TabsContent value="tos-calculator" className="flex-1 overflow-auto m-0">
+                        <TabsContent
+                            value="tos-calculator"
+                            className="m-0 flex-1 overflow-auto"
+                        >
                             <TosCalculatorTabContent
                                 matrix={tosMatrix}
                                 distribution={tosDistribution}
@@ -1763,7 +2057,10 @@ export default function ModuleShow({
                         </TabsContent>
 
                         {/* ── Duplicate Detection Tab ── */}
-                        <TabsContent value="duplicates" className="flex-1 overflow-auto m-0">
+                        <TabsContent
+                            value="duplicates"
+                            className="m-0 flex-1 overflow-auto"
+                        >
                             <DuplicateDetectionTabContent
                                 duplicates={duplicates}
                                 statistics={duplicateStats}
@@ -1771,7 +2068,10 @@ export default function ModuleShow({
                         </TabsContent>
 
                         {/* ── Workflow Tab ── */}
-                        <TabsContent value="workflow" className="flex-1 overflow-auto m-0">
+                        <TabsContent
+                            value="workflow"
+                            className="m-0 flex-1 overflow-auto"
+                        >
                             <div className="p-6">
                                 <WorkflowStepper
                                     module={module}
@@ -1785,47 +2085,61 @@ export default function ModuleShow({
                 </main>
 
                 {/* ═══════════ RIGHT PANEL — Studio ═══════════ */}
-                <aside className="w-72 shrink-0 border-l flex flex-col">
-                    <div className="p-4 border-b">
-                        <h2 className="font-semibold text-sm">Studio</h2>
+                <aside className="flex w-72 shrink-0 flex-col border-l">
+                    <div className="border-b p-4">
+                        <h2 className="text-sm font-semibold">Studio</h2>
                     </div>
 
                     <ScrollArea className="flex-1">
-                        <div className="p-4 space-y-5">
+                        <div className="space-y-5 p-4">
                             {/* Action Cards Grid */}
                             <div className="grid grid-cols-2 gap-2.5">
                                 <StudioCard
-                                    icon={<Sparkles className="size-5 text-purple-400" />}
+                                    icon={
+                                        <Sparkles className="size-5 text-purple-400" />
+                                    }
                                     label="AI Generate"
                                     onClick={() => setActiveTab('workflow')}
                                     colorClass="bg-purple-500/10"
                                 />
                                 <StudioCard
-                                    icon={<FileText className="size-5 text-blue-400" />}
+                                    icon={
+                                        <FileText className="size-5 text-blue-400" />
+                                    }
                                     label="Export PDF"
                                     href={`/modules/${module.id}`}
                                     colorClass="bg-blue-500/10"
                                 />
                                 <StudioCard
-                                    icon={<Calculator className="size-5 text-emerald-400" />}
+                                    icon={
+                                        <Calculator className="size-5 text-emerald-400" />
+                                    }
                                     label="TOS Calculator"
-                                    onClick={() => setActiveTab('tos-calculator')}
+                                    onClick={() =>
+                                        setActiveTab('tos-calculator')
+                                    }
                                     colorClass="bg-emerald-500/10"
                                 />
                                 <StudioCard
-                                    icon={<Search className="size-5 text-orange-400" />}
+                                    icon={
+                                        <Search className="size-5 text-orange-400" />
+                                    }
                                     label="Dup Check"
                                     onClick={() => setActiveTab('duplicates')}
                                     colorClass="bg-orange-500/10"
                                 />
                                 <StudioCard
-                                    icon={<Edit className="size-5 text-slate-400" />}
+                                    icon={
+                                        <Edit className="size-5 text-slate-400" />
+                                    }
                                     label="Edit Module"
                                     href={`/modules/${module.id}/edit`}
                                     colorClass="bg-slate-500/10"
                                 />
                                 <StudioCard
-                                    icon={<FolderTree className="size-5 text-teal-400" />}
+                                    icon={
+                                        <FolderTree className="size-5 text-teal-400" />
+                                    }
                                     label="Topics"
                                     onClick={() => setActiveTab('topics')}
                                     colorClass="bg-teal-500/10"
@@ -1834,7 +2148,7 @@ export default function ModuleShow({
 
                             {/* Module Info Summary */}
                             <div>
-                                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                                <h3 className="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     Module Info
                                 </h3>
                                 <div className="space-y-3 text-sm">
@@ -1842,26 +2156,38 @@ export default function ModuleShow({
                                         <p className="text-xs text-muted-foreground">
                                             Subject Area
                                         </p>
-                                        <p className="font-medium">{module.subject_area}</p>
+                                        <p className="font-medium">
+                                            {module.subject_area}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-muted-foreground">Grade Level</p>
-                                        <p className="font-medium">{module.grade_level}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Grade Level
+                                        </p>
+                                        <p className="font-medium">
+                                            {module.grade_level}
+                                        </p>
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">
                                             Curriculum Year
                                         </p>
-                                        <p className="font-medium">{module.curriculum_year}</p>
+                                        <p className="font-medium">
+                                            {module.curriculum_year}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-muted-foreground">Created By</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Created By
+                                        </p>
                                         <p className="font-medium">
                                             {module.creator?.name || 'Unknown'}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-muted-foreground">Status</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Status
+                                        </p>
                                         <Badge
                                             variant="outline"
                                             className={
@@ -1870,7 +2196,9 @@ export default function ModuleShow({
                                                     : 'bg-muted text-muted-foreground'
                                             }
                                         >
-                                            {module.is_active ? 'Active' : 'Inactive'}
+                                            {module.is_active
+                                                ? 'Active'
+                                                : 'Inactive'}
                                         </Badge>
                                     </div>
                                 </div>
@@ -1878,7 +2206,7 @@ export default function ModuleShow({
 
                             {/* Danger Zone */}
                             <div>
-                                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                                <h3 className="mb-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     Danger Zone
                                 </h3>
                                 <Button
@@ -1902,9 +2230,9 @@ export default function ModuleShow({
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Module</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete "{module.name}"? This will also delete
-                            all associated topics, questions, and exams. This action cannot be
-                            undone.
+                            Are you sure you want to delete "{module.name}"?
+                            This will also delete all associated topics,
+                            questions, and exams. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
