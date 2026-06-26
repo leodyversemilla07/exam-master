@@ -106,7 +106,7 @@ const mainNavItems: NavItem[] = [
 
 const studentNavItems: NavItem[] = [
     {
-        title: 'Student Dashboard',
+        title: 'Dashboard',
         href: studentDashboard(),
         icon: GraduationCap,
         role: 'student',
@@ -137,7 +137,14 @@ export function AppSidebar() {
     const userPermissions = auth.user?.permissions || [];
     const userRoles = auth.user?.roles || [];
 
+    const isStudent = userRoles.includes('student');
+
     const filteredNavItems = mainNavItems.filter((item) => {
+        // Skip main nav items entirely for students
+        if (isStudent) {
+            return false;
+        }
+
         if (!item.permission) {
             return true;
         }
@@ -157,14 +164,16 @@ export function AppSidebar() {
         return true;
     });
 
-    const allNavItems = [...filteredNavItems, ...filteredStudentNavItems];
+    // For students, only show student-specific items (skip main nav)
+    // For other roles, only show main nav items
+    const allNavItems = isStudent ? filteredStudentNavItems : filteredNavItems;
 
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" render={<Link href={dashboard()} />}>
+                        <SidebarMenuButton size="lg" render={<Link href={isStudent ? studentDashboard() : dashboard()} />}>
                             <AppLogo />
                         </SidebarMenuButton>
                     </SidebarMenuItem>
