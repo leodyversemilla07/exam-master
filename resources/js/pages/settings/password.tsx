@@ -5,8 +5,8 @@ import { useRef } from 'react';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/password-input';
 
 export default function Password() {
     const passwordInput = useRef<HTMLInputElement>(null);
@@ -62,14 +62,13 @@ export default function Password() {
                             Current password
                         </Label>
 
-                        <Input
+                        <PasswordInput
                             id="current_password"
                             ref={currentPasswordInput}
                             value={data.current_password}
                             onChange={(e) =>
                                 setData('current_password', e.target.value)
                             }
-                            type="password"
                             className="mt-1 block w-full"
                             autoComplete="current-password"
                             placeholder="Current password"
@@ -81,14 +80,13 @@ export default function Password() {
                     <div className="grid gap-2">
                         <Label htmlFor="password">New password</Label>
 
-                        <Input
+                        <PasswordInput
                             id="password"
                             ref={passwordInput}
                             value={data.password}
                             onChange={(e) =>
                                 setData('password', e.target.value)
                             }
-                            type="password"
                             className="mt-1 block w-full"
                             autoComplete="new-password"
                             placeholder="New password"
@@ -102,13 +100,12 @@ export default function Password() {
                             Confirm password
                         </Label>
 
-                        <Input
+                        <PasswordInput
                             id="password_confirmation"
                             value={data.password_confirmation}
                             onChange={(e) =>
                                 setData('password_confirmation', e.target.value)
                             }
-                            type="password"
                             className="mt-1 block w-full"
                             autoComplete="new-password"
                             placeholder="Confirm password"

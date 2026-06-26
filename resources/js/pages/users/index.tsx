@@ -44,6 +44,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/password-input';
 import {
     Select,
     SelectContent,
@@ -609,9 +610,8 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                         {editingUser &&
                                             '(leave blank to keep current)'}
                                     </Label>
-                                    <Input
+                                    <PasswordInput
                                         id="password"
-                                        type="password"
                                         value={form.data.password}
                                         onChange={(e) =>
                                             form.setData(
@@ -631,9 +631,8 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
                                     <Label htmlFor="password_confirmation">
                                         Confirm Password
                                     </Label>
-                                    <Input
+                                    <PasswordInput
                                         id="password_confirmation"
-                                        type="password"
                                         value={form.data.password_confirmation}
                                         onChange={(e) =>
                                             form.setData(
