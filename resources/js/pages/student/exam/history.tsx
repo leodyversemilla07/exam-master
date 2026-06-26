@@ -12,7 +12,14 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import PageHeader from '@/components/page-header';
+import {
+    Empty,
+    EmptyHeader,
+    EmptyTitle,
+    EmptyDescription,
+    EmptyMedia,
+    EmptyContent,
+} from '@/components/ui/empty';
 import {
     Table,
     TableBody,
@@ -48,14 +55,14 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
         }
 
         if (percentage >= 80) {
-            return 'text-green-600';
+            return 'text-primary';
         }
 
         if (percentage >= 60) {
-            return 'text-yellow-600';
+            return 'text-muted-foreground';
         }
 
-        return 'text-red-600';
+        return 'text-destructive';
     };
 
     const getStatusBadge = (status: string) => {
@@ -86,160 +93,200 @@ export default function ExamHistory({ attempts }: ExamHistoryProps) {
         <>
             <Head title="Exam History" />
 
-            <div className="flex flex-col gap-6">
-                <PageHeader
-                    title="Exam History"
-                    description="View all your past exam attempts and results"
-                />
+            <div className="p-6 md:p-8">
+                <div className="mx-auto max-w-7xl flex flex-col gap-8">
+                    <div className="flex flex-col gap-2">
+                        <h1 className="text-3xl font-bold tracking-tight">
+                            Exam History
+                        </h1>
+                        <p className="text-muted-foreground">
+                            View all your past exam attempts and results
+                        </p>
+                    </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <History className="h-5 w-5" />
-                            All Attempts
-                        </CardTitle>
-                        <CardDescription>
-                            {attempts.total} total attempt
-                            {attempts.total !== 1 ? 's' : ''}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {attempts.data.length === 0 ? (
-                            <div className="py-12 text-center">
-                                <Trophy className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                                <p className="text-muted-foreground">
-                                    You haven't taken any exams yet.
-                                </p>
-                                <Button render={<Link href={DashboardController.url()} />} nativeButton={false} className="mt-4">
-                                    Find Available Exams
-                                </Button>
-                            </div>
-                        ) : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Exam</TableHead>
-                                        <TableHead>Subject</TableHead>
-                                        <TableHead>Attempt</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Duration</TableHead>
-                                        <TableHead>Score</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">
-                                            Actions
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {attempts.data.map((attempt) => (
-                                        <TableRow key={attempt.id}>
-                                            <TableCell className="font-medium">
-                                                {attempt.exam_session?.exam
-                                                    ?.title || 'Unknown Exam'}
-                                            </TableCell>
-                                            <TableCell>
-                                                {attempt.exam_session?.exam
-                                                    ?.module?.name || '-'}
-                                            </TableCell>
-                                            <TableCell>
-                                                #{attempt.attempt_number}
-                                            </TableCell>
-                                            <TableCell>
-                                                {attempt.submitted_at
-                                                    ? format(
-                                                          new Date(
-                                                              attempt.submitted_at,
-                                                          ),
-                                                          'MMM d, yyyy',
-                                                      )
-                                                    : format(
-                                                          new Date(
-                                                              attempt.started_at,
-                                                          ),
-                                                          'MMM d, yyyy',
-                                                      )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-1">
-                                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                                    {formatDuration(
-                                                        attempt.time_spent_seconds,
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                {attempt.percentage !== null ? (
-                                                    <span
-                                                        className={cn(
-                                                            'font-medium',
-                                                            getScoreColor(
-                                                                attempt.percentage,
-                                                            ),
-                                                        )}
-                                                    >
-                                                        {attempt.percentage.toFixed(
-                                                            1,
-                                                        )}
-                                                        %
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-muted-foreground">
-                                                        -
-                                                    </span>
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                {getStatusBadge(attempt.status)}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                {attempt.status ===
-                                                'in_progress' ? (
-                                                    <Button size="sm" render={<Link href={take.url(attempt.id)} />} nativeButton={false}>
-                                                        Continue
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        render={<Link href={results.url(attempt.id)} />}
-                                                        nativeButton={false}
-                                                    >
-                                                        <Eye className="mr-1 h-4 w-4" />
-                                                        View
-                                                    </Button>
-                                                )}
-                                            </TableCell>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <History data-icon="inline-start" className="text-primary" />
+                                All Attempts
+                            </CardTitle>
+                            <CardDescription>
+                                {attempts.total} total attempt
+                                {attempts.total !== 1 ? 's' : ''}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {attempts.data.length === 0 ? (
+                                <Empty>
+                                    <EmptyMedia variant="icon">
+                                        <Trophy />
+                                    </EmptyMedia>
+                                    <EmptyHeader>
+                                        <EmptyTitle>
+                                            No exams taken yet
+                                        </EmptyTitle>
+                                        <EmptyDescription>
+                                            You haven't taken any exams yet.
+                                            Find available exams to get started.
+                                        </EmptyDescription>
+                                    </EmptyHeader>
+                                    <EmptyContent>
+                                        <Button
+                                            render={
+                                                <Link
+                                                    href={DashboardController.url()}
+                                                />
+                                            }
+                                        >
+                                            Find Available Exams
+                                        </Button>
+                                    </EmptyContent>
+                                </Empty>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Exam</TableHead>
+                                            <TableHead>Subject</TableHead>
+                                            <TableHead>Attempt</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Duration</TableHead>
+                                            <TableHead>Score</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">
+                                                Actions
+                                            </TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        )}
+                                    </TableHeader>
+                                    <TableBody>
+                                        {attempts.data.map((attempt) => (
+                                            <TableRow key={attempt.id}>
+                                                <TableCell className="font-medium">
+                                                    {attempt.exam_session?.exam
+                                                        ?.title || 'Unknown Exam'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {attempt.exam_session?.exam
+                                                        ?.module?.name || '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    #{attempt.attempt_number}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {attempt.submitted_at
+                                                        ? format(
+                                                              new Date(
+                                                                  attempt.submitted_at,
+                                                              ),
+                                                              'MMM d, yyyy',
+                                                          )
+                                                        : format(
+                                                              new Date(
+                                                                  attempt.started_at,
+                                                              ),
+                                                              'MMM d, yyyy',
+                                                          )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock data-icon="inline-start" className="text-muted-foreground" />
+                                                        {formatDuration(
+                                                            attempt.time_spent_seconds,
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {attempt.percentage !== null ? (
+                                                        <span
+                                                            className={cn(
+                                                                'font-medium',
+                                                                getScoreColor(
+                                                                    attempt.percentage,
+                                                                ),
+                                                            )}
+                                                        >
+                                                            {attempt.percentage.toFixed(
+                                                                1,
+                                                            )}
+                                                            %
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-muted-foreground">
+                                                            -
+                                                        </span>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {getStatusBadge(attempt.status)}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {attempt.status ===
+                                                    'in_progress' ? (
+                                                        <Button
+                                                            size="sm"
+                                                            render={
+                                                                <Link
+                                                                    href={take.url(
+                                                                        attempt.id,
+                                                                    )}
+                                                                />
+                                                            }
+                                                        >
+                                                            Continue
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            render={
+                                                                <Link
+                                                                    href={results.url(
+                                                                        attempt.id,
+                                                                    )}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Eye data-icon="inline-start" />
+                                                            View
+                                                        </Button>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
 
-                        {/* Pagination */}
-                        {attempts.last_page > 1 && (
-                            <div className="mt-6 flex justify-center gap-2">
-                                {Array.from(
-                                    { length: attempts.last_page },
-                                    (_, i) => i + 1,
-                                ).map((page) => (
-                                    <Button
-                                        key={page}
-                                        variant={
-                                            page === attempts.current_page
-                                                ? 'default'
-                                                : 'outline'
-                                        }
-                                        size="sm"
-                                        render={<Link href={historyRoute.url({ query: { page } })} />}
-                                        nativeButton={false}
-                                    >
-                                        {page}
-                                    </Button>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                            {attempts.last_page > 1 && (
+                                <div className="mt-6 flex justify-center gap-2">
+                                    {Array.from(
+                                        { length: attempts.last_page },
+                                        (_, i) => i + 1,
+                                    ).map((page) => (
+                                        <Button
+                                            key={page}
+                                            variant={
+                                                page === attempts.current_page
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            render={
+                                                <Link
+                                                    href={historyRoute.url({
+                                                        query: { page },
+                                                    })}
+                                                />
+                                            }
+                                        >
+                                            {page}
+                                        </Button>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </>
     );

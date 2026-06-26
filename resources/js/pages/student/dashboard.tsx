@@ -64,28 +64,16 @@ export default function StudentDashboard({
         joinForm.post(joinByCode.url());
     };
 
-    const getScoreColor = (percentage: number) => {
-        if (percentage >= 80) {
-            return 'text-green-600';
-        }
-
-        if (percentage >= 60) {
-            return 'text-yellow-600';
-        }
-
-        return 'text-red-600';
-    };
-
     const getScoreBadge = (percentage: number) => {
         if (percentage >= 80) {
-            return (<Badge className="bg-green-100 text-green-800">Passed</Badge>);
+            return <Badge>Passed</Badge>;
         }
 
         if (percentage >= 60) {
-            return (<Badge className="bg-yellow-100 text-yellow-800">Fair</Badge>);
+            return <Badge variant="secondary">Fair</Badge>;
         }
 
-        return (<Badge className="bg-red-100 text-red-800">Needs Improvement</Badge>);
+        return <Badge variant="outline">Needs Improvement</Badge>;
     };
 
     const hasNoData =
@@ -98,7 +86,7 @@ export default function StudentDashboard({
             <Head title="Student Dashboard" />
 
             <div className="p-6 md:p-8">
-                <div className="mx-auto max-w-7xl space-y-8">
+                <div className="mx-auto max-w-7xl flex flex-col gap-8">
                     {/* Welcome Section */}
                     <div className="flex flex-col gap-2">
                         <h1 className="text-3xl font-bold tracking-tight">
@@ -136,8 +124,8 @@ export default function StudentDashboard({
                                 <CardTitle className="text-sm font-medium">
                                     Completed
                                 </CardTitle>
-                                <div className="rounded-lg bg-green-100 p-2">
-                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                <div className="rounded-lg bg-primary/10 p-2">
+                                    <CheckCircle2 className="h-4 w-4 text-primary" />
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -154,13 +142,13 @@ export default function StudentDashboard({
                                 <CardTitle className="text-sm font-medium">
                                     Average Score
                                 </CardTitle>
-                                <div className="rounded-lg bg-amber-100 p-2">
-                                    <BarChart3 className="h-4 w-4 text-amber-600" />
+                                <div className="rounded-lg bg-primary/10 p-2">
+                                    <BarChart3 className="h-4 w-4 text-primary" />
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div
-                                    className={`text-3xl font-bold ${stats.completed_exams > 0 ? getScoreColor(stats.average_score) : 'text-muted-foreground'}`}
+                                    className="text-3xl font-bold"
                                 >
                                     {stats.completed_exams > 0
                                         ? `${stats.average_score.toFixed(1)}%`
@@ -176,8 +164,8 @@ export default function StudentDashboard({
                                 <CardTitle className="text-sm font-medium">
                                     In Progress
                                 </CardTitle>
-                                <div className="rounded-lg bg-blue-100 p-2">
-                                    <Timer className="h-4 w-4 text-blue-600" />
+                                <div className="rounded-lg bg-primary/10 p-2">
+                                    <Timer className="h-4 w-4 text-primary" />
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -194,51 +182,53 @@ export default function StudentDashboard({
                     {/* Quick Actions */}
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card className="border-dashed transition-colors hover:border-primary/50 hover:bg-accent/50">
-                            <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
-                                <div className="rounded-full bg-primary/10 p-4">
-                                    <LogIn className="h-6 w-6 text-primary" />
-                                </div>
-                                <div className="text-center">
-                                    <p className="font-semibold">Join an Exam</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Use an access code from your instructor
-                                    </p>
-                                </div>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-base">
+                                    <div className="rounded-lg bg-primary/10 p-2">
+                                        <LogIn className="h-4 w-4 text-primary" />
+                                    </div>
+                                    Join an Exam
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground">
+                                    Use an access code from your instructor
+                                </p>
                             </CardContent>
                         </Card>
-                        <Card className="border-dashed transition-colors hover:border-amber-500/50 hover:bg-accent/50">
-                            <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
-                                <div className="rounded-full bg-amber-100 p-4">
-                                    <History className="h-6 w-6 text-amber-600" />
-                                </div>
-                                <div className="text-center">
-                                    <p className="font-semibold">
-                                        View History
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Review your past results
-                                    </p>
-                                </div>
+                        <Card className="border-dashed transition-colors hover:border-primary/50 hover:bg-accent/50">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-base">
+                                    <div className="rounded-lg bg-primary/10 p-2">
+                                        <History className="h-4 w-4 text-primary" />
+                                    </div>
+                                    View History
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex flex-col gap-3">
+                                <p className="text-sm text-muted-foreground">
+                                    Review your past results
+                                </p>
                                 <Button variant="outline" size="sm" render={<Link href={history.url()} />}>
                                     See All Results
                                 </Button>
                             </CardContent>
                         </Card>
-                        <Card className="border-dashed transition-colors hover:border-green-500/50 hover:bg-accent/50">
-                            <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
-                                <div className="rounded-full bg-green-100 p-4">
-                                    <BookOpen className="h-6 w-6 text-green-600" />
-                                </div>
-                                <div className="text-center">
-                                    <p className="font-semibold">
-                                        Available Exams
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {availableSessions.length > 0
-                                            ? `${availableSessions.length} exam(s) ready for you`
-                                            : 'No exams available right now'}
-                                    </p>
-                                </div>
+                        <Card className="border-dashed transition-colors hover:border-primary/50 hover:bg-accent/50">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-base">
+                                    <div className="rounded-lg bg-primary/10 p-2">
+                                        <BookOpen className="h-4 w-4 text-primary" />
+                                    </div>
+                                    Available Exams
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground">
+                                    {availableSessions.length > 0
+                                        ? `${availableSessions.length} exam(s) ready for you`
+                                        : 'No exams available right now'}
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
@@ -247,7 +237,7 @@ export default function StudentDashboard({
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-lg">
-                                <LogIn className="h-5 w-5 text-primary" />
+                                <LogIn data-icon="inline-start" className="text-primary" />
                                 Join an Exam
                             </CardTitle>
                             <CardDescription>
@@ -279,7 +269,7 @@ export default function StudentDashboard({
                                         joinForm.data.access_code.length !== 8
                                     }
                                 >
-                                    <LogIn className="mr-2 h-4 w-4" />
+                                    <LogIn data-icon="inline-start" />
                                     Join Exam
                                 </Button>
                             </form>
@@ -293,23 +283,37 @@ export default function StudentDashboard({
 
                     <div className="grid gap-6 lg:grid-cols-2">
                         {/* In Progress Exams */}
-                        {inProgressAttempts.length > 0 && (
-                            <Card className="border-accent bg-accent/30">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-yellow-700">
-                                        <Timer className="h-5 w-5" />
-                                        Continue Your Exam
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Pick up where you left off
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Timer data-icon="inline-start" className="text-primary" />
+                                    Continue Your Exam
+                                </CardTitle>
+                                <CardDescription>
+                                    Pick up where you left off
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {inProgressAttempts.length === 0 ? (
+                                    <Empty>
+                                        <EmptyMedia variant="icon">
+                                            <Timer />
+                                        </EmptyMedia>
+                                        <EmptyHeader>
+                                            <EmptyTitle>
+                                                No exams in progress
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Join an exam to get started
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
+                                ) : (
+                                    <div className="flex flex-col gap-3">
                                         {inProgressAttempts.map((attempt) => (
                                             <div
                                                 key={attempt.id}
-                                                className="flex items-center justify-between rounded-lg border bg-white p-4 transition-shadow hover:shadow-sm"
+                                                className="flex items-center justify-between rounded-lg border p-4 transition-shadow hover:shadow-sm"
                                             >
                                                 <div className="min-w-0 flex-1">
                                                     <p className="truncate font-medium">
@@ -336,22 +340,22 @@ export default function StudentDashboard({
                                                         />
                                                     }
                                                 >
-                                                    <Play className="mr-2 h-4 w-4" />
+                                                    <Play data-icon="inline-start" />
                                                     Continue
                                                 </Button>
                                             </div>
                                         ))}
                                     </div>
-                                </CardContent>
-                            </Card>
-                        )}
+                                )}
+                            </CardContent>
+                        </Card>
 
                         {/* Available Exams */}
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="flex items-center gap-2">
-                                        <ClipboardList className="h-5 w-5 text-primary" />
+                                        <ClipboardList data-icon="inline-start" className="text-primary" />
                                         Available Exams
                                     </CardTitle>
                                     <CardDescription>
@@ -367,8 +371,8 @@ export default function StudentDashboard({
                             <CardContent>
                                 {availableSessions.length === 0 ? (
                                     <Empty>
-                                        <EmptyMedia>
-                                            <ClipboardList className="size-8" />
+                                        <EmptyMedia variant="icon">
+                                            <ClipboardList />
                                         </EmptyMedia>
                                         <EmptyHeader>
                                             <EmptyTitle>
@@ -381,7 +385,7 @@ export default function StudentDashboard({
                                         </EmptyHeader>
                                     </Empty>
                                 ) : (
-                                    <div className="space-y-3">
+                                    <div className="flex flex-col gap-3">
                                         {availableSessions
                                             .slice(0, 5)
                                             .map((session) => (
@@ -443,7 +447,7 @@ export default function StudentDashboard({
                                                         }
                                                     >
                                                         Start
-                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                        <ArrowRight data-icon="inline-end" />
                                                     </Button>
                                                 </div>
                                             ))}
@@ -457,7 +461,7 @@ export default function StudentDashboard({
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Trophy className="h-5 w-5 text-amber-500" />
+                                        <Trophy data-icon="inline-start" className="text-primary" />
                                         Recent Results
                                     </CardTitle>
                                     <CardDescription>
@@ -471,15 +475,15 @@ export default function StudentDashboard({
                                         render={<Link href={history.url()} />}
                                     >
                                         View All
-                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                        <ArrowRight data-icon="inline-end" />
                                     </Button>
                                 )}
                             </CardHeader>
                             <CardContent>
                                 {recentResults.length === 0 ? (
                                     <Empty>
-                                        <EmptyMedia>
-                                            <Trophy className="size-8" />
+                                        <EmptyMedia variant="icon">
+                                            <Trophy />
                                         </EmptyMedia>
                                         <EmptyHeader>
                                             <EmptyTitle>
@@ -492,7 +496,7 @@ export default function StudentDashboard({
                                         </EmptyHeader>
                                     </Empty>
                                 ) : (
-                                    <div className="space-y-3">
+                                    <div className="flex flex-col gap-3">
                                         {recentResults
                                             .slice(0, 5)
                                             .map((result) => (
@@ -520,7 +524,7 @@ export default function StudentDashboard({
                                                     </div>
                                                     <div className="ml-4 shrink-0 text-right">
                                                         <p
-                                                            className={`text-lg font-bold ${getScoreColor(result.percentage || 0)}`}
+                                                            className="text-lg font-bold"
                                                         >
                                                             {result.percentage?.toFixed(
                                                                 1,
@@ -540,21 +544,36 @@ export default function StudentDashboard({
                         </Card>
                     </div>
 
-                    {/* Performance Overview (only if there's data) */}
-                    {stats.completed_exams > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5 text-primary" />
-                                    Performance Overview
-                                </CardTitle>
-                                <CardDescription>
-                                    Your overall exam statistics
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
+                    {/* Performance Overview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <BarChart3 data-icon="inline-start" className="text-primary" />
+                                Performance Overview
+                            </CardTitle>
+                            <CardDescription>
+                                Your overall exam statistics
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {stats.completed_exams === 0 ? (
+                                <Empty>
+                                    <EmptyMedia variant="icon">
+                                        <BarChart3 />
+                                    </EmptyMedia>
+                                    <EmptyHeader>
+                                        <EmptyTitle>
+                                            No performance data yet
+                                        </EmptyTitle>
+                                        <EmptyDescription>
+                                            Complete an exam to see your
+                                            performance statistics
+                                        </EmptyDescription>
+                                    </EmptyHeader>
+                                </Empty>
+                            ) : (
                                 <div className="grid gap-6 sm:grid-cols-2">
-                                    <div className="space-y-2">
+                                    <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="text-muted-foreground">
                                                 Completion Rate
@@ -576,18 +595,13 @@ export default function StudentDashboard({
                                             className="h-2"
                                         />
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="text-muted-foreground">
                                                 Average Score
                                             </span>
-                                            <span
-                                                className={`font-medium ${getScoreColor(stats.average_score)}`}
-                                            >
-                                                {stats.average_score.toFixed(
-                                                    1,
-                                                )}
-                                                %
+                                            <span className="font-medium">
+                                                {stats.average_score.toFixed(1)}%
                                             </span>
                                         </div>
                                         <Progress
@@ -596,9 +610,9 @@ export default function StudentDashboard({
                                         />
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </>
