@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -365,16 +366,20 @@ export default function StudentDashboard({
                             </CardHeader>
                             <CardContent>
                                 {availableSessions.length === 0 ? (
-                                    <div className="flex flex-col items-center gap-2 py-12 text-center">
-                                        <ClipboardList className="h-12 w-12 text-muted-foreground/40" />
-                                        <p className="font-medium text-muted-foreground">
-                                            No exams available
-                                        </p>
-                                        <p className="text-sm text-muted-foreground/70">
-                                            Check back later or ask your
-                                            instructor
-                                        </p>
-                                    </div>
+                                    <Empty>
+                                        <EmptyMedia>
+                                            <ClipboardList className="size-8" />
+                                        </EmptyMedia>
+                                        <EmptyHeader>
+                                            <EmptyTitle>
+                                                No exams available
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Check back later or ask your
+                                                instructor
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
                                 ) : (
                                     <div className="space-y-3">
                                         {availableSessions
@@ -472,16 +477,20 @@ export default function StudentDashboard({
                             </CardHeader>
                             <CardContent>
                                 {recentResults.length === 0 ? (
-                                    <div className="flex flex-col items-center gap-2 py-12 text-center">
-                                        <Trophy className="h-12 w-12 text-muted-foreground/40" />
-                                        <p className="font-medium text-muted-foreground">
-                                            No results yet
-                                        </p>
-                                        <p className="text-sm text-muted-foreground/70">
-                                            Complete an exam to see your results
-                                            here
-                                        </p>
-                                    </div>
+                                    <Empty>
+                                        <EmptyMedia>
+                                            <Trophy className="size-8" />
+                                        </EmptyMedia>
+                                        <EmptyHeader>
+                                            <EmptyTitle>
+                                                No results yet
+                                            </EmptyTitle>
+                                            <EmptyDescription>
+                                                Complete an exam to see your
+                                                results here
+                                            </EmptyDescription>
+                                        </EmptyHeader>
+                                    </Empty>
                                 ) : (
                                     <div className="space-y-3">
                                         {recentResults
