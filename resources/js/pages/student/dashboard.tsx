@@ -293,7 +293,7 @@ export default function StudentDashboard({
                     <div className="grid gap-6 lg:grid-cols-2">
                         {/* In Progress Exams */}
                         {inProgressAttempts.length > 0 && (
-                            <Card className="border-yellow-200 bg-linear-to-br from-yellow-50 to-transparent">
+                            <Card className="border-accent bg-accent/30">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-yellow-700">
                                         <Timer className="h-5 w-5" />
