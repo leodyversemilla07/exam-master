@@ -4,13 +4,10 @@ import {
     Clock,
     Play,
     Trophy,
-    TrendingUp,
-    FileText,
     ArrowRight,
     CheckCircle2,
     Timer,
     History,
-    GraduationCap,
     LogIn,
     BarChart3,
     BookOpen,
@@ -29,7 +26,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import PageHeader from '@/components/page-header';
 import {
     joinByCode,
     take,
@@ -68,15 +64,27 @@ export default function StudentDashboard({
     };
 
     const getScoreColor = (percentage: number) => {
-        if (percentage >= 80) return 'text-green-600';
-        if (percentage >= 60) return 'text-yellow-600';
+        if (percentage >= 80) {
+            return 'text-green-600';
+        }
+
+        if (percentage >= 60) {
+            return 'text-yellow-600';
+        }
+
         return 'text-red-600';
     };
 
     const getScoreBadge = (percentage: number) => {
-        if (percentage >= 80) return <Badge className="bg-green-100 text-green-800">Passed</Badge>;
-        if (percentage >= 60) return <Badge className="bg-yellow-100 text-yellow-800">Fair</Badge>;
-        return <Badge className="bg-red-100 text-red-800">Needs Improvement</Badge>;
+        if (percentage >= 80) {
+            return (<Badge className="bg-green-100 text-green-800">Passed</Badge>);
+        }
+
+        if (percentage >= 60) {
+            return (<Badge className="bg-yellow-100 text-yellow-800">Fair</Badge>);
+        }
+
+        return (<Badge className="bg-red-100 text-red-800">Needs Improvement</Badge>);
     };
 
     const hasNoData =
@@ -285,7 +293,7 @@ export default function StudentDashboard({
                     <div className="grid gap-6 lg:grid-cols-2">
                         {/* In Progress Exams */}
                         {inProgressAttempts.length > 0 && (
-                            <Card className="border-yellow-200 bg-gradient-to-br from-yellow-50 to-transparent">
+                            <Card className="border-yellow-200 bg-linear-to-br from-yellow-50 to-transparent">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-yellow-700">
                                         <Timer className="h-5 w-5" />
@@ -588,4 +596,6 @@ export default function StudentDashboard({
     );
 }
 
-StudentDashboard.layout = {};
+StudentDashboard.layout = {
+    breadcrumbs: [{ title: 'Dashboard', href: '' }],
+};
