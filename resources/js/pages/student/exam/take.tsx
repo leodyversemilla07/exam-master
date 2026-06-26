@@ -58,27 +58,54 @@ interface ExamTakeProps extends PageProps {
     timeRemaining: number | null;
 }
 
+type AnswerState = Record<
+    number,
+    {
+        answer: string | null;
+        answer_data: Record<string, unknown> | null;
+    }
+>;
+
+function getInitialAnswers(questions: Question[]): AnswerState {
+    return Object.fromEntries(
+        questions.map((question) => [
+            question.answer_id,
+            {
+                answer: question.current_answer,
+                answer_data: question.current_answer_data,
+            },
+        ]),
+    );
+}
+
+function getInitialFlaggedQuestions(attempt: ExamAttempt): Set<number> {
+    const metadata = attempt.metadata as Record<string, unknown>;
+
+    if (
+        metadata?.flagged_questions &&
+        Array.isArray(metadata.flagged_questions)
+    ) {
+        return new Set(metadata.flagged_questions as number[]);
+    }
+
+    return new Set();
+}
+
 export default function ExamTake({
     attempt,
     questions,
     timeRemaining: initialTimeRemaining,
 }: ExamTakeProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<
-        Record<
-            number,
-            {
-                answer: string | null;
-                answer_data: Record<string, unknown> | null;
-            }
-        >
-    >({});
+    const [answers, setAnswers] = useState<AnswerState>(() =>
+        getInitialAnswers(questions),
+    );
     const [timeRemaining, setTimeRemaining] = useState(initialTimeRemaining);
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const [showTimeWarning, setShowTimeWarning] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(
-        new Set(),
+    const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(() =>
+        getInitialFlaggedQuestions(attempt),
     );
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
@@ -122,36 +149,6 @@ export default function ExamTake({
             setIsSaving(false);
         }
     };
-
-    // Initialize answers from props
-    useEffect(() => {
-        const initialAnswers: Record<
-            number,
-            {
-                answer: string | null;
-                answer_data: Record<string, unknown> | null;
-            }
-        > = {};
-        questions.forEach((q) => {
-            initialAnswers[q.answer_id] = {
-                answer: q.current_answer,
-                answer_data: q.current_answer_data,
-            };
-        });
-        setAnswers(initialAnswers);
-
-        // Initialize flagged questions from metadata
-        const metadata = attempt.metadata as Record<string, unknown>;
-
-        if (
-            metadata?.flagged_questions &&
-            Array.isArray(metadata.flagged_questions)
-        ) {
-            setFlaggedQuestions(
-                new Set(metadata.flagged_questions as number[]),
-            );
-        }
-    }, [questions, attempt.metadata]);
 
     // Timer
     const handleAutoSubmit = useCallback(() => {

@@ -63,11 +63,24 @@ function getPaymentStatus(): {
     }
 
     if (statusParam === 'processing') {
-        return { status: 'success', message: 'Payment is processing. We will update you shortly.' };
+        return {
+            status: 'success',
+            message: 'Payment is processing. We will update you shortly.',
+        };
     }
 
     if (statusParam === 'failed' || statusParam === 'error') {
-        return { status: 'error', message: 'Payment failed. Please try again.' };
+        return {
+            status: 'error',
+            message: 'Payment failed. Please try again.',
+        };
+    }
+
+    if (params.has('payment_intent_id')) {
+        return {
+            status: 'success',
+            message: 'Payment submitted. We are verifying the status.',
+        };
     }
 
     return { status: 'idle', message: null };
@@ -80,10 +93,14 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
     );
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [processing, setProcessing] = useState(false);
-    const [{ status, message: statusMessage }, setStatusInfo] = useState(() => getPaymentStatus());
+    const [{ status, message: statusMessage }, setStatusInfo] = useState(() =>
+        getPaymentStatus(),
+    );
 
-    const setStatus = (s: 'idle' | 'success' | 'error') => setStatusInfo((prev) => ({ ...prev, status: s }));
-    const setStatusMessage = (msg: string | null) => setStatusInfo((prev) => ({ ...prev, message: msg }));
+    const setStatus = (s: 'idle' | 'success' | 'error') =>
+        setStatusInfo((prev) => ({ ...prev, status: s }));
+    const setStatusMessage = (msg: string | null) =>
+        setStatusInfo((prev) => ({ ...prev, message: msg }));
     const defaultFormValues = useMemo(
         () => ({
             name: auth.user?.name ?? '',
@@ -308,8 +325,6 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
             return;
         }
 
-        setStatus('success');
-        setStatusMessage('Payment submitted. We are verifying the status.');
         void axios
             .get(
                 paymentIntentRoute.url({
@@ -317,9 +332,7 @@ export default function PlansIndex({ plans, paymongo }: PlansPageProps) {
                 }),
             )
             .then((response) => {
-                const statusValue = response.data?.status as
-                    | string
-                    | undefined;
+                const statusValue = response.data?.status as string | undefined;
 
                 if (!statusValue) {
                     return;

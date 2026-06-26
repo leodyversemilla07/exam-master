@@ -193,7 +193,7 @@ const createColumns = (
 ];
 
 export default function UsersIndex({ users, roles, filters }: PageProps) {
-    "use no memo";
+    'use no memo';
     const [search, setSearch] = useState(filters.search || '');
     const [showCreateDialog, setShowCreateDialog] = useState(false);
     const [editingUser, setEditingUser] = useState<ExtendedUser | null>(null);
@@ -280,6 +280,7 @@ export default function UsersIndex({ users, roles, filters }: PageProps) {
 
     const columns = createColumns(openEditDialog, handleDelete);
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data: users.data,
         columns,

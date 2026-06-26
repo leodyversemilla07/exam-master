@@ -312,10 +312,11 @@ function updatePageInUrl(page: number): string {
 }
 
 export default function Results({ session, attempts }: PageProps) {
-    "use no memo";
+    'use no memo';
     const [globalFilter, setGlobalFilter] = useState('');
     const [sorting, setSorting] = useState<SortingState>([]);
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data: attempts.data,
         columns,
@@ -374,9 +375,15 @@ export default function Results({ session, attempts }: PageProps) {
                         description={`${session.title} • ${session.exam.title}`}
                         actions={
                             <div className="flex items-center gap-2">
-                                <Button variant="outline" render={<Link
-                                    href={`/exam-sessions/${session.id}/plagiarism`}
-                                />} nativeButton={false}>
+                                <Button
+                                    variant="outline"
+                                    render={
+                                        <Link
+                                            href={`/exam-sessions/${session.id}/plagiarism`}
+                                        />
+                                    }
+                                    nativeButton={false}
+                                >
                                     <ShieldAlert className="mr-2 size-4" />
                                     Plagiarism Report
                                 </Button>
