@@ -1,9 +1,6 @@
-import { Form, Head } from '@inertiajs/react';
-import TextLink from '@/components/text-link';
+import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import { send as verificationSend } from '@/routes/verification';
-import { logout as logoutRoute } from '@/routes';
+import { dashboard as dashboardRoute } from '@/routes';
 
 export default function VerifyEmail({ status }: { status?: string }) {
     return (
@@ -17,29 +14,16 @@ export default function VerifyEmail({ status }: { status?: string }) {
                 </div>
             )}
 
-            <Form
-                action={verificationSend.url()}
-                method="post"
-                className="space-y-6 text-center"
-            >
-                {({ processing }) => (
-                    <>
-                        <Button disabled={processing} variant="secondary">
-                            {processing && <Spinner />}
-                            Resend verification email
-                        </Button>
+            <div className="space-y-6 text-center">
+                <p className="text-muted-foreground">
+                    Email verification is currently disabled. You can proceed to
+                    the dashboard.
+                </p>
 
-                        <TextLink
-                            href={logoutRoute()}
-                            method="post"
-                            as="button"
-                            className="mx-auto block text-sm"
-                        >
-                            Log out
-                        </TextLink>
-                    </>
-                )}
-            </Form>
+                <Button render={<Link href={dashboardRoute()} />}>
+                    Go to Dashboard
+                </Button>
+            </div>
         </>
     );
 }
