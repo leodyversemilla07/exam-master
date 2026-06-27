@@ -14,7 +14,7 @@ return [
     */
 
     'default' => 'openai',
-    'default_for_images' => 'gemini',
+    'default_for_images' => 'openai',
     'default_for_audio' => 'openai',
     'default_for_transcription' => 'openai',
     'default_for_embeddings' => 'openai',
@@ -50,6 +50,7 @@ return [
     */
 
     'providers' => [
+
         'anthropic' => [
             'driver' => 'anthropic',
             'key' => env('ANTHROPIC_API_KEY'),
@@ -124,6 +125,13 @@ return [
             'key' => env('OPENAI_API_KEY'),
             'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
             'store' => env('OPENAI_STORE', true),
+            'models' => [
+                'text' => [
+                    'default' => 'meta/llama-3.3-70b-instruct',
+                    'cheapest' => 'meta/llama-3.3-70b-instruct',
+                    'smartest' => 'deepseek-ai/deepseek-v4-pro',
+                ],
+            ],
         ],
 
         'openrouter' => [

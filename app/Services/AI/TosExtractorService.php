@@ -6,21 +6,10 @@ use App\Ai\Agents\TosExtractor;
 use App\Models\Module;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Ai\Enums\Lab;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class TosExtractorService
 {
-    protected Lab $provider;
-
-    protected string $model;
-
-    public function __construct()
-    {
-        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
-        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-2.0-flash';
-    }
-
     /**
      * Extract TOS-specific information from a module's PDF file.
      */
@@ -103,11 +92,7 @@ class TosExtractorService
     {
         $prompt = $this->buildExtractionPrompt($content, $module);
 
-        $response = (new TosExtractor)->prompt(
-            $prompt,
-            provider: $this->provider,
-            model: $this->model,
-        );
+        $response = (new TosExtractor)->prompt($prompt);
 
         if (! isset($response['tos_data'])) {
             throw new \RuntimeException('Invalid AI response structure');
@@ -165,21 +150,5 @@ Extract information to create a comprehensive Table of Specifications (TOS) for 
 
 Extract the TOS information now.
 PROMPT;
-    }
-
-    /**
-     * Switch to a specific provider and model.
-     */
-    public function useProvider(string $provider, string $model): self
-    {
-        $this->provider = match ($provider) {
-            'openai' => Lab::OpenAI,
-            'gemini' => Lab::Gemini,
-            'anthropic' => Lab::Anthropic,
-            default => Lab::OpenAI,
-        };
-        $this->model = $model;
-
-        return $this;
     }
 }

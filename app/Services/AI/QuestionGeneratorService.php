@@ -7,21 +7,10 @@ use App\Models\Module;
 use App\Models\TosGenerate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Ai\Enums\Lab;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class QuestionGeneratorService
 {
-    protected Lab $provider;
-
-    protected string $model;
-
-    public function __construct()
-    {
-        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
-        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
-    }
-
     /**
      * Generate exam questions based on TOS specifications.
      */
@@ -35,11 +24,7 @@ class QuestionGeneratorService
 
             $prompt = $this->buildPrompt($tos, $module);
 
-            $response = (new QuestionGenerator)->prompt(
-                $prompt,
-                provider: $this->provider,
-                model: $this->model,
-            );
+            $response = (new QuestionGenerator)->prompt($prompt);
 
             if (! isset($response['questions']) || ! is_array($response['questions'])) {
                 $shape = 'missing questions array';
@@ -188,21 +173,5 @@ PROMPT;
 
             return null;
         }
-    }
-
-    /**
-     * Switch to a specific provider and model.
-     */
-    public function useProvider(string $provider, string $model): self
-    {
-        $this->provider = match ($provider) {
-            'openai' => Lab::OpenAI,
-            'gemini' => Lab::Gemini,
-            'anthropic' => Lab::Anthropic,
-            default => Lab::OpenAI,
-        };
-        $this->model = $model;
-
-        return $this;
     }
 }

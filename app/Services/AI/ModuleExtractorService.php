@@ -5,21 +5,10 @@ namespace App\Services\AI;
 use App\Ai\Agents\ModuleExtractor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Laravel\Ai\Enums\Lab;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class ModuleExtractorService
 {
-    protected Lab $provider;
-
-    protected string $model;
-
-    public function __construct()
-    {
-        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
-        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-2.0-flash';
-    }
-
     /**
      * Extract module information from a PDF file.
      */
@@ -95,11 +84,7 @@ class ModuleExtractorService
     {
         $prompt = $this->buildExtractionPrompt($content);
 
-        $response = (new ModuleExtractor)->prompt(
-            $prompt,
-            provider: $this->provider,
-            model: $this->model,
-        );
+        $response = (new ModuleExtractor)->prompt($prompt);
 
         // Validate response structure
         if (! isset($response['module_info'])) {
@@ -137,21 +122,5 @@ You are an expert at analyzing educational curriculum documents. Analyze the fol
 
 Extract the information now.
 PROMPT;
-    }
-
-    /**
-     * Switch to a specific provider and model.
-     */
-    public function useProvider(string $provider, string $model): self
-    {
-        $this->provider = match ($provider) {
-            'openai' => Lab::OpenAI,
-            'gemini' => Lab::Gemini,
-            'anthropic' => Lab::Anthropic,
-            default => Lab::OpenAI,
-        };
-        $this->model = $model;
-
-        return $this;
     }
 }

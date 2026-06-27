@@ -9,20 +9,9 @@ use App\Models\ExamAttempt;
 use App\Models\ExamQuestion;
 use App\Models\StudentAnswer;
 use Illuminate\Support\Facades\Log;
-use Laravel\Ai\Enums\Lab;
 
 class FeedbackService
 {
-    protected Lab $provider;
-
-    protected string $model;
-
-    public function __construct()
-    {
-        $this->provider = config('app.env') === 'production' ? Lab::OpenAI : Lab::Gemini;
-        $this->model = $this->provider === Lab::OpenAI ? 'gpt-4o-mini' : 'gemini-3-flash-preview';
-    }
-
     /**
      * Generate AI feedback for an entire exam attempt.
      */
@@ -33,11 +22,7 @@ class FeedbackService
 
             $prompt = $this->buildAttemptFeedbackPrompt($attempt);
 
-            $response = (new AttemptFeedback)->prompt(
-                $prompt,
-                provider: $this->provider,
-                model: $this->model,
-            );
+            $response = (new AttemptFeedback)->prompt($prompt);
 
             $feedback = (string) $response;
 
@@ -66,11 +51,7 @@ class FeedbackService
 
             $prompt = $this->buildAnswerFeedbackPrompt($answer);
 
-            $response = (new AnswerFeedback)->prompt(
-                $prompt,
-                provider: $this->provider,
-                model: $this->model,
-            );
+            $response = (new AnswerFeedback)->prompt($prompt);
 
             $feedback = (string) $response;
 
@@ -99,11 +80,7 @@ class FeedbackService
 **Explanation:** {$question->explanation}
 PROMPT;
 
-            $response = (new QuestionPolish)->prompt(
-                $prompt,
-                provider: $this->provider,
-                model: $this->model,
-            );
+            $response = (new QuestionPolish)->prompt($prompt);
 
             return [
                 'question' => $response['question'],
@@ -166,18 +143,5 @@ You are a helpful tutor. Provide brief, specific feedback to a student who got t
 - Explain *why* their answer might be wrong or guide them toward the correct logic.
 - Tone: Supportive and educational.
 PROMPT;
-    }
-
-    public function useProvider(string $provider, string $model): self
-    {
-        $this->provider = match ($provider) {
-            'openai' => Lab::OpenAI,
-            'gemini' => Lab::Gemini,
-            'anthropic' => Lab::Anthropic,
-            default => Lab::OpenAI,
-        };
-        $this->model = $model;
-
-        return $this;
     }
 }
