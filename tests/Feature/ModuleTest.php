@@ -25,7 +25,7 @@ beforeEach(function () {
 });
 
 it('displays modules index page', function () {
-    Module::factory()->count(3)->create();
+    Module::factory()->count(3)->create(['created_by' => $this->user->id]);
 
     get(route('modules.index'))
         ->assertSuccessful()
@@ -83,7 +83,7 @@ it('validates unique module code', function () {
 });
 
 it('displays module detail page', function () {
-    $module = Module::factory()->create();
+    $module = Module::factory()->create(['created_by' => $this->user->id]);
 
     get(route('modules.show', $module))
         ->assertSuccessful()
@@ -94,7 +94,7 @@ it('displays module detail page', function () {
 });
 
 it('displays edit module page', function () {
-    $module = Module::factory()->create();
+    $module = Module::factory()->create(['created_by' => $this->user->id]);
 
     get(route('modules.edit', $module))
         ->assertSuccessful()
@@ -105,7 +105,7 @@ it('displays edit module page', function () {
 });
 
 it('updates an existing module', function () {
-    $module = Module::factory()->create(['code' => 'OLD-CODE']);
+    $module = Module::factory()->create(['code' => 'OLD-CODE', 'created_by' => $this->user->id]);
 
     $this->patch(route('modules.update', $module), [
         'code' => 'NEW-CODE',
@@ -124,7 +124,7 @@ it('updates an existing module', function () {
 });
 
 it('deletes a module', function () {
-    $module = Module::factory()->create();
+    $module = Module::factory()->create(['created_by' => $this->user->id]);
 
     $this->delete(route('modules.destroy', $module))
         ->assertRedirect()
@@ -134,7 +134,7 @@ it('deletes a module', function () {
 });
 
 it('toggles module active status', function () {
-    $module = Module::factory()->create(['is_active' => true]);
+    $module = Module::factory()->create(['is_active' => true, 'created_by' => $this->user->id]);
 
     $this->post(route('modules.toggle', $module))
         ->assertRedirect()
@@ -174,4 +174,11 @@ it('requires create modules permission for extraction', function () {
 
     $this->postJson(route('modules.extract-pdf'), ['pdf' => $file])
         ->assertStatus(403);
+});
+
+it('does not allow educators to access another educators module', function () {
+    $module = Module::factory()->create();
+
+    get(route('modules.show', $module))
+        ->assertForbidden();
 });

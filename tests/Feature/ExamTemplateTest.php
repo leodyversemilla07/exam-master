@@ -138,7 +138,7 @@ class ExamTemplateTest extends TestCase
         $user->givePermissionTo($permissions);
         $this->actingAs($user);
 
-        $module = Module::factory()->create();
+        $module = Module::factory()->create(['created_by' => $user->id]);
         $template = ExamTemplate::create([
             'user_id' => $user->id,
             'name' => 'My Template',

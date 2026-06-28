@@ -38,7 +38,7 @@ class ModuleController extends Controller
      */
     public function extractTosFromModule(Module $module, TosExtractorService $extractor): RedirectResponse
     {
-        abort_unless(auth()->user()->can('create tos'), 403);
+        abort_unless(auth()->user()->can('create tos') && $this->canAccessModule($module), 403);
 
         $result = $extractor->extractFromModule($module);
 
@@ -54,6 +54,7 @@ class ModuleController extends Controller
         $modules = Module::query()
             ->with('creator')
             ->withCount('tosGenerates', 'questions')
+            ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('created_by', auth()->id()))
             ->latest()
             ->paginate(15);
 
@@ -99,6 +100,8 @@ class ModuleController extends Controller
      */
     public function show(Module $module, QuestionDuplicateDetector $duplicateDetector): Response
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         $module->load(['creator', 'tosGenerates']);
         $module->loadCount(['questions', 'exams']);
 
@@ -267,6 +270,8 @@ class ModuleController extends Controller
      */
     public function edit(Module $module): Response
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         return Inertia::render('modules/form', [
             'module' => $module,
         ]);
@@ -277,7 +282,7 @@ class ModuleController extends Controller
      */
     public function update(StoreModuleRequest $request, Module $module): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit modules'), 403);
+        abort_unless(auth()->user()->can('edit modules') && $this->canAccessModule($module), 403);
 
         $data = $request->validated();
 
@@ -302,7 +307,7 @@ class ModuleController extends Controller
      */
     public function destroy(Module $module): RedirectResponse
     {
-        abort_unless(auth()->user()->can('delete modules'), 403);
+        abort_unless(auth()->user()->can('delete modules') && $this->canAccessModule($module), 403);
 
         // Delete PDF file if exists
         if ($module->pdf_file) {
@@ -321,7 +326,7 @@ class ModuleController extends Controller
      */
     public function toggleStatus(Module $module): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit modules'), 403);
+        abort_unless(auth()->user()->can('edit modules') && $this->canAccessModule($module), 403);
 
         $module->update(['is_active' => ! $module->is_active]);
 
@@ -329,5 +334,10 @@ class ModuleController extends Controller
             'success',
             $module->is_active ? 'Module activated.' : 'Module deactivated.'
         );
+    }
+
+    private function canAccessModule(Module $module): bool
+    {
+        return auth()->user()->isAdmin() || $module->created_by === auth()->id();
     }
 }

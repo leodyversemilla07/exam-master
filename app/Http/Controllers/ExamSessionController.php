@@ -55,6 +55,10 @@ class ExamSessionController extends Controller
             'allow_review' => ['boolean'],
         ]);
 
+        $exam = Exam::query()->findOrFail($validated['exam_id']);
+
+        abort_unless($this->canAccessExam($exam), 403);
+
         // Calculate time limit from session duration
         $startTime = new \DateTime($validated['start_time']);
         $endTime = new \DateTime($validated['end_time']);
@@ -263,8 +267,13 @@ class ExamSessionController extends Controller
 
     protected function authorizeSession(ExamSession $session): void
     {
-        if (! auth()->user()->hasRole('super-admin') && $session->created_by !== auth()->id()) {
+        if (! auth()->user()->isAdmin() && $session->created_by !== auth()->id()) {
             abort(403);
         }
+    }
+
+    private function canAccessExam(Exam $exam): bool
+    {
+        return auth()->user()->isAdmin() || $exam->created_by === auth()->id();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTosGenerateRequest;
 use App\Jobs\GenerateQuestionsJob;
+use App\Models\Module;
 use App\Models\TosGenerate;
 use App\Services\AI\QuestionGeneratorService;
 use App\Services\TosCalculator;
@@ -29,6 +30,7 @@ class TosGenerateController extends Controller
     {
         $tosGenerates = TosGenerate::query()
             ->with(['module', 'creator'])
+            ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('created_by', auth()->id()))
             ->latest()
             ->paginate(15);
 
@@ -44,9 +46,14 @@ class TosGenerateController extends Controller
     {
         abort_unless(auth()->user()->can('create tos'), 403);
 
-        $tos = DB::transaction(function () use ($request) {
+        $validated = $request->validated();
+        $module = Module::query()->findOrFail($validated['module_id']);
+
+        abort_unless($this->canAccessModule($module), 403);
+
+        $tos = DB::transaction(function () use ($validated) {
             $tos = TosGenerate::create([
-                ...$request->validated(),
+                ...$validated,
                 'created_by' => auth()->id(),
                 'status' => 'draft',
                 'item_distribution' => [],
@@ -65,7 +72,7 @@ class TosGenerateController extends Controller
      */
     public function update(StoreTosGenerateRequest $request, TosGenerate $tosGenerate): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit tos'), 403);
+        abort_unless(auth()->user()->can('edit tos') && $this->canAccessTos($tosGenerate), 403);
         $tosGenerate->update($request->validated());
 
         return redirect()
@@ -78,7 +85,7 @@ class TosGenerateController extends Controller
      */
     public function destroy(TosGenerate $tosGenerate): RedirectResponse
     {
-        abort_unless(auth()->user()->can('delete tos'), 403);
+        abort_unless(auth()->user()->can('delete tos') && $this->canAccessTos($tosGenerate), 403);
         $tosGenerate->delete();
 
         return redirect()
@@ -91,7 +98,7 @@ class TosGenerateController extends Controller
      */
     public function generateQuestions(TosGenerate $tosGenerate): RedirectResponse
     {
-        abort_unless(auth()->user()->can('generate questions'), 403);
+        abort_unless(auth()->user()->can('generate questions') && $this->canAccessTos($tosGenerate), 403);
 
         if ($tosGenerate->status === 'generating') {
             return back()->with('error', 'Questions are already being generated.');
@@ -119,6 +126,8 @@ class TosGenerateController extends Controller
      */
     public function showMatrix(TosGenerate $tosGenerate): JsonResponse
     {
+        abort_unless($this->canAccessTos($tosGenerate), 403);
+
         $matrix = $this->tosCalculator->generateMatrix($tosGenerate);
 
         return response()->json([
@@ -132,6 +141,8 @@ class TosGenerateController extends Controller
      */
     public function validateTos(TosGenerate $tosGenerate): JsonResponse
     {
+        abort_unless($this->canAccessTos($tosGenerate), 403);
+
         $validation = $this->tosCalculator->validateBalance($tosGenerate);
 
         return response()->json($validation);
@@ -142,6 +153,8 @@ class TosGenerateController extends Controller
      */
     public function getDistribution(TosGenerate $tosGenerate): JsonResponse
     {
+        abort_unless($this->canAccessTos($tosGenerate), 403);
+
         $cognitiveDistribution = $this->tosCalculator->calculateDistribution($tosGenerate);
         $topicDistribution = $this->tosCalculator->calculateTopicDistribution($tosGenerate);
         $difficultyDistribution = $this->tosCalculator->calculateDifficultyDistribution($tosGenerate);
@@ -158,6 +171,8 @@ class TosGenerateController extends Controller
      */
     public function getSummary(TosGenerate $tosGenerate): JsonResponse
     {
+        abort_unless($this->canAccessTos($tosGenerate), 403);
+
         $summary = $this->tosCalculator->generateSummary($tosGenerate);
 
         return response()->json($summary);
@@ -168,7 +183,7 @@ class TosGenerateController extends Controller
      */
     public function exportPdf(TosGenerate $tosGenerate, TosPdfExporter $exporter): HttpResponse
     {
-        abort_unless(auth()->user()->can('view tos'), 403);
+        abort_unless(auth()->user()->can('view tos') && $this->canAccessTos($tosGenerate), 403);
 
         $pdf = $exporter->export($tosGenerate);
         $filename = $exporter->getFilename($tosGenerate);
@@ -181,7 +196,7 @@ class TosGenerateController extends Controller
      */
     public function duplicate(TosGenerate $tosGenerate): RedirectResponse
     {
-        abort_unless(auth()->user()->can('create tos'), 403);
+        abort_unless(auth()->user()->can('create tos') && $this->canAccessTos($tosGenerate), 403);
 
         $duplicate = DB::transaction(function () use ($tosGenerate) {
             $newTos = $tosGenerate->replicate();
@@ -196,5 +211,17 @@ class TosGenerateController extends Controller
         return redirect()
             ->route('modules.show', $duplicate->module_id)
             ->with('success', 'TOS duplicated successfully.');
+    }
+
+    private function canAccessTos(TosGenerate $tosGenerate): bool
+    {
+        return auth()->user()->isAdmin()
+            || $tosGenerate->created_by === auth()->id()
+            || $tosGenerate->module?->created_by === auth()->id();
+    }
+
+    private function canAccessModule(Module $module): bool
+    {
+        return auth()->user()->isAdmin() || $module->created_by === auth()->id();
     }
 }

@@ -66,6 +66,7 @@ it('polishes a question using AI', function () {
     $user->assignRole('educator');
 
     $question = ExamQuestion::factory()->create([
+        'created_by' => $user->id,
         'question' => 'Old Question',
         'explanation' => 'Old Explanation',
     ]);

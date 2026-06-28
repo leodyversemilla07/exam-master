@@ -39,7 +39,10 @@ test('it calculates performance stats for a question', function () {
 });
 
 test('it can calibrate question difficulty', function () {
-    $question = ExamQuestion::factory()->create(['difficulty' => 'hard']);
+    $question = ExamQuestion::factory()->create([
+        'created_by' => $this->educator->id,
+        'difficulty' => 'hard',
+    ]);
 
     // Create 10 correct attempts
     for ($i = 0; $i < 10; $i++) {

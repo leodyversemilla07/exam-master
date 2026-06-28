@@ -27,6 +27,9 @@ class ExamBuilderController extends Controller
         $query = Exam::query()
             ->with(['module', 'creator', 'tosGenerate'])
             ->withCount('questions')
+            ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where(fn ($ownedQuery) => $ownedQuery
+                ->where('created_by', auth()->id())
+                ->orWhereHas('collaborators', fn ($collaborators) => $collaborators->where('user_id', auth()->id()))))
             ->latest();
 
         // Filter by module
@@ -54,7 +57,10 @@ class ExamBuilderController extends Controller
 
         return Inertia::render('exam-builder/index', [
             'exams' => $exams,
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
+            'modules' => Module::query()
+                ->where('is_active', true)
+                ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('created_by', auth()->id()))
+                ->get(['id', 'code', 'name']),
             'filters' => $request->only(['module_id', 'status', 'exam_type', 'search']),
         ]);
     }
@@ -66,8 +72,13 @@ class ExamBuilderController extends Controller
     {
         abort_unless(auth()->user()->can('create exams'), 403);
 
+        $validated = $request->validated();
+        $module = Module::query()->findOrFail($validated['module_id']);
+
+        abort_unless($this->canAccessModule($module), 403);
+
         $exam = Exam::create([
-            ...$request->validated(),
+            ...$validated,
             'created_by' => auth()->id(),
             'status' => 'draft',
         ]);
@@ -87,7 +98,7 @@ class ExamBuilderController extends Controller
     public function update(StoreExamRequest $request, Exam $examBuilder): RedirectResponse
     {
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canEditExam($examBuilder),
+            auth()->user()->isAdmin() || $this->canEditExam($examBuilder),
             403
         );
 
@@ -133,6 +144,11 @@ class ExamBuilderController extends Controller
             ->exists();
     }
 
+    private function canAccessModule(Module $module): bool
+    {
+        return auth()->user()->isAdmin() || $module->created_by === auth()->id();
+    }
+
     /**
      * Remove the specified exam.
      */
@@ -145,7 +161,7 @@ class ExamBuilderController extends Controller
             ->exists();
 
         abort_unless(
-            auth()->user()->can('delete exams') ||
+            auth()->user()->isAdmin() ||
             auth()->id() === $examBuilder->created_by ||
             $isCollaborator,
             403
@@ -166,7 +182,7 @@ class ExamBuilderController extends Controller
         $exam = Exam::findOrFail($examId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canEditExam($exam),
+            auth()->user()->isAdmin() || $this->canEditExam($exam),
             403
         );
 
@@ -174,6 +190,13 @@ class ExamBuilderController extends Controller
             'question_ids' => ['required', 'array'],
             'question_ids.*' => ['exists:exam_questions,id'],
         ]);
+
+        $validQuestionCount = ExamQuestion::query()
+            ->whereIn('id', $request->question_ids)
+            ->where('module_id', $exam->module_id)
+            ->count();
+
+        abort_unless($validQuestionCount === count($request->question_ids), 422);
 
         $order = $exam->questions()->max('order') ?? 0;
 
@@ -201,7 +224,7 @@ class ExamBuilderController extends Controller
         $question = ExamQuestion::findOrFail($questionId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canEditExam($exam),
+            (auth()->user()->isAdmin() || $this->canEditExam($exam)) && $question->module_id === $exam->module_id,
             403
         );
 
@@ -219,7 +242,7 @@ class ExamBuilderController extends Controller
         $exam = Exam::findOrFail($examId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canEditExam($exam),
+            auth()->user()->isAdmin() || $this->canEditExam($exam),
             403
         );
 
@@ -249,7 +272,7 @@ class ExamBuilderController extends Controller
         $question = ExamQuestion::findOrFail($questionId);
 
         abort_unless(
-            auth()->user()->can('edit exams') || $this->canEditExam($exam),
+            (auth()->user()->isAdmin() || $this->canEditExam($exam)) && $question->module_id === $exam->module_id,
             403
         );
 
@@ -273,7 +296,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('publish exams'), 403);
+        abort_unless(auth()->user()->can('publish exams') && (auth()->user()->isAdmin() || $this->canEditExam($exam)), 403);
 
         if ($exam->questions()->count() === 0) {
             return back()->with('error', 'Cannot publish an exam with no questions.');
@@ -291,7 +314,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('create exams'), 403);
+        abort_unless(auth()->user()->can('create exams') && (auth()->user()->isAdmin() || $this->canAccessExam($exam)), 403);
 
         $newExam = $exam->replicate();
         $newExam->title = $exam->title.' (Copy)';
@@ -322,7 +345,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('view exams'), 403);
+        abort_unless(auth()->user()->can('view exams') && (auth()->user()->isAdmin() || $this->canAccessExam($exam)), 403);
 
         if ($exam->questions()->count() === 0) {
             abort(400, 'Cannot export an exam with no questions.');
@@ -341,7 +364,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('view exams'), 403);
+        abort_unless(auth()->user()->can('view exams') && (auth()->user()->isAdmin() || $this->canAccessExam($exam)), 403);
 
         if ($exam->questions()->count() === 0) {
             abort(400, 'Cannot export an exam with no questions.');
@@ -359,7 +382,7 @@ class ExamBuilderController extends Controller
     public function exportDocx($examId, ExamWordExporter $exporter): BinaryFileResponse
     {
         $exam = Exam::findOrFail($examId);
-        abort_unless(auth()->user()->can('view exams'), 403);
+        abort_unless(auth()->user()->can('view exams') && (auth()->user()->isAdmin() || $this->canAccessExam($exam)), 403);
 
         if ($exam->questions()->count() === 0) {
             abort(400, 'Cannot export an exam with no questions.');
@@ -376,7 +399,7 @@ class ExamBuilderController extends Controller
     public function exportDocxWithAnswers($examId, ExamWordExporter $exporter): BinaryFileResponse
     {
         $exam = Exam::findOrFail($examId);
-        abort_unless(auth()->user()->can('view exams'), 403);
+        abort_unless(auth()->user()->can('view exams') && (auth()->user()->isAdmin() || $this->canAccessExam($exam)), 403);
 
         if ($exam->questions()->count() === 0) {
             abort(400, 'Cannot export an exam with no questions.');
@@ -394,7 +417,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(auth()->user()->can('edit exams') && (auth()->user()->isAdmin() || $this->canEditExam($exam)), 403);
 
         $exam->update(['status' => 'archived']);
 
@@ -408,7 +431,7 @@ class ExamBuilderController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(auth()->user()->can('edit exams') && (auth()->user()->isAdmin() || $this->canEditExam($exam)), 403);
 
         $exam->update(['status' => 'draft']);
 
@@ -423,6 +446,8 @@ class ExamBuilderController extends Controller
         $exam = Exam::with(['module', 'examTemplate', 'questions' => function ($query) {
             $query->orderBy('exam_items.order');
         }])->findOrFail($examId);
+
+        abort_unless(auth()->user()->can('view exams') && (auth()->user()->isAdmin() || $this->canAccessExam($exam)), 403);
 
         $template = null;
         if ($exam->examTemplate) {

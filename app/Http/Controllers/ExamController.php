@@ -25,7 +25,7 @@ class ExamController extends Controller
      */
     public function index(Request $request): Response
     {
-        $query = ExamQuestion::query()
+        $query = $this->applyQuestionAccessScope(ExamQuestion::query())
             ->with(['module', 'creator', 'tosGenerate'])
             ->latest();
 
@@ -70,7 +70,7 @@ class ExamController extends Controller
 
         return Inertia::render('question-bank/index', [
             'questions' => $questions,
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
+            'modules' => $this->accessibleModules()->get(['id', 'code', 'name']),
             'filters' => $request->only(['module_id', 'tos_generate_id', 'question_type', 'cognitive_level', 'difficulty', 'is_approved', 'search']),
         ]);
     }
@@ -96,7 +96,7 @@ class ExamController extends Controller
     public function create(): Response
     {
         return Inertia::render('question-bank/create', [
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
+            'modules' => $this->accessibleModules()->get(['id', 'code', 'name']),
         ]);
     }
 
@@ -107,8 +107,13 @@ class ExamController extends Controller
     {
         abort_unless(auth()->user()->can('create exams'), 403);
 
+        $validated = $request->validated();
+        $module = Module::query()->findOrFail($validated['module_id']);
+
+        abort_unless($this->canAccessModule($module), 403);
+
         $question = ExamQuestion::create([
-            ...$request->validated(),
+            ...$validated,
             'created_by' => auth()->id(),
             'is_ai_generated' => false,
         ]);
@@ -126,7 +131,7 @@ class ExamController extends Controller
      */
     public function show(ExamQuestion $exam): Response
     {
-        abort_unless(auth()->user()->can('view exams'), 403);
+        abort_unless(auth()->user()->can('view exams') && $this->canAccessQuestion($exam), 403);
 
         $exam->load(['module', 'creator', 'tosGenerate']);
 
@@ -141,7 +146,7 @@ class ExamController extends Controller
      */
     public function calibrate(ExamQuestion $exam): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(auth()->user()->can('edit exams') && $this->canAccessQuestion($exam), 403);
 
         $stats = $exam->getPerformanceStats();
 
@@ -159,9 +164,11 @@ class ExamController extends Controller
      */
     public function edit(ExamQuestion $exam): Response
     {
+        abort_unless($this->canAccessQuestion($exam), 403);
+
         return Inertia::render('question-bank/edit', [
             'question' => $exam,
-            'modules' => Module::where('is_active', true)->get(['id', 'code', 'name']),
+            'modules' => $this->accessibleModules()->get(['id', 'code', 'name']),
         ]);
     }
 
@@ -170,7 +177,7 @@ class ExamController extends Controller
      */
     public function update(StoreExamQuestionRequest $request, ExamQuestion $exam): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(auth()->user()->can('edit exams') && $this->canAccessQuestion($exam), 403);
 
         $exam->update($request->validated());
 
@@ -184,7 +191,7 @@ class ExamController extends Controller
      */
     public function destroy(ExamQuestion $exam): RedirectResponse
     {
-        abort_unless(auth()->user()->can('delete exams'), 403);
+        abort_unless(auth()->user()->can('delete exams') && $this->canAccessQuestion($exam), 403);
         $exam->delete();
 
         return redirect()
@@ -197,7 +204,7 @@ class ExamController extends Controller
      */
     public function approve(ExamQuestion $exam): RedirectResponse
     {
-        abort_unless(auth()->user()->can('approve questions'), 403);
+        abort_unless(auth()->user()->can('approve questions') && $this->canAccessQuestion($exam), 403);
 
         $exam->update(['is_approved' => true]);
 
@@ -209,7 +216,7 @@ class ExamController extends Controller
      */
     public function polish(ExamQuestion $exam, FeedbackService $feedbackService): RedirectResponse
     {
-        abort_unless(auth()->user()->can('edit exams'), 403);
+        abort_unless(auth()->user()->can('edit exams') && $this->canAccessQuestion($exam), 403);
 
         try {
             $polished = $feedbackService->polishQuestion($exam);
@@ -240,7 +247,12 @@ class ExamController extends Controller
             'ids.*' => 'exists:exam_questions,id',
         ]);
 
-        ExamQuestion::whereIn('id', $request->ids)->delete();
+        $query = $this->applyQuestionAccessScope(ExamQuestion::query())
+            ->whereIn('id', $request->ids);
+
+        abort_unless($query->count() === count($request->ids), 403);
+
+        $query->delete();
 
         return back()->with('success', count($request->ids).' questions deleted successfully.');
     }
@@ -250,6 +262,8 @@ class ExamController extends Controller
      */
     public function checkDuplicates(ExamQuestion $question, Request $request): JsonResponse
     {
+        abort_unless($this->canAccessQuestion($question), 403);
+
         $threshold = $request->get('threshold', 0.85);
 
         $duplicates = $this->duplicateDetector->findDuplicates($question, (float) $threshold);
@@ -266,6 +280,8 @@ class ExamController extends Controller
      */
     public function getModuleDuplicates(Module $module): JsonResponse
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         $statistics = $this->duplicateDetector->getModuleStatistics($module->id);
 
         return response()->json($statistics);
@@ -283,6 +299,10 @@ class ExamController extends Controller
             'module_id' => 'required|exists:modules,id',
         ]);
 
+        $module = Module::query()->findOrFail($request->module_id);
+
+        abort_unless($this->canAccessModule($module), 403);
+
         // Create temporary question for comparison
         $tempQuestion = new ExamQuestion([
             'question_text' => $request->question_text,
@@ -295,5 +315,31 @@ class ExamController extends Controller
             'has_duplicates' => $similarQuestions->isNotEmpty(),
             'similar_questions' => $similarQuestions,
         ]);
+    }
+
+    private function canAccessQuestion(ExamQuestion $question): bool
+    {
+        return auth()->user()->isAdmin()
+            || $question->created_by === auth()->id()
+            || $question->module?->created_by === auth()->id();
+    }
+
+    private function canAccessModule(Module $module): bool
+    {
+        return auth()->user()->isAdmin() || $module->created_by === auth()->id();
+    }
+
+    private function applyQuestionAccessScope($query)
+    {
+        return $query->when(! auth()->user()->isAdmin(), fn ($query) => $query->where(fn ($ownedQuery) => $ownedQuery
+            ->where('created_by', auth()->id())
+            ->orWhereHas('module', fn ($moduleQuery) => $moduleQuery->where('created_by', auth()->id()))));
+    }
+
+    private function accessibleModules()
+    {
+        return Module::query()
+            ->where('is_active', true)
+            ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('created_by', auth()->id()));
     }
 }
