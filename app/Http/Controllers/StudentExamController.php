@@ -269,7 +269,7 @@ class StudentExamController extends Controller
 
         // Generate AI feedback if it doesn't exist yet
         $aiFeedback = $attempt->metadata['ai_feedback'] ?? null;
-        if (! $aiFeedback && $attempt->isSubmitted() || $attempt->isGraded()) {
+        if (! $aiFeedback && ($attempt->isSubmitted() || $attempt->isGraded())) {
             $aiFeedback = $feedbackService->generateAttemptFeedback($attempt);
         }
 

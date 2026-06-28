@@ -2,18 +2,32 @@
 
 namespace App\Services\Analytics;
 
+use Closure;
+use DateInterval;
+use DateTimeInterface;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class AnalyticsCacheService
 {
+    private const RegistryKey = 'analytics:cache_keys';
+
+    /**
+     * Remember an analytics value and track the key for targeted invalidation.
+     */
+    public static function remember(string $key, DateTimeInterface|DateInterval|int|null $ttl, Closure $callback): mixed
+    {
+        self::registerKey($key);
+
+        return Cache::remember($key, $ttl, $callback);
+    }
+
     /**
      * Clear all analytics cache.
      */
     public static function clearAll(): void
     {
-        self::clearExamsCache();
-        self::clearUsageCache();
-        self::clearEducatorCache();
+        self::clearByPattern('analytics:*');
     }
 
     /**
@@ -21,12 +35,7 @@ class AnalyticsCacheService
      */
     public static function clearExamsCache(): void
     {
-        // Use a cache tag or pattern to clear all exam-related cache
-        // Since we can't use tags in file driver, we'll use a prefix approach
-        $keys = self::getCacheKeysByPattern('analytics:exams_created:*');
-        foreach ($keys as $key) {
-            Cache::forget($key);
-        }
+        self::clearByPattern('analytics:exams_created:*');
     }
 
     /**
@@ -34,10 +43,7 @@ class AnalyticsCacheService
      */
     public static function clearUsageCache(): void
     {
-        $keys = self::getCacheKeysByPattern('analytics:usage_data:*');
-        foreach ($keys as $key) {
-            Cache::forget($key);
-        }
+        self::clearByPattern('analytics:usage_data:*');
     }
 
     /**
@@ -45,40 +51,7 @@ class AnalyticsCacheService
      */
     public static function clearEducatorCache(): void
     {
-        $keys = self::getCacheKeysByPattern('analytics:educator_activity:*');
-        foreach ($keys as $key) {
-            Cache::forget($key);
-        }
-    }
-
-    /**
-     * Get cache keys matching a pattern.
-     * Note: This is a best-effort approach for file-based cache.
-     * For Redis/Memcached, you would use proper cache tags.
-     *
-     * @param  string  $pattern  The pattern to match (with wildcards)
-     */
-    private static function getCacheKeysByPattern(string $pattern): array
-    {
-        // This is a simplified approach
-        // In production with Redis, you would use Redis::keys()
-        // For file-based cache, we maintain a list of known keys
-        $knownPrefixes = [
-            'analytics:exams_created:',
-            'analytics:usage_data:',
-            'analytics:educator_activity:',
-        ];
-
-        $keys = [];
-        foreach ($knownPrefixes as $prefix) {
-            if (str_contains($pattern, $prefix)) {
-                // Try to get all possible combinations
-                // This is not perfect but works for basic cache invalidation
-                $keys[] = $prefix;
-            }
-        }
-
-        return [];
+        self::clearByPattern('analytics:educator_activity:*');
     }
 
     /**
@@ -87,16 +60,66 @@ class AnalyticsCacheService
     public static function clearForDateRange(?string $startDate = null, ?string $endDate = null): void
     {
         if ($startDate && $endDate) {
-            // Clear specific date range cache
             $periods = ['day', 'week', 'month', 'year'];
+
             foreach ($periods as $period) {
-                Cache::forget("analytics:exams_created:{$period}:{$startDate}:{$endDate}");
+                self::forget("analytics:exams_created:{$period}:{$startDate}:{$endDate}");
             }
-            Cache::forget("analytics:educator_activity:{$startDate}:{$endDate}");
-        } else {
-            // Clear all date-based cache
-            self::clearExamsCache();
-            self::clearEducatorCache();
+
+            self::forget("analytics:educator_activity:{$startDate}:{$endDate}");
+
+            return;
         }
+
+        self::clearExamsCache();
+        self::clearEducatorCache();
+    }
+
+    private static function clearByPattern(string $pattern): void
+    {
+        foreach (self::getCacheKeysByPattern($pattern) as $key) {
+            self::forget($key);
+        }
+    }
+
+    private static function forget(string $key): void
+    {
+        Cache::forget($key);
+
+        $keys = array_values(array_filter(
+            self::registeredKeys(),
+            fn (string $registeredKey): bool => $registeredKey !== $key
+        ));
+
+        Cache::forever(self::RegistryKey, $keys);
+    }
+
+    private static function registerKey(string $key): void
+    {
+        $keys = self::registeredKeys();
+
+        if (! in_array($key, $keys, true)) {
+            $keys[] = $key;
+            Cache::forever(self::RegistryKey, $keys);
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function registeredKeys(): array
+    {
+        return Cache::get(self::RegistryKey, []);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function getCacheKeysByPattern(string $pattern): array
+    {
+        return array_values(array_filter(
+            self::registeredKeys(),
+            fn (string $key): bool => Str::is($pattern, $key)
+        ));
     }
 }

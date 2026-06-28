@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Paymongo\Entities\PaymentIntent;
@@ -24,6 +25,11 @@ it('returns payment intent status', function () {
         ->once()
         ->with('pi_test_123')
         ->andReturn($paymentIntent);
+
+    Payment::factory()->create([
+        'user_id' => $user->id,
+        'paymongo_payment_intent_id' => 'pi_test_123',
+    ]);
 
     app()->instance(PaymongoClient::class, new class($paymentIntentService) extends PaymongoClient
     {
@@ -50,6 +56,22 @@ it('returns payment intent status', function () {
             'status' => 'succeeded',
             'id' => 'pi_test_123',
         ]);
+});
+
+it('does not expose another users payment intent', function () {
+    /** @var Authenticatable $user */
+    $user = User::factory()->createOne();
+    $otherUser = User::factory()->createOne();
+
+    Payment::factory()->create([
+        'user_id' => $otherUser->id,
+        'paymongo_payment_intent_id' => 'pi_other_123',
+    ]);
+
+    actingAs($user);
+
+    getJson(route('payments.intent', ['payment_intent_id' => 'pi_other_123']))
+        ->assertNotFound();
 });
 
 it('requires a payment intent id', function () {

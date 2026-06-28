@@ -12,8 +12,9 @@ class PlanSeeder extends Seeder
      */
     public function run(): void
     {
-        Plan::create([
+        Plan::updateOrCreate([
             'name' => 'Basic',
+        ], [
             'price' => 29900, // ₱299 in cents
             'features' => [
                 '500 AI-generated questions per month',
@@ -25,8 +26,9 @@ class PlanSeeder extends Seeder
             ],
         ]);
 
-        Plan::create([
+        Plan::updateOrCreate([
             'name' => 'Pro',
+        ], [
             'price' => 99900, // ₱999 in cents
             'features' => [
                 'Unlimited AI-generated questions',
@@ -41,8 +43,9 @@ class PlanSeeder extends Seeder
             ],
         ]);
 
-        Plan::create([
+        Plan::updateOrCreate([
             'name' => 'Enterprise',
+        ], [
             'price' => 299900, // ₱2,999 in cents
             'features' => [
                 'All Pro features',

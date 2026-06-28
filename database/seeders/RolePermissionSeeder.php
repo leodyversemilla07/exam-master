@@ -45,10 +45,10 @@ class RolePermissionSeeder extends Seeder
             'edit exams',
             'delete exams',
             'publish exams',
+            'create questions',
             'approve questions',
             'bulk delete questions',
             'view analytics',
-            'manage collaborators',
 
             // Profile management
             'edit own profile',
@@ -115,8 +115,11 @@ class RolePermissionSeeder extends Seeder
             'create exams',
             'edit exams',
             'delete exams',
+            'publish exams',
+            'create questions',
             'approve questions',
             'bulk delete questions',
+            'view analytics',
             'view templates',
             'create templates',
             'edit templates',
@@ -146,7 +149,10 @@ class RolePermissionSeeder extends Seeder
             'view exams',
             'create exams',
             'edit exams',
+            'publish exams',
+            'create questions',
             'approve questions',
+            'view analytics',
             'view templates',
             'create templates',
             'edit templates',
@@ -183,12 +189,6 @@ class RolePermissionSeeder extends Seeder
         );
         if (! $studentUser->hasRole('student')) {
             $studentUser->assignRole('student');
-        }
-
-        // Assign super-admin role to first user if exists
-        $user = User::first();
-        if ($user) {
-            $user->assignRole('super-admin');
         }
     }
 }

@@ -71,36 +71,34 @@ describe('Analytics Caching', function () {
 describe('AnalyticsCacheService', function () {
     it('clears usage cache', function () {
         // Arrange
-        Cache::put('analytics:usage_data:10', ['test' => 'data'], 600);
+        AnalyticsCacheService::remember('analytics:usage_data:10', 600, fn () => ['test' => 'data']);
 
         // Act
         AnalyticsCacheService::clearUsageCache();
 
-        // Assert - Cache should be cleared
-        // Note: The current implementation doesn't actually clear keys,
-        // but the test documents expected behavior
-        expect(true)->toBeTrue();
+        // Assert
+        expect(Cache::has('analytics:usage_data:10'))->toBeFalse();
     });
 
     it('clears educator cache', function () {
         // Arrange
-        Cache::put('analytics:educator_activity:2025-01-01:2025-02-01', ['test' => 'data'], 300);
+        AnalyticsCacheService::remember('analytics:educator_activity:2025-01-01:2025-02-01', 300, fn () => ['test' => 'data']);
 
         // Act
         AnalyticsCacheService::clearEducatorCache();
 
-        // Assert - Cache should be cleared
-        expect(true)->toBeTrue();
+        // Assert
+        expect(Cache::has('analytics:educator_activity:2025-01-01:2025-02-01'))->toBeFalse();
     });
 
     it('clears exams cache', function () {
         // Arrange
-        Cache::put('analytics:exams_created:month:2025-01-01:2025-02-01', ['test' => 'data'], 300);
+        AnalyticsCacheService::remember('analytics:exams_created:month:2025-01-01:2025-02-01', 300, fn () => ['test' => 'data']);
 
         // Act
         AnalyticsCacheService::clearExamsCache();
 
-        // Assert - Cache should be cleared
-        expect(true)->toBeTrue();
+        // Assert
+        expect(Cache::has('analytics:exams_created:month:2025-01-01:2025-02-01'))->toBeFalse();
     });
 });

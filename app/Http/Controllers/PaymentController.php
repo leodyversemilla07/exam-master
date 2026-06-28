@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePaymentIntentRequest;
 use App\Http\Requests\ShowPaymentIntentRequest;
+use App\Models\Payment;
 use App\Models\Plan;
+use App\Models\Subscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Paymongo\Exceptions\SignatureVerificationException;
 use Paymongo\PaymongoClient;
 
@@ -25,6 +28,22 @@ class PaymentController extends Controller
                 'currency' => 'PHP',
                 'payment_method_allowed' => ['card', 'gcash', 'paymaya'],
                 'description' => "Subscription to {$plan->name} plan",
+                'metadata' => [
+                    'user_id' => (string) $request->user()->id,
+                    'plan_id' => (string) $plan->id,
+                ],
+            ]);
+
+            Payment::create([
+                'user_id' => $request->user()->id,
+                'plan_id' => $plan->id,
+                'paymongo_payment_intent_id' => $paymentIntent->id,
+                'status' => 'pending',
+                'amount' => $plan->price,
+                'currency' => 'PHP',
+                'metadata' => [
+                    'client_key' => $paymentIntent->client_key,
+                ],
             ]);
 
             return response()->json([
@@ -48,19 +67,11 @@ class PaymentController extends Controller
                 'webhook_secret_key' => config('paymongo.webhook_secret'),
             ]);
 
-            // Handle the event
-            switch ($event->type) {
-                case 'payment_intent.succeeded':
-                    // Payment was successful
-                    $paymentIntent = $event->resource;
-                    // Update user's subscription status
-                    // This would typically update a subscription model
-                    break;
-                case 'payment_intent.payment_failed':
-                    // Payment failed
-                    break;
-                    // Handle other events as needed
-            }
+            match ($event->type) {
+                'payment_intent.succeeded' => $this->markPaymentSucceeded($event),
+                'payment_intent.payment_failed' => $this->markPaymentFailed($event),
+                default => null,
+            };
 
             return response()->json(['status' => 'ok']);
         } catch (SignatureVerificationException $e) {
@@ -74,8 +85,13 @@ class PaymentController extends Controller
     {
         $paymentIntentId = $request->validated('payment_intent_id');
 
+        $payment = Payment::query()
+            ->where('paymongo_payment_intent_id', $paymentIntentId)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
         try {
-            $paymentIntent = $this->client->paymentIntents->retrieve($paymentIntentId);
+            $paymentIntent = $this->client->paymentIntents->retrieve($payment->paymongo_payment_intent_id);
 
             return response()->json([
                 'status' => $paymentIntent->status,
@@ -84,5 +100,57 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    private function markPaymentSucceeded(object $event): void
+    {
+        $paymentIntentId = data_get($event, 'resource.id');
+
+        if (! $paymentIntentId) {
+            return;
+        }
+
+        DB::transaction(function () use ($event, $paymentIntentId) {
+            $payment = Payment::query()
+                ->where('paymongo_payment_intent_id', $paymentIntentId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $payment) {
+                return;
+            }
+
+            $subscription = Subscription::updateOrCreate(
+                ['paymongo_payment_intent_id' => $paymentIntentId],
+                [
+                    'user_id' => $payment->user_id,
+                    'plan_id' => $payment->plan_id,
+                    'status' => 'active',
+                    'starts_at' => now(),
+                    'ends_at' => now()->addMonth(),
+                    'cancelled_at' => null,
+                ]
+            );
+
+            $payment->update([
+                'subscription_id' => $subscription->id,
+                'status' => 'succeeded',
+                'payment_method' => data_get($event, 'resource.payment_method_allowed.0'),
+                'paid_at' => now(),
+            ]);
+        });
+    }
+
+    private function markPaymentFailed(object $event): void
+    {
+        $paymentIntentId = data_get($event, 'resource.id');
+
+        if (! $paymentIntentId) {
+            return;
+        }
+
+        Payment::query()
+            ->where('paymongo_payment_intent_id', $paymentIntentId)
+            ->update(['status' => 'failed']);
     }
 }

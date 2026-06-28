@@ -12,9 +12,6 @@ use App\Models\Topic;
 use App\Models\TosGenerate;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,118 +20,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Reset cached roles and permissions
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Create permissions
-        $permissions = [
-            // User management
-            'view users',
-            'create users',
-            'edit users',
-            'delete users',
-
-            // Module management
-            'view modules',
-            'create modules',
-            'edit modules',
-            'delete modules',
-
-            // TOS management
-            'view tos',
-            'create tos',
-            'edit tos',
-            'delete tos',
-            'generate questions',
-
-            // Exam management
-            'view exams',
-            'create exams',
-            'edit exams',
-            'delete exams',
-            'publish exams',
-            'approve questions',
-            'bulk delete questions',
-
-            // Profile management
-            'edit own profile',
-            'change own password',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-
-        // Create roles and assign permissions
-
-        // Super Admin - has all permissions
-        $superAdmin = Role::create(['name' => 'super-admin']);
-        $superAdmin->givePermissionTo(Permission::all());
-
-        // Admin - can manage users and all content
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo([
-            'view users',
-            'create users',
-            'edit users',
-            'view modules',
-            'create modules',
-            'edit modules',
-            'delete modules',
-            'view tos',
-            'create tos',
-            'edit tos',
-            'delete tos',
-            'generate questions',
-            'view exams',
-            'create exams',
-            'edit exams',
-            'delete exams',
-            'approve questions',
-            'bulk delete questions',
-            'edit own profile',
-            'change own password',
-        ]);
-
-        // Educator - can create and manage own content
-        $educator = Role::create(['name' => 'educator']);
-        $educator->givePermissionTo([
-            'view modules',
-            'create modules',
-            'edit modules',
-            'view tos',
-            'create tos',
-            'edit tos',
-            'delete tos',
-            'generate questions',
-            'view exams',
-            'create exams',
-            'edit exams',
-            'publish exams',
-            'edit own profile',
-            'change own password',
+        $this->call([
+            RolePermissionSeeder::class,
+            PlanSeeder::class,
         ]);
 
         // Create Super Admin user
-        $superAdminUser = User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'leobrielzilvrak@gmail.com',
-        ]);
-        $superAdminUser->assignRole('super-admin');
+        $superAdminUser = User::firstOrCreate(
+            ['email' => 'super-admin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $superAdminUser->syncRoles('super-admin');
 
         // Create Admin user
-        $adminUser = User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'lunarspectre00@gmail.com',
-        ]);
-        $adminUser->assignRole('admin');
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $adminUser->syncRoles('admin');
 
         // Create Educator user
-        $educatorUser = User::factory()->create([
-            'name' => 'Educator User',
-            'email' => 'leodyversemilla07@gmail.com',
-        ]);
-        $educatorUser->assignRole('educator');
+        $educatorUser = User::firstOrCreate(
+            ['email' => 'educator@example.com'],
+            [
+                'name' => 'Educator User',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $educatorUser->syncRoles('educator');
 
         // Create realistic modules for educator
         $mathModule = Module::create([

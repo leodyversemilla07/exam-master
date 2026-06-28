@@ -9,13 +9,13 @@ use App\Models\Module;
 use App\Models\StudentAnswer;
 use App\Models\Topic;
 use App\Models\User;
+use App\Services\Analytics\AnalyticsCacheService;
 use App\Services\Analytics\Exporters\CsvExporterFactory;
 use App\Services\Analytics\PeriodQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -66,7 +66,7 @@ class AnalyticsController extends Controller
 
         $cacheKey = "analytics:exams_created:{$period}:{$startDate}:{$endDate}";
 
-        return Cache::remember($cacheKey, 300, function () use ($period, $startDate, $endDate) {
+        return AnalyticsCacheService::remember($cacheKey, 300, function () use ($period, $startDate, $endDate) {
             $query = Exam::query()
                 ->whereBetween('created_at', [$startDate, $endDate]);
 
@@ -89,7 +89,7 @@ class AnalyticsController extends Controller
     {
         $cacheKey = "analytics:usage_data:{$limit}";
 
-        return Cache::remember($cacheKey, 600, function () use ($limit) {
+        return AnalyticsCacheService::remember($cacheKey, 600, function () use ($limit) {
             return [
                 'modules' => $this->getMostUsedModules($limit),
                 'topics' => $this->getMostUsedTopics($limit),
@@ -135,7 +135,7 @@ class AnalyticsController extends Controller
 
         $cacheKey = "analytics:educator_activity:{$startDate}:{$endDate}";
 
-        return Cache::remember($cacheKey, 300, function () use ($startDate, $endDate) {
+        return AnalyticsCacheService::remember($cacheKey, 300, function () use ($startDate, $endDate) {
             $educators = User::query()
                 ->role('educator')
                 ->withCount([

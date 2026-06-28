@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -26,11 +27,13 @@ it('creates a payment intent and returns client key', function () {
     $paymentIntentService
         ->shouldReceive('create')
         ->once()
-        ->withArgs(function (array $payload) use ($plan) {
+        ->withArgs(function (array $payload) use ($plan, $user) {
             return $payload['amount'] === $plan->price
                 && $payload['currency'] === 'PHP'
                 && $payload['payment_method_allowed'] === ['card', 'gcash', 'paymaya']
-                && $payload['description'] === "Subscription to {$plan->name} plan";
+                && $payload['description'] === "Subscription to {$plan->name} plan"
+                && $payload['metadata']['user_id'] === (string) $user->id
+                && $payload['metadata']['plan_id'] === (string) $plan->id;
         })
         ->andReturn($paymentIntent);
 
@@ -59,6 +62,13 @@ it('creates a payment intent and returns client key', function () {
             'client_key' => 'pi_client_key_test',
             'payment_intent_id' => 'pi_test_123',
         ]);
+
+    expect(Payment::query()
+        ->where('user_id', $user->id)
+        ->where('plan_id', $plan->id)
+        ->where('paymongo_payment_intent_id', 'pi_test_123')
+        ->where('status', 'pending')
+        ->exists())->toBeTrue();
 });
 
 it('validates the plan id when creating payment intent', function () {
