@@ -190,9 +190,14 @@ class RolePermissionSeeder extends Seeder
             ['email' => 'student@example.com'],
             [
                 'name' => 'Student User',
+                'email_verified_at' => now(),
                 'password' => bcrypt('password'),
             ]
         );
+        if ($studentUser->email_verified_at === null) {
+            $studentUser->forceFill(['email_verified_at' => now()])->save();
+        }
+
         if (! $studentUser->hasRole('student')) {
             $studentUser->assignRole('student');
         }

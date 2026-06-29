@@ -44,6 +44,7 @@ test('can create a user', function () {
 
     $user = User::where('email', 'john@example.com')->first();
     $this->assertTrue($user->hasRole('educator'));
+    expect($user->hasVerifiedEmail())->toBeTrue();
 });
 
 test('super admin can assign super admin role', function () {
@@ -93,6 +94,14 @@ test('admin cannot update super admin users', function () {
             'role' => 'admin',
         ])
         ->assertForbidden();
+});
+
+test('seeded default student is verified and active', function () {
+    $student = User::where('email', 'student@example.com')->first();
+
+    expect($student)->not->toBeNull();
+    expect($student->hasVerifiedEmail())->toBeTrue();
+    expect($student->is_active)->toBeTrue();
 });
 
 test('can update a user', function () {
