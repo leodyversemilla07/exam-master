@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import PageHeader from '@/components/page-header';
+import * as questionBankRoutes from '@/routes/question-bank';
 
 interface Module {
     id: number;
@@ -86,7 +87,7 @@ export default function ExamCreate({
             });
 
             // Transform the data before submission using the transform option
-            post('/question-bank', {
+            post(questionBankRoutes.store.url(), {
                 forceFormData: true,
                 onBefore: () => {
                     // Update data with transformed values before submission
@@ -98,7 +99,7 @@ export default function ExamCreate({
                 },
             });
         } else {
-            post('/question-bank');
+            post(questionBankRoutes.store.url());
         }
     };
 
@@ -580,7 +581,7 @@ export default function ExamCreate({
                                     type="button"
                                     variant="outline"
                                     onClick={() =>
-                                        router.visit('/question-bank')
+                                        router.visit(questionBankRoutes.index.url())
                                     }
                                 >
                                     Cancel
@@ -604,7 +605,7 @@ ExamCreate.layout = (props: PageProps) => ({
     breadcrumbs:
         props.from_group && props.from_group_id && props.from_group_name
             ? [
-                  { title: 'Question Bank', href: '/question-bank' },
+                  { title: 'Question Bank', href: questionBankRoutes.index.url() },
                   {
                       title: props.from_group_name,
                       href:
@@ -612,10 +613,10 @@ ExamCreate.layout = (props: PageProps) => ({
                               ? `/question-bank/tos/${props.from_group_id}`
                               : `/question-bank/module/${props.from_group_id}`,
                   },
-                  { title: 'Create', href: '/question-bank/create' },
+                  { title: 'Create', href: questionBankRoutes.create.url() },
               ]
             : [
-                  { title: 'Question Bank', href: '/question-bank' },
-                  { title: 'Create', href: '/question-bank/create' },
+                  { title: 'Question Bank', href: questionBankRoutes.index.url() },
+                  { title: 'Create', href: questionBankRoutes.create.url() },
               ],
 });

@@ -83,6 +83,11 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import * as examBuilderRoutes from '@/routes/exam-builder';
+import * as examSessionRoutes from '@/routes/exam-sessions';
+import * as moduleRoutes from '@/routes/modules';
+import * as topicRoutes from '@/routes/modules/topics';
+import * as questionBankRoutes from '@/routes/question-bank';
 
 /* ─── Types ─── */
 
@@ -411,11 +416,16 @@ function TopicFormPanel({
         e.preventDefault();
 
         if (isEditing) {
-            form.put(`/modules/${module.id}/topics/${topic!.id}`, {
+            form.put(
+                topicRoutes.update.url({ module: module.id, topic: topic!.id }),
+                {
+                    preserveScroll: true,
+                },
+            );
+        } else {
+            form.post(topicRoutes.store.url(module.id), {
                 preserveScroll: true,
             });
-        } else {
-            form.post(`/modules/${module.id}/topics`, { preserveScroll: true });
         }
     };
 
@@ -731,7 +741,10 @@ function TopicsTabContent({
                                         )
                                     ) {
                                         router.delete(
-                                            `/modules/${module.id}/topics/${topic.id}`,
+                                            topicRoutes.destroy.url({
+                                                module: module.id,
+                                                topic: topic.id,
+                                            }),
                                             {
                                                 preserveScroll: true,
                                             },
@@ -794,10 +807,10 @@ function TopicsTabContent({
 /* ─── Sessions Tab Content ─── */
 function SessionsTabContent({
     sessions,
-    moduleId,
+    onCreateSession,
 }: {
     sessions: SessionRow[];
-    moduleId: number;
+    onCreateSession: () => void;
 }) {
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -813,7 +826,7 @@ function SessionsTabContent({
                 <h2 className="text-lg font-semibold">
                     Exam Sessions ({sessions.length})
                 </h2>
-                <Button size="sm" render={<Link href={`/modules/${moduleId}`} />} nativeButton={false}>
+                <Button size="sm" onClick={onCreateSession}>
                     <Plus className="mr-2 size-4" />
                     Create Session
                 </Button>
@@ -941,7 +954,9 @@ function SessionsTabContent({
                                                     variant="outline"
                                                     size="icon"
                                                     render={<Link
-                                                        href={`/exam-sessions/${session.id}`}
+                                                        href={examSessionRoutes.show.url(
+                                                            session.id,
+                                                        )}
                                                     />}
                                                     nativeButton={false}
                                                 >
@@ -961,7 +976,9 @@ function SessionsTabContent({
                                                             )
                                                         ) {
                                                             router.delete(
-                                                                `/exam-sessions/${session.id}`,
+                                                                examSessionRoutes.destroy.url(
+                                                                    session.id,
+                                                                ),
                                                                 {
                                                                     preserveScroll: true,
                                                                 },
@@ -1546,8 +1563,8 @@ export default function ModuleShow({
     });
 
     const confirmDelete = () => {
-        router.delete(`/modules/${module.id}`, {
-            onSuccess: () => router.visit('/modules'),
+        router.delete(moduleRoutes.destroy.url(module.id), {
+            onSuccess: () => router.visit(moduleRoutes.index.url()),
         });
     };
 
@@ -1711,9 +1728,7 @@ export default function ModuleShow({
                                     <h2 className="text-lg font-semibold">
                                         Table of Specifications
                                     </h2>
-                                    <Button size="sm" render={<Link
-                                        href={`/tos-generates/create?module=${module.id}`}
-                                    />} nativeButton={false}>
+                                    <Button size="sm" onClick={() => setActiveTab('workflow')}>
                                         <Plus className="mr-2 size-4" />
                                         Generate TOS
                                     </Button>
@@ -1730,10 +1745,11 @@ export default function ModuleShow({
                                             <span>Created</span>
                                         </div>
                                         {module.tos_generates.map((tos) => (
-                                            <Link
+                                            <button
                                                 key={tos.id}
-                                                href={`/tos-generates/${tos.id}`}
-                                                className="grid grid-cols-[1fr_80px_120px_100px_120px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
+                                                type="button"
+                                                onClick={() => setActiveTab('workflow')}
+                                                className="grid w-full grid-cols-[1fr_80px_120px_100px_120px] items-center gap-4 border-b px-6 py-4 text-left transition-colors last:border-0 hover:bg-accent/50"
                                             >
                                                 <div className="flex min-w-0 items-center gap-2">
                                                     <FileText className="size-4 shrink-0 text-muted-foreground" />
@@ -1761,7 +1777,7 @@ export default function ModuleShow({
                                                 <span className="text-sm text-muted-foreground">
                                                     {formatDate(tos.created_at)}
                                                 </span>
-                                            </Link>
+                                            </button>
                                         ))}
                                     </div>
                                 ) : (
@@ -1776,9 +1792,7 @@ export default function ModuleShow({
                                             Generate a Table of Specifications
                                             to define your assessment blueprint.
                                         </p>
-                                        <Button size="sm" render={<Link
-                                            href={`/tos-generates/create?module=${module.id}`}
-                                        />} nativeButton={false}>
+                                        <Button size="sm" onClick={() => setActiveTab('workflow')}>
                                             <Plus className="mr-2 size-4" />
                                             Generate TOS
                                         </Button>
@@ -1798,7 +1812,7 @@ export default function ModuleShow({
                                         Questions ({questions.total})
                                     </h2>
                                     <Button size="sm" render={<Link
-                                        href={`/question-bank/create?module=${module.id}`}
+                                        href={questionBankRoutes.create.url({ query: { module: module.id } })}
                                     />} nativeButton={false}>
                                         <Plus className="mr-2 size-4" />
                                         Create Question
@@ -1818,7 +1832,7 @@ export default function ModuleShow({
                                             {questions.data.map((q) => (
                                                 <Link
                                                     key={q.id}
-                                                    href={`/question-bank/${q.id}`}
+                                                    href={questionBankRoutes.show.url({ exam: q.id })}
                                                     className="grid grid-cols-[1fr_100px_100px_80px_80px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                                 >
                                                     <p className="truncate text-sm font-medium">
@@ -1867,7 +1881,7 @@ export default function ModuleShow({
                                                             className="size-8"
                                                             onClick={() =>
                                                                 router.get(
-                                                                    `/modules/${module.id}`,
+                                                                    moduleRoutes.show.url(module.id),
                                                                     {
                                                                         page:
                                                                             i +
@@ -1899,7 +1913,7 @@ export default function ModuleShow({
                                             generation from your TOS.
                                         </p>
                                         <Button size="sm" render={<Link
-                                            href={`/question-bank/create?module=${module.id}`}
+                                            href={questionBankRoutes.create.url({ query: { module: module.id } })}
                                         />} nativeButton={false}>
                                             <Plus className="mr-2 size-4" />
                                             Create Question
@@ -1919,7 +1933,7 @@ export default function ModuleShow({
                                     <h2 className="text-lg font-semibold">
                                         Exams ({exams.length})
                                     </h2>
-                                    <Button size="sm" render={<Link href="/exam-builder/create" />} nativeButton={false}>
+                                    <Button size="sm" render={<Link href={examBuilderRoutes.index.url({ query: { module_id: module.id } })} />} nativeButton={false}>
                                         <Plus className="mr-2 size-4" />
                                         Create Exam
                                     </Button>
@@ -1936,7 +1950,7 @@ export default function ModuleShow({
                                         {exams.map((exam) => (
                                             <Link
                                                 key={exam.id}
-                                                href={`/exam-builder/${exam.id}`}
+                                                href={examBuilderRoutes.index.url({ query: { module_id: module.id } })}
                                                 className="grid grid-cols-[1fr_100px_120px_100px] items-center gap-4 border-b px-6 py-4 transition-colors last:border-0 hover:bg-accent/50"
                                             >
                                                 <div className="flex min-w-0 items-center gap-2">
@@ -1987,7 +2001,7 @@ export default function ModuleShow({
                                             Create an exam to assemble questions
                                             into an assessment.
                                         </p>
-                                        <Button size="sm" render={<Link href="/exam-builder/create" />} nativeButton={false}>
+                                        <Button size="sm" render={<Link href={examBuilderRoutes.index.url({ query: { module_id: module.id } })} />} nativeButton={false}>
                                             <Plus className="mr-2 size-4" />
                                             Create Exam
                                         </Button>
@@ -2014,7 +2028,7 @@ export default function ModuleShow({
                         >
                             <SessionsTabContent
                                 sessions={sessions}
-                                moduleId={module.id}
+                                onCreateSession={() => setActiveTab('workflow')}
                             />
                         </TabsContent>
 
@@ -2082,7 +2096,7 @@ export default function ModuleShow({
                                         <FileText className="size-5 text-blue-400" />
                                     }
                                     label="Export PDF"
-                                    href={`/modules/${module.id}`}
+                                    href={moduleRoutes.show.url(module.id)}
                                     colorClass="bg-blue-500/10"
                                 />
                                 <StudioCard
@@ -2108,7 +2122,7 @@ export default function ModuleShow({
                                         <Edit className="size-5 text-slate-400" />
                                     }
                                     label="Edit Module"
-                                    href={`/modules/${module.id}/edit`}
+                                    href={moduleRoutes.edit.url(module.id)}
                                     colorClass="bg-slate-500/10"
                                 />
                                 <StudioCard
@@ -2227,7 +2241,7 @@ export default function ModuleShow({
 
 ModuleShow.layout = (page: PageProps) => ({
     breadcrumbs: [
-        { title: 'Modules', href: '/modules' },
-        { title: page.module.code, href: `/modules/${page.module.id}` },
+        { title: 'Modules', href: moduleRoutes.index.url() },
+        { title: page.module.code, href: moduleRoutes.show.url(page.module.id) },
     ],
 });

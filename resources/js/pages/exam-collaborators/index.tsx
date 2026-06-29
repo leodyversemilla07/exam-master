@@ -39,6 +39,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/page-header';
 import type { BreadcrumbItem } from '@/types';
+import * as examBuilder from '@/routes/exam-builder';
+import examBuilderCollaborators from '@/routes/exam-builder/collaborators';
 
 interface Collaborator {
     id: number;
@@ -98,7 +100,7 @@ export default function ExamCollaboratorsIndex({
         }
 
         router.post(
-            `/exam-builder/${exam.id}/collaborators`,
+            examBuilderCollaborators.store.url(exam.id),
             {
                 user_id: selectedUser,
                 role,
@@ -123,7 +125,7 @@ export default function ExamCollaboratorsIndex({
                 `Are you sure you want to remove ${userName} from this exam?`,
             )
         ) {
-            router.delete(`/exam-builder/${exam.id}/collaborators/${userId}`, {
+            router.delete(examBuilderCollaborators.destroy.url({ exam: exam.id, user: userId }), {
                 onSuccess: () => {
                     // Refresh handled by Inertia
                 },
@@ -139,11 +141,11 @@ export default function ExamCollaboratorsIndex({
             )
         ) {
             router.post(
-                `/exam-builder/${exam.id}/collaborators/leave`,
+                examBuilderCollaborators.leave.url(exam.id),
                 {} as any,
                 {
                     onSuccess: () => {
-                        window.location.href = '/exam-builder';
+                        window.location.href = examBuilder.index.url();
                     },
                 } as any,
             );
@@ -156,7 +158,7 @@ export default function ExamCollaboratorsIndex({
         newCanDelete: boolean,
     ) => {
         router.patch(
-            `/exam-builder/${exam.id}/collaborators/${userId}`,
+            examBuilderCollaborators.update.url({ exam: exam.id, user: userId }),
             {
                 role: newRole,
                 can_delete: newCanDelete,
@@ -183,7 +185,7 @@ export default function ExamCollaboratorsIndex({
                         description={`Manage collaborators for "${exam.title}"`}
                         actions={
                             <>
-                                <Link href={`/exam-builder/${exam.id}`}>
+                                <Link href={examBuilder.index.url()}>
                                     <Button variant="outline" size="sm">
                                         Back to Exam
                                     </Button>
@@ -564,7 +566,7 @@ export default function ExamCollaboratorsIndex({
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Exam Builder', href: '/exam-builder' },
+    { title: 'Exam Builder', href: examBuilder.index.url() },
     { title: 'Exam Details', href: '' },
     { title: 'Collaborators', href: '' },
 ];

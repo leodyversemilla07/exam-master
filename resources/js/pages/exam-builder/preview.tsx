@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import * as examBuilder from '@/routes/exam-builder';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +51,7 @@ export default function Preview({ exam, template }: PageProps) {
                 <div className="mx-auto max-w-5xl space-y-8">
                     {/* Controls */}
                     <div className="flex items-center justify-between print:hidden">
-                        <Button variant="ghost" render={<Link href={`/exam-builder/${exam.id}`} />} nativeButton={false}>
+                        <Button variant="ghost" render={<Link href={examBuilder.index.url()} />} nativeButton={false}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Details
                         </Button>
@@ -312,7 +313,7 @@ export default function Preview({ exam, template }: PageProps) {
 
 Preview.layout = {
     breadcrumbs: [
-        { title: 'Exam Builder', href: '/exam-builder' },
+        { title: 'Exam Builder', href: examBuilder.index.url() },
         { title: 'Exam Preview', href: '' },
     ],
 };

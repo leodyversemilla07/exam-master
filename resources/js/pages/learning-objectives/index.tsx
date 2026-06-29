@@ -9,6 +9,8 @@ import type {
     CognitiveLevel,
 } from '@/types/models';
 import { Button } from '@/components/ui/button';
+import * as moduleRoutes from '@/routes/modules';
+import * as topicRoutes from '@/routes/modules/topics';
 import {
     Card,
     CardContent,
@@ -471,12 +473,12 @@ export default function LearningObjectivesIndex({
 
 LearningObjectivesIndex.layout = (page: Props) => ({
     breadcrumbs: [
-        { title: 'Modules', href: '/modules' },
-        { title: page.module.name, href: `/modules/${page.module.id}` },
-        { title: 'Topics', href: `/modules/${page.module.id}/topics` },
+        { title: 'Modules', href: moduleRoutes.index.url() },
+        { title: page.module.name, href: moduleRoutes.show.url(page.module.id) },
+        { title: 'Topics', href: topicRoutes.index.url(page.module.id) },
         {
             title: page.topic.title,
-            href: `/modules/${page.module.id}/topics/${page.topic.id}`,
+            href: topicRoutes.show.url({ module: page.module.id, topic: page.topic.id }),
         },
         { title: 'Learning Objectives', href: '#' },
     ],

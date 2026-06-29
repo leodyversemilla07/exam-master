@@ -167,12 +167,12 @@ export default function ExamBuilderIndex({
             ...newFilters,
         };
 
-        router.get('/exam-builder', currentFilters, { preserveState: true });
+        router.get(examBuilder.index.url(), currentFilters, { preserveState: true });
     };
 
     const confirmDelete = () => {
         if (deletingExam) {
-            router.delete(`/exam-builder/${deletingExam.id}`, {
+            router.delete(examBuilder.destroy.url({ exam_builder: deletingExam.id }), {
                 onSuccess: () => setDeletingExam(null),
             });
         }

@@ -30,6 +30,7 @@ import {
     edit,
     extractFromPdf,
 } from '@/actions/App/Http/Controllers/ModuleController';
+import { index as modulesIndex, create as moduleCreate } from '@/routes/modules';
 import {
     Empty,
     EmptyHeader,
@@ -591,10 +592,10 @@ export default function ModuleForm({ module }: Props) {
 
 ModuleForm.layout = (page: Props) => ({
     breadcrumbs: [
-        { title: 'Modules', href: '/modules' },
+        { title: 'Modules', href: modulesIndex.url() },
         {
             title: page.module ? 'Edit Module' : 'Create Module',
-            href: page.module ? edit.url(page.module.id) : '/modules/create',
+            href: page.module ? edit.url(page.module.id) : moduleCreate.url(),
         },
     ],
 });

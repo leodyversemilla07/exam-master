@@ -10,6 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { Module, ExamQuestion } from '@/types/models';
 import PageHeader from '@/components/page-header';
+import * as moduleRoutes from '@/routes/modules';
 
 interface DuplicateMatch {
     question: ExamQuestion;
@@ -411,11 +412,11 @@ export default function DuplicateDetectionIndex({
 
 DuplicateDetectionIndex.layout = (page: PageProps) => ({
     breadcrumbs: [
-        { title: 'Modules', href: '/modules' },
-        { title: page.module.name, href: `/modules/${page.module.id}` },
+        { title: 'Modules', href: moduleRoutes.index.url() },
+        { title: page.module.name, href: moduleRoutes.show.url(page.module.id) },
         {
             title: 'Duplicate Detection',
-            href: `/duplicate-detection/${page.module.id}`,
+            href: moduleRoutes.duplicateDetection.url(page.module.id),
         },
     ],
 });
