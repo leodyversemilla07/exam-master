@@ -143,8 +143,8 @@ class StudentExamController extends Controller
 
         $session = $attempt->examSession;
 
-        if ($session->time_limit_minutes && $attempt->getTimeRemainingSeconds() <= 0) {
-            $attempt->submit();
+        if ($this->attemptHasExpired($attempt)) {
+            $this->submitAttempt($attempt);
 
             return redirect()->route('student.exam.results', $attempt);
         }
@@ -193,6 +193,15 @@ class StudentExamController extends Controller
             return response()->json(['error' => 'Exam already submitted'], 400);
         }
 
+        if ($this->attemptHasExpired($attempt)) {
+            $this->submitAttempt($attempt);
+
+            return response()->json([
+                'error' => 'Exam time has expired.',
+                'redirect_url' => route('student.exam.results', $attempt),
+            ], 409);
+        }
+
         $request->validate([
             'answer_id' => ['nullable', 'exists:student_answers,id'],
             'answer' => ['nullable', 'string'],
@@ -202,6 +211,8 @@ class StudentExamController extends Controller
         ]);
 
         if ($request->has('is_flagged') && $request->has('question_id')) {
+            abort_unless($attempt->answers()->where('exam_question_id', $request->integer('question_id'))->exists(), 422);
+
             $metadata = $attempt->metadata ?? [];
             $flags = $metadata['flagged_questions'] ?? [];
 
@@ -243,11 +254,7 @@ class StudentExamController extends Controller
             return redirect()->route('student.exam.results', $attempt);
         }
 
-        foreach ($attempt->answers as $answer) {
-            $answer->autoGrade();
-        }
-
-        $attempt->submit();
+        $this->submitAttempt($attempt);
 
         return redirect()->route('student.exam.results', $attempt);
     }
@@ -322,5 +329,28 @@ class StudentExamController extends Controller
         return Inertia::render('student/exam/history', [
             'attempts' => $attempts,
         ]);
+    }
+
+    private function attemptHasExpired(ExamAttempt $attempt): bool
+    {
+        $session = $attempt->examSession;
+
+        return $session->isExpired()
+            || ($session->time_limit_minutes && $attempt->getTimeRemainingSeconds() <= 0);
+    }
+
+    private function submitAttempt(ExamAttempt $attempt): void
+    {
+        if (! $attempt->isInProgress()) {
+            return;
+        }
+
+        $attempt->loadMissing('answers.question');
+
+        foreach ($attempt->answers as $answer) {
+            $answer->autoGrade();
+        }
+
+        $attempt->submit();
     }
 }

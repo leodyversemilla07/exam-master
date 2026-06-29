@@ -367,6 +367,7 @@ test('student can submit exam and receive score', function () {
 
     $attempt->refresh();
     expect($attempt->status)->toBe('submitted');
+    expect($attempt->time_spent_seconds)->toBeGreaterThan(0);
     expect((float) $attempt->score)->toBe(2.0);
     expect((float) $attempt->percentage)->toBe(100.0);
 });
@@ -1153,4 +1154,118 @@ test('student dashboard calculates stats correctly', function () {
             ->where('stats.average_score', 80)
             ->where('stats.in_progress', 1);
     });
+});
+
+test('student cannot save answers after time limit expires', function () {
+    $student = User::factory()->create();
+    $student->assignRole('student');
+
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create([
+        'module_id' => $module->id,
+        'status' => 'published',
+    ]);
+
+    $question = ExamQuestion::factory()->create([
+        'module_id' => $module->id,
+        'question_type' => 'multiple_choice',
+        'correct_answer' => 'A',
+    ]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $question->id,
+        'order' => 1,
+        'points' => 1,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Timed Session',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addHour(),
+        'time_limit_minutes' => 1,
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => $student->id,
+        'attempt_number' => 1,
+        'started_at' => now()->subMinutes(5),
+        'status' => 'in_progress',
+    ]);
+
+    $answer = StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $question->id,
+        'max_points' => 1,
+    ]);
+
+    $this->actingAs($student)
+        ->post(route('student.exam.save-answer', $attempt), [
+            'answer_id' => $answer->id,
+            'answer' => 'A',
+        ])
+        ->assertStatus(409)
+        ->assertJsonPath('error', 'Exam time has expired.');
+
+    expect($answer->fresh()->answer)->toBeNull();
+    expect($attempt->fresh()->status)->toBe('submitted');
+});
+
+test('student cannot flag a question outside their attempt', function () {
+    $student = User::factory()->create();
+    $student->assignRole('student');
+
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create([
+        'module_id' => $module->id,
+        'status' => 'published',
+    ]);
+
+    $attemptQuestion = ExamQuestion::factory()->create(['module_id' => $module->id]);
+    $outsideQuestion = ExamQuestion::factory()->create(['module_id' => $module->id]);
+
+    ExamItem::create([
+        'exam_id' => $exam->id,
+        'exam_question_id' => $attemptQuestion->id,
+        'order' => 1,
+        'points' => 1,
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Flag Session',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addHour(),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+    ]);
+
+    $attempt = ExamAttempt::create([
+        'exam_session_id' => $session->id,
+        'user_id' => $student->id,
+        'attempt_number' => 1,
+        'started_at' => now(),
+        'status' => 'in_progress',
+    ]);
+
+    StudentAnswer::create([
+        'exam_attempt_id' => $attempt->id,
+        'exam_question_id' => $attemptQuestion->id,
+        'max_points' => 1,
+    ]);
+
+    $this->actingAs($student)
+        ->post(route('student.exam.save-answer', $attempt), [
+            'question_id' => $outsideQuestion->id,
+            'is_flagged' => true,
+        ])
+        ->assertStatus(422);
+
+    expect($attempt->fresh()->metadata)->toBeNull();
 });

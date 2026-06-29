@@ -104,7 +104,7 @@ class ExamAttempt extends Model
     public function submit(): void
     {
         $this->submitted_at = now();
-        $this->time_spent_seconds = now()->diffInSeconds($this->started_at);
+        $this->time_spent_seconds = max(0, (int) $this->started_at->diffInSeconds(now()));
         $this->status = 'submitted';
         $this->save();
 
