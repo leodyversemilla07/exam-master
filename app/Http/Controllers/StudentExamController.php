@@ -36,6 +36,12 @@ class StudentExamController extends Controller
             ]);
         }
 
+        if (! $session->isUserAllowed(auth()->user())) {
+            return back()->withErrors([
+                'access_code' => 'You are not allowed to join this exam.',
+            ]);
+        }
+
         if (! $session->canUserAttempt(auth()->user())) {
             return back()->withErrors([
                 'access_code' => 'You have reached the maximum number of attempts for this exam.',

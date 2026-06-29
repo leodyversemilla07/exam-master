@@ -53,7 +53,11 @@ class ExamSessionController extends Controller
             'show_results_immediately' => ['boolean'],
             'show_correct_answers' => ['boolean'],
             'allow_review' => ['boolean'],
+            'allowed_students' => ['nullable', 'array'],
+            'allowed_students.*' => ['required', 'email'],
         ]);
+
+        $this->normalizeAllowedStudents($validated);
 
         $exam = Exam::query()->findOrFail($validated['exam_id']);
 
@@ -141,8 +145,12 @@ class ExamSessionController extends Controller
             'show_results_immediately' => ['boolean'],
             'show_correct_answers' => ['boolean'],
             'allow_review' => ['boolean'],
+            'allowed_students' => ['nullable', 'array'],
+            'allowed_students.*' => ['required', 'email'],
             'status' => ['required', 'in:draft,active,ended'],
         ]);
+
+        $this->normalizeAllowedStudents($validated);
 
         // Calculate time limit from session duration
         $startTime = new \DateTime($validated['start_time']);
@@ -270,6 +278,23 @@ class ExamSessionController extends Controller
         if (! auth()->user()->isAdmin() && $session->created_by !== auth()->id()) {
             abort(403);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    private function normalizeAllowedStudents(array &$validated): void
+    {
+        if (! array_key_exists('allowed_students', $validated)) {
+            return;
+        }
+
+        $validated['allowed_students'] = collect($validated['allowed_students'] ?? [])
+            ->map(fn (string $email): string => Str::lower(trim($email)))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     private function canAccessExam(Exam $exam): bool

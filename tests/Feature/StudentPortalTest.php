@@ -70,6 +70,7 @@ test('educator can create an exam session', function () {
         'show_results_immediately' => true,
         'show_correct_answers' => false,
         'allow_review' => true,
+        'allowed_students' => ['STUDENT@Example.COM'],
     ]);
 
     $response->assertRedirect();
@@ -77,6 +78,9 @@ test('educator can create an exam session', function () {
         'title' => 'Test Session',
         'exam_id' => $exam->id,
     ]);
+
+    expect(ExamSession::where('title', 'Test Session')->first()->allowed_students)
+        ->toBe(['student@example.com']);
 });
 
 test('exam session generates unique access code', function () {
@@ -129,6 +133,58 @@ test('student can join exam by access code', function () {
     ]);
 
     $response->assertRedirect("/student/exam/{$session->id}/start");
+});
+
+test('student can join restricted exam when email is allowed', function () {
+    $student = User::factory()->create(['email' => 'allowed@example.com']);
+    $student->assignRole('student');
+
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create([
+        'module_id' => $module->id,
+        'status' => 'published',
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Restricted Session',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDays(1),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+        'allowed_students' => ['ALLOWED@example.com'],
+    ]);
+
+    $this->actingAs($student)
+        ->post('/student/join-exam', ['access_code' => $session->access_code])
+        ->assertRedirect("/student/exam/{$session->id}/start");
+});
+
+test('student cannot join restricted exam when not allowed', function () {
+    $student = User::factory()->create(['email' => 'blocked@example.com']);
+    $student->assignRole('student');
+
+    $module = Module::factory()->create();
+    $exam = Exam::factory()->create([
+        'module_id' => $module->id,
+        'status' => 'published',
+    ]);
+
+    $session = ExamSession::create([
+        'exam_id' => $exam->id,
+        'title' => 'Restricted Session',
+        'start_time' => now()->subHour(),
+        'end_time' => now()->addDays(1),
+        'max_attempts' => 1,
+        'created_by' => 1,
+        'status' => 'active',
+        'allowed_students' => ['allowed@example.com'],
+    ]);
+
+    $this->actingAs($student)
+        ->post('/student/join-exam', ['access_code' => $session->access_code])
+        ->assertSessionHasErrors(['access_code' => 'You are not allowed to join this exam.']);
 });
 
 test('student cannot join exam with invalid access code', function () {

@@ -100,11 +100,29 @@ class ExamSession extends Model
             return false;
         }
 
+        if (! $this->isUserAllowed($user)) {
+            return false;
+        }
+
         $attemptCount = $this->attempts()
             ->where('user_id', $user->id)
             ->count();
 
         return $attemptCount < $this->max_attempts;
+    }
+
+    public function isUserAllowed(User $user): bool
+    {
+        $allowedStudents = collect($this->allowed_students ?? [])
+            ->filter(fn ($identifier): bool => filled($identifier))
+            ->map(fn ($identifier): string => Str::lower(trim((string) $identifier)));
+
+        if ($allowedStudents->isEmpty()) {
+            return true;
+        }
+
+        return $allowedStudents->contains(Str::lower($user->email))
+            || $allowedStudents->contains((string) $user->id);
     }
 
     public function getUserAttempts(User $user): Collection
