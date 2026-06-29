@@ -9,6 +9,7 @@ use App\Models\ExamSession;
 use App\Models\Module;
 use App\Models\TosGenerate;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,22 +26,27 @@ class DashboardController extends Controller
             return $this->studentDashboard();
         }
 
+        $moduleQuery = $this->accessibleModulesQuery($user);
+        $questionQuery = $this->accessibleQuestionsQuery($user);
+        $examQuery = $this->accessibleExamsQuery($user);
+        $tosQuery = $this->accessibleTosQuery($user);
+
         $stats = [
-            'total_modules' => Module::count(),
-            'active_modules' => Module::where('is_active', true)->count(),
-            'total_questions' => ExamQuestion::count(),
-            'approved_questions' => ExamQuestion::where('is_approved', true)->count(),
-            'pending_questions' => ExamQuestion::where('is_approved', false)->count(),
-            'ai_generated_questions' => ExamQuestion::where('is_ai_generated', true)->count(),
-            'total_exams' => Exam::count(),
-            'published_exams' => Exam::where('status', 'published')->count(),
-            'draft_exams' => Exam::where('status', 'draft')->count(),
-            'total_tos' => TosGenerate::count(),
-            'completed_tos' => TosGenerate::where('status', 'completed')->count(),
-            'total_users' => User::count(),
+            'total_modules' => (clone $moduleQuery)->count(),
+            'active_modules' => (clone $moduleQuery)->where('is_active', true)->count(),
+            'total_questions' => (clone $questionQuery)->count(),
+            'approved_questions' => (clone $questionQuery)->where('is_approved', true)->count(),
+            'pending_questions' => (clone $questionQuery)->where('is_approved', false)->count(),
+            'ai_generated_questions' => (clone $questionQuery)->where('is_ai_generated', true)->count(),
+            'total_exams' => (clone $examQuery)->count(),
+            'published_exams' => (clone $examQuery)->where('status', 'published')->count(),
+            'draft_exams' => (clone $examQuery)->where('status', 'draft')->count(),
+            'total_tos' => (clone $tosQuery)->count(),
+            'completed_tos' => (clone $tosQuery)->where('status', 'completed')->count(),
+            'total_users' => $user->isAdmin() ? User::count() : 0,
         ];
 
-        $recentExams = Exam::with(['module', 'creator'])
+        $recentExams = (clone $examQuery)->with(['module', 'creator'])
             ->withCount('questions')
             ->latest()
             ->take(20)
@@ -100,5 +106,33 @@ class DashboardController extends Controller
             'recentResults' => $recentResults,
             'stats' => $stats,
         ]);
+    }
+
+    private function accessibleModulesQuery(User $user): Builder
+    {
+        return Module::query()
+            ->when(! $user->isAdmin(), fn ($query) => $query->where('created_by', $user->id));
+    }
+
+    private function accessibleQuestionsQuery(User $user): Builder
+    {
+        return ExamQuestion::query()
+            ->when(! $user->isAdmin(), fn ($query) => $query->where(fn ($ownedQuery) => $ownedQuery
+                ->where('created_by', $user->id)
+                ->orWhereHas('module', fn ($moduleQuery) => $moduleQuery->where('created_by', $user->id))));
+    }
+
+    private function accessibleExamsQuery(User $user): Builder
+    {
+        return Exam::query()
+            ->when(! $user->isAdmin(), fn ($query) => $query->where('created_by', $user->id));
+    }
+
+    private function accessibleTosQuery(User $user): Builder
+    {
+        return TosGenerate::query()
+            ->when(! $user->isAdmin(), fn ($query) => $query->where(fn ($ownedQuery) => $ownedQuery
+                ->where('created_by', $user->id)
+                ->orWhereHas('module', fn ($moduleQuery) => $moduleQuery->where('created_by', $user->id))));
     }
 }
