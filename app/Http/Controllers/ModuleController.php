@@ -219,7 +219,7 @@ class ModuleController extends Controller
         $processedPairs = [];
 
         foreach ($moduleQuestions as $question) {
-            $matches = $duplicateDetector->findDuplicates($question, 60.0);
+            $matches = $duplicateDetector->findDuplicates($question, 0.60);
             if ($matches->isNotEmpty()) {
                 $duplicateGroup = ['question' => $question, 'matches' => []];
                 foreach ($matches as $match) {
@@ -230,11 +230,11 @@ class ModuleController extends Controller
                     $processedPairs[] = $pairKey;
                     $duplicateGroup['matches'][] = [
                         'question' => $match['question'],
-                        'similarity_score' => $match['similarity_score'],
-                        'matching_aspects' => $match['matching_aspects'],
+                        'similarity_score' => $match['similarity'],
+                        'matching_aspects' => [$match['match_type']],
                     ];
-                    if ($match['similarity_score'] > $duplicateStats['highest_similarity']) {
-                        $duplicateStats['highest_similarity'] = $match['similarity_score'];
+                    if ($match['similarity'] > $duplicateStats['highest_similarity']) {
+                        $duplicateStats['highest_similarity'] = $match['similarity'];
                     }
                 }
                 if (! empty($duplicateGroup['matches'])) {

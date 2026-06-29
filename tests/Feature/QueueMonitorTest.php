@@ -72,3 +72,16 @@ test('can clear all failed jobs', function () {
     $response->assertRedirect();
     $this->assertEquals(0, DB::table('failed_jobs')->count());
 });
+
+test('admin without queue permissions cannot manage queue monitor', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $this->actingAs($admin)
+        ->get(route('queue-monitor.index'))
+        ->assertForbidden();
+
+    $this->actingAs($admin)
+        ->post(route('queue-monitor.clear'))
+        ->assertForbidden();
+});

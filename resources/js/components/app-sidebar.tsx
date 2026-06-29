@@ -94,13 +94,13 @@ const mainNavItems: NavItem[] = [
         title: 'System Logs',
         href: systemLogs(),
         icon: ScrollText,
-        permission: 'view users',
+        permission: 'view system logs',
     },
     {
         title: 'Queue Monitor',
         href: queueMonitor(),
         icon: Activity,
-        permission: 'view users',
+        permission: 'view queue monitor',
     },
 ];
 

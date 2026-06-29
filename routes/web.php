@@ -205,6 +205,7 @@ Route::get('exam-builder/{examId}/preview', [ExamBuilderController::class, 'prev
     ->middleware(['auth', 'verified', 'permission:view exams']);
 
 Route::resource('exam-templates', ExamTemplateController::class)
+    ->except(['show'])
     ->middleware(['auth', 'verified']);
 
 // Topic Management Routes
@@ -317,40 +318,40 @@ Route::get('analytics/export-student-performance', [AnalyticsController::class, 
 // System Logs Routes
 Route::get('system-logs', [SystemLogsController::class, 'index'])
     ->name('system-logs.index')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:view system logs']);
 
 Route::get('system-logs/logs', [SystemLogsController::class, 'getLogs'])
     ->name('system-logs.logs')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:view system logs']);
 
 Route::post('system-logs/clear', [SystemLogsController::class, 'clearLogs'])
     ->name('system-logs.clear')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:manage system logs']);
 
 Route::get('system-logs/download', [SystemLogsController::class, 'downloadLogs'])
     ->name('system-logs.download')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:view system logs']);
 
 // Queue Monitor Routes
 Route::get('queue-monitor', [QueueMonitorController::class, 'index'])
     ->name('queue-monitor.index')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:view queue monitor']);
 
 Route::get('queue-monitor/stats', [QueueMonitorController::class, 'getStats'])
     ->name('queue-monitor.stats')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:view queue monitor']);
 
 Route::post('queue-monitor/retry', [QueueMonitorController::class, 'retryJob'])
     ->name('queue-monitor.retry')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:manage queue monitor']);
 
 Route::delete('queue-monitor/job', [QueueMonitorController::class, 'deleteJob'])
     ->name('queue-monitor.delete')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:manage queue monitor']);
 
 Route::post('queue-monitor/clear', [QueueMonitorController::class, 'clearFailedJobs'])
     ->name('queue-monitor.clear')
-    ->middleware(['auth', 'verified', 'permission:view users']);
+    ->middleware(['auth', 'verified', 'permission:manage queue monitor']);
 
 // Exam Sessions Routes (for educators)
 Route::resource('exam-sessions', ExamSessionController::class)

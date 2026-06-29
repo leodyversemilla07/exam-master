@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class StoreUserRequest extends FormRequest
 {
@@ -32,7 +33,24 @@ class StoreUserRequest extends FormRequest
                 'min:8',
                 'confirmed',
             ],
+            'role' => ['nullable', 'string', Rule::in($this->assignableRoleNames())],
         ];
+    }
+
+    /**
+     * Get the roles the current user may assign.
+     *
+     * @return array<int, string>
+     */
+    private function assignableRoleNames(): array
+    {
+        $roles = Role::query()->pluck('name')->all();
+
+        if ($this->user()?->hasRole('super-admin')) {
+            return $roles;
+        }
+
+        return array_values(array_filter($roles, fn (string $role): bool => $role !== 'super-admin'));
     }
 
     /**
@@ -48,6 +66,7 @@ class StoreUserRequest extends FormRequest
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
+            'role.in' => 'You are not allowed to assign the selected role.',
         ];
     }
 }

@@ -10,6 +10,8 @@ class TosCalculatorController extends Controller
 {
     public function index(Module $module): Response
     {
+        abort_unless(auth()->user()->isAdmin() || $module->created_by === auth()->id(), 403);
+
         $module->load(['topics.learningObjectives' => function ($query) {
             $query->where('is_active', true)->orderBy('order');
         }]);

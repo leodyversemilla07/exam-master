@@ -17,7 +17,7 @@ class SystemLogsController extends Controller
      */
     public function index(): Response
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('view system logs'), 403);
 
         return Inertia::render('system-logs/index');
     }
@@ -27,7 +27,7 @@ class SystemLogsController extends Controller
      */
     public function getLogs(Request $request): JsonResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('view system logs'), 403);
 
         $validated = $request->validate([
             'lines' => 'nullable|integer|min:10|max:1000',
@@ -115,7 +115,7 @@ class SystemLogsController extends Controller
      */
     public function clearLogs(): JsonResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('manage system logs'), 403);
 
         $logPath = storage_path('logs/laravel.log');
 
@@ -143,7 +143,7 @@ class SystemLogsController extends Controller
      */
     public function downloadLogs(): BinaryFileResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('view system logs'), 403);
 
         // Rate limiting: max 5 downloads per hour per user
         $rateLimitKey = 'log-download:'.auth()->id();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ExamQuestion;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -90,6 +91,32 @@ it('displays module detail page', function () {
         ->assertInertia(fn ($page) => $page
             ->component('modules/show')
             ->has('module')
+        );
+});
+
+it('includes duplicate statistics for similar approved questions', function () {
+    $module = Module::factory()->create(['created_by' => $this->user->id]);
+
+    ExamQuestion::factory()->approved()->create([
+        'module_id' => $module->id,
+        'created_by' => $this->user->id,
+        'question_type' => 'essay',
+        'question' => 'Explain the process of photosynthesis in plants.',
+    ]);
+
+    ExamQuestion::factory()->approved()->create([
+        'module_id' => $module->id,
+        'created_by' => $this->user->id,
+        'question_type' => 'essay',
+        'question' => 'Explain the process of photosynthesis in plants.',
+    ]);
+
+    get(route('modules.show', $module))
+        ->assertSuccessful()
+        ->assertInertia(fn ($page) => $page
+            ->where('duplicateStats.duplicate_groups', 1)
+            ->where('duplicateStats.highest_similarity', 100)
+            ->has('duplicates.0.matches.0')
         );
 });
 

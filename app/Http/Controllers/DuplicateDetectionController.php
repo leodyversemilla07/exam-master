@@ -16,6 +16,8 @@ class DuplicateDetectionController extends Controller
 
     public function index(Module $module): Response
     {
+        abort_unless(auth()->user()->isAdmin() || $module->created_by === auth()->id(), 403);
+
         $questions = ExamQuestion::where('module_id', $module->id)
             ->where('is_approved', true)
             ->get();
@@ -31,7 +33,7 @@ class DuplicateDetectionController extends Controller
         $processedPairs = [];
 
         foreach ($questions as $question) {
-            $matches = $this->duplicateDetector->findDuplicates($question, 60.0);
+            $matches = $this->duplicateDetector->findDuplicates($question, 0.60);
 
             if ($matches->isNotEmpty()) {
                 $duplicateGroup = [
@@ -55,12 +57,12 @@ class DuplicateDetectionController extends Controller
 
                     $duplicateGroup['matches'][] = [
                         'question' => $match['question'],
-                        'similarity_score' => $match['similarity_score'],
-                        'matching_aspects' => $match['matching_aspects'],
+                        'similarity_score' => $match['similarity'],
+                        'matching_aspects' => [$match['match_type']],
                     ];
 
-                    if ($match['similarity_score'] > $statistics['highest_similarity']) {
-                        $statistics['highest_similarity'] = $match['similarity_score'];
+                    if ($match['similarity'] > $statistics['highest_similarity']) {
+                        $statistics['highest_similarity'] = $match['similarity'];
                     }
                 }
 

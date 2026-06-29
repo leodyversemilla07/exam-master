@@ -7,15 +7,16 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class QueueMonitorController extends Controller
 {
     /**
      * Display the queue monitor.
      */
-    public function index()
+    public function index(): Response
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('view queue monitor'), 403);
 
         return Inertia::render('queue-monitor/index');
     }
@@ -25,7 +26,7 @@ class QueueMonitorController extends Controller
      */
     public function getStats(): JsonResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('view queue monitor'), 403);
 
         try {
             // Get failed jobs count
@@ -71,7 +72,7 @@ class QueueMonitorController extends Controller
      */
     public function retryJob(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('manage queue monitor'), 403);
 
         $validated = $request->validate([
             'id' => 'required|integer',
@@ -93,7 +94,7 @@ class QueueMonitorController extends Controller
      */
     public function deleteJob(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('manage queue monitor'), 403);
 
         $validated = $request->validate([
             'id' => 'required|integer',
@@ -113,7 +114,7 @@ class QueueMonitorController extends Controller
      */
     public function clearFailedJobs(): RedirectResponse
     {
-        abort_unless(auth()->user()->can('view users'), 403);
+        abort_unless(auth()->user()->can('manage queue monitor'), 403);
 
         try {
             $count = DB::table('failed_jobs')->count();

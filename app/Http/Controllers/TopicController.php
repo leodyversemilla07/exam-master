@@ -16,6 +16,8 @@ class TopicController extends Controller
      */
     public function index(Module $module): Response
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         $topics = $module->topics()
             ->with(['parent', 'children', 'learningObjectives'])
             ->get();
@@ -31,6 +33,8 @@ class TopicController extends Controller
      */
     public function create(Module $module): Response
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         $topics = $module->topics()->get();
 
         return Inertia::render('topics/form', [
@@ -44,6 +48,8 @@ class TopicController extends Controller
      */
     public function store(Request $request, Module $module): RedirectResponse
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         $validated = $request->validate([
             'code' => 'required|string|max:50',
             'title' => 'required|string|max:255',
@@ -54,6 +60,10 @@ class TopicController extends Controller
             'weight_percentage' => 'nullable|numeric|min:0|max:100',
             'is_active' => 'boolean',
         ]);
+
+        if (isset($validated['parent_id'])) {
+            abort_unless($module->topics()->whereKey($validated['parent_id'])->exists(), 422);
+        }
 
         $validated['module_id'] = $module->id;
 
@@ -73,6 +83,7 @@ class TopicController extends Controller
      */
     public function show(Module $module, Topic $topic): Response
     {
+        abort_unless($this->canAccessModule($module), 403);
         abort_unless($topic->module_id === $module->id, 404);
 
         $topic->load([
@@ -92,6 +103,7 @@ class TopicController extends Controller
      */
     public function edit(Module $module, Topic $topic): Response
     {
+        abort_unless($this->canAccessModule($module), 403);
         abort_unless($topic->module_id === $module->id, 404);
 
         $availableParents = $module->topics()
@@ -110,6 +122,7 @@ class TopicController extends Controller
      */
     public function update(Request $request, Module $module, Topic $topic): RedirectResponse
     {
+        abort_unless($this->canAccessModule($module), 403);
         abort_unless($topic->module_id === $module->id, 404);
 
         $validated = $request->validate([
@@ -123,6 +136,10 @@ class TopicController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        if (isset($validated['parent_id'])) {
+            abort_unless($module->topics()->whereKey($validated['parent_id'])->whereKeyNot($topic->id)->exists(), 422);
+        }
+
         $topic->update($validated);
 
         return redirect()
@@ -135,6 +152,7 @@ class TopicController extends Controller
      */
     public function destroy(Module $module, Topic $topic): RedirectResponse
     {
+        abort_unless($this->canAccessModule($module), 403);
         abort_unless($topic->module_id === $module->id, 404);
 
         $topic->delete();
@@ -149,11 +167,17 @@ class TopicController extends Controller
      */
     public function reorder(Request $request, Module $module): RedirectResponse
     {
+        abort_unless($this->canAccessModule($module), 403);
+
         $validated = $request->validate([
             'topics' => 'required|array',
             'topics.*.id' => 'required|exists:topics,id',
             'topics.*.order' => 'required|integer|min:0',
         ]);
+
+        $topicIds = collect($validated['topics'])->pluck('id');
+
+        abort_unless($module->topics()->whereIn('id', $topicIds)->count() === $topicIds->count(), 422);
 
         foreach ($validated['topics'] as $topicData) {
             Topic::where('id', $topicData['id'])
@@ -162,5 +186,10 @@ class TopicController extends Controller
         }
 
         return back()->with('success', 'Topics reordered successfully.');
+    }
+
+    private function canAccessModule(Module $module): bool
+    {
+        return auth()->user()->isAdmin() || $module->created_by === auth()->id();
     }
 }

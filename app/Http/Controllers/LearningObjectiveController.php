@@ -17,7 +17,7 @@ class LearningObjectiveController extends Controller
      */
     public function index(Module $module, Topic $topic): Response
     {
-        abort_unless($topic->module_id === $module->id, 404);
+        $this->authorizeTopic($module, $topic);
 
         $objectives = $topic->learningObjectives()
             ->orderBy('order')
@@ -35,7 +35,7 @@ class LearningObjectiveController extends Controller
      */
     public function store(Request $request, Module $module, Topic $topic): RedirectResponse
     {
-        abort_unless($topic->module_id === $module->id, 404);
+        $this->authorizeTopic($module, $topic);
 
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:learning_objectives,code',
@@ -62,8 +62,7 @@ class LearningObjectiveController extends Controller
      */
     public function update(Request $request, Module $module, Topic $topic, LearningObjective $objective): RedirectResponse
     {
-        abort_unless($topic->module_id === $module->id, 404);
-        abort_unless($objective->topic_id === $topic->id, 404);
+        $this->authorizeObjective($module, $topic, $objective);
 
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:learning_objectives,code,'.$objective->id,
@@ -84,8 +83,7 @@ class LearningObjectiveController extends Controller
      */
     public function destroy(Module $module, Topic $topic, LearningObjective $objective): RedirectResponse
     {
-        abort_unless($topic->module_id === $module->id, 404);
-        abort_unless($objective->topic_id === $topic->id, 404);
+        $this->authorizeObjective($module, $topic, $objective);
 
         $objective->delete();
 
@@ -97,13 +95,17 @@ class LearningObjectiveController extends Controller
      */
     public function reorder(Request $request, Module $module, Topic $topic): RedirectResponse
     {
-        abort_unless($topic->module_id === $module->id, 404);
+        $this->authorizeTopic($module, $topic);
 
         $validated = $request->validate([
             'objectives' => 'required|array',
             'objectives.*.id' => 'required|exists:learning_objectives,id',
             'objectives.*.order' => 'required|integer|min:0',
         ]);
+
+        $objectiveIds = collect($validated['objectives'])->pluck('id');
+
+        abort_unless($topic->learningObjectives()->whereIn('id', $objectiveIds)->count() === $objectiveIds->count(), 422);
 
         foreach ($validated['objectives'] as $objectiveData) {
             LearningObjective::where('id', $objectiveData['id'])
@@ -112,5 +114,22 @@ class LearningObjectiveController extends Controller
         }
 
         return back()->with('success', 'Learning objectives reordered successfully.');
+    }
+
+    private function authorizeTopic(Module $module, Topic $topic): void
+    {
+        abort_unless($this->canAccessModule($module), 403);
+        abort_unless($topic->module_id === $module->id, 404);
+    }
+
+    private function authorizeObjective(Module $module, Topic $topic, LearningObjective $objective): void
+    {
+        $this->authorizeTopic($module, $topic);
+        abort_unless($objective->topic_id === $topic->id, 404);
+    }
+
+    private function canAccessModule(Module $module): bool
+    {
+        return auth()->user()->isAdmin() || $module->created_by === auth()->id();
     }
 }

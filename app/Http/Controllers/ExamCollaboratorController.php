@@ -19,7 +19,7 @@ class ExamCollaboratorController extends Controller
     {
         $exam->load(['collaborators', 'creator']);
 
-        abort_unless($exam->created_by === auth()->id() || $exam->collaborators->contains(auth()->id()), 403);
+        abort_unless($this->canManageExam($exam) || $exam->collaborators->contains(auth()->id()), 403);
 
         return Inertia::render('exam-collaborators/index', [
             'exam' => $exam,
@@ -34,6 +34,8 @@ class ExamCollaboratorController extends Controller
      */
     public function store(Request $request, Exam $exam): RedirectResponse
     {
+        abort_unless($this->canManageExam($exam), 403, 'You can only add collaborators to exams you own.');
+
         $request->validate([
             'user_id' => ['required', 'exists:users,id', 'not_in:'.$exam->created_by],
             'role' => ['required', 'in:editor,viewer'],
@@ -62,7 +64,7 @@ class ExamCollaboratorController extends Controller
     public function update(Request $request, Exam $exam, User $user): RedirectResponse
     {
         // Only owner can update collaborator
-        abort_unless($exam->created_by === auth()->id(), 403, 'You can only update collaborators you own.');
+        abort_unless($this->canManageExam($exam), 403, 'You can only update collaborators you own.');
 
         // Check if user is a collaborator
         abort_unless($exam->collaborators()->where('user_id', $user->id)->exists(), 403);
@@ -81,7 +83,7 @@ class ExamCollaboratorController extends Controller
     public function destroy(Exam $exam, User $user): RedirectResponse
     {
         // Only owner can remove collaborator
-        abort_unless($exam->created_by === auth()->id(), 403, 'You can only remove collaborators from exams you own.');
+        abort_unless($this->canManageExam($exam), 403, 'You can only remove collaborators from exams you own.');
 
         abort_unless($exam->collaborators()->where('user_id', $user->id)->exists(), 403, 'User is not a collaborator.');
 
@@ -107,7 +109,7 @@ class ExamCollaboratorController extends Controller
     public function searchUsers(Request $request): JsonResponse
     {
         $exam = Exam::findOrFail($request->exam_id);
-        abort_unless($exam->created_by === auth()->id(), 403, 'You can only search users for exams you own.');
+        abort_unless($this->canManageExam($exam), 403, 'You can only search users for exams you own.');
 
         $excludedUserIds = [$exam->created_by, ...$exam->collaborators->pluck('id')->toArray()];
         $excludedUserIds = array_filter($excludedUserIds);
@@ -128,5 +130,10 @@ class ExamCollaboratorController extends Controller
             ]);
 
         return response()->json($users);
+    }
+
+    private function canManageExam(Exam $exam): bool
+    {
+        return auth()->user()->isAdmin() || $exam->created_by === auth()->id();
     }
 }

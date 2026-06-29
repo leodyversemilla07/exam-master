@@ -46,6 +46,55 @@ test('can create a user', function () {
     $this->assertTrue($user->hasRole('educator'));
 });
 
+test('super admin can assign super admin role', function () {
+    $response = $this->post(route('users.store'), [
+        'name' => 'Jane Doe',
+        'email' => 'jane@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'role' => 'super-admin',
+    ]);
+
+    $response->assertRedirect();
+
+    $user = User::where('email', 'jane@example.com')->first();
+
+    expect($user)->not->toBeNull();
+    expect($user->hasRole('super-admin'))->toBeTrue();
+});
+
+test('admin cannot assign super admin role', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $this->actingAs($admin)
+        ->post(route('users.store'), [
+            'name' => 'Privilege Escalation',
+            'email' => 'escalation@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'super-admin',
+        ])
+        ->assertSessionHasErrors('role');
+
+    $createdUser = User::where('email', 'escalation@example.com')->first();
+
+    expect($createdUser)->toBeNull();
+});
+
+test('admin cannot update super admin users', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $this->actingAs($admin)
+        ->put(route('users.update', $this->admin), [
+            'name' => 'Updated Super Admin',
+            'email' => $this->admin->email,
+            'role' => 'admin',
+        ])
+        ->assertForbidden();
+});
+
 test('can update a user', function () {
     $user = User::factory()->create(['name' => 'Old Name']);
 

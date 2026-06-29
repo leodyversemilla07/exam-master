@@ -52,3 +52,16 @@ test('can download logs', function () {
     $response->assertHeader('Content-Disposition');
     $this->assertStringContainsString('attachment; filename=laravel-', $response->headers->get('Content-Disposition'));
 });
+
+test('admin without system log permissions cannot access logs', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $this->actingAs($admin)
+        ->get(route('system-logs.index'))
+        ->assertForbidden();
+
+    $this->actingAs($admin)
+        ->postJson(route('system-logs.clear'))
+        ->assertForbidden();
+});

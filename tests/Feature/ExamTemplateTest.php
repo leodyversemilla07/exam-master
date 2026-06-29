@@ -6,6 +6,7 @@ use App\Models\ExamTemplate;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -29,6 +30,11 @@ class ExamTemplateTest extends TestCase
         foreach ($permissions as $permission) {
             Permission::findOrCreate($permission, 'web');
         }
+    }
+
+    public function test_show_route_is_not_registered_without_a_controller_action()
+    {
+        $this->assertFalse(Route::has('exam-templates.show'));
     }
 
     public function test_user_can_view_exam_templates()

@@ -38,7 +38,9 @@ class UserController extends Controller
         });
 
         // Get available roles for the dropdown
-        $roles = Role::all()->pluck('name');
+        $roles = Role::query()
+            ->when(! auth()->user()->hasRole('super-admin'), fn ($query) => $query->where('name', '!=', 'super-admin'))
+            ->pluck('name');
 
         return Inertia::render('users/index', [
             'users' => $users,
@@ -54,6 +56,10 @@ class UserController extends Controller
     {
         abort_unless(auth()->user()->can('create users'), 403);
 
+        $role = $request->input('role', 'educator');
+
+        abort_if($role === 'super-admin' && ! auth()->user()->hasRole('super-admin'), 403);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -63,7 +69,6 @@ class UserController extends Controller
         ]);
 
         // Assign role
-        $role = $request->input('role', 'educator');
         $user->assignRole($role);
 
         return back()->with('success', 'User created successfully.');
@@ -75,6 +80,7 @@ class UserController extends Controller
     public function update(StoreUserRequest $request, User $user): RedirectResponse
     {
         abort_unless(auth()->user()->can('edit users'), 403);
+        abort_unless($this->canManageUser($user), 403);
 
         $data = [
             'name' => $request->name,
@@ -90,7 +96,11 @@ class UserController extends Controller
 
         // Update role if provided
         if ($request->filled('role')) {
-            $user->syncRoles([$request->input('role')]);
+            $role = $request->input('role');
+
+            abort_if($role === 'super-admin' && ! auth()->user()->hasRole('super-admin'), 403);
+
+            $user->syncRoles([$role]);
         }
 
         return back()->with('success', 'User updated successfully.');
@@ -102,6 +112,7 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         abort_unless(auth()->user()->can('delete users'), 403);
+        abort_unless($this->canManageUser($user), 403);
 
         // Prevent deleting yourself
         if ($user->id === auth()->id()) {
@@ -119,6 +130,7 @@ class UserController extends Controller
     public function toggleActive(User $user): RedirectResponse
     {
         abort_unless(auth()->user()->can('edit users'), 403);
+        abort_unless($this->canManageUser($user), 403);
 
         // Prevent deactivating yourself
         if ($user->id === auth()->id()) {
@@ -130,5 +142,10 @@ class UserController extends Controller
         $status = $user->is_active ? 'activated' : 'deactivated';
 
         return back()->with('success', "User {$status} successfully.");
+    }
+
+    private function canManageUser(User $user): bool
+    {
+        return auth()->user()->hasRole('super-admin') || ! $user->hasRole('super-admin');
     }
 }

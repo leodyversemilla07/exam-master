@@ -26,6 +26,12 @@ class RolePermissionSeeder extends Seeder
             'edit users',
             'delete users',
 
+            // System operations
+            'view system logs',
+            'manage system logs',
+            'view queue monitor',
+            'manage queue monitor',
+
             // Module management
             'view modules',
             'create modules',
