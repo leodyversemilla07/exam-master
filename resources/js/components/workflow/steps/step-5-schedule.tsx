@@ -6,6 +6,7 @@ import {
     Settings,
     CheckCircle2,
     ExternalLink,
+    Users,
 } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
@@ -21,11 +22,31 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import type { Exam, ExamSession } from '@/types/models';
-import { store } from '@/routes/exam-sessions';
+import { preview as examBuilderPreview } from '@/routes/exam-builder';
+import { show as examSessionShow, store } from '@/routes/exam-sessions';
 
 interface Props {
     exam: Exam;
     onAdvance: (session: ExamSession) => void;
+}
+
+function parseAllowedStudents(value: string): string[] {
+    return value
+        .split(/[\n,]+/)
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean);
+}
+
+function getAllowedStudentsError(
+    errors: Record<string, string>,
+): string | null {
+    return (
+        errors.allowed_students ||
+        Object.entries(errors).find(([key]) =>
+            key.startsWith('allowed_students.'),
+        )?.[1] ||
+        null
+    );
 }
 
 export default function Step5Schedule({ exam, onAdvance }: Props) {
@@ -41,6 +62,7 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
         show_results_immediately: true,
         show_correct_answers: false,
         allow_review: true,
+        allowed_students: [] as string[],
     });
 
     const sessionDurationMinutes = (() => {
@@ -87,6 +109,8 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
             },
         });
     };
+
+    const allowedStudentsError = getAllowedStudentsError(errors);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -218,6 +242,42 @@ export default function Step5Schedule({ exam, onAdvance }: Props) {
                 </div>
             </div>
 
+            {/* Student Access */}
+            <div className="space-y-4 rounded-lg border p-4">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <Users className="size-4" />
+                    Student Access
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="wf5-allowed-students">
+                        Allowed Student Emails
+                    </Label>
+                    <Textarea
+                        id="wf5-allowed-students"
+                        value={data.allowed_students.join('\n')}
+                        onChange={(e) =>
+                            setData(
+                                'allowed_students',
+                                parseAllowedStudents(e.target.value),
+                            )
+                        }
+                        placeholder="student@example.com&#10;another.student@example.com"
+                        rows={4}
+                    />
+                    {allowedStudentsError && (
+                        <p className="text-sm text-destructive">
+                            {allowedStudentsError}
+                        </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                        {data.allowed_students.length > 0
+                            ? `${data.allowed_students.length} student email${data.allowed_students.length > 1 ? 's' : ''} allowed.`
+                            : 'Leave blank to allow any student with the access code.'}
+                    </p>
+                </div>
+            </div>
+
             {/* Options */}
             <div className="space-y-4 rounded-lg border p-4">
                 <p className="text-sm font-medium">Options</p>
@@ -311,11 +371,18 @@ export function Step5Done({
                 )}
             </div>
             <div className="flex gap-3">
-                <Button variant="outline" render={<Link href={`/exam-sessions/${session.id}`} />} nativeButton={false}>
+                <Button
+                    variant="outline"
+                    render={<Link href={examSessionShow.url(session.id)} />}
+                    nativeButton={false}
+                >
                     <ExternalLink className="mr-2 size-4" />
                     View Session
                 </Button>
-                <Button render={<Link href={`/exam-builder/${exam.id}`} />} nativeButton={false}>
+                <Button
+                    render={<Link href={examBuilderPreview.url(exam.id)} />}
+                    nativeButton={false}
+                >
                     <ExternalLink className="mr-2 size-4" />
                     View Exam
                 </Button>

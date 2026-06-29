@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/page-header';
+import { index, results } from '@/routes/exam-sessions';
 
 interface Match {
     student1: string;
@@ -35,8 +36,8 @@ interface PageProps {
 }
 
 const breadcrumbs = (props: PageProps) => [
-    { title: 'Exam Sessions', href: '/exam-sessions' },
-    { title: 'Results', href: `/exam-sessions/${props.session.id}/results` },
+    { title: 'Exam Sessions', href: index.url() },
+    { title: 'Results', href: results.url(props.session.id) },
     { title: 'Plagiarism Report', href: '#' },
 ];
 
@@ -47,7 +48,11 @@ export default function PlagiarismReport({ session, reports }: PageProps) {
 
             <div className="space-y-6 p-4 md:p-6">
                 <div className="mb-6">
-                    <Button variant="ghost" render={<Link href={`/exam-sessions/${session.id}/results`} />} nativeButton={false}>
+                    <Button
+                        variant="ghost"
+                        render={<Link href={results.url(session.id)} />}
+                        nativeButton={false}
+                    >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Results
                     </Button>

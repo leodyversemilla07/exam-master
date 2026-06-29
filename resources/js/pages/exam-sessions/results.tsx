@@ -379,7 +379,9 @@ export default function Results({ session, attempts }: PageProps) {
                                     variant="outline"
                                     render={
                                         <Link
-                                            href={`/exam-sessions/${session.id}/plagiarism`}
+                                            href={examSessions.plagiarism.url(
+                                                session.id,
+                                            )}
                                         />
                                     }
                                     nativeButton={false}

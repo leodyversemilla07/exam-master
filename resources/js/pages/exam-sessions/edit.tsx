@@ -1,5 +1,12 @@
 import { Head, useForm, Link } from '@inertiajs/react';
-import { Save, Clock, Calendar, Settings, AlertCircle } from 'lucide-react';
+import {
+    Save,
+    Clock,
+    Calendar,
+    Settings,
+    AlertCircle,
+    Users,
+} from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,6 +64,25 @@ function formatDateTimeLocal(dateString: string): string {
     return date.toISOString().slice(0, 16);
 }
 
+function parseAllowedStudents(value: string): string[] {
+    return value
+        .split(/[\n,]+/)
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean);
+}
+
+function getAllowedStudentsError(
+    errors: Record<string, string>,
+): string | null {
+    return (
+        errors.allowed_students ||
+        Object.entries(errors).find(([key]) =>
+            key.startsWith('allowed_students.'),
+        )?.[1] ||
+        null
+    );
+}
+
 export default function Edit({ session }: PageProps) {
     const { data, setData, put, processing, errors, isDirty } = useForm({
         title: session.title,
@@ -69,6 +95,7 @@ export default function Edit({ session }: PageProps) {
         show_results_immediately: session.show_results_immediately,
         show_correct_answers: session.show_correct_answers,
         allow_review: session.allow_review,
+        allowed_students: session.allowed_students ?? [],
         status: session.status,
     });
 
@@ -111,6 +138,7 @@ export default function Edit({ session }: PageProps) {
         session.exam &&
         'attempts_count' in session &&
         (session as any).attempts_count > 0;
+    const allowedStudentsError = getAllowedStudentsError(errors);
 
     return (
         <>
@@ -375,6 +403,50 @@ export default function Edit({ session }: PageProps) {
                             </CardContent>
                         </Card>
 
+                        {/* Student Access */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Users className="size-5" />
+                                    Student Access
+                                </CardTitle>
+                                <CardDescription>
+                                    Leave blank to let any student with the
+                                    access code join. Add one email per line to
+                                    restrict this session.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <Label htmlFor="allowed_students">
+                                    Allowed Student Emails
+                                </Label>
+                                <Textarea
+                                    id="allowed_students"
+                                    value={data.allowed_students.join('\n')}
+                                    onChange={(e) =>
+                                        setData(
+                                            'allowed_students',
+                                            parseAllowedStudents(
+                                                e.target.value,
+                                            ),
+                                        )
+                                    }
+                                    placeholder="student@example.com&#10;another.student@example.com"
+                                    rows={4}
+                                />
+                                {allowedStudentsError && (
+                                    <p className="text-sm text-destructive">
+                                        {allowedStudentsError}
+                                    </p>
+                                )}
+                                <p className="text-xs text-muted-foreground">
+                                    {data.allowed_students.length > 0
+                                        ? `${data.allowed_students.length} student email${data.allowed_students.length > 1 ? 's' : ''} allowed.`
+                                        : 'This session is open to all students with the access code.'}
+                                </p>
+                            </CardContent>
+                        </Card>
+
                         {/* Options */}
                         <Card>
                             <CardHeader>
@@ -511,7 +583,15 @@ export default function Edit({ session }: PageProps) {
 
                         {/* Submit */}
                         <div className="flex justify-end gap-4">
-                            <Button variant="outline" render={<Link href={examSessions.show.url(session.id)} />} nativeButton={false}>
+                            <Button
+                                variant="outline"
+                                render={
+                                    <Link
+                                        href={examSessions.show.url(session.id)}
+                                    />
+                                }
+                                nativeButton={false}
+                            >
                                 Cancel
                             </Button>
                             <Button
