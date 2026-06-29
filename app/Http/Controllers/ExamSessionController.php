@@ -22,7 +22,7 @@ class ExamSessionController extends Controller
     {
         $sessions = ExamSession::with(['exam.module', 'creator'])
             ->withCount('attempts')
-            ->when(! auth()->user()->hasRole('super-admin'), function ($query) {
+            ->when(! auth()->user()->isAdmin(), function ($query) {
                 $query->where('created_by', auth()->id());
             })
             ->orderByDesc('created_at')
@@ -41,6 +41,8 @@ class ExamSessionController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('create exam sessions'), 403);
+
         $validated = $request->validate([
             'exam_id' => ['required', 'exists:exams,id'],
             'title' => ['required', 'string', 'max:255'],
@@ -113,13 +115,15 @@ class ExamSessionController extends Controller
 
     public function edit(ExamSession $examSession): Response
     {
+        abort_unless(auth()->user()->can('edit exam sessions'), 403);
+
         $this->authorizeSession($examSession);
 
         $examSession->load('exam.module');
 
         $exams = Exam::with('module')
             ->where('status', 'published')
-            ->when(! auth()->user()->hasRole('super-admin'), function ($query) {
+            ->when(! auth()->user()->isAdmin(), function ($query) {
                 $query->where('created_by', auth()->id());
             })
             ->get(['id', 'title', 'module_id', 'total_items', 'total_points', 'time_limit']);
@@ -132,6 +136,8 @@ class ExamSessionController extends Controller
 
     public function update(Request $request, ExamSession $examSession): RedirectResponse
     {
+        abort_unless(auth()->user()->can('edit exam sessions'), 403);
+
         $this->authorizeSession($examSession);
 
         $validated = $request->validate([
@@ -168,6 +174,8 @@ class ExamSessionController extends Controller
 
     public function destroy(ExamSession $examSession): RedirectResponse
     {
+        abort_unless(auth()->user()->can('delete exam sessions'), 403);
+
         $this->authorizeSession($examSession);
 
         if ($examSession->attempts()->exists()) {
