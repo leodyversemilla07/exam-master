@@ -564,7 +564,6 @@
 -   [x] Implementation summary (IMPLEMENTATION_SUMMARY.md)
 -   [x] Software Requirements Specification (SRS.md)
 -   [x] Contributing guide (CONTRIBUTING.md)
--   [x] Deployment guide (DEPLOYMENT.md)
 -   [x] Queue setup guide (QUEUE_SETUP.md)
 -   [x] Development roadmap (ROADMAP.md)
 -   [x] Codebase analysis report (CODEBASE_ANALYSIS_REPORT.md)

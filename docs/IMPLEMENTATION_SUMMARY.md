@@ -248,7 +248,6 @@ docs/
 ├── API.md                 ← Complete API docs
 ├── ARCHITECTURE.md        ← System architecture
 ├── SRS.md                 ← Software requirements
-├── DEPLOYMENT.md          ← Deployment guide
 └── CONTRIBUTING.md        ← Contribution guide
 ```
 

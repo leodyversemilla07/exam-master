@@ -641,4 +641,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 -   [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
 -   [API.md](./API.md) - API documentation
--   [DEPLOYMENT.md](./DEPLOYMENT.md) - Deployment guide
