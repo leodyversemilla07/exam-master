@@ -1,11 +1,11 @@
 # ExamMaster Architecture
 
-**Version:** 1.2  
-**Last Updated:** December 22, 2025  
-**Laravel Version:** 12.43.1  
-**React Version:** 19.2.3  
-**TypeScript Version:** 5.9.3  
-**Inertia.js Version:** 2.x
+**Version:** 1.3  
+**Last Updated:** October 12, 2026  
+**Laravel Version:** 13.17.0  
+**React Version:** 19.2.7  
+**TypeScript Version:** 6.0.3  
+**Inertia.js Version:** 3.x
 
 This document describes the technical architecture of the ExamMaster application.
 
@@ -24,7 +24,7 @@ This document describes the technical architecture of the ExamMaster application
 
 ## Overview
 
-ExamMaster is a full-stack web application built with Laravel 12 (backend) and React with TypeScript (frontend), using Inertia.js for seamless SPA-like navigation without building a separate API.
+ExamMaster is a full-stack web application built with Laravel 13 (backend) and React with TypeScript (frontend), using Inertia.js for seamless SPA-like navigation without building a separate API.
 
 ### Current Implementation Status
 
@@ -56,7 +56,7 @@ ExamMaster is a full-stack web application built with Laravel 12 (backend) and R
 - Consistent UI patterns (page-level padding, no max-width constraints)
 
 **✅ All Features Completed:**
-- AI question generation with PrismPHP
+- AI question generation with the Laravel AI SDK
 - Multi-provider AI support (OpenAI, Gemini, Anthropic)
 - Structured output for exam questions
 - Database schema for questions and TOS
@@ -75,7 +75,7 @@ ExamMaster is a full-stack web application built with Laravel 12 (backend) and R
 │              (Controllers, Services, Models)                │
 │                                                             │
 │    ┌─────────────────────────────────────┐                │
-│    │   AI Service Layer (PrismPHP)       │                │
+│    │   AI Service Layer (Laravel AI SDK)   │                │
 │    │   - QuestionGeneratorService        │                │
 │    │   - OpenAI / Gemini / Anthropic     │                │
 │    └─────────────────────────────────────┘                │
@@ -94,33 +94,33 @@ ExamMaster is a full-stack web application built with Laravel 12 (backend) and R
 
 | Technology        | Version | Purpose           |
 | ----------------- | ------- | ----------------- |
-| React             | 19.2.3  | UI library        |
-| TypeScript        | 5.9.3   | Type safety       |
-| Inertia.js        | 2.3.3   | SPA adapter       |
-| Tailwind CSS      | 4.1.18  | Styling           |
-| shadcn/ui         | 3.5.1   | UI components     |
-| Laravel Wayfinder | 0.1.12  | Type-safe routing |
+| React             | 19.2.7  | UI library        |
+| TypeScript        | 6.0.3   | Type safety       |
+| Inertia.js        | 3.5.0   | SPA adapter       |
+| Tailwind CSS      | 4.3.1   | Styling           |
+| shadcn/ui         | 4.11.1  | UI components     |
+| Laravel Wayfinder | 0.1.20  | Type-safe routing |
 
 ### Backend
 
 | Technology       | Version | Purpose           |
 | ---------------- | ------- | ----------------- |
-| Laravel          | 12.43.1 | PHP framework     |
-| PHP              | 8.3.28  | Server language   |
+| Laravel          | 13.17.0 | PHP framework     |
+| PHP              | 8.4     | Server language   |
 | SQLite           | 3.x     | Database (dev)    |
-| Laravel Sanctum  | 4.2.1   | Authentication    |
-| Laravel Fortify  | 1.33.0  | Auth features     |
-| PrismPHP         | 0.99.2  | AI integration    |
+| Laravel Sanctum  | 4.3.2   | Authentication    |
+| Laravel Fortify  | 1.37.2  | Auth features     |
+| Laravel AI SDK   | 0.8.1   | AI integration    |
 
 ### Development Tools
 
 | Tool           | Version | Purpose          |
 | -------------- | ------- | ---------------- |
-| Vite           | 7.3.0   | Asset bundling   |
-| Pest           | 4.2.0   | Testing          |
-| Laravel Pint   | 1.26.0  | Code formatting  |
-| TypeScript     | 5.9.3   | Type checking    |
-| Laravel Boost  | 1.8+    | MCP dev tools    |
+| Vite           | 8.1.0   | Asset bundling   |
+| Pest           | 4.7.3   | Testing          |
+| Laravel Pint   | 1.29.3  | Code formatting  |
+| TypeScript     | 6.0.3   | Type checking    |
+| Laravel Boost  | 2.4+    | MCP dev tools    |
 
 ---
 

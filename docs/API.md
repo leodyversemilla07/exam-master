@@ -1,8 +1,8 @@
 # ExamMaster API Documentation
 
-**Version:** 1.3.0  
-**Last Updated:** December 21, 2025  
-**Laravel Version:** 12.43.1  
+**Version:** 1.3.1  
+**Last Updated:** October 12, 2026  
+**Laravel Version:** 13.17.0  
 **Database:** SQLite (development), MySQL/PostgreSQL (production)  
 **Backend Status:** 100% Complete (Production Ready) ✅  
 **Frontend Status:** 100% Complete (Production Ready) ✅
@@ -535,7 +535,7 @@ DELETE /modules/{module}/topics/{topic}/learning-objectives/{objective}
 
 ## TOS Generator
 
-The TOS (Table of Specifications) Generator module includes **AI-powered question generation** using PrismPHP with multi-provider support.
+The TOS (Table of Specifications) Generator module includes **AI-powered question generation** using the Laravel AI SDK with multi-provider support.
 
 ### List TOS
 
@@ -604,7 +604,7 @@ POST /tos-generates/{tosGenerate}/generate
 
 **AI-Powered Question Generation**
 
-Uses PrismPHP to call AI providers (OpenAI GPT-4o-mini, Gemini 3 Flash, Claude) to automatically generate exam questions based on the TOS specifications.
+Uses the Laravel AI SDK to call AI providers (OpenAI-compatible/NVIDIA NIM, Gemini, Claude) to automatically generate exam questions based on the TOS specifications.
 
 **Features:**
 - Multi-provider AI support
