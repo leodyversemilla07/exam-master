@@ -252,6 +252,6 @@ Now when you generate questions, they'll be processed in the background without 
 
 ## Additional Resources
 
-- [Laravel Queue Documentation](https://laravel.com/docs/12.x/queues)
+- [Laravel Queue Documentation](https://laravel.com/docs/13.x/queues)
 - [Supervisor Documentation](http://supervisord.org/)
 - [systemd Service Documentation](https://www.freedesktop.org/software/systemd/man/systemd.service.html)

@@ -3,7 +3,7 @@
 ## AI-Powered Exam Question Generator with Table of Specifications (TOS) Creator
 
 **Status:** Backend 100% Complete | Frontend Fully Implemented  
-**Last Updated:** December 21, 2025
+**Last Updated:** October 12, 2026
 
 ---
 
@@ -51,7 +51,7 @@ In Partial Fulfillment of the Requirements for the Degree
 
 In the evolving landscape of education, educators face the challenge of developing assessments that accurately measure student knowledge while aligning with curriculum standards and learning objectives. Traditional methods of exam creation can be time-consuming and may lack consistency, particularly in distributing questions across various cognitive levels.
 
-**ExamMaster** is an AI-powered tool designed to address these issues by automating the exam creation process while incorporating a Table of Specifications (TOS). Using advanced AI models (GPT-4o-mini, Gemini 3 Flash, Claude 3.5) through PrismPHP, this tool provides educators with an efficient way to generate high-quality exams that are balanced, culturally appropriate for Filipino students, and aligned with educational standards and specific curriculum goals. By leveraging AI, ExamMaster supports educators in producing reliable and fair assessments with questions distributed across Bloom's taxonomy cognitive levels, helping to meet the increasing demands of modern education.
+**ExamMaster** is an AI-powered tool designed to address these issues by automating the exam creation process while incorporating a Table of Specifications (TOS). Using advanced AI models (Llama 3.3 70B, DeepSeek, Gemini, Claude) through the official Laravel AI SDK, this tool provides educators with an efficient way to generate high-quality exams that are balanced, culturally appropriate for Filipino students, and aligned with educational standards and specific curriculum goals. By leveraging AI, ExamMaster supports educators in producing reliable and fair assessments with questions distributed across Bloom's taxonomy cognitive levels, helping to meet the increasing demands of modern education.
 
 This study builds on the principles of educational assessment and instructional design. The primary goal of ExamMaster is to assist educators in creating valid and reliable exams by automating much of the manual effort typically involved. Grounded in research highlighting the limitations of conventional assessment methods and the potential of automation, this project offers an innovative solution to modern educational challenges.
 
@@ -127,7 +127,7 @@ The study will also gather feedback from educators to evaluate the system's ease
 | **IDE**                | Visual Studio Code                    | Lightweight but powerful code editor for backend APIs, frontend interfaces, and AI model integration |
 | **AI Development**     | Google Colab                          | Essential for handling AI model development, NLP tasks, and data analysis                            |
 | **Database**           | SQLite (Dev) / MySQL (Production)     | To store and manage user data, exam configurations, templates, and reports                           |
-| **Backend**            | PHP 8.3, Laravel 12                   | PHP for server-side logic; Laravel for MVC framework and API development                             |
+| **Backend**            | PHP 8.4, Laravel 13                   | PHP for server-side logic; Laravel for MVC framework and API development                             |
 | **Frontend Framework** | React.js 19 with TypeScript           | To build dynamic and responsive user interfaces with type safety                                     |
 | **Styling**            | Tailwind CSS v4, shadcn/ui            | For utility-first styling and pre-built accessible UI components                                     |
 | **AI/ML Frameworks**   | TensorFlow/PyTorch                    | For creating and deploying AI models for exam question generation                                    |
@@ -287,16 +287,16 @@ The **Scrum methodology** (Agile approach) is used for developing ExamMaster bec
 
 | Layer              | Technology                                          |
 | ------------------ | --------------------------------------------------- |
-| **Frontend**       | React 19.2.3, TypeScript 5.9.3, Tailwind CSS 4.1.18 |
-| **UI Library**     | shadcn/ui 3.5.1, Radix UI, Lucide React             |
-| **Backend**        | Laravel 12.43.1, PHP 8.3.29                         |
+| **Frontend**       | React 19.2.7, TypeScript 6.0.3, Tailwind CSS 4.3.1  |
+| **UI Library**     | shadcn/ui 4.11.1, Radix UI, Lucide React            |
+| **Backend**        | Laravel 13.17.0, PHP 8.4                            |
 | **Database**       | MySQL 8.0+ (production-ready)                       |
-| **Routing**        | Laravel Wayfinder 0.1.12, Inertia.js 2.0.16         |
-| **Auth**           | Laravel Fortify 1.33.0, Laravel Sanctum 4.2.1       |
-| **AI Integration** | PrismPHP 0.99.2 (OpenAI, Gemini, Anthropic)         |
-| **AI Models**      | GPT-4o-mini, Gemini 1.5 Flash, Claude 3.5 Sonnet    |
-| **Testing**        | Pest PHP 4.2.0                                      |
-| **Dev Tools**      | Vite 7.3.0, Laravel Pint 1.26.0, Laravel Boost 1.8+ |
+| **Routing**        | Laravel Wayfinder 0.1.20, Inertia.js 3.x            |
+| **Auth**           | Laravel Fortify 1.37.2, Laravel Sanctum 4.3.2       |
+| **AI Integration** | Laravel AI SDK 0.8.1 (OpenAI, Gemini, Anthropic)    |
+| **AI Models**      | Llama 3.3 70B, DeepSeek, Gemini, Claude             |
+| **Testing**        | Pest PHP 4.7.3                                      |
+| **Dev Tools**      | Vite 8.1.0, Laravel Pint 1.29.3, Laravel Boost 2.4+ |
 
 ---
 
@@ -313,7 +313,7 @@ The **Scrum methodology** (Agile approach) is used for developing ExamMaster bec
 
 ```bash
 # Clone the repository
-git clone https://github.com/hisangge/exam-master.git
+git clone https://github.com/leodyversemilla07/exam-master.git
 cd exam-master
 
 # Install PHP dependencies
@@ -341,10 +341,11 @@ php artisan migrate
 
 # Configure AI API Keys (Required for AI question generation)
 # Get free Gemini API key: https://aistudio.google.com/apikey
-# Add to .env file:
-# PRISM_PROVIDER=gemini
+# Add to .env file (default provider is openai; set OPENAI_URL for an
+# OpenAI-compatible endpoint such as NVIDIA NIM):
+# OPENAI_API_KEY=your_openai_api_key_here
 # GEMINI_API_KEY=your_gemini_api_key_here
-# OPENAI_API_KEY=your_openai_api_key_here  # Optional for production
+# TAVILY_API_KEY=your_tavily_api_key_here  # Required for web search grounding
 
 # Generate Wayfinder routes (optional, auto-generated on build)
 php artisan wayfinder:generate
@@ -421,7 +422,7 @@ php artisan test --filter=TopicTest
 -   3 advanced services (TOS calculations, duplicate detection, auto-grading)
 -   Comprehensive testing (171 passing tests, 631 assertions)
 -   PSR-12 code standards (Laravel Pint)
--   AI integration (OpenAI, Gemini, Claude via PrismPHP)
+-   AI integration (OpenAI, Gemini, Claude via Laravel AI SDK)
 -   Kebab-case URL standardization
 
 **See detailed documentation:**
@@ -467,24 +468,24 @@ php artisan test --filter=TopicTest
 
 ### Backend
 
--   **Laravel 12.43.1** - PHP framework with modern features
--   **PHP 8.3.29** - Latest PHP version
+-   **Laravel 13.17.0** - PHP framework with modern features
+-   **PHP 8.4** - Latest PHP version
 -   **MySQL 8.0+** - Production-ready relational database
 -   **Laravel Fortify** - Authentication with 2FA support
 -   **Spatie Laravel Permission** - Role-Based Access Control
--   **PrismPHP** - AI integration (OpenAI, Gemini, Anthropic)
+-   **Laravel AI SDK** - AI integration (OpenAI-compatible, Gemini, Anthropic)
 -   **Laravel Queues** - Background job processing
 -   **Laravel Pint** - PHP code formatter
 
 ### Frontend
 
--   **React 19.2.3** - UI library
--   **TypeScript 5.9.3** - Type-safe JavaScript
--   **Inertia.js 2.0.16** - SPA framework without API
+-   **React 19.2.7** - UI library
+-   **TypeScript 6.0.3** - Type-safe JavaScript
+-   **Inertia.js 3.x** - SPA framework without API
 -   **Tailwind CSS 4.x** - Utility-first CSS
 -   **shadcn/ui** - Component library (Radix UI primitives)
 -   **Laravel Wayfinder** - Type-safe routing
--   **Vite 6.0** - Build tool and dev server
+-   **Vite 8.1** - Build tool and dev server
 
 ### Development Tools
 
@@ -497,9 +498,9 @@ php artisan test --filter=TopicTest
 
 ### AI Providers
 
--   **OpenAI GPT-4o-mini** - Primary AI provider for question generation
--   **Google Gemini 3 Flash** - Fast and efficient alternative provider  
--   **Anthropic Claude 3.5 Sonnet** - High-quality backup provider
+-   **OpenAI-compatible (NVIDIA NIM)** - Primary AI provider for question generation
+-   **Google Gemini** - Fast and efficient alternative provider
+-   **Anthropic Claude** - High-quality backup provider
 
 ### Key Features
 
